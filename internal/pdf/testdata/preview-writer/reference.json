@@ -1,0 +1,12 @@
+{
+  "sources": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-reference/repository/internal/builtinskills/documents/scripts/document_check.py": "f7f724147f3678383b5d64b2d128639c2df3115404f07624dbcca4419ef15e94",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-reference/repository/internal/builtinskills/documents/scripts/document_preview.py": "67f940b24546b9ef2073272df3429b533d872157b7de91aa04a09dc0758fcfe3",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/pypdf/_writer.py": "b21a576fac2285eec36ab335fac6e58df18adaf142f6b1742a49371459579a70",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/pypdf/generic/_data_structures.py": "6625601890c06bf5e4707b979a2156a6b7a12408fcf6df0e828e787ade50dc98",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/pypdf/generic/_base.py": "e0e8fb5466f5a028f412e7489fcca22c5373472c18e960f25ac7440dc112a632"
+  },
+  "input": "33981bad1deb0cf4192b0475f3fd00261d32797f1ad42053c4e23910bb19aa62",
+  "expected": "4a7957a9894371b59438cb1b6f07d02de87e11cfd3f06f4f491d0e5e77c7821f",
+  "pypdf_version": "6.20.0"
+}

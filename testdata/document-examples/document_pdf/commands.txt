@@ -1,0 +1,45 @@
+```sh
+paperworks create-pdf --spec "$SKILL_DIR/examples/report.json" --output report.pdf
+paperworks inspect report.pdf > report-check.json
+paperworks pdf-text report.pdf --output report.txt
+paperworks create-pdf --spec "$SKILL_DIR/examples/review-form.json" --output review-form.pdf
+paperworks inspect review-form.pdf > before.json
+cat > values.json <<'JSON'
+{"reviewer":"Example reviewer"}
+JSON
+paperworks fill review-form.pdf --values values.json --output completed.pdf
+paperworks inspect completed.pdf > after.json
+paperworks render completed.pdf --output pdf-pages --max-pixels 1600
+paperworks fill completed.pdf --values values.json --output flattened.pdf --flatten
+paperworks inspect flattened.pdf > flat-check.json
+paperworks render flattened.pdf --output flat-pages --max-pixels 1600
+```
+
+```sh
+paperworks create-pdf --spec "$SKILL_DIR/examples/flow.json" --output flowing.pdf
+paperworks inspect flowing.pdf > flowing-check.json
+paperworks pdf-text flowing.pdf --output flowing.txt
+paperworks render flowing.pdf --output flowing-pages --max-pixels 1600
+```
+
+```sh
+printf '%s' 'R = p \times q' > figure-equation.txt
+paperworks equation figure-equation.txt figure-equation.png
+cat > figure.json <<'JSON'
+{
+  "paper": "A4",
+  "flow": {
+    "blocks": [
+      {"kind": "heading", "text": "Revenue model"},
+      {"kind": "figure", "src": "figure-equation.png", "width": 240,
+       "height": 100, "caption": "Figure 1. Revenue equals price times quantity."},
+      {"kind": "paragraph", "text": "The figure and its caption remain together."}
+    ]
+  }
+}
+JSON
+paperworks create-pdf --spec figure.json --output figure.pdf
+paperworks inspect figure.pdf > figure-check.json
+paperworks pdf-text figure.pdf --output figure.txt
+paperworks render figure.pdf --output figure-pages --max-pixels 1600
+```

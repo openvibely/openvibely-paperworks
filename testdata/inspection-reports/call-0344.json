@@ -1,0 +1,245 @@
+{
+  "external_relationships": [],
+  "issues": [
+    "Table without designated header row; review whether appropriate"
+  ],
+  "package_parts": {
+    "[Content_Types].xml": {
+      "bytes": 1977,
+      "sha256": "7a0bdc77af17732aad614eac254f1a018efa68198b9892be784226b0e9d152ec"
+    },
+    "_rels/.rels": {
+      "bytes": 734,
+      "sha256": "a9ae57efe9186f07d48303bcac5d54c7e359bf3f503939c03ad2954e5c59a5c4"
+    },
+    "docProps/core.xml": {
+      "bytes": 724,
+      "sha256": "b1b532f3e253d468be4ccde0a8c69e1d6e0520052898165e8bc3d23bcd8f17ea"
+    },
+    "docProps/app.xml": {
+      "bytes": 1132,
+      "sha256": "be664981c3141cddfc59362beb287ebf20d0773660e2dd6faac5968a5930a081"
+    },
+    "word/document.xml": {
+      "bytes": 2337,
+      "sha256": "f7510edf2dc00da5ed0f4836ba58d2f779e4bc0ad09d393f84142d62c15183e4"
+    },
+    "word/_rels/document.xml.rels": {
+      "bytes": 1493,
+      "sha256": "a122b8945c6d1677f290e98179b3bc2ccf6c3746b0aaf1050a17cd8467d0581e"
+    },
+    "word/styles.xml": {
+      "bytes": 349458,
+      "sha256": "02d71a68ddb92c055e84526d6a9e45700be3872781ababf759241694bc30e384"
+    },
+    "word/stylesWithEffects.xml": {
+      "bytes": 438131,
+      "sha256": "463ae0928cf0d84775dbf8cf18d6c3029f6707c81bf590f6d6dd8757a5e93f15"
+    },
+    "word/settings.xml": {
+      "bytes": 2535,
+      "sha256": "51a0d348fe85965c66e4748a03c3c0d055d78455514f03cb121c334af7d73689"
+    },
+    "word/webSettings.xml": {
+      "bytes": 438,
+      "sha256": "349d36de7434d09f86987ff671d8814964a0588c1e630c06e562cda7e75e9f95"
+    },
+    "word/fontTable.xml": {
+      "bytes": 2811,
+      "sha256": "79385fb7f60247507ecaffc292e9ebd52ea0657b8634f629ba6fccc54011d6bb"
+    },
+    "word/theme/theme1.xml": {
+      "bytes": 10939,
+      "sha256": "e3a8ab7db9ca7afca56f5f2820a56e8b660016c647773555b060b0a02ac76941"
+    },
+    "customXml/item1.xml": {
+      "bytes": 262,
+      "sha256": "a86086ffc5d8e83ebd6c71a55d1d2efaa31b137977f5f3a752366e1023612144"
+    },
+    "customXml/_rels/item1.xml.rels": {
+      "bytes": 295,
+      "sha256": "1ca6c9a64edcebe24ee703a54403611b322d96da33371779e742d2d3f7ed7a6c"
+    },
+    "customXml/itemProps1.xml": {
+      "bytes": 354,
+      "sha256": "c542307b13ec29a8b546217bb37936ab4822e044b265d2952985ec3d6afed24e"
+    },
+    "word/numbering.xml": {
+      "bytes": 5513,
+      "sha256": "70976f19cbcd896e51890859fe6ecb3467a5a7ad0c040160fedc5a1993cb09ce"
+    },
+    "docProps/thumbnail.jpeg": {
+      "bytes": 8324,
+      "sha256": "96367138dc44ce09bf2c8f0f8e49348a1478d2c5c0af69bbc2bbc38b63cdcead"
+    },
+    "word/comments.xml": {
+      "bytes": 731,
+      "sha256": "0a9769d92b47907b6c9eb095fa6b53598187340c042a05d0d8785657c193c0df"
+    },
+    "word/commentsExtended.xml": {
+      "bytes": 204,
+      "sha256": "aca8ee37e85ee6a45383b0b24b2d17b84cd8c03f2f87b737eed3128757b0fe20"
+    }
+  },
+  "tracked_insertions": 0,
+  "tracked_deletions": 0,
+  "comments": 1,
+  "equations": 0,
+  "headings": [],
+  "sections": [
+    {
+      "pgSz": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}w": "12240",
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}h": "15840"
+      },
+      "pgMar": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}top": "1440",
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}right": "1800",
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}bottom": "1440",
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}left": "1800",
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}header": "720",
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}footer": "720",
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}gutter": "0"
+      },
+      "cols": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}space": "720"
+      }
+    }
+  ],
+  "fields": [],
+  "controls": [],
+  "notes": [],
+  "comment_details": [
+    {
+      "id": "0",
+      "author": "Reviewer",
+      "text": "First\nSecond\nThird",
+      "date": "2026-10-13T19:13:18Z",
+      "initials": "R",
+      "resolved": true,
+      "anchored_text": [
+        {
+          "part": "word/document.xml",
+          "text": "The old price is $10."
+        }
+      ]
+    }
+  ],
+  "images": [],
+  "watermarks": [],
+  "direct_formatting": [
+    {
+      "part": "word/document.xml",
+      "paragraph": 0,
+      "style": null,
+      "text": "The old price is $10.",
+      "properties": [
+        {
+          "property": "b"
+        },
+        {
+          "property": "i"
+        }
+      ]
+    }
+  ],
+  "stories": [
+    {
+      "part": "word/document.xml",
+      "content": [
+        {
+          "kind": "text",
+          "text": "The old "
+        },
+        {
+          "kind": "text",
+          "text": "price is $10."
+        }
+      ]
+    },
+    {
+      "part": "word/comments.xml",
+      "content": [
+        {
+          "kind": "text",
+          "text": "First"
+        },
+        {
+          "kind": "text",
+          "text": "Second"
+        },
+        {
+          "kind": "text",
+          "text": "Third"
+        }
+      ]
+    }
+  ],
+  "style_warnings": [],
+  "font_usage": {},
+  "section_links": [
+    {
+      "section": 0,
+      "links": {
+        "header:default": {
+          "target": null,
+          "inherited": false
+        },
+        "header:first": {
+          "target": null,
+          "inherited": false
+        },
+        "header:even": {
+          "target": null,
+          "inherited": false
+        },
+        "footer:default": {
+          "target": null,
+          "inherited": false
+        },
+        "footer:first": {
+          "target": null,
+          "inherited": false
+        },
+        "footer:even": {
+          "target": null,
+          "inherited": false
+        }
+      }
+    }
+  ],
+  "section_details": [
+    {
+      "part": "word/document.xml",
+      "properties": [
+        {
+          "pgSz": {
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}w": "12240",
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}h": "15840"
+          }
+        },
+        {
+          "pgMar": {
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}top": "1440",
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}right": "1800",
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}bottom": "1440",
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}left": "1800",
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}header": "720",
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}footer": "720",
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}gutter": "0"
+          }
+        },
+        {
+          "cols": {
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}space": "720"
+          }
+        },
+        {
+          "docGrid": {
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}linePitch": "360"
+          }
+        }
+      ]
+    }
+  ]
+}

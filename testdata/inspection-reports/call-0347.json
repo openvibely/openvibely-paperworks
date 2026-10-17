@@ -1,0 +1,232 @@
+{
+  "external_relationships": [],
+  "issues": [],
+  "package_parts": {
+    "[Content_Types].xml": {
+      "bytes": 1869,
+      "sha256": "a61e2cb9fb6b6ba9eb602e45251b9bc7a0a7687d424544e6acadf64957255d9d"
+    },
+    "_rels/.rels": {
+      "bytes": 734,
+      "sha256": "a9ae57efe9186f07d48303bcac5d54c7e359bf3f503939c03ad2954e5c59a5c4"
+    },
+    "docProps/core.xml": {
+      "bytes": 721,
+      "sha256": "d14be8284e406d14dc2a576b19f15e7f637b955f9e27a3d9ed871ec99606f7ba"
+    },
+    "docProps/app.xml": {
+      "bytes": 1132,
+      "sha256": "be664981c3141cddfc59362beb287ebf20d0773660e2dd6faac5968a5930a081"
+    },
+    "word/document.xml": {
+      "bytes": 1753,
+      "sha256": "d5bd3f1bc2a44fb733a39c07e1ca2ee50c12dcdb4215fd9df75fafb90225de43"
+    },
+    "word/_rels/document.xml.rels": {
+      "bytes": 1358,
+      "sha256": "790a2e312a7996b0aac152e7e7c07dfa1abe2c654ca834da764ee737ff6afb70"
+    },
+    "word/styles.xml": {
+      "bytes": 349458,
+      "sha256": "02d71a68ddb92c055e84526d6a9e45700be3872781ababf759241694bc30e384"
+    },
+    "word/stylesWithEffects.xml": {
+      "bytes": 438131,
+      "sha256": "463ae0928cf0d84775dbf8cf18d6c3029f6707c81bf590f6d6dd8757a5e93f15"
+    },
+    "word/settings.xml": {
+      "bytes": 2535,
+      "sha256": "51a0d348fe85965c66e4748a03c3c0d055d78455514f03cb121c334af7d73689"
+    },
+    "word/webSettings.xml": {
+      "bytes": 438,
+      "sha256": "349d36de7434d09f86987ff671d8814964a0588c1e630c06e562cda7e75e9f95"
+    },
+    "word/fontTable.xml": {
+      "bytes": 2811,
+      "sha256": "79385fb7f60247507ecaffc292e9ebd52ea0657b8634f629ba6fccc54011d6bb"
+    },
+    "word/theme/theme1.xml": {
+      "bytes": 10939,
+      "sha256": "e3a8ab7db9ca7afca56f5f2820a56e8b660016c647773555b060b0a02ac76941"
+    },
+    "customXml/item1.xml": {
+      "bytes": 262,
+      "sha256": "a86086ffc5d8e83ebd6c71a55d1d2efaa31b137977f5f3a752366e1023612144"
+    },
+    "customXml/_rels/item1.xml.rels": {
+      "bytes": 295,
+      "sha256": "1ca6c9a64edcebe24ee703a54403611b322d96da33371779e742d2d3f7ed7a6c"
+    },
+    "customXml/itemProps1.xml": {
+      "bytes": 354,
+      "sha256": "c542307b13ec29a8b546217bb37936ab4822e044b265d2952985ec3d6afed24e"
+    },
+    "word/numbering.xml": {
+      "bytes": 5513,
+      "sha256": "70976f19cbcd896e51890859fe6ecb3467a5a7ad0c040160fedc5a1993cb09ce"
+    },
+    "word/comments.xml": {
+      "bytes": 1235,
+      "sha256": "a87ab74ddad8e369d17c4f3ad7e188ce3b8a482760a62860cf26236a19579fc5"
+    },
+    "docProps/thumbnail.jpeg": {
+      "bytes": 8324,
+      "sha256": "96367138dc44ce09bf2c8f0f8e49348a1478d2c5c0af69bbc2bbc38b63cdcead"
+    }
+  },
+  "tracked_insertions": 0,
+  "tracked_deletions": 0,
+  "comments": 1,
+  "equations": 0,
+  "headings": [],
+  "sections": [
+    {
+      "pgSz": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}w": "12240",
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}h": "15840"
+      },
+      "pgMar": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}top": "1440",
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}right": "1800",
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}bottom": "1440",
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}left": "1800",
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}header": "720",
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}footer": "720",
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}gutter": "0"
+      },
+      "cols": {
+        "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}space": "720"
+      }
+    }
+  ],
+  "fields": [],
+  "controls": [],
+  "notes": [],
+  "comment_details": [
+    {
+      "id": "0",
+      "author": "Reviewer",
+      "text": "Revenue: 10\nCosts: 20\nDetails\tA\nB\nC",
+      "date": "2026-10-13T19:13:18Z",
+      "initials": "",
+      "resolved": false,
+      "anchored_text": [
+        {
+          "part": "word/document.xml",
+          "text": "Review these totals."
+        }
+      ]
+    }
+  ],
+  "images": [],
+  "watermarks": [],
+  "direct_formatting": [],
+  "stories": [
+    {
+      "part": "word/document.xml",
+      "content": [
+        {
+          "kind": "text",
+          "text": "Review these totals."
+        }
+      ]
+    },
+    {
+      "part": "word/comments.xml",
+      "content": [
+        {
+          "kind": "text",
+          "text": "Revenue: 10"
+        },
+        {
+          "kind": "text",
+          "text": "Costs: 20"
+        },
+        {
+          "kind": "text",
+          "text": "Details"
+        },
+        {
+          "kind": "text",
+          "text": "A"
+        },
+        {
+          "kind": "text",
+          "text": "B"
+        },
+        {
+          "kind": "text",
+          "text": "C"
+        }
+      ]
+    }
+  ],
+  "style_warnings": [],
+  "font_usage": {},
+  "section_links": [
+    {
+      "section": 0,
+      "links": {
+        "header:default": {
+          "target": null,
+          "inherited": false
+        },
+        "header:first": {
+          "target": null,
+          "inherited": false
+        },
+        "header:even": {
+          "target": null,
+          "inherited": false
+        },
+        "footer:default": {
+          "target": null,
+          "inherited": false
+        },
+        "footer:first": {
+          "target": null,
+          "inherited": false
+        },
+        "footer:even": {
+          "target": null,
+          "inherited": false
+        }
+      }
+    }
+  ],
+  "section_details": [
+    {
+      "part": "word/document.xml",
+      "properties": [
+        {
+          "pgSz": {
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}w": "12240",
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}h": "15840"
+          }
+        },
+        {
+          "pgMar": {
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}top": "1440",
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}right": "1800",
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}bottom": "1440",
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}left": "1800",
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}header": "720",
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}footer": "720",
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}gutter": "0"
+          }
+        },
+        {
+          "cols": {
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}space": "720"
+          }
+        },
+        {
+          "docGrid": {
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}linePitch": "360"
+          }
+        }
+      ]
+    }
+  ]
+}

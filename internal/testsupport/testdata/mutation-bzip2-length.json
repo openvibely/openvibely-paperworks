@@ -1,0 +1,775 @@
+{
+  "reference": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/test_presentation_native.py": "6199f9f1767fa49fa3743f11fb6545468da586c68aabe28e79ba942fdb0513fb",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/document_native.py": "eb2407fed420206fc34ad88f3fceb613ee694d3bf7f239b19cce3a73a6b9c420",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/document_check.py": "f7f724147f3678383b5d64b2d128639c2df3115404f07624dbcca4419ef15e94"
+  },
+  "zipfile_source_sha256": "94c53aedba0b0f7d6f71bf8ec34973e666ee0c0e56e6800ff4c26d2e3951987a",
+  "scope": "Original PresentationNative.mutate unchanged. Fixed fixture timestamps; no output byte-equality claim. Error types are Python observations, not Go type-equivalence.",
+  "cases": [
+    {
+      "name": "size-0-valid",
+      "input": "UEsDBC4AAAAMAIMYIlgAAAAAKgAAAAAAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYAAAAACoAAAAAAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAATQAAAAAA",
+      "input_sha256": "80d5cfb662f722b725c968b966d121c8793277ab71d572213756280c94a79b16",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": ""
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "size-0-bad-crc",
+      "input": "UEsDBC4AAAAMAIMYIlgBAAAAKgAAAAAAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYAQAAACoAAAAAAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAATQAAAAAA",
+      "input_sha256": "6f74aa4112e24466683162428b062c95e14a787459ac40e3e981b3228436f4d1",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "size-1-valid",
+      "input": "UEsDBC4AAAAMAIMYIlgLzw4bKgAAAAEAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYC88OGyoAAAABAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAATQAAAAAA",
+      "input_sha256": "2b4922b4a6ff4abaed409004757ed4a1d6eda9f281fd4bd60963a5b9be709730",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "cw=="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "size-1-bad-crc",
+      "input": "UEsDBC4AAAAMAIMYIlgKzw4bKgAAAAEAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYCs8OGyoAAAABAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAATQAAAAAA",
+      "input_sha256": "e7c23c4e336d7d639420ad32775d2d03f0d866a0c91d38eca990f611a6081cd5",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "size-4-valid",
+      "input": "UEsDBC4AAAAMAIMYIljeOmZVKgAAAAQAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJY3jpmVSoAAAAEAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAATQAAAAAA",
+      "input_sha256": "875eb45f259f1e577c9969bb961824df7016a4f51806e000100a7b7b3f375502",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZQ=="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "size-4-bad-crc",
+      "input": "UEsDBC4AAAAMAIMYIljfOmZVKgAAAAQAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJY3zpmVSoAAAAEAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAATQAAAAAA",
+      "input_sha256": "d719d6e3eeb466a0d50171cae736c7a94073085250aea13e2215255e500e42aa",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "size-5-valid",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+SoAAAAFAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAATQAAAAAA",
+      "input_sha256": "d09a4470be38adb6a478cd3848dd47e2c2fdeab618cf5ab60c963c378440398b",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "size-5-bad-crc",
+      "input": "UEsDBC4AAAAMAIMYIlgk0+P5KgAAAAUAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJNPj+SoAAAAFAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAATQAAAAAA",
+      "input_sha256": "da6face70fbcab02074eae1fc83eb8b5a72c52cbc485da43b4f1fef5a8f3ba68",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "size-9-valid",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAkAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+SoAAAAJAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAATQAAAAAA",
+      "input_sha256": "cf45bd08ffd178d8fde1984d3ff0a32dbc196b3d223ad30116ad36667c117f74",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "size-9-bad-crc",
+      "input": "UEsDBC4AAAAMAIMYIlgk0+P5KgAAAAkAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJNPj+SoAAAAJAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAATQAAAAAA",
+      "input_sha256": "ef430cb9de7c701d3cd7c1604e4df3738d64b468193b1da19453575be8e6f8b9",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "size-4294967295-valid",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAP////8FAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+SoAAAD/////BQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAATQAAAAAA",
+      "input_sha256": "74e482e02bf6aa75397986f6697ccba209d96d332c70eb65f3c29c522c54bd77",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "size-4294967295-bad-crc",
+      "input": "UEsDBC4AAAAMAIMYIlgk0+P5KgAAAP////8FAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJNPj+SoAAAD/////BQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAATQAAAAAA",
+      "input_sha256": "bcd1294e8d24df8945418e79118bf93a5f808e3d55949267e420ecd7ce144f0d",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "empty",
+      "input": "UEsDBC4AAAAMAIMYIlgAAAAADgAAAAkAAAAFAAAAZmlyc3RCWmg5F3JFOFCQAAAAAFBLAQIuAy4AAAAMAIMYIlgAAAAADgAAAAkAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAxAAAAAAA=",
+      "input_sha256": "26612a9af362a1c80944a6384be71f6623405e076750fff0ff1ece12b9078a0b",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": ""
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "directory",
+      "input": "UEsDBC4AAAAMAIMYIlhDvrfoJgAAAAEAAAAHAAAAZm9sZGVyL0JaaDkxQVkmU1lkjLtzAAAAAQA4ACAAIZgZhGF3JFOFCQZIy7cwUEsBAi4DLgAAAAwAgxgiWEO+t+gmAAAAAQAAAAcAAAAAAAAAAAAAAIABAAAAAGZvbGRlci9QSwUGAAAAAAEAAQA1AAAASwAAAAAA",
+      "input_sha256": "a724a5f24d3c90c99f6a0ff6b1338a95f26d31d06c9057203b45c88074dae7e9",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "folder/",
+          "data": "YQ=="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "large",
+      "input": "UEsDBC4AAAAMAIMYIlh9HdBMMgMAAAEgAAAFAAAAZmlyc3RCWmg5MUFZJlNZRumCygAAMf/////////////////////////////////////////////QBJ4AAAAACTAATAAEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASYACYAAmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACTAATAAEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASYACYAAmAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUqqoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP+IsAIsBIsCIsDIsEIsFIsGIsHIsIIsJIsKIsLIsMIsNIsOIsPIsQIsRIsSIsTIsUIsVIsWIsXIsYIsZIsaIsbIscIsdIseIsfIsgIshIsiIsjIskIslIsmIsnIsoIspIsqIsrIssIstIsuIsvIswIsxIsyIszIs0Is1Is2Is3Is4Is5Is6Is7Is8Is9Is+Is/ItAItBItCItDItEItFItGItHItIItJItKItLItMItNItOItPItQItRItSItTItUItVItWItXItYItZItaItbItcItdIteItfItgIthItiItjItkItlItmItnItoItpItqItrItsIttItuItvItwItxItyItzIt0It1It2It3It4It5It6It7It8It9It+It/IuAIuBIuCIuDIuEIuFIuGIuHIuIIuJIuKIuLIuMIuNIuOIuPIuQIuRIuSIuTIuUIuVIuWIuXIuYIuZIuaIubIucIudIueIufIugIuhIuiIujIukIulIumIunIuoIupIuqIurIusIutIuuIuvIuwIuxIuyIuzIu0Iu1Iu2Iu3Iu4Iu5Iu6Iu7Iu8Iu9Iu+Iu/IvAIvBIvCIvDIvEIvFIvGIvHIvIIvJIvKIvLIvMIvNIvOIvPIvQIvRIvSIvTIvUIvVIvWIvXIvYIvZIvaIvbIvcIvdIveIvfIvgIvhIviIvjIvkIvlIvmIvnIvoIvpIvqIvrIvsIvtIvuIvvIvwIvxIvyIvzIv0Iv1Iv2Iv3Iv4Iv5Iv6Iv7Iv8Iv9Iv+Iv/F3JFOFCQRumCygFBLAQIuAy4AAAAMAIMYIlh9HdBMMgMAAAEgAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAABVAwAAAAA=",
+      "input_sha256": "722e223be826a7416a25416412ad5770fbab71940a50676c14fc2ff9ce91bc2c",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "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"
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "shadowed-bad-crc",
+      "input": "UEsDBC4AAAAMAIMYIljl1F0/JgAAAAMAAAAEAAAAc2FtZUJaaDkxQVkmU1kfQ5ioAAABAQAEBKAAIZgZgWF3JFOFCQH0OYqAUEsDBBQAAAAAAIMYIlgGaij7BAAAAAQAAAAGAAAAbWlkZGxla2VwdFBLAwQuAAAADACDGCJYoKnbSioAAAAEAAAABAAAAHNhbWVCWmg5MUFZJlNZOhfIGQAAAIGAIAQMACAAIZpoM00HPF3JFOFCQOhfIGRQSwECLgMuAAAADACDGCJY5NRdPyYAAAADAAAABAAAAAAAAAAAAAAAgAEAAAAAc2FtZVBLAQIUAxQAAAAAAIMYIlgGaij7BAAAAAQAAAAGAAAAAAAAAAAAAACAAUgAAABtaWRkbGVQSwECLgMuAAAADACDGCJYoKnbSioAAAAEAAAABAAAAAAAAAAAAAAAgAFwAAAAc2FtZVBLBQYAAAAAAwADAJgAAAC8AAAAAAA=",
+      "input_sha256": "6bebb57c9ff2bf1c6a4e14ec91deaf242d0adb5b8eb18ad2dc2a8ad04324e369",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "same",
+          "data": "bGFzdA=="
+        },
+        {
+          "name": "middle",
+          "data": "a2VwdA=="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "selected-bad-crc",
+      "input": "UEsDBC4AAAAMAIMYIljl1F0/JgAAAAMAAAAEAAAAc2FtZUJaaDkxQVkmU1kfQ5ioAAABAQAEBKAAIZgZgWF3JFOFCQH0OYqAUEsDBBQAAAAAAIMYIlgGaij7BAAAAAQAAAAGAAAAbWlkZGxla2VwdFBLAwQuAAAADACDGCJYoKnbSioAAAAEAAAABAAAAHNhbWVCWmg5MUFZJlNZOhfIGQAAAIGAIAQMACAAIZpoM00HPF3JFOFCQOhfIGRQSwECLgMuAAAADACDGCJY5dRdPyYAAAADAAAABAAAAAAAAAAAAAAAgAEAAAAAc2FtZVBLAQIUAxQAAAAAAIMYIlgGaij7BAAAAAQAAAAGAAAAAAAAAAAAAACAAUgAAABtaWRkbGVQSwECLgMuAAAADACDGCJYoanbSioAAAAEAAAABAAAAAAAAAAAAAAAgAFwAAAAc2FtZVBLBQYAAAAAAwADAJgAAAC8AAAAAAA=",
+      "input_sha256": "c9b2bf5554bfbc4fe7d2a920fd2614207f227ea171d35f34c59b754755c33e72",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'same'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "descriptor-disagrees-0",
+      "input": "UEsDBC4ACAAMANs6T10AAAAAAAAAAAAAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwcI////////////////UEsBAi4DLgAIAAwA2zpPXQAAAAAqAAAAAAAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAAF0AAAAAAA==",
+      "input_sha256": "c8489daa7206e5057636aa7ab76105916faceee9122ba560921d851fd07ef331",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": ""
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "descriptor-disagrees-2",
+      "input": "UEsDBC4ACAAMANs6T10AAAAAAAAAAAAAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwcI////////////////UEsBAi4DLgAIAAwA2zpPXQRpfn8qAAAAAgAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAAF0AAAAAAA==",
+      "input_sha256": "89cbb18f9580ec9a282b0607080e411b01fafd72811d06381a14c194342edbf7",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2E="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "descriptor-disagrees-5",
+      "input": "UEsDBC4ACAAMANs6T10AAAAAAAAAAAAAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwcI////////////////UEsBAi4DLgAIAAwA2zpPXSXT4/kqAAAABQAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAAF0AAAAAAA==",
+      "input_sha256": "8c0f9665db36d4c3d28b2355bb43f4bb02b85c0176bdac839ecec901e7fc0804",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "descriptor-disagrees-9",
+      "input": "UEsDBC4ACAAMANs6T10AAAAAAAAAAAAAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwcI////////////////UEsBAi4DLgAIAAwA2zpPXSXT4/kqAAAACQAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAAF0AAAAAAA==",
+      "input_sha256": "ba47e77d82e5dcd9f7e81c7cbf198edce9d5ccdec515fb089bfbce23e646cfe5",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-0",
+      "input": "UEsDBC4AAAAMAIMYIlgAAAAALgAAAAAAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBqdW5rUEsBAi4DLgAAAAwAgxgiWAAAAAAuAAAAAAAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAAFEAAAAAAA==",
+      "input_sha256": "2e7020936f960813bf19168923dfbb1154e732017121e8b1f6eb43dbdb42f4b8",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": ""
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-2",
+      "input": "UEsDBC4AAAAMAIMYIlgEaX5/LgAAAAIAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBqdW5rUEsBAi4DLgAAAAwAgxgiWARpfn8uAAAAAgAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAAFEAAAAAAA==",
+      "input_sha256": "2558301b487904fe73aa26263a3e04b5e71ff210e27cefe57df742369f211bd6",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2E="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-9",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5LgAAAAkAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBqdW5rUEsBAi4DLgAAAAwAgxgiWCXT4/kuAAAACQAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAAFEAAAAAAA==",
+      "input_sha256": "5732cb96e75b5087c093ae8e425e6b22030cb6e2512670a18456553ca94356fb",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "concatenated-0",
+      "input": "UEsDBC4AAAAMAIMYIlgAAAAAVAAAAAAAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYAAAAAFQAAAAAAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAdwAAAAAA",
+      "input_sha256": "a42170aa248abab914c65ba2ff971d8d6844c26d6e6f33ee311cb7ce954d3caa",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": ""
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "concatenated-2",
+      "input": "UEsDBC4AAAAMAIMYIlgEaX5/VAAAAAIAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYBGl+f1QAAAACAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAdwAAAAAA",
+      "input_sha256": "6c32f72f7302d6fd43d336ae528944d6374a17786b52daf60ecbf3335a6085af",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2E="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "concatenated-9",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5VAAAAAkAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+VQAAAAJAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAdwAAAAAA",
+      "input_sha256": "2e99388f394b1fc7f27ded5479dd909ad95c30d857379f8321b1ba5170dc5db5",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "truncated-footer-0",
+      "input": "UEsDBC4AAAAMAIMYIlgAAAAAIAAAAAAAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcVBLAQIuAy4AAAAMAIMYIlgAAAAAIAAAAAAAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAABDAAAAAAA=",
+      "input_sha256": "0b45cbc1d303544805f8bb3167d62315deb711732d153bd32ba6f9ba82ab0d7c",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": ""
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "truncated-footer-2",
+      "input": "UEsDBC4AAAAMAIMYIlgEaX5/IAAAAAIAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcVBLAQIuAy4AAAAMAIMYIlgEaX5/IAAAAAIAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAABDAAAAAAA=",
+      "input_sha256": "37a156fb543ff979dcfdf9689f6742dadaeb8dccf54547a73840fb11a86b073f",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2E="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "truncated-footer-9",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5IAAAAAkAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcVBLAQIuAy4AAAAMAIMYIlgl0+P5IAAAAAkAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAABDAAAAAAA=",
+      "input_sha256": "0432eed83d04319a95be91f9d36b037be08773cb9c213bba2ff83ac49908c2cf",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "truncated-block-0",
+      "input": "UEsDBC4AAAAMAIMYIlgAAAAADwAAAAAAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DABQSwECLgMuAAAADACDGCJYAAAAAA8AAAAAAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAMgAAAAAA",
+      "input_sha256": "f83a80f71e81c4430510a51d85ca61ac6e2ed6d562d0f2b5ace3254ce6845129",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": ""
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "truncated-block-2",
+      "input": "UEsDBC4AAAAMAIMYIlgEaX5/DwAAAAIAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DABQSwECLgMuAAAADACDGCJYBGl+fw8AAAACAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAMgAAAAAA",
+      "input_sha256": "b9d40d6da2d450a8861922c8c71f48ff7ffef018e8ba8e26d8906f3799c13f99",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "truncated-block-9",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5DwAAAAkAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DABQSwECLgMuAAAADACDGCJYJdPj+Q8AAAAJAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAMgAAAAAA",
+      "input_sha256": "7c994029cd614059b04ded20133fd3819fed05aa3c9d7dd22f96274c208d5b4b",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "none-0",
+      "input": "UEsDBC4AAAAMAIMYIlgAAAAAAAAAAAAAAAAFAAAAZmlyc3RQSwECLgMuAAAADACDGCJYAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAIwAAAAAA",
+      "input_sha256": "8ab96c13c4ea564e68b498d08d0aa219f06fbc7b3ca3331c159692ac655f427c",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": ""
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "none-2",
+      "input": "UEsDBC4AAAAMAIMYIlgEaX5/AAAAAAIAAAAFAAAAZmlyc3RQSwECLgMuAAAADACDGCJYBGl+fwAAAAACAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAIwAAAAAA",
+      "input_sha256": "6494bcce50d6f25e4c778f23172218f7f78c2b57ebe1be9bcdc3ac45289d17a1",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "none-9",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5AAAAAAkAAAAFAAAAZmlyc3RQSwECLgMuAAAADACDGCJYJdPj+QAAAAAJAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAIwAAAAAA",
+      "input_sha256": "818c172bc48f5b6a2ac11b2726094e93c562cc84cd31f5760ec0ab9055fdc426",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "invalid-header-0",
+      "input": "UEsDBC4AAAAMAIMYIlgAAAAACQAAAAAAAAAFAAAAZmlyc3Rub3QtYnppcDJQSwECLgMuAAAADACDGCJYAAAAAAkAAAAAAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAALAAAAAAA",
+      "input_sha256": "7b6e5646d6bae8a4bac6323f114c8301906de87f45c556715ea3dab2787e3b9f",
+      "accepted": false,
+      "error": {
+        "type": "OSError",
+        "message": "Invalid data stream"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "invalid-header-2",
+      "input": "UEsDBC4AAAAMAIMYIlgEaX5/CQAAAAIAAAAFAAAAZmlyc3Rub3QtYnppcDJQSwECLgMuAAAADACDGCJYBGl+fwkAAAACAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAALAAAAAAA",
+      "input_sha256": "2977a4cd8c5f5d14cf77004c5b3fd1f330bd65f497df96122a22e2b6b7076f90",
+      "accepted": false,
+      "error": {
+        "type": "OSError",
+        "message": "Invalid data stream"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "invalid-header-9",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5CQAAAAkAAAAFAAAAZmlyc3Rub3QtYnppcDJQSwECLgMuAAAADACDGCJYJdPj+QkAAAAJAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAALAAAAAAA",
+      "input_sha256": "925f77b8416a6f726b4ad5bfcabe72eea9427be88db312a0bbdbfbc791c315d1",
+      "accepted": false,
+      "error": {
+        "type": "OSError",
+        "message": "Invalid data stream"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "corrupt-block-crc-0",
+      "input": "UEsDBC4AAAAMAIMYIlgAAAAAKgAAAAAAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHgw0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYAAAAACoAAAAAAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAATQAAAAAA",
+      "input_sha256": "506ea5725aca21e389c9dbf0137fe88d2f69b1a3f4f69988ccc4351050ca7b69",
+      "accepted": false,
+      "error": {
+        "type": "OSError",
+        "message": "Invalid data stream"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "corrupt-block-crc-2",
+      "input": "UEsDBC4AAAAMAIMYIlgEaX5/KgAAAAIAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHgw0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYBGl+fyoAAAACAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAATQAAAAAA",
+      "input_sha256": "8fbe29263f6a5d5fe118b479354dabbf82f2065bf842344261cd165a3e863631",
+      "accepted": false,
+      "error": {
+        "type": "OSError",
+        "message": "Invalid data stream"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "corrupt-block-crc-9",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAkAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHgw0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+SoAAAAJAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAATQAAAAAA",
+      "input_sha256": "e75893f1c4d872b2f75906bcb9e4161aa31a01903bde8ebcb74f06d5824a1b7f",
+      "accepted": false,
+      "error": {
+        "type": "OSError",
+        "message": "Invalid data stream"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "corrupt-stream-crc-0",
+      "input": "UEsDBC4AAAAMAIMYIlgAAAAAKgAAAAAAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDwMBQSwECLgMuAAAADACDGCJYAAAAACoAAAAAAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAATQAAAAAA",
+      "input_sha256": "e42135af566999e40c2e263bd2572ad43a7adf160f6a6ebce55378c781466747",
+      "accepted": false,
+      "error": {
+        "type": "OSError",
+        "message": "Invalid data stream"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "corrupt-stream-crc-2",
+      "input": "UEsDBC4AAAAMAIMYIlgEaX5/KgAAAAIAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDwMBQSwECLgMuAAAADACDGCJYBGl+fyoAAAACAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAATQAAAAAA",
+      "input_sha256": "2ce7308bb9d2d9c89ab984eef8aa7da4dcaaca2edbb2eabe644a627d7d5962a0",
+      "accepted": false,
+      "error": {
+        "type": "OSError",
+        "message": "Invalid data stream"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "corrupt-stream-crc-9",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAkAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDwMBQSwECLgMuAAAADACDGCJYJdPj+SoAAAAJAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAATQAAAAAA",
+      "input_sha256": "5c7e6189ff2628e84c3a4283b9345b230719bc1ca81852eebff0f3a99835f4b9",
+      "accepted": false,
+      "error": {
+        "type": "OSError",
+        "message": "Invalid data stream"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    }
+  ]
+}

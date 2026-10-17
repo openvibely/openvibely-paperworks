@@ -1,0 +1,131 @@
+{
+  "styles": {
+    "header": {
+      "Font": {
+        "Color": "FFFFFF",
+        "Bold": true
+      },
+      "Fill": {
+        "Type": "pattern",
+        "Pattern": 1,
+        "Color": [
+          "17324D"
+        ]
+      }
+    },
+    "currency": {
+      "CustomNumFmt": "$#,##0.00;[Red]($#,##0.00)"
+    },
+    "negative": {
+      "Font": {
+        "Color": "C00000"
+      }
+    }
+  },
+  "sheets": [
+    {
+      "name": "Revenue",
+      "rows": [
+        [
+          "Item",
+          "Quantity",
+          "Price",
+          "Revenue"
+        ],
+        [
+          "Subscriptions",
+          3,
+          40
+        ],
+        [
+          "Services",
+          2,
+          40
+        ],
+        [
+          "Total"
+        ]
+      ],
+      "cells": {
+        "D2": {
+          "formula": "B2*C2"
+        },
+        "D3": {
+          "formula": "B3*C3"
+        },
+        "D4": {
+          "formula": "SUM(D2:D3)"
+        }
+      },
+      "freeze": "B2",
+      "columns": {
+        "A": 24,
+        "B:D": 14
+      },
+      "formats": [
+        {
+          "range": "A1:D1",
+          "style": "header"
+        },
+        {
+          "range": "C2:D4",
+          "style": "currency"
+        }
+      ],
+      "validations": [
+        {
+          "Type": "whole",
+          "Operator": "greaterThanOrEqual",
+          "Formula1": "0",
+          "Sqref": "B2:B3",
+          "ShowErrorMessage": true
+        }
+      ],
+      "conditional": [
+        {
+          "range": "D2:D3",
+          "style": "negative",
+          "type": "cell",
+          "criteria": "<",
+          "value": "0"
+        }
+      ],
+      "print_area": "A1:Q23",
+      "page_layout": {
+        "Orientation": "landscape",
+        "FitToWidth": 1,
+        "FitToHeight": 1
+      },
+      "show_grid_lines": true,
+      "sheet_props": {
+        "BaseColWidth": 8,
+        "DefaultRowHeight": 15
+      },
+      "page_margins": {
+        "Left": 0.75,
+        "Right": 0.75,
+        "Top": 1,
+        "Bottom": 1,
+        "Header": 0.5,
+        "Footer": 0.5
+      },
+      "column_charts": [
+        {
+          "cell": "F2",
+          "title": "Revenue by item",
+          "value_title": "USD",
+          "width_emu": 5400000,
+          "height_emu": 2700000,
+          "series": [
+            {
+              "name": "'Revenue'!D1",
+              "categories": "'Revenue'!$A$2:$A$3",
+              "values": "'Revenue'!$D$2:$D$3"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "theme_file": "report-theme.xml"
+}

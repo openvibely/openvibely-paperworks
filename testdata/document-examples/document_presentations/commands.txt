@@ -1,0 +1,16 @@
+```sh
+paperworks create-pptx --spec "$SKILL_DIR/examples/revenue-slide.json" --output report.pptx
+paperworks inspect report.pptx > revenue-slide.json
+```
+
+```sh
+paperworks create-pptx --spec "$SKILL_DIR/examples/revenue-deck.json" --output revenue-deck.pptx
+paperworks inspect revenue-deck.pptx > before.json
+paperworks verify-slides revenue-deck.pptx --requirements "$SKILL_DIR/examples/revenue-deck-checks.json"
+paperworks slide-edit revenue-deck.pptx --spec "$SKILL_DIR/examples/revenue-deck-edit.json" --output edited.pptx
+paperworks inspect edited.pptx > after.json
+```
+
+```sh
+paperworks render edited.pptx --output slide-pages --max-pixels 1600
+```

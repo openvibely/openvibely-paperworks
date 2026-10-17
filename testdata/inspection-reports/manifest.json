@@ -1,0 +1,136 @@
+{
+  "baseline_head": "346e6e90a4474d89113bd4ab78dadd8b55d7d7c0",
+  "report_sha256": "d2e1cddc8311d259edf03661e075934f62c92546f8fc6a4d89976b0325291071",
+  "cases": [
+    {
+      "name": "call-0002",
+      "input": "call-0002.xlsx",
+      "test": "test_document_check.DocumentChecks.test_empty_string_formula_result_is_a_valid_cache",
+      "sha256": "c5dcf672b540d52fe54fd4ce40002b533a928a5824d63722e8364a6349938df9",
+      "expected_sha256": "3f1a45c7e68ec1c17b69be99067b03c56632e59decf3f8f5d5c435723ea6b6cd"
+    },
+    {
+      "name": "call-0033",
+      "input": "call-0033.docx",
+      "test": "test_document_check.DocumentChecks.test_stories_notes_sections_and_style_audit",
+      "sha256": "e213167e0bbdfc8cb2d446ca4b2ffc557a2b1c7a103fbf3e22542b1c1f050329",
+      "expected_sha256": "942676f25d9c7c4765c66bb971ba50d9d82629fed20a03912c577a0f86a5c66b"
+    },
+    {
+      "name": "call-0034",
+      "input": "call-0034.docx",
+      "test": "test_document_check.DocumentChecks.test_word_revisions_and_accessibility",
+      "sha256": "c0e3e24788d922d08818799d522de0fd089e3c0149f438e17c3b3c4320c67d0e",
+      "expected_sha256": "eca47487adafbfc890b15b95eb620096d2fd5b9701fb5483a14f1b46a3cc1a3b"
+    },
+    {
+      "name": "call-0062",
+      "input": "call-0062.xlsx",
+      "test": "test_document_gaps.DocumentGapChecks.test_spill_expansion_updates_streaming_dimensions_and_rejects_collisions",
+      "sha256": "2646cc2e85bd099cc963850a3ea52f5331ff6bcdd54188ff610a7b49f570df59",
+      "expected_sha256": "c1dc237afed93674e789ba41ccf56f25fb3eb407ef4c5bcf720148c7a8745af7"
+    },
+    {
+      "name": "call-0344",
+      "input": "call-0344.docx",
+      "test": "test_word_edit.WordEditing.test_comment_append_resolution_and_reopen",
+      "sha256": "1f1fdc0c3f693c13ade1c192237a4c15350f5335ad85157ca007826ab7cf8e33",
+      "expected_sha256": "2ca3a445eb39f7a803c0e61de894339e94f71637a3248fdeacb8bac317746e75"
+    },
+    {
+      "name": "call-0346",
+      "input": "call-0346.docx",
+      "test": "test_word_edit.WordEditing.test_comment_append_resolution_and_reopen",
+      "sha256": "02dc1c8a68393af542c213212e78bdf7f13c8aea5fc36e6cec099a3a36249606",
+      "expected_sha256": "382a92d43d7ca69b11996ae8ba494a21e0f23980c6dc6c13805f10ff3fee5ae5"
+    },
+    {
+      "name": "call-0347",
+      "input": "call-0347.docx",
+      "test": "test_word_edit.WordEditing.test_comment_inspection_preserves_paragraphs_tabs_and_breaks",
+      "sha256": "9d9e245fb7d9ceb19f55233d474f1ecded5d7d33a0314ca394e6220d0e014fec",
+      "expected_sha256": "22e284b6df451f843d53a556781fbb0585320e1dde449666be48029b4a2c1475"
+    },
+    {
+      "name": "call-0397",
+      "input": "call-0397.docx",
+      "test": "test_word_edit.WordEditing.test_inspect_combines_split_field_instructions_without_merging_fields",
+      "sha256": "7a4a4601cab23d47fbce9deb484ac030e1e07b8104d64f8d8e036b1f64196ec0",
+      "expected_sha256": "4c0b63b00aa2f1c40f18d3ac04fe6bce46b132335e8313edaa41abb5fa014d95"
+    },
+    {
+      "name": "call-0400",
+      "input": "call-0400.docx",
+      "test": "test_word_edit.WordEditing.test_inspect_imported_comment_state_and_control_alias",
+      "sha256": "6f16c9939d415e2645ee960b56ff43d5bf9c7fda0c8273c09182ec0eec71888b",
+      "expected_sha256": "c848f8f8b6b0d1abf7485e5efcb8cc6a84d8f7da500462d074f5ae5f189471ad"
+    },
+    {
+      "name": "call-0402",
+      "input": "call-0402.docx",
+      "test": "test_word_edit.WordEditing.test_inspect_imported_comment_state_and_control_alias",
+      "sha256": "c13a13ac09bb4a71c12f7403164a42b19e5c818a2bc34fae4a57579adf1af446",
+      "expected_sha256": "5842c3f93839e60390e9591e786ccb62b90378f72be6b78f324c84a6e62a4897"
+    },
+    {
+      "name": "call-0269",
+      "input": "call-0269.xlsx",
+      "kind": "trace",
+      "arguments": {
+        "source": "/var/folders/12/mp74t0c91350y5lgqwxjvl_w0000gn/T/tmpp77rc92x/source.xlsx",
+        "sheet": "Output",
+        "cell": "C2",
+        "max_nodes": 200,
+        "max_depth": 20
+      },
+      "test": "test_spreadsheet_threads_trace.SpreadsheetThreadsTrace.test_qualified_name_cycles_missing_sheets_and_limits_are_explicit",
+      "sha256": "f1c5fb139b211e7fb4c62f410fd779ff8b528487914b2ec3a1f15afcfe2425d5",
+      "expected_sha256": "705bdfa70cc2417d3d0a0884ccf2e05bf410b9ffa064a2b5b40054188b7ed6e2"
+    },
+    {
+      "name": "call-0270",
+      "input": "call-0270.xlsx",
+      "kind": "trace",
+      "arguments": {
+        "source": "/var/folders/12/mp74t0c91350y5lgqwxjvl_w0000gn/T/tmpp77rc92x/source.xlsx",
+        "sheet": "Output",
+        "cell": "C3",
+        "max_nodes": 200,
+        "max_depth": 20
+      },
+      "test": "test_spreadsheet_threads_trace.SpreadsheetThreadsTrace.test_qualified_name_cycles_missing_sheets_and_limits_are_explicit",
+      "sha256": "f1c5fb139b211e7fb4c62f410fd779ff8b528487914b2ec3a1f15afcfe2425d5",
+      "expected_sha256": "f6ab425637e757748cd9d7fce041660d31bc7601fc718640b01326e73f739d02"
+    },
+    {
+      "name": "call-0304",
+      "input": "call-0304.xlsx",
+      "kind": "trace",
+      "arguments": {
+        "source": "/var/folders/12/mp74t0c91350y5lgqwxjvl_w0000gn/T/tmpgt0zth1p/source.xlsx",
+        "sheet": "Output",
+        "cell": "C2",
+        "max_nodes": 200,
+        "max_depth": 20
+      },
+      "test": "test_spreadsheet_threads_trace.SpreadsheetThreadsTrace.test_trace_reports_dynamic_external_structured_and_cyclic_names",
+      "sha256": "8c1507046e35585a5691c8710e4df0a685e0f9ef3f81145cbdaa431dea0f84e8",
+      "expected_sha256": "6d20758a798f162304e225ca85ba38fd6d958976031e891071bcde0e570dfae5"
+    },
+    {
+      "name": "call-0307",
+      "input": "call-0307.xlsx",
+      "kind": "trace",
+      "arguments": {
+        "source": "/var/folders/12/mp74t0c91350y5lgqwxjvl_w0000gn/T/tmpgt0zth1p/source.xlsx",
+        "sheet": "Output",
+        "cell": "B1",
+        "max_nodes": 200,
+        "max_depth": 20
+      },
+      "test": "test_spreadsheet_threads_trace.SpreadsheetThreadsTrace.test_trace_reports_dynamic_external_structured_and_cyclic_names",
+      "sha256": "8c1507046e35585a5691c8710e4df0a685e0f9ef3f81145cbdaa431dea0f84e8",
+      "expected_sha256": "b2da84dff11518e1bc377ce2ada8a18eb469cc4f235d14cf0b57052b9a7c6552"
+    }
+  ]
+}

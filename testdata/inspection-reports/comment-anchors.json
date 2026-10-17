@@ -1,0 +1,132 @@
+[
+  {
+    "input": "fixtures/reference-comments.pptx",
+    "sha256": "45a36d0d822b3fbca57b7f5eb0b24802a60d54656e84ea19f5ff95afe94560b0",
+    "comments": [
+      {
+        "slide": 1,
+        "id": "{E85798A6-0411-4397-8877-E9865C0C73A3}",
+        "parent_id": null,
+        "author": "Fixture Reviewer",
+        "author_id": "{58979891-C540-48E5-B3BF-671F3FBA60D6}",
+        "text": "Review this slide",
+        "status": "resolved",
+        "created": "2026-10-10T00:31:49.746-04:00",
+        "anchor_xml": [
+          "<pc:sldMkLst xmlns:pc=\"http://schemas.microsoft.com/office/powerpoint/2013/main/command\" xmlns:p188=\"http://schemas.microsoft.com/office/powerpoint/2018/8/main\"><pc:docMk/><pc:sldMk cId=\"1184467621\" sldId=\"256\"/></pc:sldMkLst>"
+        ],
+        "reactions": []
+      },
+      {
+        "slide": 1,
+        "id": "{D98926FD-C9DD-44D3-9D15-528A42D12976}",
+        "parent_id": "{E85798A6-0411-4397-8877-E9865C0C73A3}",
+        "author": "Fixture Reviewer",
+        "author_id": "{58979891-C540-48E5-B3BF-671F3FBA60D6}",
+        "text": "Checked",
+        "status": "resolved",
+        "created": "2026-10-10T00:31:49.746-04:00",
+        "anchor_xml": [
+          "<pc:sldMkLst xmlns:pc=\"http://schemas.microsoft.com/office/powerpoint/2013/main/command\" xmlns:p188=\"http://schemas.microsoft.com/office/powerpoint/2018/8/main\"><pc:docMk/><pc:sldMk cId=\"1184467621\" sldId=\"256\"/></pc:sldMkLst>"
+        ],
+        "reactions": []
+      }
+    ]
+  },
+  {
+    "input": "fixtures/reference-multiline-comments.pptx",
+    "sha256": "c564329cead1333c356ece51e41065f1ca200990eecab928ee714310b9a89084",
+    "comments": [
+      {
+        "slide": 1,
+        "id": "{33EFA982-7D75-4EC0-8B63-0CB048C498C3}",
+        "parent_id": null,
+        "author": "Reviewer",
+        "author_id": "{D325B7D5-B83C-4EBC-AE49-1CF9E2EE9329}",
+        "text": "Second",
+        "status": "active",
+        "created": "2026-10-10T00:52:25.499-04:00",
+        "anchor_xml": [
+          "<oac:txMkLst xmlns:oac=\"http://schemas.microsoft.com/office/drawing/2013/main/command\" xmlns:p188=\"http://schemas.microsoft.com/office/powerpoint/2018/8/main\"><pc:docMk xmlns:pc=\"http://schemas.microsoft.com/office/powerpoint/2013/main/command\"/><pc:sldMk xmlns:pc=\"http://schemas.microsoft.com/office/powerpoint/2013/main/command\" cId=\"1661146033\" sldId=\"256\"/><oac:spMk id=\"2\" creationId=\"{3A4BB674-FC05-4516-8A2A-523B4484D4BE}\"/><oac:txMk xmlns:oac=\"http://schemas.microsoft.com/office/drawing/2013/main/command\" cp=\"19\" len=\"6\"/></oac:txMkLst>"
+        ],
+        "reactions": []
+      },
+      {
+        "slide": 1,
+        "id": "{86855170-E81F-4658-AEB3-2DE91A2D75D9}",
+        "parent_id": null,
+        "author": "Reviewer",
+        "author_id": "{D325B7D5-B83C-4EBC-AE49-1CF9E2EE9329}",
+        "text": "paragraph\nSecond",
+        "status": "active",
+        "created": "2026-10-10T00:52:25.499-04:00",
+        "anchor_xml": [
+          "<oac:txMkLst xmlns:oac=\"http://schemas.microsoft.com/office/drawing/2013/main/command\" xmlns:p188=\"http://schemas.microsoft.com/office/powerpoint/2018/8/main\"><pc:docMk xmlns:pc=\"http://schemas.microsoft.com/office/powerpoint/2013/main/command\"/><pc:sldMk xmlns:pc=\"http://schemas.microsoft.com/office/powerpoint/2013/main/command\" cId=\"1661146033\" sldId=\"256\"/><oac:spMk id=\"2\" creationId=\"{3A4BB674-FC05-4516-8A2A-523B4484D4BE}\"/><oac:txMk xmlns:oac=\"http://schemas.microsoft.com/office/drawing/2013/main/command\" cp=\"9\" len=\"16\"/></oac:txMkLst>"
+        ],
+        "reactions": []
+      }
+    ]
+  },
+  {
+    "input": "fixtures/reference-anchors.pptx",
+    "sha256": "f62d84879ae63fb6fc54bb79b92c2a4edcd47be2fe35d01bb2aaedf0b631fb02",
+    "comments": [
+      {
+        "slide": 1,
+        "id": "{DDB42763-E2A2-4427-B201-48CEA39E4E51}",
+        "parent_id": null,
+        "author": "Reviewer",
+        "author_id": "{CD87E23F-2D0B-4EF6-ABEE-8C6AC4BA0B14}",
+        "text": "Element",
+        "status": "active",
+        "created": "2026-10-10T00:37:40.653-04:00",
+        "anchor_xml": [
+          "<oac:deMkLst xmlns:oac=\"http://schemas.microsoft.com/office/drawing/2013/main/command\" xmlns:p188=\"http://schemas.microsoft.com/office/powerpoint/2018/8/main\"><pc:docMk xmlns:pc=\"http://schemas.microsoft.com/office/powerpoint/2013/main/command\"/><pc:sldMk xmlns:pc=\"http://schemas.microsoft.com/office/powerpoint/2013/main/command\" cId=\"1894913651\" sldId=\"256\"/><oac:spMk id=\"2\" creationId=\"{9637C688-62FB-4D0D-8BF9-7C140411B9AF}\"/></oac:deMkLst>"
+        ],
+        "reactions": []
+      },
+      {
+        "slide": 1,
+        "id": "{72422B8A-CF85-4B65-A095-38809E6938CA}",
+        "parent_id": null,
+        "author": "Reviewer",
+        "author_id": "{CD87E23F-2D0B-4EF6-ABEE-8C6AC4BA0B14}",
+        "text": "Text",
+        "status": "active",
+        "created": "2026-10-10T00:37:40.653-04:00",
+        "anchor_xml": [
+          "<oac:txMkLst xmlns:oac=\"http://schemas.microsoft.com/office/drawing/2013/main/command\" xmlns:p188=\"http://schemas.microsoft.com/office/powerpoint/2018/8/main\"><pc:docMk xmlns:pc=\"http://schemas.microsoft.com/office/powerpoint/2013/main/command\"/><pc:sldMk xmlns:pc=\"http://schemas.microsoft.com/office/powerpoint/2013/main/command\" cId=\"1894913651\" sldId=\"256\"/><oac:spMk id=\"2\" creationId=\"{9637C688-62FB-4D0D-8BF9-7C140411B9AF}\"/><oac:txMk xmlns:oac=\"http://schemas.microsoft.com/office/drawing/2013/main/command\" cp=\"8\" len=\"4\"/></oac:txMkLst>"
+        ],
+        "reactions": [
+          {
+            "type": "\ud83d\udc4d",
+            "authors": [
+              "{CD87E23F-2D0B-4EF6-ABEE-8C6AC4BA0B14}"
+            ]
+          }
+        ]
+      },
+      {
+        "slide": 1,
+        "id": "{BF06819B-A95A-4359-8CE1-A152D26292DF}",
+        "parent_id": "{72422B8A-CF85-4B65-A095-38809E6938CA}",
+        "author": "Reviewer",
+        "author_id": "{CD87E23F-2D0B-4EF6-ABEE-8C6AC4BA0B14}",
+        "text": "Reply",
+        "status": "active",
+        "created": "2026-10-10T00:37:40.653-04:00",
+        "anchor_xml": [
+          "<oac:txMkLst xmlns:oac=\"http://schemas.microsoft.com/office/drawing/2013/main/command\" xmlns:p188=\"http://schemas.microsoft.com/office/powerpoint/2018/8/main\"><pc:docMk xmlns:pc=\"http://schemas.microsoft.com/office/powerpoint/2013/main/command\"/><pc:sldMk xmlns:pc=\"http://schemas.microsoft.com/office/powerpoint/2013/main/command\" cId=\"1894913651\" sldId=\"256\"/><oac:spMk id=\"2\" creationId=\"{9637C688-62FB-4D0D-8BF9-7C140411B9AF}\"/><oac:txMk xmlns:oac=\"http://schemas.microsoft.com/office/drawing/2013/main/command\" cp=\"8\" len=\"4\"/></oac:txMkLst>"
+        ],
+        "reactions": [
+          {
+            "type": "\ud83d\udc4d",
+            "authors": [
+              "{CD87E23F-2D0B-4EF6-ABEE-8C6AC4BA0B14}"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

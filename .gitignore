@@ -1,0 +1,7 @@
+# Local CLI binaries and release builds.
+/paperworks
+/paperworks.exe
+/dist/
+
+.worktrees/
+.openvibely/

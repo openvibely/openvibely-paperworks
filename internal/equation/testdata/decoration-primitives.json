@@ -1,0 +1,231 @@
+{
+  "scope": "Whole PNG equality for captured supported inputs; smaller clipped-brace differences retained separately, not waived.",
+  "cases": [
+    {
+      "name": "cancelto",
+      "tex": "\\cancelto{0}{x}",
+      "inline": false,
+      "png_sha256": "e7624628e72d9c16fc097f170a75f238567b4e165216e432745db8beae524122"
+    },
+    {
+      "name": "overbrace",
+      "tex": "\\overbrace{a+b}^{\\text{two terms}}",
+      "inline": false,
+      "png_sha256": "c947d46901081656e31bdddbac36f783baa49151ad9367903e85a489091ab938"
+    },
+    {
+      "name": "cancel-fraction",
+      "tex": "\\cancelto{1}{\\frac{a}{b}}",
+      "inline": false,
+      "png_sha256": "96bb3a64530802d409ce3c8c811395af459fa6acaef191a1b246692ab6166668"
+    },
+    {
+      "name": "cancel-wide",
+      "tex": "\\cancelto{0}{a+b+c}",
+      "inline": false,
+      "png_sha256": "83dc465e58d5fda047e4292b7a9325edbd642a273c95868935414dff5adfcb1c"
+    },
+    {
+      "name": "cancel-nested",
+      "tex": "\\cancelto{x}{\\cancelto{0}{y}}",
+      "inline": false,
+      "png_sha256": "33d7983ba95d44ecd8493a2bbb967e7761ca0a42a0b5dbc5a6a3e12f5a268db1"
+    },
+    {
+      "name": "cancel-inline",
+      "tex": "\\cancelto{0}{x}",
+      "inline": true,
+      "png_sha256": "24fd15a44df4eaf0ddf5f54939fc47d74dfb6c5250ee53e0bf1509e45ca21409"
+    },
+    {
+      "name": "cancel-color",
+      "tex": "\\color{red}{\\cancelto{1}{\\alpha}}",
+      "inline": false,
+      "png_sha256": "da6fad8718376b767c48dd2c100fb4d5fac994ebccc0a678662f42f2437002d4"
+    },
+    {
+      "name": "brace-wide",
+      "tex": "\\underbrace{a+b+c+d}_{n}",
+      "inline": false,
+      "png_sha256": "e76be8a7855fd4e0a507642dad604f0112867b8b0bcb62fae2b0def7d5198554"
+    },
+    {
+      "name": "underbrace",
+      "tex": "\\underbrace{a+b}_{\\text{two terms}}",
+      "inline": false,
+      "png_sha256": "b957e5380e452af21b30875a595606d7895abe2e08fd0315e5f0d9e31e9a6c99"
+    },
+    {
+      "name": "brace-short",
+      "tex": "\\overbrace{x}",
+      "inline": false,
+      "png_sha256": "c6538b55888b14d752fd8307aedf0579859338169ce53ca456fcf885319f5c7c"
+    },
+    {
+      "name": "brace-fraction",
+      "tex": "\\overbrace{\\frac{x}{y}}^{2}",
+      "inline": false,
+      "png_sha256": "c3c749cb1a2509e356b4dbf272995d6de868705fab4a533f394e5927d3b6fada"
+    },
+    {
+      "name": "brace-nested",
+      "tex": "\\underbrace{\\overbrace{a+b}}_{x}",
+      "inline": false,
+      "png_sha256": "0a0d56a48c479e0d59f54b99a8586ac4d3febc69c818a3db1a040beb09387ebd"
+    },
+    {
+      "name": "brace-inline",
+      "tex": "\\overbrace{a+b}^{n}",
+      "inline": true,
+      "png_sha256": "10ec17e87b7d3a2ab81999859d7ff895526e47d880dada642e1b17e06965b94f"
+    },
+    {
+      "name": "enclose",
+      "tex": "\\enclose{circle}{x}",
+      "inline": false,
+      "png_sha256": "3815c03091d9ed8227bc74826bfab86e89b1767951fd6f0d0c6b3a886dcff5d9"
+    },
+    {
+      "name": "circle-wide",
+      "tex": "\\enclose{circle}{a+b+c}",
+      "inline": false,
+      "png_sha256": "993b20f395849f9d949ef7d4bfbd67295f9bf4ba38e16de737fd698193369c3b"
+    },
+    {
+      "name": "circle-fraction",
+      "tex": "\\enclose{circle}{\\frac{a}{b}}",
+      "inline": false,
+      "png_sha256": "7d95f14d429bdd8358914613f89490cdb78a4528a0ddbf57a7939bd69479e01a"
+    },
+    {
+      "name": "circle-nested",
+      "tex": "\\enclose{circle}{\\enclose{circle}{x}}",
+      "inline": false,
+      "png_sha256": "c7d47c090c34c7b007431e3245bbe1322b0d62e829c771164f836ec397526346"
+    },
+    {
+      "name": "circle-color",
+      "tex": "\\color{red}{\\enclose{circle}{\\alpha}}",
+      "inline": false,
+      "png_sha256": "71b8b6fc775be06d12c7e39ad92bfbc55dee77d93510f310a400417aba92206e"
+    },
+    {
+      "name": "circle-inline",
+      "tex": "\\enclose{circle}{x}",
+      "inline": true,
+      "png_sha256": "3815c03091d9ed8227bc74826bfab86e89b1767951fd6f0d0c6b3a886dcff5d9"
+    },
+    {
+      "name": "circle-script",
+      "tex": "\\enclose{circle}{x^2}",
+      "inline": false,
+      "png_sha256": "9dbce6b15d1471c83d242fe7e6b434e37d8e2b5c018dcceaee0739fa9e1dbb82"
+    },
+    {
+      "name": "circle-brace",
+      "tex": "\\enclose{circle}{\\underbrace{a+b}_{n}}",
+      "inline": false,
+      "png_sha256": "97ca6534f0a0fd55ab4389874aab5a956b41a48df983472a6de2507c619d28bb"
+    },
+    {
+      "name": "circle-tall",
+      "tex": "\\enclose{circle}{\\frac{1}{\\frac{x}{y}}}",
+      "inline": false,
+      "png_sha256": "a043fef64095d269459aca88e6add8ca5e0772f67d0097a87ce4254341d2d9a5"
+    }
+  ],
+  "sources": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/test_document_runtime.py": "a757811a001dd52cfbc4ce548bd0a331e2f45ad9441678941ac75afd1aef101e",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/equation.cjs": "b7e87685d7a23c04015d15fa9a5494137d6efb6fce12d8bf59446ab525a436a0",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/document_check.py": "f7f724147f3678383b5d64b2d128639c2df3115404f07624dbcca4419ef15e94",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/test_equation.cjs": "5d64afc73f87198148db967c7bf9d320143ac1083225f1f6b6010350f5c389b0",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/test_presentation_native.py": "6199f9f1767fa49fa3743f11fb6545468da586c68aabe28e79ba942fdb0513fb",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/document_native.py": "eb2407fed420206fc34ad88f3fceb613ee694d3bf7f239b19cce3a73a6b9c420",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/document_preview.py": "67f940b24546b9ef2073272df3429b533d872157b7de91aa04a09dc0758fcfe3",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/word_edit.py": "6bd30fcacb7aed0da313f524eea3dc9d003c95b3803f93d6044e177723d7a45b",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/test_spreadsheet_threads_trace.py": "28f9985165bba746fd927d2bddf831acc696ba862712ba8502866dae2eab662f",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/test_document_check.py": "2c92e798c5e43eced98934c5f141577c1f4496ee2b0e3bc26cf9033ff441d609",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/test_word_edit.py": "cd4b8bdd7a5bdf4fa1c604ad1398ee7e9ab54838060b19afb2366c5655e26242",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/test_document_libraries.py": "db546fd6792e4d766396d2ae42edaee5ba85f4d1e4af59e5ff6e781a50a176e7",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/test_pdf_forms.py": "f54de2dcc536322f5422d6b8750d4c796e277800ae178a548c6a8d7e3d8fba5a",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/test_document_gaps.py": "d4fdb092c945d79888291eaefb5ea3f59096196bd84e280e4a2d2d8b68e914c2",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/test_skill_examples.py": "13ba9c018d5db651740a38ac905eb59d6dcd90700b93c5185ae7cfa6ba50592b",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/Wrapper.js": "a7a9fd92c3bce63627fee8363967de4548f5069c22ef9f00709b6c6e0813fc51",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/Wrapper.js": "34ff5c7941071cf4a8a99a941e97562fe026b7857143ef380e39ff66bc0c777d",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/Wrappers/menclose.js": "b8e1727e19c16e5278f6b470c1f16ccf838aa4af17d746178f18fdf8b6c32c75",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/Wrappers/menclose.js": "ee7852d9f4bf324fa87ebd707c5b75da333e3f698d0b92731a45dde87f95d8c8",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/Wrappers/mpadded.js": "618a38ea9068f910565cc3ffa1ef892f5e89d4cc7cfe28a0bee60bf73154336b",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/Wrappers/mpadded.js": "ead08ee9c3dc083cc34aef5458f59b91969045e25631b9ac7d407e7750a2754d",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/Wrappers/mo.js": "6eebbc9509cf4d1adee05f27725831de9ec29100609ef55e479389b744ec1751",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/Notation.js": "2959d7a5852de4bbafd7a7dc93cf30f7101939777a66b744902275c283ddec7e",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/Notation.js": "34a0e89f06abebcf47e74411c366200913d8b7066453261dd0facff89ac36dad",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/input/tex/bbox/BboxConfiguration.js": "91157ce73e36fd817ae8df7e6efa919167615dd820e42c093be22f79d56b384d",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/input/tex/color/ColorMethods.js": "acc6764d44ed3b074d98193af9a652531a1d18da7a37f58faef96fc829be5b71",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/util/lengths.js": "b8fb8b00ed71c6c8fb1b7409f7695ac45a18366d14a20f593d3751f0648ed813",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/Wrappers/mtable.js": "ee6033a1f3a07d0b2bd0275921cdfc4fc309729715b32dc3d5969d4a53b6fd48",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/input/tex/ams/AmsMethods.js": "ed831554f913bcda801bfd5a1f2f3f08cff9ab5f7e12f4893fac0c691a345f29",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/Wrappers/mtable.js": "385ad528024d5dfffd22299c41908890f6de9de5eb1bed42c6d19854006a301b",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/Wrappers/mtr.js": "573aa857bbf7fd037a96950f9eb4684a86f0c92dbed326c47f50c732c4266363",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/Wrappers/scriptbase.js": "c6c2e601a6042258262e80e2c464f5bdee024c39e63ea714fc655712dffef694",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/Wrappers/munderover.js": "476d4f5a838b2922f95c3d3d2cda2d6b1e104d0b1b741cc1fdbcb15b1fde0d5b",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/Wrappers/munderover.js": "37d74a1ca68ec08ca9ba63f4eb7403dcadfe02664c77db070b0bd0a5a465fbb0",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/largeop.js": "058b96bd8611a6ffca6b8fe87302c731ae3a4361ea89f17894fd3f1976443174",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/smallop.js": "29fbc79c7a54be8673deddab0a3cd4c8604f76b04ecb9bb8a1d0fa2aa2131d03",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/input/tex/ams/AmsItems.js": "140ec0f29d9b81e2ecb71a0078c9cdea775a3da3328ab6efb334aff010ceed88",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/input/tex/ParseUtil.js": "57a1071396ced6527157d185054b886843c750a2d86e4b590cf2b519e939f1b8",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/FontData.js": "ffe4caef95928475bb9331911bdee964ec602a19f2d5a4e0f71ae42791e05359",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/largeop.js": "c669b9fbeb388602177d95459a002ed9fe8de71707033a11f8b94d01ac182e5f",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/smallop.js": "4f5e97c7a06f6e7ade0fc0560dc77798775a1f51ffa87282cc901757b6aea4db",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/completion-equation-decorations/libvips-8.17.3/libvips/foreign/cairo.c": "e5ef70a7f18176d2522a0cc7ba49bca22bffc4ebc2fdf2eeae1994b5202060fe",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/input/tex/cancel/CancelConfiguration.js": "81e1c845e58a6e855c6a48112e582d76182eb62ffab298cb53574ab43424a353",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/delimiters.js": "d3baf85fcb39d8277cecae51c48440a10776e12c79260338c5987ea21274655d",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/tex-size4.js": "282b9cd1cfe3e7e6d5451e66aa046a7a1d507f799b79007cd492db696dd7747a",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/tex-size4.js": "3702f87ac9be6367fa9650303ca34767a1cec714163f8ca2ea87aed5cc2098f7",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/fraktur.js": "1d50857fe5384f2fcac348100e156a2816dfe06f901c226a8cf3e5d8bc2e7914",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/normal.js": "2bd111364fc0383901ac7d4c74156067fa43fe7f509bd974d0e557261be7867a",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/sans-serif-italic.js": "5db1bdf3669340bfbb31c1ed437cf019019cd9ce5ac10e29d5e471530f892a81",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/tex-calligraphic-bold.js": "b6e9171a7e0fcd8bd6892a78bf49a653cb763668e5606fa2fa2955a70f83bdb5",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/tex-oldstyle.js": "3388a6aee261b312ff6ab3fce64f7085a4e1eafe07979e445b6452ee35e1aab8",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/double-struck.js": "9ceb1a7464c0079a2242ea5680c38b4c1e9b43eb8e89e14807c44bda281b67e5",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/monospace.js": "940525280b48c309cc66950b8f3ba3fa198a7ef36de1cf2168ef231151f8ffbe",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/sans-serif-bold-italic.js": "3c4b3eec41c2eabe0f12fdda6d9b51585bd04d99db07b49d86d92012c801cfad",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/bold-italic.js": "d9cc56eb08c7be2916330138cf995e86e5e6ef051e15a2700944689da57f2531",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/tex-calligraphic.js": "2dd2b9a66012362434e0cb3928738035cc750316ebe761a9391ef0bbc0d48804",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/italic.js": "ab8230b56ad633944008d5e683a8587ffc7fbe4d553ab328f6ec4841f5f86c42",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/script.js": "cc47dd67276cd3667dd81569054efc621102029c07ab07027ea7d6c68e3c4fb5",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/bold.js": "865ecaa78a4eb56a956a4c73c6637cc6068a6be3a8331587e00c0f3458b71c7b",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/tex-size3.js": "bb60edc749db9c9350b9c0565ca6a03dc75f0013af4aa9ebd10e6c5bbac04c8d",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/tex-mathit.js": "5287524853d89f96c57ad8e1ec2867bcec866661b63a374431d4e67210150ba5",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/fraktur-bold.js": "c09a1c69e55b76f4f6c6d6ef8bf6b3990bc3fc7bdfca7f4a38d227a5ad904c89",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/sans-serif-bold.js": "9b8bc4f19314fcb58f5a73167482134e1d2ad22ab1005421d29b72f02bef63a5",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/tex-oldstyle-bold.js": "10beb249fb68855c5e4cbc028542d08adce6d3f4cf24310cd1b30f341de7caf3",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/tex-variant.js": "fb5d2c6e39891e692cd6834a06f1fb8fd319074b34f319b378ca4bf66f4136dc",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/script-bold.js": "aafd5555e0f725392eac59d2baf75280b6f9a699438dcfc185567d1e717aaa69",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/sans-serif.js": "c9c229819cd1c74ba58522fbe84a09ba4607453a998f73410c5f5ea95d5a35d4",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/fraktur.js": "8ce26887d8b399c483ab977421fc7287072ff7b592f25fda73a76abe935821bb",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/normal.js": "d42b97a7a0a6ad13e32e6f716c94b4ea2df3ecdc7c2deac55ccf189f498c73c5",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/sans-serif-italic.js": "a9ea20628811ddc2e80ad87d138ba92bb4171ee195c00a7f88b8ec406b8d3435",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/tex-calligraphic-bold.js": "9387dd1fe20ded46ccf1e04b8727f0a05ef52d2d1fe9ec84b22eb6c54ccc1c94",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/tex-oldstyle.js": "2438600197447d49826336517813dc238ccdcd91ed6371e2548101dad540e4fc",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/double-struck.js": "a350c976456b85bd2a703c925c66ba343675b392fa88621a6c073a0fa243f31f",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/monospace.js": "6ae9ade9f77a365bf182a46716a41a98ed9b34083bc01229f7ea661a4813f5eb",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/sans-serif-bold-italic.js": "add177d6abe0910896792095f345b68508895c812125ad8a71fbb4257ce0ebe5",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/bold-italic.js": "0b10f5467b953578ddb679bbc2c8eeea49f5475e8343887bc156aa45397df3ed",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/tex-calligraphic.js": "c4034c8564c912ddbcf6850e797c86f472fd60ce64c203a6f7280da9bd8f7087",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/italic.js": "b7d56d03219cfcb0a0fd1b6a211d5706b415ded12d7e79d7c94f1f85cb0e4420",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/script.js": "2aa9325efabc1596a86ae27dbba3bc019e10b86cee6616982a3be3b5e02a4057",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/bold.js": "dee7ab1d46bd0399f691a4444b176b08a5abe5b347d914bf31ca06b007be2aff",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/tex-size3.js": "933fa6dca0f213a84ddd01f7b16de91b96d78e5133ad7a8215e759b9ca1a3fda",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/tex-mathit.js": "57a3b4c71dc07e937aaa3d51fedb1ca8b9786a15203a85d0de047b1f5e1a8168",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/fraktur-bold.js": "ef3b3dcd6a0f485b0edeee7f720e15086ec3889bcfa19a8f86ea7053ee23e931",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/sans-serif-bold.js": "e2f180be56e1046c18f9eacdd4bbacf613befaf353beb3434788b64cc5fa6cd3",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/tex-oldstyle-bold.js": "cf1e1d18b4b0ae6c331c0f0e11418bcb8c8c5defde9f1008572c54093655df44",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/tex-variant.js": "d0d05bb22cc575e01b268b616b479cb5d48e6f2527f785a26738f381927c252a",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/script-bold.js": "495d6c0fd46aaabc740ab4cbce962a6fe202706c9b9086f3ae3b2baf9f18f130",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/sans-serif.js": "3081a0020b8cffb98748ba945dfc8c017856b769f7f20a758049979d7269849c",
+    ".scratch/completion-equation-curves/cairo-1.18.4/src/cairo-default-context.c": "fafdb29cf86a9a8b088e53e7dcc673f3fa02fbed8a4234ddc8c43299db17bbeb",
+    ".scratch/completion-equation-curves/cairo-1.18.4/src/cairo-spans-compositor.c": "a1bc56ed231a2615dc59fdc93fbfc732d1043e0386fa58e6bcab1e7edeb881a7",
+    ".scratch/completion-equation-curves/cairo-1.18.4/src/cairo-path-stroke-polygon.c": "9763eb010a451679f5d36289cd6885b35b2629f2fee952fdc1d2b39aea817dab",
+    ".scratch/completion-equation-extender-clip/circle-prototype/shapes.rs": "07c2fad1fc742c93f193dc69459e7d9917f01f4683ec9aa3589e491b1a08abe7"
+  }
+}

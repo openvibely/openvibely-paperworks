@@ -1,0 +1,87 @@
+{
+  "paper": "A4",
+  "pages": [
+    {
+      "size": [
+        595.2756,
+        841.8898
+      ],
+      "fixed_tables": [
+        {
+          "pos": [
+            97.6378,
+            607.8898
+          ],
+          "column_widths": [
+            300,
+            100
+          ],
+          "row_height": 25,
+          "font_size": 10,
+          "padding_left": 6,
+          "baseline_offset": 12,
+          "header": [
+            "Item",
+            "Amount"
+          ],
+          "rows": [
+            [
+              "Subscriptions",
+              "$120"
+            ],
+            [
+              "Services",
+              "$80"
+            ],
+            [
+              "Total",
+              "$200"
+            ]
+          ],
+          "header_color": [
+            0.090196,
+            0.196078,
+            0.301961
+          ],
+          "grid_color": [
+            0.827451,
+            0.827451,
+            0.827451
+          ],
+          "grid_width": 0.5
+        }
+      ],
+      "fixed_paragraphs": [
+        {
+          "text": "Revenue report",
+          "pos": [
+            78,
+            741.8898
+          ],
+          "width": 439.2756,
+          "font": "Helvetica-Bold",
+          "font_size": 18,
+          "leading": 22,
+          "align": "center"
+        },
+        {
+          "text": "Revenue totaled $200 across subscriptions and services.",
+          "pos": [
+            78,
+            723.8898
+          ],
+          "width": 439.2756,
+          "font": "Helvetica",
+          "font_size": 10,
+          "leading": 12
+        }
+      ],
+      "fixed_spacers": [
+        [
+          78,
+          707.8898
+        ]
+      ]
+    }
+  ]
+}

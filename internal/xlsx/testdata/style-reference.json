@@ -1,0 +1,8 @@
+{
+  "sources": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/openpyxl/styles/stylesheet.py": "ee4669cf26af2eb38971d66a6739775994f233ad02a963fc8bf390d09ff5c72d",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/openpyxl/styles/colors.py": "4acdd0a8d4b9608495909c6535f778abf612ac529d2a301358b0d2bb6acf3017"
+  },
+  "supplemental_sha256": "636f246cb1076a497c0f20aad435f3e2f0adb54f49cf75e080a6b1655e620a4c",
+  "installed_sha256": "636f246cb1076a497c0f20aad435f3e2f0adb54f49cf75e080a6b1655e620a4c"
+}

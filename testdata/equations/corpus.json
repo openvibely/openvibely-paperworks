@@ -1,0 +1,150 @@
+[
+  {
+    "name": "color",
+    "tex": "\\color{red}{x^2}"
+  },
+  {
+    "name": "textcolor",
+    "tex": "\\textcolor{blue}{x}"
+  },
+  {
+    "name": "cancel",
+    "tex": "\\cancel{x}"
+  },
+  {
+    "name": "bcancel",
+    "tex": "\\bcancel{x}"
+  },
+  {
+    "name": "xcancel",
+    "tex": "\\xcancel{x}"
+  },
+  {
+    "name": "cancelto",
+    "tex": "\\cancelto{0}{x}"
+  },
+  {
+    "name": "underbrace",
+    "tex": "\\underbrace{a+b}_{\\text{two terms}}"
+  },
+  {
+    "name": "overbrace",
+    "tex": "\\overbrace{a+b}^{\\text{two terms}}"
+  },
+  {
+    "name": "label",
+    "tex": "\\text{net profit}"
+  },
+  {
+    "name": "bbox",
+    "tex": "\\bbox[5px,border:2px solid red]{x+1}"
+  },
+  {
+    "name": "colorbox",
+    "tex": "\\colorbox{yellow}{$x$}"
+  },
+  {
+    "name": "fcolorbox",
+    "tex": "\\fcolorbox{red}{yellow}{$x$}"
+  },
+  {
+    "name": "enclose",
+    "tex": "\\enclose{circle}{x}"
+  },
+  {
+    "name": "tag",
+    "tex": "\\begin{equation}x=1\\tag{A}\\end{equation}"
+  },
+  {
+    "name": "aligned",
+    "tex": "\\begin{aligned}x&=1\\\\y&=2\\end{aligned}"
+  },
+  {
+    "name": "align",
+    "tex": "\\begin{align}x&=1\\\\y&=2\\end{align}"
+  },
+  {
+    "name": "multline",
+    "tex": "\\begin{multline}a+b+c\\\\=d+e\\end{multline}"
+  },
+  {
+    "name": "xrightarrow",
+    "tex": "A\\xrightarrow[below]{above}B"
+  },
+  {
+    "name": "xleftrightarrow",
+    "tex": "A\\xleftrightarrow{above}B"
+  },
+  {
+    "name": "prescript",
+    "tex": "\\prescript{14}{6}{C}"
+  },
+  {
+    "name": "sideset",
+    "tex": "\\sideset{_a^b}{_c^d}\\sum"
+  },
+  {
+    "name": "quantity",
+    "tex": "\\qty(\\frac{x}{y})"
+  },
+  {
+    "name": "derivative",
+    "tex": "\\dv{f}{x}"
+  },
+  {
+    "name": "unicode",
+    "tex": "\\unicode{x2605}"
+  },
+  {
+    "name": "mathchoice",
+    "tex": "\\mathchoice{A}{B}{C}{D}"
+  },
+  {
+    "name": "newcommand",
+    "tex": "\\newcommand{\\foo}[1]{\\frac{#1}{2}}\\foo{x}"
+  },
+  {
+    "name": "newenvironment",
+    "tex": "\\newenvironment{foo}{\\begin{matrix}}{\\end{matrix}}\\begin{foo}a&b\\end{foo}"
+  },
+  {
+    "name": "boldsymbol",
+    "tex": "\\boldsymbol{\\alpha}"
+  },
+  {
+    "name": "binom",
+    "tex": "\\binom{n}{k}"
+  },
+  {
+    "name": "substack",
+    "tex": "\\sum_{\\substack{i>0\\\\j>0}}a_{ij}"
+  },
+  {
+    "name": "not",
+    "tex": "\\not\\equiv"
+  },
+  {
+    "name": "mathstrut",
+    "tex": "\\mathstrut x"
+  },
+  {
+    "name": "phantom",
+    "tex": "\\phantom{x}+y"
+  },
+  {
+    "name": "smash",
+    "tex": "\\smash{\\frac{x}{y}}"
+  },
+  {
+    "name": "cfrac",
+    "tex": "\\cfrac{1}{1+\\cfrac{1}{x}}"
+  },
+  {
+    "name": "hline",
+    "tex": "\\begin{array}{c|c}a&b\\\\\\hline c&d\\end{array}"
+  },
+  {
+    "name": "boxed",
+    "tex": "\\boxed{x=1}"
+  }
+]

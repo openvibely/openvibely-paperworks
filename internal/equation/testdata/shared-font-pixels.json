@@ -1,0 +1,370 @@
+{
+  "scope": "Exact RGBA from unchanged pinned equation.cjs; not PNG equality. Unsupported system-font CJK case retained in evidence, not included as a matching case.",
+  "cases": [
+    {
+      "name": "label",
+      "tex": "\\text{net profit}",
+      "width": 436,
+      "height": 120,
+      "pixels_equal": true,
+      "native_size": [
+        436,
+        120
+      ],
+      "reference_rgba_sha256": "bbbbd22310a7c44e93da0556b526028eb9575731cbefd5aed9ca5318f874e835",
+      "native_rgba_sha256": "bbbbd22310a7c44e93da0556b526028eb9575731cbefd5aed9ca5318f874e835",
+      "bytes_equal": false
+    },
+    {
+      "name": "boldsymbol",
+      "tex": "\\boldsymbol{\\alpha}",
+      "width": 106,
+      "height": 76,
+      "pixels_equal": true,
+      "native_size": [
+        106,
+        76
+      ],
+      "reference_rgba_sha256": "3f9f80ace61388c85550e86dc1f74629417c3b39af95cde89f3328c8288faf52",
+      "native_rgba_sha256": "3f9f80ace61388c85550e86dc1f74629417c3b39af95cde89f3328c8288faf52",
+      "bytes_equal": false
+    },
+    {
+      "name": "text-space",
+      "tex": "\\text{ a b }",
+      "width": 211,
+      "height": 101,
+      "pixels_equal": true,
+      "native_size": [
+        211,
+        101
+      ],
+      "reference_rgba_sha256": "8f72b91e634bcba5c5d5112895ade104fa40dbbf0b46b6d6beb0e81c3a50ee8b",
+      "native_rgba_sha256": "8f72b91e634bcba5c5d5112895ade104fa40dbbf0b46b6d6beb0e81c3a50ee8b",
+      "bytes_equal": false
+    },
+    {
+      "name": "textbf",
+      "tex": "\\textbf{Profit 123}",
+      "width": 523,
+      "height": 101,
+      "pixels_equal": true,
+      "native_size": [
+        523,
+        101
+      ],
+      "reference_rgba_sha256": "ecab2baa245441e54adfde3358e63683baba07f47246120d7b9196b76c76f153",
+      "native_rgba_sha256": "ecab2baa245441e54adfde3358e63683baba07f47246120d7b9196b76c76f153",
+      "bytes_equal": false
+    },
+    {
+      "name": "textit",
+      "tex": "\\textit{net profit}",
+      "width": 461,
+      "height": 121,
+      "pixels_equal": true,
+      "native_size": [
+        461,
+        121
+      ],
+      "reference_rgba_sha256": "644b366629fd76a1341ac6951b605b6a25cffb9a82641a2bdb72340cf89f79bd",
+      "native_rgba_sha256": "644b366629fd76a1341ac6951b605b6a25cffb9a82641a2bdb72340cf89f79bd",
+      "bytes_equal": false
+    },
+    {
+      "name": "greek",
+      "tex": "\\alpha+\\beta=\\gamma",
+      "width": 460,
+      "height": 122,
+      "pixels_equal": true,
+      "native_size": [
+        460,
+        122
+      ],
+      "reference_rgba_sha256": "ac8aafb3c9102a7ee55d3c20aea87961e1a7d95ba5a35beaeb5206577e5be267",
+      "native_rgba_sha256": "ac8aafb3c9102a7ee55d3c20aea87961e1a7d95ba5a35beaeb5206577e5be267",
+      "bytes_equal": false
+    },
+    {
+      "name": "boldlatin",
+      "tex": "\\boldsymbol{x+y}",
+      "width": 289,
+      "height": 113,
+      "pixels_equal": true,
+      "native_size": [
+        289,
+        113
+      ],
+      "reference_rgba_sha256": "fc10caa2cf639bb58b545a7bc5d847e75d144fd3ba4ed0f64f5d1b7646afc336",
+      "native_rgba_sha256": "fc10caa2cf639bb58b545a7bc5d847e75d144fd3ba4ed0f64f5d1b7646afc336",
+      "bytes_equal": false
+    },
+    {
+      "name": "roman",
+      "tex": "\\mathrm{ABC123}",
+      "width": 398,
+      "height": 104,
+      "pixels_equal": true,
+      "native_size": [
+        398,
+        104
+      ],
+      "reference_rgba_sha256": "138beffb3c5278dd51748e0df3373ef6a1e36c538fc3ac543df4f04daa7e881e",
+      "native_rgba_sha256": "138beffb3c5278dd51748e0df3373ef6a1e36c538fc3ac543df4f04daa7e881e",
+      "bytes_equal": false
+    },
+    {
+      "name": "mathbf",
+      "tex": "\\mathbf{ABC123}",
+      "width": 454,
+      "height": 101,
+      "pixels_equal": true,
+      "native_size": [
+        454,
+        101
+      ],
+      "reference_rgba_sha256": "180a13850d6699bb9964a2ebd907277452795bf64cc2e356ddb352632351ad27",
+      "native_rgba_sha256": "180a13850d6699bb9964a2ebd907277452795bf64cc2e356ddb352632351ad27",
+      "bytes_equal": false
+    },
+    {
+      "name": "mixed",
+      "tex": "x+\\text{ net profit }+y",
+      "width": 837,
+      "height": 121,
+      "pixels_equal": true,
+      "native_size": [
+        837,
+        121
+      ],
+      "reference_rgba_sha256": "5da85965529fe1e946fd21a3611a30345c8d09f1ca2e0791d8d2742728834dd0",
+      "native_rgba_sha256": "5da85965529fe1e946fd21a3611a30345c8d09f1ca2e0791d8d2742728834dd0",
+      "bytes_equal": false
+    },
+    {
+      "name": "textscript",
+      "tex": "x_{\\text{net}}",
+      "width": 194,
+      "height": 90,
+      "pixels_equal": true,
+      "native_size": [
+        194,
+        90
+      ],
+      "reference_rgba_sha256": "1ac8e14dc93ebebbacaa495adbc42ae0c33535443a1d5f1b7d588f5f4663c747",
+      "native_rgba_sha256": "1ac8e14dc93ebebbacaa495adbc42ae0c33535443a1d5f1b7d588f5f4663c747",
+      "bytes_equal": false
+    },
+    {
+      "name": "greekfraction",
+      "tex": "\\frac{\\alpha}{\\beta}",
+      "width": 138,
+      "height": 230,
+      "pixels_equal": true,
+      "native_size": [
+        138,
+        230
+      ],
+      "reference_rgba_sha256": "6e1ca33afa238c12f1f45d5e80a62942542c86d7c9ba7369e8dedc8acef1b566",
+      "native_rgba_sha256": "6e1ca33afa238c12f1f45d5e80a62942542c86d7c9ba7369e8dedc8acef1b566",
+      "bytes_equal": false
+    },
+    {
+      "name": "cancelgreek",
+      "tex": "\\cancel{\\alpha}",
+      "width": 147,
+      "height": 129,
+      "pixels_equal": true,
+      "native_size": [
+        147,
+        129
+      ],
+      "reference_rgba_sha256": "5e1f742a8a30573b8d02e6eb0408ee7d627a15e94384c559f9bb2c7036d68d00",
+      "native_rgba_sha256": "5e1f742a8a30573b8d02e6eb0408ee7d627a15e94384c559f9bb2c7036d68d00",
+      "bytes_equal": false
+    },
+    {
+      "name": "operator",
+      "tex": "a\\equiv b",
+      "width": 259,
+      "height": 101,
+      "pixels_equal": true,
+      "native_size": [
+        259,
+        101
+      ],
+      "reference_rgba_sha256": "34ff542c4e54be6c6ff002401709e74d5d26ce4172c3b1584d0cf2132bc635b9",
+      "native_rgba_sha256": "34ff542c4e54be6c6ff002401709e74d5d26ce4172c3b1584d0cf2132bc635b9",
+      "bytes_equal": false
+    },
+    {
+      "name": "not",
+      "tex": "\\not\\equiv",
+      "width": 108,
+      "height": 123,
+      "pixels_equal": true,
+      "native_size": [
+        108,
+        123
+      ],
+      "reference_rgba_sha256": "955b3b1745960561b76a265676ce2035d2e599a4cf642dd26581cf0e13e502ca",
+      "native_rgba_sha256": "955b3b1745960561b76a265676ce2035d2e599a4cf642dd26581cf0e13e502ca",
+      "bytes_equal": false
+    },
+    {
+      "name": "notmixed",
+      "tex": "a\\not\\equiv b",
+      "width": 259,
+      "height": 123,
+      "pixels_equal": true,
+      "native_size": [
+        259,
+        123
+      ],
+      "reference_rgba_sha256": "94f4ce76019815180d6d19ad503979202f42e6c5f7df86ae7e5ac3ce50850565",
+      "native_rgba_sha256": "94f4ce76019815180d6d19ad503979202f42e6c5f7df86ae7e5ac3ce50850565",
+      "bytes_equal": false
+    },
+    {
+      "name": "notequal",
+      "tex": "a\\not=b",
+      "width": 259,
+      "height": 123,
+      "pixels_equal": true,
+      "native_size": [
+        259,
+        123
+      ],
+      "reference_rgba_sha256": "47293e5ef395841a30dccc74c2fd0c0edd7890b69f693c17c41b480936c83268",
+      "native_rgba_sha256": "47293e5ef395841a30dccc74c2fd0c0edd7890b69f693c17c41b480936c83268",
+      "bytes_equal": false
+    },
+    {
+      "name": "notless",
+      "tex": "a\\not<b",
+      "width": 259,
+      "height": 122,
+      "pixels_equal": true,
+      "native_size": [
+        259,
+        122
+      ],
+      "reference_rgba_sha256": "2f06f286e48688d9aaf2e0927488c4a72d08232fdac32083a9cbbca504d62ff1",
+      "native_rgba_sha256": "2f06f286e48688d9aaf2e0927488c4a72d08232fdac32083a9cbbca504d62ff1",
+      "bytes_equal": false
+    },
+    {
+      "name": "notsubset",
+      "tex": "A\\not\\subset B",
+      "width": 314,
+      "height": 123,
+      "pixels_equal": true,
+      "native_size": [
+        314,
+        123
+      ],
+      "reference_rgba_sha256": "b6fbd0c3702ac50f91f31fc84163ac12f641988a6803fa9506b982af77cc0ddb",
+      "native_rgba_sha256": "b6fbd0c3702ac50f91f31fc84163ac12f641988a6803fa9506b982af77cc0ddb",
+      "bytes_equal": false
+    },
+    {
+      "name": "notarrow",
+      "tex": "A\\not\\to B",
+      "width": 336,
+      "height": 102,
+      "pixels_equal": true,
+      "native_size": [
+        336,
+        102
+      ],
+      "reference_rgba_sha256": "1809954a6397ed3c3fa225decc0085671d0cd60bf1a3d4c3b5bdb1e7ad4075ea",
+      "native_rgba_sha256": "1809954a6397ed3c3fa225decc0085671d0cd60bf1a3d4c3b5bdb1e7ad4075ea",
+      "bytes_equal": false
+    },
+    {
+      "name": "textfraction",
+      "tex": "\\frac{\\text{net}}{\\text{gross}}",
+      "width": 292,
+      "height": 248,
+      "pixels_equal": true,
+      "native_size": [
+        292,
+        248
+      ],
+      "reference_rgba_sha256": "0074a859dff398d49344387e88cb4bdd20668e2991fdf902280b6cf2c9871d5b",
+      "native_rgba_sha256": "0074a859dff398d49344387e88cb4bdd20668e2991fdf902280b6cf2c9871d5b",
+      "bytes_equal": false
+    },
+    {
+      "name": "boldgreekfraction",
+      "tex": "\\frac{\\boldsymbol{\\alpha}}{\\boldsymbol{\\beta}}",
+      "width": 150,
+      "height": 231,
+      "pixels_equal": true,
+      "native_size": [
+        150,
+        231
+      ],
+      "reference_rgba_sha256": "d3b0b8729e37ebc644f3f474409b5103dbf7ca0a07dc0cda69514a0e9a9cec47",
+      "native_rgba_sha256": "d3b0b8729e37ebc644f3f474409b5103dbf7ca0a07dc0cda69514a0e9a9cec47",
+      "bytes_equal": false
+    }
+  ],
+  "sources": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex.js": "f897d2efbf4543dc3abeb13bd7b68d4d37feff2153ee2f40cc4a4c885a387897",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/FontData.js": "6ea541d5c213d930323d449521972f0150b9eb7ffb159cfcca80bd2b872d1ef2",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/FontData.js": "ffe4caef95928475bb9331911bdee964ec602a19f2d5a4e0f71ae42791e05359",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/util/Options.js": "f5a81709847dba93bafeab0f748da977db131094bdb5970244618422ea7184b2",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex.js": "aa9ddbf0b3c6fb9993586f532c8f600f4126697311d1224ffec05979740815f7",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/bold-italic.js": "d9cc56eb08c7be2916330138cf995e86e5e6ef051e15a2700944689da57f2531",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/bold-italic.js": "0b10f5467b953578ddb679bbc2c8eeea49f5475e8343887bc156aa45397df3ed",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/bold.js": "865ecaa78a4eb56a956a4c73c6637cc6068a6be3a8331587e00c0f3458b71c7b",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/bold.js": "dee7ab1d46bd0399f691a4444b176b08a5abe5b347d914bf31ca06b007be2aff",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/double-struck.js": "9ceb1a7464c0079a2242ea5680c38b4c1e9b43eb8e89e14807c44bda281b67e5",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/double-struck.js": "a350c976456b85bd2a703c925c66ba343675b392fa88621a6c073a0fa243f31f",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/fraktur-bold.js": "c09a1c69e55b76f4f6c6d6ef8bf6b3990bc3fc7bdfca7f4a38d227a5ad904c89",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/fraktur-bold.js": "ef3b3dcd6a0f485b0edeee7f720e15086ec3889bcfa19a8f86ea7053ee23e931",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/fraktur.js": "1d50857fe5384f2fcac348100e156a2816dfe06f901c226a8cf3e5d8bc2e7914",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/fraktur.js": "8ce26887d8b399c483ab977421fc7287072ff7b592f25fda73a76abe935821bb",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/italic.js": "ab8230b56ad633944008d5e683a8587ffc7fbe4d553ab328f6ec4841f5f86c42",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/italic.js": "b7d56d03219cfcb0a0fd1b6a211d5706b415ded12d7e79d7c94f1f85cb0e4420",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/largeop.js": "058b96bd8611a6ffca6b8fe87302c731ae3a4361ea89f17894fd3f1976443174",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/largeop.js": "c669b9fbeb388602177d95459a002ed9fe8de71707033a11f8b94d01ac182e5f",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/monospace.js": "940525280b48c309cc66950b8f3ba3fa198a7ef36de1cf2168ef231151f8ffbe",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/monospace.js": "6ae9ade9f77a365bf182a46716a41a98ed9b34083bc01229f7ea661a4813f5eb",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/normal.js": "2bd111364fc0383901ac7d4c74156067fa43fe7f509bd974d0e557261be7867a",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/normal.js": "d42b97a7a0a6ad13e32e6f716c94b4ea2df3ecdc7c2deac55ccf189f498c73c5",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/sans-serif-bold-italic.js": "3c4b3eec41c2eabe0f12fdda6d9b51585bd04d99db07b49d86d92012c801cfad",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/sans-serif-bold-italic.js": "add177d6abe0910896792095f345b68508895c812125ad8a71fbb4257ce0ebe5",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/sans-serif-bold.js": "9b8bc4f19314fcb58f5a73167482134e1d2ad22ab1005421d29b72f02bef63a5",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/sans-serif-bold.js": "e2f180be56e1046c18f9eacdd4bbacf613befaf353beb3434788b64cc5fa6cd3",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/sans-serif-italic.js": "5db1bdf3669340bfbb31c1ed437cf019019cd9ce5ac10e29d5e471530f892a81",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/sans-serif-italic.js": "a9ea20628811ddc2e80ad87d138ba92bb4171ee195c00a7f88b8ec406b8d3435",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/sans-serif.js": "c9c229819cd1c74ba58522fbe84a09ba4607453a998f73410c5f5ea95d5a35d4",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/sans-serif.js": "3081a0020b8cffb98748ba945dfc8c017856b769f7f20a758049979d7269849c",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/script-bold.js": "aafd5555e0f725392eac59d2baf75280b6f9a699438dcfc185567d1e717aaa69",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/script-bold.js": "495d6c0fd46aaabc740ab4cbce962a6fe202706c9b9086f3ae3b2baf9f18f130",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/script.js": "cc47dd67276cd3667dd81569054efc621102029c07ab07027ea7d6c68e3c4fb5",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/script.js": "2aa9325efabc1596a86ae27dbba3bc019e10b86cee6616982a3be3b5e02a4057",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/smallop.js": "29fbc79c7a54be8673deddab0a3cd4c8604f76b04ecb9bb8a1d0fa2aa2131d03",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/smallop.js": "4f5e97c7a06f6e7ade0fc0560dc77798775a1f51ffa87282cc901757b6aea4db",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/tex-calligraphic-bold.js": "b6e9171a7e0fcd8bd6892a78bf49a653cb763668e5606fa2fa2955a70f83bdb5",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/tex-calligraphic-bold.js": "9387dd1fe20ded46ccf1e04b8727f0a05ef52d2d1fe9ec84b22eb6c54ccc1c94",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/tex-calligraphic.js": "2dd2b9a66012362434e0cb3928738035cc750316ebe761a9391ef0bbc0d48804",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/tex-calligraphic.js": "c4034c8564c912ddbcf6850e797c86f472fd60ce64c203a6f7280da9bd8f7087",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/tex-mathit.js": "5287524853d89f96c57ad8e1ec2867bcec866661b63a374431d4e67210150ba5",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/tex-mathit.js": "57a3b4c71dc07e937aaa3d51fedb1ca8b9786a15203a85d0de047b1f5e1a8168",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/tex-oldstyle-bold.js": "10beb249fb68855c5e4cbc028542d08adce6d3f4cf24310cd1b30f341de7caf3",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/tex-oldstyle-bold.js": "cf1e1d18b4b0ae6c331c0f0e11418bcb8c8c5defde9f1008572c54093655df44",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/tex-oldstyle.js": "3388a6aee261b312ff6ab3fce64f7085a4e1eafe07979e445b6452ee35e1aab8",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/tex-oldstyle.js": "2438600197447d49826336517813dc238ccdcd91ed6371e2548101dad540e4fc",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/tex-size3.js": "bb60edc749db9c9350b9c0565ca6a03dc75f0013af4aa9ebd10e6c5bbac04c8d",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/tex-size3.js": "933fa6dca0f213a84ddd01f7b16de91b96d78e5133ad7a8215e759b9ca1a3fda",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/tex-size4.js": "3702f87ac9be6367fa9650303ca34767a1cec714163f8ca2ea87aed5cc2098f7",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/tex-size4.js": "282b9cd1cfe3e7e6d5451e66aa046a7a1d507f799b79007cd492db696dd7747a",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/tex-variant.js": "fb5d2c6e39891e692cd6834a06f1fb8fd319074b34f319b378ca4bf66f4136dc",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/tex-variant.js": "d0d05bb22cc575e01b268b616b479cb5d48e6f2527f785a26738f381927c252a",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/delimiters.js": "d3baf85fcb39d8277cecae51c48440a10776e12c79260338c5987ea21274655d",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/equation.cjs": "b7e87685d7a23c04015d15fa9a5494137d6efb6fce12d8bf59446ab525a436a0"
+  }
+}

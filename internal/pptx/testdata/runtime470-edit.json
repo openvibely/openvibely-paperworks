@@ -1,0 +1,14 @@
+{
+  "reference_runtime_sha256": "a757811a001dd52cfbc4ce548bd0a331e2f45ad9441678941ac75afd1aef101e",
+  "fixture_sha256": "491121741c1f779644045da1268490fa4e878c63f79f2220795ba132f92a5f97",
+  "parts": {
+    "ppt/slides/slide2.xml": {
+      "input_sha256": "377c07996a1a69e4269773583ae6f2d73b14987e513e52ed6b896d65e304e04f",
+      "reference_output_sha256": "0301d0391a6b1c30c59b3968d17fbf6bbcf23beb49dc8602fbfa5365e4d3e0bb"
+    },
+    "ppt/notesSlides/notesSlide2.xml": {
+      "input_sha256": "9ae378d515cb50eb7c0e995508f53069aa07dab130d5f6536c49690ac94edc38",
+      "reference_output_sha256": "8a9e8a342dda2f38968e964603330e82e9c2fa0d6d762333e69d42a97c9ecbfd"
+    }
+  }
+}

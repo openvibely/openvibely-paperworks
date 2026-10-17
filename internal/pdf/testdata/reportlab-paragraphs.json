@@ -1,0 +1,113 @@
+{
+  "sources": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/reportlab/pdfgen/canvas.py": "a5583a68a867e903b3b4d28e5c60ac5904fc812fa8dae2aa50d709461fd2a290",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/reportlab/pdfgen/textobject.py": "b8268fe29383d3585f497f66e307718061039c3203972dd3d08621f9f2dc6d7e",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/reportlab/platypus/paragraph.py": "c9f4a40a05dba9878b52f9d25231eaa2e51fc4db4be95c742adaa77dc1e91ce8",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/reportlab/platypus/flowables.py": "b0860ebc693e2435fde3e913164343e3a67e6decdc7edb48b4a0fff2c9ee2b1a",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/reportlab/pdfbase/pdfmetrics.py": "d3cefd6fc756d2134b77c14dc61ceb901d57a0f21f0f5f8bd0fe7eb00e50b7fb"
+  },
+  "cases": [
+    {
+      "name": "title",
+      "paragraph": {
+        "text": "Revenue report",
+        "font": "Helvetica-Bold",
+        "font_size": 18,
+        "leading": 22,
+        "align": "center",
+        "width": 439.2756,
+        "pos": [
+          78,
+          741.8898
+        ]
+      },
+      "font_resource": "F2",
+      "stream": "q\n1 0 0 1 78 741.8898 cm\nq\n0 0 0 rg\nBT 1 0 0 1 0 4 Tm /F2 18 Tf 22 TL 153.6228 0 Td (Revenue report) Tj T* -153.6228 0 Td ET\nQ\nQ\n"
+    },
+    {
+      "name": "body",
+      "paragraph": {
+        "text": "Revenue totaled $200 across subscriptions and services.",
+        "font": "Helvetica",
+        "font_size": 10,
+        "leading": 12,
+        "align": "left",
+        "width": 439.2756,
+        "pos": [
+          78,
+          723.8898
+        ]
+      },
+      "font_resource": "F1",
+      "stream": "q\n1 0 0 1 78 723.8898 cm\nq\n0 0 0 rg\nBT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Revenue totaled $200 across subscriptions and services.) Tj T* ET\nQ\nQ\n"
+    },
+    {
+      "name": "escaped",
+      "paragraph": {
+        "text": "Price (USD) \\\\ total tax",
+        "font": "Helvetica",
+        "font_size": 11,
+        "leading": 15,
+        "align": "right",
+        "width": 320.125,
+        "pos": [
+          -12.5,
+          65.25
+        ]
+      },
+      "font_resource": "F1",
+      "stream": "q\n1 0 0 1 -12.5 65.25 cm\nq\n0 0 0 rg\nBT 1 0 0 1 0 4 Tm /F1 11 Tf 15 TL 210.708 0 Td (Price \\(USD\\) \\\\\\\\ total tax) Tj T* -210.708 0 Td ET\nQ\nQ\n"
+    },
+    {
+      "name": "bold",
+      "paragraph": {
+        "text": "A short bold line",
+        "font": "Helvetica-Bold",
+        "font_size": 14.5,
+        "leading": 18,
+        "align": "left",
+        "width": 250,
+        "pos": [
+          0,
+          0
+        ]
+      },
+      "font_resource": "F2",
+      "stream": "q\n1 0 0 1 0 0 cm\nq\n0 0 0 rg\nBT 1 0 0 1 0 3.5 Tm /F2 14.5 Tf 18 TL (A short bold line) Tj T* ET\nQ\nQ\n"
+    },
+    {
+      "name": "center",
+      "paragraph": {
+        "text": "Small centered",
+        "font": "Helvetica",
+        "font_size": 8,
+        "leading": 10,
+        "align": "center",
+        "width": 130,
+        "pos": [
+          12,
+          24
+        ]
+      },
+      "font_resource": "F1",
+      "stream": "q\n1 0 0 1 12 24 cm\nq\n0 0 0 rg\nBT 1 0 0 1 0 2 Tm /F1 8 Tf 10 TL 38.324 0 Td (Small centered) Tj T* -38.324 0 Td ET\nQ\nQ\n"
+    },
+    {
+      "name": "right",
+      "paragraph": {
+        "text": "Right edge",
+        "font": "Helvetica-Bold",
+        "font_size": 22,
+        "leading": 30,
+        "align": "right",
+        "width": 300,
+        "pos": [
+          20,
+          30
+        ]
+      },
+      "font_resource": "F2",
+      "stream": "q\n1 0 0 1 20 30 cm\nq\n0 0 0 rg\nBT 1 0 0 1 0 8 Tm /F2 22 Tf 30 TL 186.326 0 Td (Right edge) Tj T* -186.326 0 Td ET\nQ\nQ\n"
+    }
+  ]
+}

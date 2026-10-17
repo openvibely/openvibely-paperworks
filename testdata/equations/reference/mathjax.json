@@ -1,0 +1,286 @@
+{
+  "color": {
+    "ok": true,
+    "em": {
+      "width": 1.0086,
+      "height": 0.8949,
+      "ascent": 0.8839
+    }
+  },
+  "textcolor": {
+    "ok": true,
+    "em": {
+      "width": 0.572,
+      "height": 0.453,
+      "ascent": 0.442
+    }
+  },
+  "cancel": {
+    "ok": true,
+    "em": {
+      "width": 1.106,
+      "height": 0.987,
+      "ascent": 0.709
+    }
+  },
+  "bcancel": {
+    "ok": true,
+    "em": {
+      "width": 1.106,
+      "height": 0.987,
+      "ascent": 0.709
+    }
+  },
+  "xcancel": {
+    "ok": true,
+    "em": {
+      "width": 1.106,
+      "height": 0.987,
+      "ascent": 0.709
+    }
+  },
+  "cancelto": {
+    "ok": true,
+    "em": {
+      "width": 1.5338,
+      "height": 1.1736,
+      "ascent": 0.9546
+    }
+  },
+  "underbrace": {
+    "ok": true,
+    "em": {
+      "width": 3.0498000000000003,
+      "height": 2.1056,
+      "ascent": 0.694
+    }
+  },
+  "overbrace": {
+    "ok": true,
+    "em": {
+      "width": 3.0498000000000003,
+      "height": 2.1309,
+      "ascent": 2.0489
+    }
+  },
+  "label": {
+    "ok": true,
+    "em": {
+      "width": 4.06,
+      "height": 0.899,
+      "ascent": 0.705
+    }
+  },
+  "bbox": {
+    "ok": true,
+    "em": {
+      "width": 3.0679000000000003,
+      "height": 1.5215,
+      "ascent": 1.0528
+    }
+  },
+  "colorbox": {
+    "ok": true,
+    "em": {
+      "width": 1.1245,
+      "height": 1.0055,
+      "ascent": 0.7182999999999999
+    }
+  },
+  "fcolorbox": {
+    "ok": true,
+    "em": {
+      "width": 1.3455,
+      "height": 1.2265,
+      "ascent": 0.8288
+    }
+  },
+  "enclose": {
+    "ok": true,
+    "em": {
+      "width": 1.106,
+      "height": 0.987,
+      "ascent": 0.709
+    }
+  },
+  "tag": {
+    "ok": false,
+    "error": "Cannot read properties of undefined (reading 'split')"
+  },
+  "aligned": {
+    "ok": true,
+    "em": {
+      "width": 2.4055999999999997,
+      "height": 2.3,
+      "ascent": 1.4
+    }
+  },
+  "align": {
+    "ok": true,
+    "em": {
+      "width": 2.4055999999999997,
+      "height": 2.3,
+      "ascent": 1.4
+    }
+  },
+  "multline": {
+    "ok": true,
+    "em": {
+      "width": 35.36,
+      "height": 2.5,
+      "ascent": 1.5
+    }
+  },
+  "xrightarrow": {
+    "ok": true,
+    "em": {
+      "width": 4.3464,
+      "height": 2.1994000000000002,
+      "ascent": 1.3200999999999998
+    }
+  },
+  "xleftrightarrow": {
+    "ok": true,
+    "em": {
+      "width": 4.229,
+      "height": 1.4021,
+      "ascent": 1.3200999999999998
+    }
+  },
+  "prescript": {
+    "ok": true,
+    "em": {
+      "width": 1.5171,
+      "height": 1.1542999999999999,
+      "ascent": 0.8917
+    }
+  },
+  "sideset": {
+    "ok": true,
+    "em": {
+      "width": 2.2858,
+      "height": 1.6756,
+      "ascent": 1.1678
+    }
+  },
+  "quantity": {
+    "ok": false,
+    "error": "Undefined control sequence \\qty"
+  },
+  "derivative": {
+    "ok": false,
+    "error": "Undefined control sequence \\dv"
+  },
+  "unicode": {
+    "ok": true,
+    "em": {
+      "width": 0.944,
+      "height": 0.805,
+      "ascent": 0.694
+    }
+  },
+  "mathchoice": {
+    "ok": true,
+    "em": {
+      "width": 0.75,
+      "height": 0.716,
+      "ascent": 0.716
+    }
+  },
+  "newcommand": {
+    "ok": true,
+    "em": {
+      "width": 1.012,
+      "height": 1.804,
+      "ascent": 1.118
+    }
+  },
+  "newenvironment": {
+    "ok": true,
+    "em": {
+      "width": 1.958,
+      "height": 1,
+      "ascent": 0.75
+    }
+  },
+  "boldsymbol": {
+    "ok": true,
+    "em": {
+      "width": 0.761,
+      "height": 0.46,
+      "ascent": 0.452
+    }
+  },
+  "binom": {
+    "ok": true,
+    "em": {
+      "width": 2.072,
+      "height": 2.399,
+      "ascent": 1.4495
+    }
+  },
+  "substack": {
+    "ok": true,
+    "em": {
+      "width": 2.7579000000000002,
+      "height": 2.8521,
+      "ascent": 0.95
+    }
+  },
+  "not": {
+    "ok": true,
+    "em": {
+      "width": 0.778,
+      "height": 0.931,
+      "ascent": 0.716
+    }
+  },
+  "mathstrut": {
+    "ok": true,
+    "em": {
+      "width": 0.572,
+      "height": 1,
+      "ascent": 0.75
+    }
+  },
+  "phantom": {
+    "ok": true,
+    "em": {
+      "width": 2.2844,
+      "height": 0.788,
+      "ascent": 0.583
+    }
+  },
+  "smash": {
+    "ok": true,
+    "em": {
+      "width": 1.012,
+      "height": 0.016,
+      "ascent": 0
+    }
+  },
+  "cfrac": {
+    "ok": true,
+    "em": {
+      "width": 3.1744,
+      "height": 3.4584,
+      "ascent": 1.62
+    }
+  },
+  "hline": {
+    "ok": true,
+    "em": {
+      "width": 2.119,
+      "height": 2.47,
+      "ascent": 1.485
+    }
+  },
+  "boxed": {
+    "ok": true,
+    "em": {
+      "width": 2.9396,
+      "height": 1.282,
+      "ascent": 0.933
+    }
+  }
+}

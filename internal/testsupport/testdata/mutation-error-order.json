@@ -1,0 +1,1061 @@
+{
+  "reference": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/test_presentation_native.py": "6199f9f1767fa49fa3743f11fb6545468da586c68aabe28e79ba942fdb0513fb",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/document_native.py": "eb2407fed420206fc34ad88f3fceb613ee694d3bf7f239b19cce3a73a6b9c420",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/document_check.py": "f7f724147f3678383b5d64b2d128639c2df3115404f07624dbcca4419ef15e94"
+  },
+  "zipfile_source_sha256": "94c53aedba0b0f7d6f71bf8ec34973e666ee0c0e56e6800ff4c26d2e3951987a",
+  "scope": "Original PresentationNative.mutate unchanged. Fixed fixture timestamps; no output byte-equality claim. Error types are Python observations, not Go type-equivalence.",
+  "cases": [
+    {
+      "name": "flags-0-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "62db248926a5bc57bc78fd1713ea295786655f37a7f1e03b68fc2f62be0fa5e4",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "flags-0-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "e5302b9e70374513079ca99142a54c05293c7833db02dc58d7226c66d3f3d3e7",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-0-utf8",
+      "input": "UEsDBBQAAAgAAIMYIlgl0+P5BQAAAAUAAAAFAAAA/2lyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "de6ad3999977841ca2d36575d91d5dbc389b8d65a2bbac0d21706db67dc6c19d",
+      "accepted": false,
+      "error": {
+        "type": "UnicodeDecodeError",
+        "message": "'utf-8' codec can't decode byte 0xff in position 0: invalid start byte"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-0-magic",
+      "input": "AEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "fa39f37234856120ffaa67c7aac50ec268744ff0c4960df2a28b6c9d452a73f9",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad magic number for file header"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-0-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "06166ba78fda84448f94148d83ed7ff28b4668e2d7b7ae30d350e1079e0fb1b9",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-0-crc",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgAAAAABQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "87fac0ef357cf5ea5a59482399ad4182b92597d94e126ea5ea2f47e49a38cbdf",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-0-method",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAABjAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "ecb880f7bbcf27d814ebe42cb17818938c5b1503a2990cc09e7a73226f9d4046",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "That compression method is not supported"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-0-central-utf8",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAgAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAAD/aXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "67b6ef654c0f3a31b4fd7e1e9eeca5475add137b21b8bd4e5bb1a17715131afd",
+      "accepted": false,
+      "error": {
+        "type": "UnicodeDecodeError",
+        "message": "'utf-8' codec can't decode byte 0xff in position 0: invalid start byte"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-0-version",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUA0AAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "dea5f4c4333ccfda30bd1c69b499bfb45a8be9950bc68f7796666501772cea6f",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "zip file version 6.4"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-32-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAIAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "3ed33321c3f3a730c38cd6a814ad1574cda7c51fdc16124f21bad0abecd1a9fb",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "compressed patched data (flag bit 5)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-32-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAIAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "8da191063267f8e6ca81d59bc059d7ce10bd82cbea66d95a693df25090457fbd",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "compressed patched data (flag bit 5)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-32-utf8",
+      "input": "UEsDBBQAAAgAAIMYIlgl0+P5BQAAAAUAAAAFAAAA/2lyc3RzYXZlZFBLAQIUAxQAIAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "86c761e0ee0ba9260fe666df093d8cd392431aa7ddca0152fdca7eed87997861",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "compressed patched data (flag bit 5)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-32-magic",
+      "input": "AEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAIAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "215408fa60161be54655d4a8740f46bb2c2a063d55d4e07b32705c399508d3d0",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad magic number for file header"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-32-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAIAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "66a30b82c2a660acfcdd5190f9965949a7b1a425bfd91b89fe9e5e4f3fc6bb3e",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "compressed patched data (flag bit 5)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-32-crc",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAIAAAAIMYIlgAAAAABQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "ff3a81a96130dd89b4ecdde380dc92bc30534a870b60adaab5f9fcaba71ad252",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "compressed patched data (flag bit 5)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-32-method",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAIABjAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "8817943e94996e5ea160ad2826fcf60dfda3b55cd96bbe5a1abaee3601472e68",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "compressed patched data (flag bit 5)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-32-central-utf8",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAIAgAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAAD/aXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "f7037dcf9015f8ebe4014b52a06d870ffdcd906645cd9ad783fb7e5a2289a333",
+      "accepted": false,
+      "error": {
+        "type": "UnicodeDecodeError",
+        "message": "'utf-8' codec can't decode byte 0xff in position 0: invalid start byte"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-32-version",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUA0AAIAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "c82f74fb62464a393e06836664f22b38a06f0f48fd447b6586c264610da2f285",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "zip file version 6.4"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-64-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAQAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "368f0341baeb5f48a632ca8c31f5ebfaf98cd583ef13b272bf30cd10a4e0ce4b",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "strong encryption (flag bit 6)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-64-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAQAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "e953946b71ad4125bc8ca5756e1c066a0c6b1fd16d4611686da5888fade2e277",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "strong encryption (flag bit 6)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-64-utf8",
+      "input": "UEsDBBQAAAgAAIMYIlgl0+P5BQAAAAUAAAAFAAAA/2lyc3RzYXZlZFBLAQIUAxQAQAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "e1cd6ec41d5501b120c55d7dde42f5cd850b83fc5fcaeaa370316d965fc61af3",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "strong encryption (flag bit 6)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-64-magic",
+      "input": "AEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAQAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "105c1b9ba6b6c46f438b75eb5a51a29a7fa60764df873f100db18b3430445a4f",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad magic number for file header"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-64-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAQAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "b7d4b6e8e69013509337ca3e4347f9f8a688f02d47899c0c80c2e509d8dd3a3a",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "strong encryption (flag bit 6)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-64-crc",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAQAAAAIMYIlgAAAAABQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "8a84a3ff45f858f2e336bdde941cf796109e94645ea3e3c0e586afb368aac292",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "strong encryption (flag bit 6)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-64-method",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAQABjAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "01a5aab758f48d0a3d9edbfee66b240ea0fa0320c61b1d4a7963a5e01fc16712",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "strong encryption (flag bit 6)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-64-central-utf8",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAQAgAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAAD/aXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "0dcda6ec20c1b5e864a43f1a3dcea5c6c825e11c3998c8c9c9b41df40af86a6c",
+      "accepted": false,
+      "error": {
+        "type": "UnicodeDecodeError",
+        "message": "'utf-8' codec can't decode byte 0xff in position 0: invalid start byte"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-64-version",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUA0AAQAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "efa5bc77dbccac485b9a5b8157c9b083cad2470f2fbf150b1247dc1a18c667a1",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "zip file version 6.4"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-96-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAYAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "99473afb4b9def36e63bab6160c5f608b7a2e8b51752cd74b1a3f83ed818f94a",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "compressed patched data (flag bit 5)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-96-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAYAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "fdf4fc4bbbcc0f4739e846db9b70f648fd1fd098bebea49b926e47fd709fff6c",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "compressed patched data (flag bit 5)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-96-utf8",
+      "input": "UEsDBBQAAAgAAIMYIlgl0+P5BQAAAAUAAAAFAAAA/2lyc3RzYXZlZFBLAQIUAxQAYAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "a8c97727b45068ba1b0381846bcf32def56c0ef18015deb5b285206e4c546606",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "compressed patched data (flag bit 5)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-96-magic",
+      "input": "AEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAYAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "db8eb46365f817485993f9d0fe0364d0ac141470750922465049a36c8cdca731",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad magic number for file header"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-96-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAYAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "5b52ec80272ec9582011d8815da2ee7959655d5e8f402004b7d8c84241f995ef",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "compressed patched data (flag bit 5)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-96-crc",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAYAAAAIMYIlgAAAAABQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "2e4bf56bc14dd47e92ddae17541da15239363fbcd2174b745ab0013dbbb98cec",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "compressed patched data (flag bit 5)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-96-method",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAYABjAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "1913c6eb34a29009bcdf2ae093e98e05b86842e4ccfb438b0cd4c7cb72fa8eb9",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "compressed patched data (flag bit 5)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-96-central-utf8",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAYAgAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAAD/aXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "7a77151a146591950263676f90f6a15331c11c9233138afea5a76d102cd6d82f",
+      "accepted": false,
+      "error": {
+        "type": "UnicodeDecodeError",
+        "message": "'utf-8' codec can't decode byte 0xff in position 0: invalid start byte"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-96-version",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUA0AAYAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "ff07638595341789ac1eaef08e2e3e9777789bdf4f9fb445f5996f33ab341a8f",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "zip file version 6.4"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-1-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAQAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "e84acc115de7e8d0d9d9309897b7f4c78f47991c0c6dfcdc37919e5e0e1c0efb",
+      "accepted": false,
+      "error": {
+        "type": "RuntimeError",
+        "message": "File 'first' is encrypted, password required for extraction"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-1-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAQAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "4905e4a87e5e9cbd9584331ba2338d7621fbe6f1c03606ce7b2e0b34e7e1246f",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-1-utf8",
+      "input": "UEsDBBQAAAgAAIMYIlgl0+P5BQAAAAUAAAAFAAAA/2lyc3RzYXZlZFBLAQIUAxQAAQAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "ce7d382c73daea3acceaf506dfcb9b58b3364f06e2c7c1e7799bad0a8686e21c",
+      "accepted": false,
+      "error": {
+        "type": "UnicodeDecodeError",
+        "message": "'utf-8' codec can't decode byte 0xff in position 0: invalid start byte"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-1-magic",
+      "input": "AEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAQAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "ce27d215b62acedb11e5d2542b5fce77bd81934b08d33608d2b306955c201cf1",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad magic number for file header"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-1-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAQAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "042aa6c549f8ec249600022a08335215f54113c01215ffcc1f2173c8a1dc3a67",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-1-crc",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAQAAAIMYIlgAAAAABQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "a99076e8e601620371b0b1c2fa69983f4b018bd45a1b2b2e138d2e35dffbfd1f",
+      "accepted": false,
+      "error": {
+        "type": "RuntimeError",
+        "message": "File 'first' is encrypted, password required for extraction"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-1-method",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAQBjAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "aecc834adb8ceecece7915923c128c620d74eec4bee273d3229b88c672e67b81",
+      "accepted": false,
+      "error": {
+        "type": "RuntimeError",
+        "message": "File 'first' is encrypted, password required for extraction"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-1-central-utf8",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAQgAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAAD/aXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "2d0302e693764d181645a203d5237462319fd6e840efd6610bd6e289f2cfae0e",
+      "accepted": false,
+      "error": {
+        "type": "UnicodeDecodeError",
+        "message": "'utf-8' codec can't decode byte 0xff in position 0: invalid start byte"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-1-version",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUA0AAAQAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "38cdaa7a55a386c7201eb6603c9d48d5e88787fa26f4bb2af7944e85e706a8c8",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "zip file version 6.4"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-33-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAIQAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "567532289726e15d59ba062aa81fae23e5ea5b14cb40ad019c2ae222e3d70c9b",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "compressed patched data (flag bit 5)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-33-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAIQAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "756824a938d5f74a56bd9f28ac260bf7cf5422afd6683b106bf65abf7bc528fa",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "compressed patched data (flag bit 5)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-33-utf8",
+      "input": "UEsDBBQAAAgAAIMYIlgl0+P5BQAAAAUAAAAFAAAA/2lyc3RzYXZlZFBLAQIUAxQAIQAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "555cad78f88718b505cca7f65bfc720daeb12dbe8618f010041efb44ea81d87d",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "compressed patched data (flag bit 5)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-33-magic",
+      "input": "AEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAIQAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "21fc09e0922884954ce8e8eda04b17e362771814dccf25c61017522b1c6f2b68",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad magic number for file header"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-33-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAIQAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "017077d28de912befbbf303ae38386156058ace8892a175e4e7cc097b57bc324",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "compressed patched data (flag bit 5)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-33-crc",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAIQAAAIMYIlgAAAAABQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "22bc8ef3a2e40b9f813e7e381b7ef336aad66d057cb6c04542c3db6077d5ff2d",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "compressed patched data (flag bit 5)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-33-method",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAIQBjAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "e439b953d64c510706b44deb0e8abdf97170c1e3e3c4cfa1a860e08f1677753e",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "compressed patched data (flag bit 5)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-33-central-utf8",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAIQgAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAAD/aXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "835d029d82755dfcaf438a894ded2067ac80049debdb5ef4d86eeac9990230ef",
+      "accepted": false,
+      "error": {
+        "type": "UnicodeDecodeError",
+        "message": "'utf-8' codec can't decode byte 0xff in position 0: invalid start byte"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-33-version",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUA0AAIQAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "f4ebaaa7be33d50154accbe57e9cc443dc54d19e3f4be97c8eb4df95e87fbf63",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "zip file version 6.4"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-65-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAQQAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "9140175886b40804577d17ab85d27f40849d00fd84a5ea7f2abfeffc102b6f3f",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "strong encryption (flag bit 6)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-65-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAQQAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "d9c718ac97b47ad03c68eba252aedfd348a453afbb8171e16ff6485743d3a4af",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "strong encryption (flag bit 6)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-65-utf8",
+      "input": "UEsDBBQAAAgAAIMYIlgl0+P5BQAAAAUAAAAFAAAA/2lyc3RzYXZlZFBLAQIUAxQAQQAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "030c46dba7eaa2e826305295bd911b35a4e2e80b8bf72cf6d96abcf7e1c12db5",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "strong encryption (flag bit 6)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-65-magic",
+      "input": "AEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAQQAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "1e2d0c6ef585099759d26253ddaf62b2285d3cf4b0fedbea802343e9811f70f5",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad magic number for file header"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-65-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAQQAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "84e6376a11a45baa89b4ed2f884a4fafa63f6424073ac51b61ddb54acdd0d661",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "strong encryption (flag bit 6)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-65-crc",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAQQAAAIMYIlgAAAAABQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "f56f27925546b1df18d86fe47b59a4080475b88445c0eba47dcd9fc5a6013426",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "strong encryption (flag bit 6)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-65-method",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAQQBjAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "d6708f37d26e665fb40ed576287c6491a03e7a5a8b12a2bea0956af224f24248",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "strong encryption (flag bit 6)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-65-central-utf8",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAQQgAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAAD/aXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "4b47555143480d5bfaf3434e6683f26a422572a7fda3e7eda998c16f01bad744",
+      "accepted": false,
+      "error": {
+        "type": "UnicodeDecodeError",
+        "message": "'utf-8' codec can't decode byte 0xff in position 0: invalid start byte"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "flags-65-version",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUA0AAQQAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "918ebeca68c428805297f634e309d12b46014d5e68fd5f38da04c9f28e7d0a27",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "zip file version 6.4"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "method-8-flags-32-name",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAeGlyc3QrTixLTQEAUEsBAhQDFAAgAAgAgxgiWCXT4/kHAAAABQAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAACoAAAAAAA==",
+      "input_sha256": "a7d514943fd003b135aaa81aa91c0ab89adff4cb2b47d973f49b281278f98f93",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "compressed patched data (flag bit 5)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "method-8-flags-64-name",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAeGlyc3QrTixLTQEAUEsBAhQDFABAAAgAgxgiWCXT4/kHAAAABQAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAACoAAAAAAA==",
+      "input_sha256": "d0baab9d1a8def8f19386f2a37b4170d2e5f55560f8f4781b18804724cd76ce7",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "strong encryption (flag bit 6)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "method-12-flags-32-name",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAeGlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuACAADACDGCJYJdPj+SoAAAAFAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAATQAAAAAA",
+      "input_sha256": "7be350f2bf22057dc0bea3f703e73421f90ae56dd4fabf97a248750276d37192",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "compressed patched data (flag bit 5)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "method-12-flags-64-name",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAeGlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAEAADACDGCJYJdPj+SoAAAAFAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAATQAAAAAA",
+      "input_sha256": "05698d9017cf1e56f7e764151791506e4e73e5ac8fdb83e2b3ce9ef6cdeb7d83",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "strong encryption (flag bit 6)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "method-14-flags-32-name",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAeGlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/ACAADgCDGCJYJdPj+RgAAAAFAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAOwAAAAAA",
+      "input_sha256": "ab81356d8637d50bf486e00fd02807637d43872b16df66bc6e9b7a76f6ad7583",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "compressed patched data (flag bit 5)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "method-14-flags-64-name",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAeGlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AEAADgCDGCJYJdPj+RgAAAAFAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAOwAAAAAA",
+      "input_sha256": "617089394fc5ace210eab9633bb101909f4f8c0efb219b659ca62b8352ab0bd7",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "strong encryption (flag bit 6)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "local-flags-32-ignored",
+      "input": "UEsDBBQAIAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "ec2d63aadd875fd28885e13126d7c0b8b5216f43b9f824aebae9b6d31a99b87d",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "local-flags-64-ignored",
+      "input": "UEsDBBQAQAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "c67cd2d4afbfa5605dde45cd850ea3b1b0b8331cdadf73c3901fb5d92b6adef1",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "local-flags-96-ignored",
+      "input": "UEsDBBQAYAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "dfcca4376af927c6f08b4c0e8721e3e8da175452e20732269021be91a3efa592",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "local-flags-1-ignored",
+      "input": "UEsDBBQAAQAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "fbf0a0d7be4b13086295b024e03b125b74549c64487a119ad4765893a97f03c3",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "duplicate-flags-32-selected-0",
+      "input": "UEsDBBQAAAAAAIMYIljl1F0/AwAAAAMAAAAFAAAAeGlyc3RvbGRQSwMEFAAAAAAAgxgiWCXT4/kFAAAABQAAAAUAAABmaXJzdHNhdmVkUEsBAhQDFAAgAAAAgxgiWOXUXT8DAAAAAwAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsBAhQDFAAAAAAAgxgiWCXT4/kFAAAABQAAAAUAAAAAAAAAAAAAAIABJgAAAGZpcnN0UEsFBgAAAAACAAIAZgAAAE4AAAAAAA==",
+      "input_sha256": "72f0fad103c2260a7d3f1968182c76098bc196ad19973de477101d7c1ba02708",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "duplicate-flags-32-selected-1",
+      "input": "UEsDBBQAAAAAAIMYIljl1F0/AwAAAAMAAAAFAAAAZmlyc3RvbGRQSwMEFAAAAAAAgxgiWCXT4/kFAAAABQAAAAUAAAB4aXJzdHNhdmVkUEsBAhQDFAAAAAAAgxgiWOXUXT8DAAAAAwAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsBAhQDFAAgAAAAgxgiWCXT4/kFAAAABQAAAAUAAAAAAAAAAAAAAIABJgAAAGZpcnN0UEsFBgAAAAACAAIAZgAAAE4AAAAAAA==",
+      "input_sha256": "a190d36533807e156e27e75cdb7161ac081b61ee706cd85219c3435efae064ba",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "compressed patched data (flag bit 5)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "duplicate-flags-64-selected-0",
+      "input": "UEsDBBQAAAAAAIMYIljl1F0/AwAAAAMAAAAFAAAAeGlyc3RvbGRQSwMEFAAAAAAAgxgiWCXT4/kFAAAABQAAAAUAAABmaXJzdHNhdmVkUEsBAhQDFABAAAAAgxgiWOXUXT8DAAAAAwAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsBAhQDFAAAAAAAgxgiWCXT4/kFAAAABQAAAAUAAAAAAAAAAAAAAIABJgAAAGZpcnN0UEsFBgAAAAACAAIAZgAAAE4AAAAAAA==",
+      "input_sha256": "53f9c1f024ff4b76a8c204037c1efa133c4afd04f97a9a9fc9f421c82dd25986",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "duplicate-flags-64-selected-1",
+      "input": "UEsDBBQAAAAAAIMYIljl1F0/AwAAAAMAAAAFAAAAZmlyc3RvbGRQSwMEFAAAAAAAgxgiWCXT4/kFAAAABQAAAAUAAAB4aXJzdHNhdmVkUEsBAhQDFAAAAAAAgxgiWOXUXT8DAAAAAwAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsBAhQDFABAAAAAgxgiWCXT4/kFAAAABQAAAAUAAAAAAAAAAAAAAIABJgAAAGZpcnN0UEsFBgAAAAACAAIAZgAAAE4AAAAAAA==",
+      "input_sha256": "dde5e9ac76da798526ab19f9b9d698f9ef44f8e978889b8e057be84e984e0263",
+      "accepted": false,
+      "error": {
+        "type": "NotImplementedError",
+        "message": "strong encryption (flag bit 6)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    }
+  ]
+}

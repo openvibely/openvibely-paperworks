@@ -1,0 +1,4457 @@
+{
+  "reference": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-reference/repository/internal/builtinskills/documents/scripts/test_presentation_native.py": "6199f9f1767fa49fa3743f11fb6545468da586c68aabe28e79ba942fdb0513fb",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-reference/repository/internal/builtinskills/documents/scripts/document_native.py": "eb2407fed420206fc34ad88f3fceb613ee694d3bf7f239b19cce3a73a6b9c420",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/python/cpython-3.12.12-macos-aarch64-none/lib/python3.12/zipfile/__init__.py": "94c53aedba0b0f7d6f71bf8ec34973e666ee0c0e56e6800ff4c26d2e3951987a"
+  },
+  "cases": [
+    {
+      "name": "a",
+      "overlap": false,
+      "method": 0,
+      "policy": "always",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAABAAAAYXBheWxvYWRQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAAAQAAAAAAAAAAAAAAgAEAAAAAYVBLBQYAAAAAAQABAC8AAAAmAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a",
+      "overlap": false,
+      "method": 0,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAABAAAAYXBheWxvYWRQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAAAQAAAAAAAAAAAAAAgAEAAAAAYVBLBQYAAAAAAQABAC8AAAAmAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a",
+      "overlap": false,
+      "method": 0,
+      "policy": "error",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAABAAAAYXBheWxvYWRQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAAAQAAAAAAAAAAAAAAgAEAAAAAYVBLBQYAAAAAAQABAC8AAAAmAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a",
+      "overlap": false,
+      "method": 8,
+      "policy": "always",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAABAAAAYStIrMzJT0wBAFBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAABAAAAAAAAAAAAAACAAQAAAABhUEsFBgAAAAABAAEALwAAACgAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a",
+      "overlap": false,
+      "method": 8,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAABAAAAYStIrMzJT0wBAFBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAABAAAAAAAAAAAAAACAAQAAAABhUEsFBgAAAAABAAEALwAAACgAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a",
+      "overlap": false,
+      "method": 8,
+      "policy": "error",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAABAAAAYStIrMzJT0wBAFBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAABAAAAAAAAAAAAAACAAQAAAABhUEsFBgAAAAABAAEALwAAACgAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a",
+      "overlap": false,
+      "method": 12,
+      "policy": "always",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAABAAAAYUJaaDkxQVkmU1kdG4oNAAACgYAkBMAgIAAiGGgwCVgTC7kinChIDo3FBoBQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAAAQAAAAAAAAAAAAAAgAEAAAAAYVBLBQYAAAAAAQABAC8AAABKAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a",
+      "overlap": false,
+      "method": 12,
+      "policy": "ignore",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAABAAAAYUJaaDkxQVkmU1kdG4oNAAACgYAkBMAgIAAiGGgwCVgTC7kinChIDo3FBoBQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAAAQAAAAAAAAAAAAAAgAEAAAAAYVBLBQYAAAAAAQABAC8AAABKAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a",
+      "overlap": false,
+      "method": 12,
+      "policy": "error",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAABAAAAYUJaaDkxQVkmU1kdG4oNAAACgYAkBMAgIAAiGGgwCVgTC7kinChIDo3FBoBQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAAAQAAAAAAAAAAAAAAgAEAAAAAYVBLBQYAAAAAAQABAC8AAABKAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a",
+      "overlap": false,
+      "method": 14,
+      "policy": "always",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAABAAAAYQkEBQBdAACAAAA4GEuZdQ9GDE7gT//93xAAUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAEAAAAAAAAAAAAAAIABAAAAAGFQSwUGAAAAAAEAAQAvAAAAOQAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a",
+      "overlap": false,
+      "method": 14,
+      "policy": "ignore",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAABAAAAYQkEBQBdAACAAAA4GEuZdQ9GDE7gT//93xAAUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAEAAAAAAAAAAAAAAIABAAAAAGFQSwUGAAAAAAEAAQAvAAAAOQAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a",
+      "overlap": false,
+      "method": 14,
+      "policy": "error",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAABAAAAYQkEBQBdAACAAAA4GEuZdQ9GDE7gT//93xAAUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAEAAAAAAAAAAAAAAIABAAAAAGFQSwUGAAAAAAEAAQAvAAAAOQAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a",
+      "overlap": true,
+      "method": 0,
+      "policy": "always",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAABAAAAYXBheWxvYWRQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAAAQAAAAAAAAAAAAAAgAEAAAAAYVBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAABAAoAAAAAAAAAAACAAQAAAABhdXAGAAFDvrfoelBLBQYAAAAAAgACAGgAAAAmAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a",
+      "overlap": true,
+      "method": 0,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAABAAAAYXBheWxvYWRQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAAAQAAAAAAAAAAAAAAgAEAAAAAYVBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAABAAoAAAAAAAAAAACAAQAAAABhdXAGAAFDvrfoelBLBQYAAAAAAgACAGgAAAAmAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a",
+      "overlap": true,
+      "method": 0,
+      "policy": "error",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAABAAAAYXBheWxvYWRQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAAAQAAAAAAAAAAAAAAgAEAAAAAYVBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAABAAoAAAAAAAAAAACAAQAAAABhdXAGAAFDvrfoelBLBQYAAAAAAgACAGgAAAAmAAAAAAA=",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a",
+      "overlap": true,
+      "method": 8,
+      "policy": "always",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAABAAAAYStIrMzJT0wBAFBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAABAAAAAAAAAAAAAACAAQAAAABhUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAEACgAAAAAAAAAAAIABAAAAAGF1cAYAAUO+t+h6UEsFBgAAAAACAAIAaAAAACgAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a",
+      "overlap": true,
+      "method": 8,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAABAAAAYStIrMzJT0wBAFBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAABAAAAAAAAAAAAAACAAQAAAABhUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAEACgAAAAAAAAAAAIABAAAAAGF1cAYAAUO+t+h6UEsFBgAAAAACAAIAaAAAACgAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a",
+      "overlap": true,
+      "method": 8,
+      "policy": "error",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAABAAAAYStIrMzJT0wBAFBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAABAAAAAAAAAAAAAACAAQAAAABhUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAEACgAAAAAAAAAAAIABAAAAAGF1cAYAAUO+t+h6UEsFBgAAAAACAAIAaAAAACgAAAAAAA==",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a",
+      "overlap": true,
+      "method": 12,
+      "policy": "always",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAABAAAAYUJaaDkxQVkmU1kdG4oNAAACgYAkBMAgIAAiGGgwCVgTC7kinChIDo3FBoBQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAAAQAAAAAAAAAAAAAAgAEAAAAAYVBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAABAAoAAAAAAAAAAACAAQAAAABhdXAGAAFDvrfoelBLBQYAAAAAAgACAGgAAABKAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a",
+      "overlap": true,
+      "method": 12,
+      "policy": "ignore",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAABAAAAYUJaaDkxQVkmU1kdG4oNAAACgYAkBMAgIAAiGGgwCVgTC7kinChIDo3FBoBQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAAAQAAAAAAAAAAAAAAgAEAAAAAYVBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAABAAoAAAAAAAAAAACAAQAAAABhdXAGAAFDvrfoelBLBQYAAAAAAgACAGgAAABKAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a",
+      "overlap": true,
+      "method": 12,
+      "policy": "error",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAABAAAAYUJaaDkxQVkmU1kdG4oNAAACgYAkBMAgIAAiGGgwCVgTC7kinChIDo3FBoBQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAAAQAAAAAAAAAAAAAAgAEAAAAAYVBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAABAAoAAAAAAAAAAACAAQAAAABhdXAGAAFDvrfoelBLBQYAAAAAAgACAGgAAABKAAAAAAA=",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a",
+      "overlap": true,
+      "method": 14,
+      "policy": "always",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAABAAAAYQkEBQBdAACAAAA4GEuZdQ9GDE7gT//93xAAUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAEAAAAAAAAAAAAAAIABAAAAAGFQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAQAKAAAAAAAAAAAAgAEAAAAAYXVwBgABQ7636HpQSwUGAAAAAAIAAgBoAAAAOQAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a",
+      "overlap": true,
+      "method": 14,
+      "policy": "ignore",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAABAAAAYQkEBQBdAACAAAA4GEuZdQ9GDE7gT//93xAAUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAEAAAAAAAAAAAAAAIABAAAAAGFQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAQAKAAAAAAAAAAAAgAEAAAAAYXVwBgABQ7636HpQSwUGAAAAAAIAAgBoAAAAOQAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a",
+      "overlap": true,
+      "method": 14,
+      "policy": "error",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAABAAAAYQkEBQBdAACAAAA4GEuZdQ9GDE7gT//93xAAUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAEAAAAAAAAAAAAAAIABAAAAAGFQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAQAKAAAAAAAAAAAAgAEAAAAAYXVwBgABQ7636HpQSwUGAAAAAAIAAgBoAAAAOQAAAAAA",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a'b",
+      "overlap": false,
+      "method": 0,
+      "policy": "always",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYSdicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhJ2JQSwUGAAAAAAEAAQAxAAAAKAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: \"a'b\""
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a'b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'b",
+      "overlap": false,
+      "method": 0,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYSdicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhJ2JQSwUGAAAAAAEAAQAxAAAAKAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a'b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'b",
+      "overlap": false,
+      "method": 0,
+      "policy": "error",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYSdicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhJ2JQSwUGAAAAAAEAAQAxAAAAKAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: \"a'b\""
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a'b",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'b",
+      "overlap": false,
+      "method": 8,
+      "policy": "always",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYSdiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGEnYlBLBQYAAAAAAQABADEAAAAqAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: \"a'b\""
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a'b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'b",
+      "overlap": false,
+      "method": 8,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYSdiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGEnYlBLBQYAAAAAAQABADEAAAAqAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a'b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'b",
+      "overlap": false,
+      "method": 8,
+      "policy": "error",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYSdiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGEnYlBLBQYAAAAAAQABADEAAAAqAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: \"a'b\""
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a'b",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'b",
+      "overlap": false,
+      "method": 12,
+      "policy": "always",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYSdiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhJ2JQSwUGAAAAAAEAAQAxAAAATAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: \"a'b\""
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a'b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'b",
+      "overlap": false,
+      "method": 12,
+      "policy": "ignore",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYSdiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhJ2JQSwUGAAAAAAEAAQAxAAAATAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a'b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'b",
+      "overlap": false,
+      "method": 12,
+      "policy": "error",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYSdiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhJ2JQSwUGAAAAAAEAAQAxAAAATAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: \"a'b\""
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a'b",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'b",
+      "overlap": false,
+      "method": 14,
+      "policy": "always",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYSdiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYSdiUEsFBgAAAAABAAEAMQAAADsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: \"a'b\""
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a'b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'b",
+      "overlap": false,
+      "method": 14,
+      "policy": "ignore",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYSdiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYSdiUEsFBgAAAAABAAEAMQAAADsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a'b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'b",
+      "overlap": false,
+      "method": 14,
+      "policy": "error",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYSdiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYSdiUEsFBgAAAAABAAEAMQAAADsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: \"a'b\""
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a'b",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'b",
+      "overlap": true,
+      "method": 0,
+      "policy": "always",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYSdicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhJ2JQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYSdidXAGAAEUyi3PelBLBQYAAAAAAgACAGwAAAAoAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: \"a'b\" (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'b",
+      "overlap": true,
+      "method": 0,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYSdicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhJ2JQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYSdidXAGAAEUyi3PelBLBQYAAAAAAgACAGwAAAAoAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'b",
+      "overlap": true,
+      "method": 0,
+      "policy": "error",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYSdicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhJ2JQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYSdidXAGAAEUyi3PelBLBQYAAAAAAgACAGwAAAAoAAAAAAA=",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: \"a'b\" (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a'b",
+      "overlap": true,
+      "method": 8,
+      "policy": "always",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYSdiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGEnYlBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAADAAoAAAAAAAAAAACAAQAAAABhJ2J1cAYAARTKLc96UEsFBgAAAAACAAIAbAAAACoAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: \"a'b\" (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'b",
+      "overlap": true,
+      "method": 8,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYSdiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGEnYlBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAADAAoAAAAAAAAAAACAAQAAAABhJ2J1cAYAARTKLc96UEsFBgAAAAACAAIAbAAAACoAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'b",
+      "overlap": true,
+      "method": 8,
+      "policy": "error",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYSdiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGEnYlBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAADAAoAAAAAAAAAAACAAQAAAABhJ2J1cAYAARTKLc96UEsFBgAAAAACAAIAbAAAACoAAAAAAA==",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: \"a'b\" (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a'b",
+      "overlap": true,
+      "method": 12,
+      "policy": "always",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYSdiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhJ2JQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYSdidXAGAAEUyi3PelBLBQYAAAAAAgACAGwAAABMAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: \"a'b\" (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'b",
+      "overlap": true,
+      "method": 12,
+      "policy": "ignore",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYSdiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhJ2JQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYSdidXAGAAEUyi3PelBLBQYAAAAAAgACAGwAAABMAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'b",
+      "overlap": true,
+      "method": 12,
+      "policy": "error",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYSdiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhJ2JQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYSdidXAGAAEUyi3PelBLBQYAAAAAAgACAGwAAABMAAAAAAA=",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: \"a'b\" (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a'b",
+      "overlap": true,
+      "method": 14,
+      "policy": "always",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYSdiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYSdiUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAMACgAAAAAAAAAAAIABAAAAAGEnYnVwBgABFMotz3pQSwUGAAAAAAIAAgBsAAAAOwAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: \"a'b\" (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'b",
+      "overlap": true,
+      "method": 14,
+      "policy": "ignore",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYSdiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYSdiUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAMACgAAAAAAAAAAAIABAAAAAGEnYnVwBgABFMotz3pQSwUGAAAAAAIAAgBsAAAAOwAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'b",
+      "overlap": true,
+      "method": 14,
+      "policy": "error",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYSdiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYSdiUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAMACgAAAAAAAAAAAIABAAAAAGEnYnVwBgABFMotz3pQSwUGAAAAAAIAAgBsAAAAOwAAAAAA",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: \"a'b\" (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a\"b",
+      "overlap": false,
+      "method": 0,
+      "policy": "always",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYSJicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhImJQSwUGAAAAAAEAAQAxAAAAKAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a\"b'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\"b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\"b",
+      "overlap": false,
+      "method": 0,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYSJicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhImJQSwUGAAAAAAEAAQAxAAAAKAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\"b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\"b",
+      "overlap": false,
+      "method": 0,
+      "policy": "error",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYSJicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhImJQSwUGAAAAAAEAAQAxAAAAKAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a\"b'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a\"b",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\"b",
+      "overlap": false,
+      "method": 8,
+      "policy": "always",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYSJiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGEiYlBLBQYAAAAAAQABADEAAAAqAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a\"b'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\"b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\"b",
+      "overlap": false,
+      "method": 8,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYSJiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGEiYlBLBQYAAAAAAQABADEAAAAqAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\"b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\"b",
+      "overlap": false,
+      "method": 8,
+      "policy": "error",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYSJiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGEiYlBLBQYAAAAAAQABADEAAAAqAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a\"b'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a\"b",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\"b",
+      "overlap": false,
+      "method": 12,
+      "policy": "always",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYSJiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhImJQSwUGAAAAAAEAAQAxAAAATAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a\"b'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\"b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\"b",
+      "overlap": false,
+      "method": 12,
+      "policy": "ignore",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYSJiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhImJQSwUGAAAAAAEAAQAxAAAATAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\"b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\"b",
+      "overlap": false,
+      "method": 12,
+      "policy": "error",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYSJiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhImJQSwUGAAAAAAEAAQAxAAAATAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a\"b'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a\"b",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\"b",
+      "overlap": false,
+      "method": 14,
+      "policy": "always",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYSJiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYSJiUEsFBgAAAAABAAEAMQAAADsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a\"b'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\"b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\"b",
+      "overlap": false,
+      "method": 14,
+      "policy": "ignore",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYSJiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYSJiUEsFBgAAAAABAAEAMQAAADsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\"b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\"b",
+      "overlap": false,
+      "method": 14,
+      "policy": "error",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYSJiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYSJiUEsFBgAAAAABAAEAMQAAADsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a\"b'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a\"b",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\"b",
+      "overlap": true,
+      "method": 0,
+      "policy": "always",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYSJicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhImJQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYSJidXAGAAFRPlqyelBLBQYAAAAAAgACAGwAAAAoAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a\"b' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\"b",
+      "overlap": true,
+      "method": 0,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYSJicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhImJQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYSJidXAGAAFRPlqyelBLBQYAAAAAAgACAGwAAAAoAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\"b",
+      "overlap": true,
+      "method": 0,
+      "policy": "error",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYSJicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhImJQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYSJidXAGAAFRPlqyelBLBQYAAAAAAgACAGwAAAAoAAAAAAA=",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a\"b' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a\"b",
+      "overlap": true,
+      "method": 8,
+      "policy": "always",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYSJiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGEiYlBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAADAAoAAAAAAAAAAACAAQAAAABhImJ1cAYAAVE+WrJ6UEsFBgAAAAACAAIAbAAAACoAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a\"b' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\"b",
+      "overlap": true,
+      "method": 8,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYSJiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGEiYlBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAADAAoAAAAAAAAAAACAAQAAAABhImJ1cAYAAVE+WrJ6UEsFBgAAAAACAAIAbAAAACoAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\"b",
+      "overlap": true,
+      "method": 8,
+      "policy": "error",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYSJiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGEiYlBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAADAAoAAAAAAAAAAACAAQAAAABhImJ1cAYAAVE+WrJ6UEsFBgAAAAACAAIAbAAAACoAAAAAAA==",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a\"b' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a\"b",
+      "overlap": true,
+      "method": 12,
+      "policy": "always",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYSJiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhImJQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYSJidXAGAAFRPlqyelBLBQYAAAAAAgACAGwAAABMAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a\"b' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\"b",
+      "overlap": true,
+      "method": 12,
+      "policy": "ignore",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYSJiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhImJQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYSJidXAGAAFRPlqyelBLBQYAAAAAAgACAGwAAABMAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\"b",
+      "overlap": true,
+      "method": 12,
+      "policy": "error",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYSJiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhImJQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYSJidXAGAAFRPlqyelBLBQYAAAAAAgACAGwAAABMAAAAAAA=",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a\"b' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a\"b",
+      "overlap": true,
+      "method": 14,
+      "policy": "always",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYSJiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYSJiUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAMACgAAAAAAAAAAAIABAAAAAGEiYnVwBgABUT5asnpQSwUGAAAAAAIAAgBsAAAAOwAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a\"b' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\"b",
+      "overlap": true,
+      "method": 14,
+      "policy": "ignore",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYSJiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYSJiUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAMACgAAAAAAAAAAAIABAAAAAGEiYnVwBgABUT5asnpQSwUGAAAAAAIAAgBsAAAAOwAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\"b",
+      "overlap": true,
+      "method": 14,
+      "policy": "error",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYSJiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYSJiUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAMACgAAAAAAAAAAAIABAAAAAGEiYnVwBgABUT5asnpQSwUGAAAAAAIAAgBsAAAAOwAAAAAA",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a\"b' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a'\"b",
+      "overlap": false,
+      "method": 0,
+      "policy": "always",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAAEAAAAYSciYnBheWxvYWRQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYSciYlBLBQYAAAAAAQABADIAAAApAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a\\'\"b'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a'\"b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'\"b",
+      "overlap": false,
+      "method": 0,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAAEAAAAYSciYnBheWxvYWRQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYSciYlBLBQYAAAAAAQABADIAAAApAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a'\"b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'\"b",
+      "overlap": false,
+      "method": 0,
+      "policy": "error",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAAEAAAAYSciYnBheWxvYWRQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYSciYlBLBQYAAAAAAQABADIAAAApAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a\\'\"b'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a'\"b",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'\"b",
+      "overlap": false,
+      "method": 8,
+      "policy": "always",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAAEAAAAYSciYitIrMzJT0wBAFBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAAEAAAAAAAAAAAAAACAAQAAAABhJyJiUEsFBgAAAAABAAEAMgAAACsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a\\'\"b'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a'\"b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'\"b",
+      "overlap": false,
+      "method": 8,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAAEAAAAYSciYitIrMzJT0wBAFBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAAEAAAAAAAAAAAAAACAAQAAAABhJyJiUEsFBgAAAAABAAEAMgAAACsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a'\"b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'\"b",
+      "overlap": false,
+      "method": 8,
+      "policy": "error",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAAEAAAAYSciYitIrMzJT0wBAFBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAAEAAAAAAAAAAAAAACAAQAAAABhJyJiUEsFBgAAAAABAAEAMgAAACsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a\\'\"b'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a'\"b",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'\"b",
+      "overlap": false,
+      "method": 12,
+      "policy": "always",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAAEAAAAYSciYkJaaDkxQVkmU1kdG4oNAAACgYAkBMAgIAAiGGgwCVgTC7kinChIDo3FBoBQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYSciYlBLBQYAAAAAAQABADIAAABNAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a\\'\"b'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a'\"b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'\"b",
+      "overlap": false,
+      "method": 12,
+      "policy": "ignore",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAAEAAAAYSciYkJaaDkxQVkmU1kdG4oNAAACgYAkBMAgIAAiGGgwCVgTC7kinChIDo3FBoBQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYSciYlBLBQYAAAAAAQABADIAAABNAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a'\"b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'\"b",
+      "overlap": false,
+      "method": 12,
+      "policy": "error",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAAEAAAAYSciYkJaaDkxQVkmU1kdG4oNAAACgYAkBMAgIAAiGGgwCVgTC7kinChIDo3FBoBQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYSciYlBLBQYAAAAAAQABADIAAABNAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a\\'\"b'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a'\"b",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'\"b",
+      "overlap": false,
+      "method": 14,
+      "policy": "always",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAAEAAAAYSciYgkEBQBdAACAAAA4GEuZdQ9GDE7gT//93xAAUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAQAAAAAAAAAAAAAAIABAAAAAGEnImJQSwUGAAAAAAEAAQAyAAAAPAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a\\'\"b'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a'\"b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'\"b",
+      "overlap": false,
+      "method": 14,
+      "policy": "ignore",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAAEAAAAYSciYgkEBQBdAACAAAA4GEuZdQ9GDE7gT//93xAAUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAQAAAAAAAAAAAAAAIABAAAAAGEnImJQSwUGAAAAAAEAAQAyAAAAPAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a'\"b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'\"b",
+      "overlap": false,
+      "method": 14,
+      "policy": "error",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAAEAAAAYSciYgkEBQBdAACAAAA4GEuZdQ9GDE7gT//93xAAUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAQAAAAAAAAAAAAAAIABAAAAAGEnImJQSwUGAAAAAAEAAQAyAAAAPAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a\\'\"b'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a'\"b",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'\"b",
+      "overlap": true,
+      "method": 0,
+      "policy": "always",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAAEAAAAYSciYnBheWxvYWRQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYSciYlBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAAEAAoAAAAAAAAAAACAAQAAAABhJyJidXAGAAFLWdKbelBLBQYAAAAAAgACAG4AAAApAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a\\'\"b' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'\"b",
+      "overlap": true,
+      "method": 0,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAAEAAAAYSciYnBheWxvYWRQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYSciYlBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAAEAAoAAAAAAAAAAACAAQAAAABhJyJidXAGAAFLWdKbelBLBQYAAAAAAgACAG4AAAApAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'\"b",
+      "overlap": true,
+      "method": 0,
+      "policy": "error",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAAEAAAAYSciYnBheWxvYWRQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYSciYlBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAAEAAoAAAAAAAAAAACAAQAAAABhJyJidXAGAAFLWdKbelBLBQYAAAAAAgACAG4AAAApAAAAAAA=",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a\\'\"b' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a'\"b",
+      "overlap": true,
+      "method": 8,
+      "policy": "always",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAAEAAAAYSciYitIrMzJT0wBAFBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAAEAAAAAAAAAAAAAACAAQAAAABhJyJiUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAQACgAAAAAAAAAAAIABAAAAAGEnImJ1cAYAAUtZ0pt6UEsFBgAAAAACAAIAbgAAACsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a\\'\"b' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'\"b",
+      "overlap": true,
+      "method": 8,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAAEAAAAYSciYitIrMzJT0wBAFBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAAEAAAAAAAAAAAAAACAAQAAAABhJyJiUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAQACgAAAAAAAAAAAIABAAAAAGEnImJ1cAYAAUtZ0pt6UEsFBgAAAAACAAIAbgAAACsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'\"b",
+      "overlap": true,
+      "method": 8,
+      "policy": "error",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAAEAAAAYSciYitIrMzJT0wBAFBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAAEAAAAAAAAAAAAAACAAQAAAABhJyJiUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAQACgAAAAAAAAAAAIABAAAAAGEnImJ1cAYAAUtZ0pt6UEsFBgAAAAACAAIAbgAAACsAAAAAAA==",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a\\'\"b' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a'\"b",
+      "overlap": true,
+      "method": 12,
+      "policy": "always",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAAEAAAAYSciYkJaaDkxQVkmU1kdG4oNAAACgYAkBMAgIAAiGGgwCVgTC7kinChIDo3FBoBQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYSciYlBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAAEAAoAAAAAAAAAAACAAQAAAABhJyJidXAGAAFLWdKbelBLBQYAAAAAAgACAG4AAABNAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a\\'\"b' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'\"b",
+      "overlap": true,
+      "method": 12,
+      "policy": "ignore",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAAEAAAAYSciYkJaaDkxQVkmU1kdG4oNAAACgYAkBMAgIAAiGGgwCVgTC7kinChIDo3FBoBQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYSciYlBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAAEAAoAAAAAAAAAAACAAQAAAABhJyJidXAGAAFLWdKbelBLBQYAAAAAAgACAG4AAABNAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'\"b",
+      "overlap": true,
+      "method": 12,
+      "policy": "error",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAAEAAAAYSciYkJaaDkxQVkmU1kdG4oNAAACgYAkBMAgIAAiGGgwCVgTC7kinChIDo3FBoBQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYSciYlBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAAEAAoAAAAAAAAAAACAAQAAAABhJyJidXAGAAFLWdKbelBLBQYAAAAAAgACAG4AAABNAAAAAAA=",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a\\'\"b' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a'\"b",
+      "overlap": true,
+      "method": 14,
+      "policy": "always",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAAEAAAAYSciYgkEBQBdAACAAAA4GEuZdQ9GDE7gT//93xAAUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAQAAAAAAAAAAAAAAIABAAAAAGEnImJQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAABAAKAAAAAAAAAAAAgAEAAAAAYSciYnVwBgABS1nSm3pQSwUGAAAAAAIAAgBuAAAAPAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a\\'\"b' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'\"b",
+      "overlap": true,
+      "method": 14,
+      "policy": "ignore",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAAEAAAAYSciYgkEBQBdAACAAAA4GEuZdQ9GDE7gT//93xAAUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAQAAAAAAAAAAAAAAIABAAAAAGEnImJQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAABAAKAAAAAAAAAAAAgAEAAAAAYSciYnVwBgABS1nSm3pQSwUGAAAAAAIAAgBuAAAAPAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a'\"b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a'\"b",
+      "overlap": true,
+      "method": 14,
+      "policy": "error",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAAEAAAAYSciYgkEBQBdAACAAAA4GEuZdQ9GDE7gT//93xAAUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAQAAAAAAAAAAAAAAIABAAAAAGEnImJQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAABAAKAAAAAAAAAAAAgAEAAAAAYSciYnVwBgABS1nSm3pQSwUGAAAAAAIAAgBuAAAAPAAAAAAA",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a\\'\"b' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "\u03b1",
+      "overlap": false,
+      "method": 0,
+      "policy": "always",
+      "input": "UEsDBBQAAAgAAEmuT10VaixCBwAAAAcAAAACAAAAzrFwYXlsb2FkUEsBAhQDFAAACAAASa5PXRVqLEIHAAAABwAAAAIAAAAAAAAAAAAAAIABAAAAAM6xUEsFBgAAAAABAAEAMAAAACcAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: '\u03b1'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "\u03b1",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "\u03b1",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "\u03b1",
+      "overlap": false,
+      "method": 0,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAgAAEmuT10VaixCBwAAAAcAAAACAAAAzrFwYXlsb2FkUEsBAhQDFAAACAAASa5PXRVqLEIHAAAABwAAAAIAAAAAAAAAAAAAAIABAAAAAM6xUEsFBgAAAAABAAEAMAAAACcAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "\u03b1",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "\u03b1",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "\u03b1",
+      "overlap": false,
+      "method": 0,
+      "policy": "error",
+      "input": "UEsDBBQAAAgAAEmuT10VaixCBwAAAAcAAAACAAAAzrFwYXlsb2FkUEsBAhQDFAAACAAASa5PXRVqLEIHAAAABwAAAAIAAAAAAAAAAAAAAIABAAAAAM6xUEsFBgAAAAABAAEAMAAAACcAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: '\u03b1'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "\u03b1",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "\u03b1",
+      "overlap": false,
+      "method": 8,
+      "policy": "always",
+      "input": "UEsDBBQAAAgIAEmuT10VaixCCQAAAAcAAAACAAAAzrErSKzMyU9MAQBQSwECFAMUAAAICABJrk9dFWosQgkAAAAHAAAAAgAAAAAAAAAAAAAAgAEAAAAAzrFQSwUGAAAAAAEAAQAwAAAAKQAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: '\u03b1'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "\u03b1",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "\u03b1",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "\u03b1",
+      "overlap": false,
+      "method": 8,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAgIAEmuT10VaixCCQAAAAcAAAACAAAAzrErSKzMyU9MAQBQSwECFAMUAAAICABJrk9dFWosQgkAAAAHAAAAAgAAAAAAAAAAAAAAgAEAAAAAzrFQSwUGAAAAAAEAAQAwAAAAKQAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "\u03b1",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "\u03b1",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "\u03b1",
+      "overlap": false,
+      "method": 8,
+      "policy": "error",
+      "input": "UEsDBBQAAAgIAEmuT10VaixCCQAAAAcAAAACAAAAzrErSKzMyU9MAQBQSwECFAMUAAAICABJrk9dFWosQgkAAAAHAAAAAgAAAAAAAAAAAAAAgAEAAAAAzrFQSwUGAAAAAAEAAQAwAAAAKQAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: '\u03b1'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "\u03b1",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "\u03b1",
+      "overlap": false,
+      "method": 12,
+      "policy": "always",
+      "input": "UEsDBC4AAAgMAEmuT10VaixCKwAAAAcAAAACAAAAzrFCWmg5MUFZJlNZHRuKDQAAAoGAJATAICAAIhhoMAlYEwu5IpwoSA6NxQaAUEsBAi4DLgAACAwASa5PXRVqLEIrAAAABwAAAAIAAAAAAAAAAAAAAIABAAAAAM6xUEsFBgAAAAABAAEAMAAAAEsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: '\u03b1'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "\u03b1",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "\u03b1",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "\u03b1",
+      "overlap": false,
+      "method": 12,
+      "policy": "ignore",
+      "input": "UEsDBC4AAAgMAEmuT10VaixCKwAAAAcAAAACAAAAzrFCWmg5MUFZJlNZHRuKDQAAAoGAJATAICAAIhhoMAlYEwu5IpwoSA6NxQaAUEsBAi4DLgAACAwASa5PXRVqLEIrAAAABwAAAAIAAAAAAAAAAAAAAIABAAAAAM6xUEsFBgAAAAABAAEAMAAAAEsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "\u03b1",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "\u03b1",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "\u03b1",
+      "overlap": false,
+      "method": 12,
+      "policy": "error",
+      "input": "UEsDBC4AAAgMAEmuT10VaixCKwAAAAcAAAACAAAAzrFCWmg5MUFZJlNZHRuKDQAAAoGAJATAICAAIhhoMAlYEwu5IpwoSA6NxQaAUEsBAi4DLgAACAwASa5PXRVqLEIrAAAABwAAAAIAAAAAAAAAAAAAAIABAAAAAM6xUEsFBgAAAAABAAEAMAAAAEsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: '\u03b1'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "\u03b1",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "\u03b1",
+      "overlap": false,
+      "method": 14,
+      "policy": "always",
+      "input": "UEsDBD8AAggOAEmuT10VaixCGgAAAAcAAAACAAAAzrEJBAUAXQAAgAAAOBhLmXUPRgxO4E///d8QAFBLAQI/Az8AAggOAEmuT10VaixCGgAAAAcAAAACAAAAAAAAAAAAAACAAQAAAADOsVBLBQYAAAAAAQABADAAAAA6AAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: '\u03b1'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "\u03b1",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "\u03b1",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "\u03b1",
+      "overlap": false,
+      "method": 14,
+      "policy": "ignore",
+      "input": "UEsDBD8AAggOAEmuT10VaixCGgAAAAcAAAACAAAAzrEJBAUAXQAAgAAAOBhLmXUPRgxO4E///d8QAFBLAQI/Az8AAggOAEmuT10VaixCGgAAAAcAAAACAAAAAAAAAAAAAACAAQAAAADOsVBLBQYAAAAAAQABADAAAAA6AAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "\u03b1",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "\u03b1",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "\u03b1",
+      "overlap": false,
+      "method": 14,
+      "policy": "error",
+      "input": "UEsDBD8AAggOAEmuT10VaixCGgAAAAcAAAACAAAAzrEJBAUAXQAAgAAAOBhLmXUPRgxO4E///d8QAFBLAQI/Az8AAggOAEmuT10VaixCGgAAAAcAAAACAAAAAAAAAAAAAACAAQAAAADOsVBLBQYAAAAAAQABADAAAAA6AAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: '\u03b1'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "\u03b1",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "\u03b1",
+      "overlap": true,
+      "method": 0,
+      "policy": "always",
+      "input": "UEsDBBQAAAgAAEmuT10VaixCBwAAAAcAAAACAAAAzrFwYXlsb2FkUEsBAhQDFAAACAAASa5PXRVqLEIHAAAABwAAAAIAAAAAAAAAAAAAAIABAAAAAM6xUEsBAhQDFAAACAAASa5PXRVqLEIHAAAABwAAAAIACgAAAAAAAAAAAIABAAAAAM6xdXAGAAEla8aoelBLBQYAAAAAAgACAGoAAAAnAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: '\u03b1' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "\u03b1",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "\u03b1",
+      "overlap": true,
+      "method": 0,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAgAAEmuT10VaixCBwAAAAcAAAACAAAAzrFwYXlsb2FkUEsBAhQDFAAACAAASa5PXRVqLEIHAAAABwAAAAIAAAAAAAAAAAAAAIABAAAAAM6xUEsBAhQDFAAACAAASa5PXRVqLEIHAAAABwAAAAIACgAAAAAAAAAAAIABAAAAAM6xdXAGAAEla8aoelBLBQYAAAAAAgACAGoAAAAnAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "\u03b1",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "\u03b1",
+      "overlap": true,
+      "method": 0,
+      "policy": "error",
+      "input": "UEsDBBQAAAgAAEmuT10VaixCBwAAAAcAAAACAAAAzrFwYXlsb2FkUEsBAhQDFAAACAAASa5PXRVqLEIHAAAABwAAAAIAAAAAAAAAAAAAAIABAAAAAM6xUEsBAhQDFAAACAAASa5PXRVqLEIHAAAABwAAAAIACgAAAAAAAAAAAIABAAAAAM6xdXAGAAEla8aoelBLBQYAAAAAAgACAGoAAAAnAAAAAAA=",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: '\u03b1' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "\u03b1",
+      "overlap": true,
+      "method": 8,
+      "policy": "always",
+      "input": "UEsDBBQAAAgIAEmuT10VaixCCQAAAAcAAAACAAAAzrErSKzMyU9MAQBQSwECFAMUAAAICABJrk9dFWosQgkAAAAHAAAAAgAAAAAAAAAAAAAAgAEAAAAAzrFQSwECFAMUAAAICABJrk9dFWosQgkAAAAHAAAAAgAKAAAAAAAAAAAAgAEAAAAAzrF1cAYAASVrxqh6UEsFBgAAAAACAAIAagAAACkAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: '\u03b1' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "\u03b1",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "\u03b1",
+      "overlap": true,
+      "method": 8,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAgIAEmuT10VaixCCQAAAAcAAAACAAAAzrErSKzMyU9MAQBQSwECFAMUAAAICABJrk9dFWosQgkAAAAHAAAAAgAAAAAAAAAAAAAAgAEAAAAAzrFQSwECFAMUAAAICABJrk9dFWosQgkAAAAHAAAAAgAKAAAAAAAAAAAAgAEAAAAAzrF1cAYAASVrxqh6UEsFBgAAAAACAAIAagAAACkAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "\u03b1",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "\u03b1",
+      "overlap": true,
+      "method": 8,
+      "policy": "error",
+      "input": "UEsDBBQAAAgIAEmuT10VaixCCQAAAAcAAAACAAAAzrErSKzMyU9MAQBQSwECFAMUAAAICABJrk9dFWosQgkAAAAHAAAAAgAAAAAAAAAAAAAAgAEAAAAAzrFQSwECFAMUAAAICABJrk9dFWosQgkAAAAHAAAAAgAKAAAAAAAAAAAAgAEAAAAAzrF1cAYAASVrxqh6UEsFBgAAAAACAAIAagAAACkAAAAAAA==",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: '\u03b1' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "\u03b1",
+      "overlap": true,
+      "method": 12,
+      "policy": "always",
+      "input": "UEsDBC4AAAgMAEmuT10VaixCKwAAAAcAAAACAAAAzrFCWmg5MUFZJlNZHRuKDQAAAoGAJATAICAAIhhoMAlYEwu5IpwoSA6NxQaAUEsBAi4DLgAACAwASa5PXRVqLEIrAAAABwAAAAIAAAAAAAAAAAAAAIABAAAAAM6xUEsBAi4DLgAACAwASa5PXRVqLEIrAAAABwAAAAIACgAAAAAAAAAAAIABAAAAAM6xdXAGAAEla8aoelBLBQYAAAAAAgACAGoAAABLAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: '\u03b1' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "\u03b1",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "\u03b1",
+      "overlap": true,
+      "method": 12,
+      "policy": "ignore",
+      "input": "UEsDBC4AAAgMAEmuT10VaixCKwAAAAcAAAACAAAAzrFCWmg5MUFZJlNZHRuKDQAAAoGAJATAICAAIhhoMAlYEwu5IpwoSA6NxQaAUEsBAi4DLgAACAwASa5PXRVqLEIrAAAABwAAAAIAAAAAAAAAAAAAAIABAAAAAM6xUEsBAi4DLgAACAwASa5PXRVqLEIrAAAABwAAAAIACgAAAAAAAAAAAIABAAAAAM6xdXAGAAEla8aoelBLBQYAAAAAAgACAGoAAABLAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "\u03b1",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "\u03b1",
+      "overlap": true,
+      "method": 12,
+      "policy": "error",
+      "input": "UEsDBC4AAAgMAEmuT10VaixCKwAAAAcAAAACAAAAzrFCWmg5MUFZJlNZHRuKDQAAAoGAJATAICAAIhhoMAlYEwu5IpwoSA6NxQaAUEsBAi4DLgAACAwASa5PXRVqLEIrAAAABwAAAAIAAAAAAAAAAAAAAIABAAAAAM6xUEsBAi4DLgAACAwASa5PXRVqLEIrAAAABwAAAAIACgAAAAAAAAAAAIABAAAAAM6xdXAGAAEla8aoelBLBQYAAAAAAgACAGoAAABLAAAAAAA=",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: '\u03b1' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "\u03b1",
+      "overlap": true,
+      "method": 14,
+      "policy": "always",
+      "input": "UEsDBD8AAggOAEmuT10VaixCGgAAAAcAAAACAAAAzrEJBAUAXQAAgAAAOBhLmXUPRgxO4E///d8QAFBLAQI/Az8AAggOAEmuT10VaixCGgAAAAcAAAACAAAAAAAAAAAAAACAAQAAAADOsVBLAQI/Az8AAggOAEmuT10VaixCGgAAAAcAAAACAAoAAAAAAAAAAACAAQAAAADOsXVwBgABJWvGqHpQSwUGAAAAAAIAAgBqAAAAOgAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: '\u03b1' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "\u03b1",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "\u03b1",
+      "overlap": true,
+      "method": 14,
+      "policy": "ignore",
+      "input": "UEsDBD8AAggOAEmuT10VaixCGgAAAAcAAAACAAAAzrEJBAUAXQAAgAAAOBhLmXUPRgxO4E///d8QAFBLAQI/Az8AAggOAEmuT10VaixCGgAAAAcAAAACAAAAAAAAAAAAAACAAQAAAADOsVBLAQI/Az8AAggOAEmuT10VaixCGgAAAAcAAAACAAoAAAAAAAAAAACAAQAAAADOsXVwBgABJWvGqHpQSwUGAAAAAAIAAgBqAAAAOgAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "\u03b1",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "\u03b1",
+      "overlap": true,
+      "method": 14,
+      "policy": "error",
+      "input": "UEsDBD8AAggOAEmuT10VaixCGgAAAAcAAAACAAAAzrEJBAUAXQAAgAAAOBhLmXUPRgxO4E///d8QAFBLAQI/Az8AAggOAEmuT10VaixCGgAAAAcAAAACAAAAAAAAAAAAAACAAQAAAADOsVBLAQI/Az8AAggOAEmuT10VaixCGgAAAAcAAAACAAoAAAAAAAAAAACAAQAAAADOsXVwBgABJWvGqHpQSwUGAAAAAAIAAgBqAAAAOgAAAAAA",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: '\u03b1' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a\nb",
+      "overlap": false,
+      "method": 0,
+      "policy": "always",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYQpicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhCmJQSwUGAAAAAAEAAQAxAAAAKAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a\\nb'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\nb",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\nb",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\nb",
+      "overlap": false,
+      "method": 0,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYQpicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhCmJQSwUGAAAAAAEAAQAxAAAAKAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\nb",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\nb",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\nb",
+      "overlap": false,
+      "method": 0,
+      "policy": "error",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYQpicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhCmJQSwUGAAAAAAEAAQAxAAAAKAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a\\nb'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a\nb",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\nb",
+      "overlap": false,
+      "method": 8,
+      "policy": "always",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYQpiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGEKYlBLBQYAAAAAAQABADEAAAAqAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a\\nb'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\nb",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\nb",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\nb",
+      "overlap": false,
+      "method": 8,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYQpiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGEKYlBLBQYAAAAAAQABADEAAAAqAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\nb",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\nb",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\nb",
+      "overlap": false,
+      "method": 8,
+      "policy": "error",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYQpiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGEKYlBLBQYAAAAAAQABADEAAAAqAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a\\nb'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a\nb",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\nb",
+      "overlap": false,
+      "method": 12,
+      "policy": "always",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYQpiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhCmJQSwUGAAAAAAEAAQAxAAAATAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a\\nb'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\nb",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\nb",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\nb",
+      "overlap": false,
+      "method": 12,
+      "policy": "ignore",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYQpiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhCmJQSwUGAAAAAAEAAQAxAAAATAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\nb",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\nb",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\nb",
+      "overlap": false,
+      "method": 12,
+      "policy": "error",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYQpiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhCmJQSwUGAAAAAAEAAQAxAAAATAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a\\nb'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a\nb",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\nb",
+      "overlap": false,
+      "method": 14,
+      "policy": "always",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYQpiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYQpiUEsFBgAAAAABAAEAMQAAADsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a\\nb'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\nb",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\nb",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\nb",
+      "overlap": false,
+      "method": 14,
+      "policy": "ignore",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYQpiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYQpiUEsFBgAAAAABAAEAMQAAADsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\nb",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\nb",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\nb",
+      "overlap": false,
+      "method": 14,
+      "policy": "error",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYQpiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYQpiUEsFBgAAAAABAAEAMQAAADsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a\\nb'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a\nb",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\nb",
+      "overlap": true,
+      "method": 0,
+      "policy": "always",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYQpicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhCmJQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYQpidXAGAAH7kAfvelBLBQYAAAAAAgACAGwAAAAoAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a\\nb' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\nb",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\nb",
+      "overlap": true,
+      "method": 0,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYQpicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhCmJQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYQpidXAGAAH7kAfvelBLBQYAAAAAAgACAGwAAAAoAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\nb",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\nb",
+      "overlap": true,
+      "method": 0,
+      "policy": "error",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYQpicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhCmJQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYQpidXAGAAH7kAfvelBLBQYAAAAAAgACAGwAAAAoAAAAAAA=",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a\\nb' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a\nb",
+      "overlap": true,
+      "method": 8,
+      "policy": "always",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYQpiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGEKYlBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAADAAoAAAAAAAAAAACAAQAAAABhCmJ1cAYAAfuQB+96UEsFBgAAAAACAAIAbAAAACoAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a\\nb' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\nb",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\nb",
+      "overlap": true,
+      "method": 8,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYQpiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGEKYlBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAADAAoAAAAAAAAAAACAAQAAAABhCmJ1cAYAAfuQB+96UEsFBgAAAAACAAIAbAAAACoAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\nb",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\nb",
+      "overlap": true,
+      "method": 8,
+      "policy": "error",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYQpiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGEKYlBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAADAAoAAAAAAAAAAACAAQAAAABhCmJ1cAYAAfuQB+96UEsFBgAAAAACAAIAbAAAACoAAAAAAA==",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a\\nb' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a\nb",
+      "overlap": true,
+      "method": 12,
+      "policy": "always",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYQpiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhCmJQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYQpidXAGAAH7kAfvelBLBQYAAAAAAgACAGwAAABMAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a\\nb' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\nb",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\nb",
+      "overlap": true,
+      "method": 12,
+      "policy": "ignore",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYQpiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhCmJQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYQpidXAGAAH7kAfvelBLBQYAAAAAAgACAGwAAABMAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\nb",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\nb",
+      "overlap": true,
+      "method": 12,
+      "policy": "error",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYQpiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhCmJQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYQpidXAGAAH7kAfvelBLBQYAAAAAAgACAGwAAABMAAAAAAA=",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a\\nb' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a\nb",
+      "overlap": true,
+      "method": 14,
+      "policy": "always",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYQpiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYQpiUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAMACgAAAAAAAAAAAIABAAAAAGEKYnVwBgAB+5AH73pQSwUGAAAAAAIAAgBsAAAAOwAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a\\nb' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\nb",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\nb",
+      "overlap": true,
+      "method": 14,
+      "policy": "ignore",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYQpiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYQpiUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAMACgAAAAAAAAAAAIABAAAAAGEKYnVwBgAB+5AH73pQSwUGAAAAAAIAAgBsAAAAOwAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\nb",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\nb",
+      "overlap": true,
+      "method": 14,
+      "policy": "error",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYQpiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYQpiUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAMACgAAAAAAAAAAAIABAAAAAGEKYnVwBgAB+5AH73pQSwUGAAAAAAIAAgBsAAAAOwAAAAAA",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a\\nb' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a\\b",
+      "overlap": false,
+      "method": 0,
+      "policy": "always",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYVxicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhXGJQSwUGAAAAAAEAAQAxAAAAKAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a\\\\b'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\\b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\\b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\\b",
+      "overlap": false,
+      "method": 0,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYVxicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhXGJQSwUGAAAAAAEAAQAxAAAAKAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\\b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\\b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\\b",
+      "overlap": false,
+      "method": 0,
+      "policy": "error",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYVxicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhXGJQSwUGAAAAAAEAAQAxAAAAKAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a\\\\b'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a\\b",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\\b",
+      "overlap": false,
+      "method": 8,
+      "policy": "always",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYVxiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGFcYlBLBQYAAAAAAQABADEAAAAqAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a\\\\b'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\\b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\\b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\\b",
+      "overlap": false,
+      "method": 8,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYVxiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGFcYlBLBQYAAAAAAQABADEAAAAqAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\\b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\\b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\\b",
+      "overlap": false,
+      "method": 8,
+      "policy": "error",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYVxiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGFcYlBLBQYAAAAAAQABADEAAAAqAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a\\\\b'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a\\b",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\\b",
+      "overlap": false,
+      "method": 12,
+      "policy": "always",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYVxiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhXGJQSwUGAAAAAAEAAQAxAAAATAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a\\\\b'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\\b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\\b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\\b",
+      "overlap": false,
+      "method": 12,
+      "policy": "ignore",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYVxiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhXGJQSwUGAAAAAAEAAQAxAAAATAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\\b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\\b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\\b",
+      "overlap": false,
+      "method": 12,
+      "policy": "error",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYVxiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhXGJQSwUGAAAAAAEAAQAxAAAATAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a\\\\b'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a\\b",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\\b",
+      "overlap": false,
+      "method": 14,
+      "policy": "always",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYVxiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYVxiUEsFBgAAAAABAAEAMQAAADsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a\\\\b'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\\b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\\b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\\b",
+      "overlap": false,
+      "method": 14,
+      "policy": "ignore",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYVxiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYVxiUEsFBgAAAAABAAEAMQAAADsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\\b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\\b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\\b",
+      "overlap": false,
+      "method": 14,
+      "policy": "error",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYVxiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYVxiUEsFBgAAAAABAAEAMQAAADsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a\\\\b'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a\\b",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\\b",
+      "overlap": true,
+      "method": 0,
+      "policy": "always",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYVxicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhXGJQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYVxidXAGAAEpauYDelBLBQYAAAAAAgACAGwAAAAoAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a\\\\b' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\\b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\\b",
+      "overlap": true,
+      "method": 0,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYVxicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhXGJQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYVxidXAGAAEpauYDelBLBQYAAAAAAgACAGwAAAAoAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\\b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\\b",
+      "overlap": true,
+      "method": 0,
+      "policy": "error",
+      "input": "UEsDBBQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAYVxicGF5bG9hZFBLAQIUAxQAAAAAAEmuT10VaixCBwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhXGJQSwECFAMUAAAAAABJrk9dFWosQgcAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYVxidXAGAAEpauYDelBLBQYAAAAAAgACAGwAAAAoAAAAAAA=",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a\\\\b' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a\\b",
+      "overlap": true,
+      "method": 8,
+      "policy": "always",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYVxiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGFcYlBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAADAAoAAAAAAAAAAACAAQAAAABhXGJ1cAYAASlq5gN6UEsFBgAAAAACAAIAbAAAACoAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a\\\\b' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\\b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\\b",
+      "overlap": true,
+      "method": 8,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYVxiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGFcYlBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAADAAoAAAAAAAAAAACAAQAAAABhXGJ1cAYAASlq5gN6UEsFBgAAAAACAAIAbAAAACoAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\\b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\\b",
+      "overlap": true,
+      "method": 8,
+      "policy": "error",
+      "input": "UEsDBBQAAAAIAEmuT10VaixCCQAAAAcAAAADAAAAYVxiK0iszMlPTAEAUEsBAhQDFAAAAAgASa5PXRVqLEIJAAAABwAAAAMAAAAAAAAAAAAAAIABAAAAAGFcYlBLAQIUAxQAAAAIAEmuT10VaixCCQAAAAcAAAADAAoAAAAAAAAAAACAAQAAAABhXGJ1cAYAASlq5gN6UEsFBgAAAAACAAIAbAAAACoAAAAAAA==",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a\\\\b' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a\\b",
+      "overlap": true,
+      "method": 12,
+      "policy": "always",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYVxiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhXGJQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYVxidXAGAAEpauYDelBLBQYAAAAAAgACAGwAAABMAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a\\\\b' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\\b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\\b",
+      "overlap": true,
+      "method": 12,
+      "policy": "ignore",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYVxiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhXGJQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYVxidXAGAAEpauYDelBLBQYAAAAAAgACAGwAAABMAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\\b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\\b",
+      "overlap": true,
+      "method": 12,
+      "policy": "error",
+      "input": "UEsDBC4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAYVxiQlpoOTFBWSZTWR0big0AAAKBgCQEwCAgACIYaDAJWBMLuSKcKEgOjcUGgFBLAQIuAy4AAAAMAEmuT10VaixCKwAAAAcAAAADAAAAAAAAAAAAAACAAQAAAABhXGJQSwECLgMuAAAADABJrk9dFWosQisAAAAHAAAAAwAKAAAAAAAAAAAAgAEAAAAAYVxidXAGAAEpauYDelBLBQYAAAAAAgACAGwAAABMAAAAAAA=",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a\\\\b' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a\\b",
+      "overlap": true,
+      "method": 14,
+      "policy": "always",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYVxiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYVxiUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAMACgAAAAAAAAAAAIABAAAAAGFcYnVwBgABKWrmA3pQSwUGAAAAAAIAAgBsAAAAOwAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a\\\\b' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\\b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\\b",
+      "overlap": true,
+      "method": 14,
+      "policy": "ignore",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYVxiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYVxiUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAMACgAAAAAAAAAAAIABAAAAAGFcYnVwBgABKWrmA3pQSwUGAAAAAAIAAgBsAAAAOwAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\\b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\\b",
+      "overlap": true,
+      "method": 14,
+      "policy": "error",
+      "input": "UEsDBD8AAgAOAEmuT10VaixCGgAAAAcAAAADAAAAYVxiCQQFAF0AAIAAADgYS5l1D0YMTuBP//3fEABQSwECPwM/AAIADgBJrk9dFWosQhoAAAAHAAAAAwAAAAAAAAAAAAAAgAEAAAAAYVxiUEsBAj8DPwACAA4ASa5PXRVqLEIaAAAABwAAAAMACgAAAAAAAAAAAIABAAAAAGFcYnVwBgABKWrmA3pQSwUGAAAAAAIAAgBsAAAAOwAAAAAA",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a\\\\b' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": false,
+      "method": 0,
+      "policy": "always",
+      "input": "UEsDBBQAAAgAAEmuT10VaixCBwAAAAcAAAAEAAAAYcKgYnBheWxvYWRQSwECFAMUAAAIAABJrk9dFWosQgcAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYcKgYlBLBQYAAAAAAQABADIAAAApAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a\\xa0b'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\u00a0b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\u00a0b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": false,
+      "method": 0,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAgAAEmuT10VaixCBwAAAAcAAAAEAAAAYcKgYnBheWxvYWRQSwECFAMUAAAIAABJrk9dFWosQgcAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYcKgYlBLBQYAAAAAAQABADIAAAApAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\u00a0b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\u00a0b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": false,
+      "method": 0,
+      "policy": "error",
+      "input": "UEsDBBQAAAgAAEmuT10VaixCBwAAAAcAAAAEAAAAYcKgYnBheWxvYWRQSwECFAMUAAAIAABJrk9dFWosQgcAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYcKgYlBLBQYAAAAAAQABADIAAAApAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a\\xa0b'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a\u00a0b",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": false,
+      "method": 8,
+      "policy": "always",
+      "input": "UEsDBBQAAAgIAEmuT10VaixCCQAAAAcAAAAEAAAAYcKgYitIrMzJT0wBAFBLAQIUAxQAAAgIAEmuT10VaixCCQAAAAcAAAAEAAAAAAAAAAAAAACAAQAAAABhwqBiUEsFBgAAAAABAAEAMgAAACsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a\\xa0b'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\u00a0b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\u00a0b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": false,
+      "method": 8,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAgIAEmuT10VaixCCQAAAAcAAAAEAAAAYcKgYitIrMzJT0wBAFBLAQIUAxQAAAgIAEmuT10VaixCCQAAAAcAAAAEAAAAAAAAAAAAAACAAQAAAABhwqBiUEsFBgAAAAABAAEAMgAAACsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\u00a0b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\u00a0b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": false,
+      "method": 8,
+      "policy": "error",
+      "input": "UEsDBBQAAAgIAEmuT10VaixCCQAAAAcAAAAEAAAAYcKgYitIrMzJT0wBAFBLAQIUAxQAAAgIAEmuT10VaixCCQAAAAcAAAAEAAAAAAAAAAAAAACAAQAAAABhwqBiUEsFBgAAAAABAAEAMgAAACsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a\\xa0b'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a\u00a0b",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": false,
+      "method": 12,
+      "policy": "always",
+      "input": "UEsDBC4AAAgMAEmuT10VaixCKwAAAAcAAAAEAAAAYcKgYkJaaDkxQVkmU1kdG4oNAAACgYAkBMAgIAAiGGgwCVgTC7kinChIDo3FBoBQSwECLgMuAAAIDABJrk9dFWosQisAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYcKgYlBLBQYAAAAAAQABADIAAABNAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a\\xa0b'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\u00a0b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\u00a0b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": false,
+      "method": 12,
+      "policy": "ignore",
+      "input": "UEsDBC4AAAgMAEmuT10VaixCKwAAAAcAAAAEAAAAYcKgYkJaaDkxQVkmU1kdG4oNAAACgYAkBMAgIAAiGGgwCVgTC7kinChIDo3FBoBQSwECLgMuAAAIDABJrk9dFWosQisAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYcKgYlBLBQYAAAAAAQABADIAAABNAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\u00a0b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\u00a0b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": false,
+      "method": 12,
+      "policy": "error",
+      "input": "UEsDBC4AAAgMAEmuT10VaixCKwAAAAcAAAAEAAAAYcKgYkJaaDkxQVkmU1kdG4oNAAACgYAkBMAgIAAiGGgwCVgTC7kinChIDo3FBoBQSwECLgMuAAAIDABJrk9dFWosQisAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYcKgYlBLBQYAAAAAAQABADIAAABNAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a\\xa0b'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a\u00a0b",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": false,
+      "method": 14,
+      "policy": "always",
+      "input": "UEsDBD8AAggOAEmuT10VaixCGgAAAAcAAAAEAAAAYcKgYgkEBQBdAACAAAA4GEuZdQ9GDE7gT//93xAAUEsBAj8DPwACCA4ASa5PXRVqLEIaAAAABwAAAAQAAAAAAAAAAAAAAIABAAAAAGHCoGJQSwUGAAAAAAEAAQAyAAAAPAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Duplicate name: 'a\\xa0b'"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\u00a0b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\u00a0b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": false,
+      "method": 14,
+      "policy": "ignore",
+      "input": "UEsDBD8AAggOAEmuT10VaixCGgAAAAcAAAAEAAAAYcKgYgkEBQBdAACAAAA4GEuZdQ9GDE7gT//93xAAUEsBAj8DPwACCA4ASa5PXRVqLEIaAAAABwAAAAQAAAAAAAAAAAAAAIABAAAAAGHCoGJQSwUGAAAAAAEAAQAyAAAAPAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\u00a0b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "a\u00a0b",
+          "data": "c2Vjb25k"
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": false,
+      "method": 14,
+      "policy": "error",
+      "input": "UEsDBD8AAggOAEmuT10VaixCGgAAAAcAAAAEAAAAYcKgYgkEBQBdAACAAAA4GEuZdQ9GDE7gT//93xAAUEsBAj8DPwACCA4ASa5PXRVqLEIaAAAABwAAAAQAAAAAAAAAAAAAAIABAAAAAGHCoGJQSwUGAAAAAAEAAQAyAAAAPAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Duplicate name: 'a\\xa0b'"
+      },
+      "accepted": false,
+      "parts": [
+        {
+          "name": "a\u00a0b",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": true,
+      "method": 0,
+      "policy": "always",
+      "input": "UEsDBBQAAAgAAEmuT10VaixCBwAAAAcAAAAEAAAAYcKgYnBheWxvYWRQSwECFAMUAAAIAABJrk9dFWosQgcAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYcKgYlBLAQIUAxQAAAgAAEmuT10VaixCBwAAAAcAAAAEAAoAAAAAAAAAAACAAQAAAABhwqBidXAGAAHJsU49elBLBQYAAAAAAgACAG4AAAApAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a\\xa0b' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\u00a0b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": true,
+      "method": 0,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAgAAEmuT10VaixCBwAAAAcAAAAEAAAAYcKgYnBheWxvYWRQSwECFAMUAAAIAABJrk9dFWosQgcAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYcKgYlBLAQIUAxQAAAgAAEmuT10VaixCBwAAAAcAAAAEAAoAAAAAAAAAAACAAQAAAABhwqBidXAGAAHJsU49elBLBQYAAAAAAgACAG4AAAApAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\u00a0b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": true,
+      "method": 0,
+      "policy": "error",
+      "input": "UEsDBBQAAAgAAEmuT10VaixCBwAAAAcAAAAEAAAAYcKgYnBheWxvYWRQSwECFAMUAAAIAABJrk9dFWosQgcAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYcKgYlBLAQIUAxQAAAgAAEmuT10VaixCBwAAAAcAAAAEAAoAAAAAAAAAAACAAQAAAABhwqBidXAGAAHJsU49elBLBQYAAAAAAgACAG4AAAApAAAAAAA=",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a\\xa0b' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": true,
+      "method": 8,
+      "policy": "always",
+      "input": "UEsDBBQAAAgIAEmuT10VaixCCQAAAAcAAAAEAAAAYcKgYitIrMzJT0wBAFBLAQIUAxQAAAgIAEmuT10VaixCCQAAAAcAAAAEAAAAAAAAAAAAAACAAQAAAABhwqBiUEsBAhQDFAAACAgASa5PXRVqLEIJAAAABwAAAAQACgAAAAAAAAAAAIABAAAAAGHCoGJ1cAYAAcmxTj16UEsFBgAAAAACAAIAbgAAACsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a\\xa0b' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\u00a0b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": true,
+      "method": 8,
+      "policy": "ignore",
+      "input": "UEsDBBQAAAgIAEmuT10VaixCCQAAAAcAAAAEAAAAYcKgYitIrMzJT0wBAFBLAQIUAxQAAAgIAEmuT10VaixCCQAAAAcAAAAEAAAAAAAAAAAAAACAAQAAAABhwqBiUEsBAhQDFAAACAgASa5PXRVqLEIJAAAABwAAAAQACgAAAAAAAAAAAIABAAAAAGHCoGJ1cAYAAcmxTj16UEsFBgAAAAACAAIAbgAAACsAAAAAAA==",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\u00a0b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": true,
+      "method": 8,
+      "policy": "error",
+      "input": "UEsDBBQAAAgIAEmuT10VaixCCQAAAAcAAAAEAAAAYcKgYitIrMzJT0wBAFBLAQIUAxQAAAgIAEmuT10VaixCCQAAAAcAAAAEAAAAAAAAAAAAAACAAQAAAABhwqBiUEsBAhQDFAAACAgASa5PXRVqLEIJAAAABwAAAAQACgAAAAAAAAAAAIABAAAAAGHCoGJ1cAYAAcmxTj16UEsFBgAAAAACAAIAbgAAACsAAAAAAA==",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a\\xa0b' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": true,
+      "method": 12,
+      "policy": "always",
+      "input": "UEsDBC4AAAgMAEmuT10VaixCKwAAAAcAAAAEAAAAYcKgYkJaaDkxQVkmU1kdG4oNAAACgYAkBMAgIAAiGGgwCVgTC7kinChIDo3FBoBQSwECLgMuAAAIDABJrk9dFWosQisAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYcKgYlBLAQIuAy4AAAgMAEmuT10VaixCKwAAAAcAAAAEAAoAAAAAAAAAAACAAQAAAABhwqBidXAGAAHJsU49elBLBQYAAAAAAgACAG4AAABNAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a\\xa0b' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\u00a0b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": true,
+      "method": 12,
+      "policy": "ignore",
+      "input": "UEsDBC4AAAgMAEmuT10VaixCKwAAAAcAAAAEAAAAYcKgYkJaaDkxQVkmU1kdG4oNAAACgYAkBMAgIAAiGGgwCVgTC7kinChIDo3FBoBQSwECLgMuAAAIDABJrk9dFWosQisAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYcKgYlBLAQIuAy4AAAgMAEmuT10VaixCKwAAAAcAAAAEAAoAAAAAAAAAAACAAQAAAABhwqBidXAGAAHJsU49elBLBQYAAAAAAgACAG4AAABNAAAAAAA=",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\u00a0b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": true,
+      "method": 12,
+      "policy": "error",
+      "input": "UEsDBC4AAAgMAEmuT10VaixCKwAAAAcAAAAEAAAAYcKgYkJaaDkxQVkmU1kdG4oNAAACgYAkBMAgIAAiGGgwCVgTC7kinChIDo3FBoBQSwECLgMuAAAIDABJrk9dFWosQisAAAAHAAAABAAAAAAAAAAAAAAAgAEAAAAAYcKgYlBLAQIuAy4AAAgMAEmuT10VaixCKwAAAAcAAAAEAAoAAAAAAAAAAACAAQAAAABhwqBidXAGAAHJsU49elBLBQYAAAAAAgACAG4AAABNAAAAAAA=",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a\\xa0b' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": true,
+      "method": 14,
+      "policy": "always",
+      "input": "UEsDBD8AAggOAEmuT10VaixCGgAAAAcAAAAEAAAAYcKgYgkEBQBdAACAAAA4GEuZdQ9GDE7gT//93xAAUEsBAj8DPwACCA4ASa5PXRVqLEIaAAAABwAAAAQAAAAAAAAAAAAAAIABAAAAAGHCoGJQSwECPwM/AAIIDgBJrk9dFWosQhoAAAAHAAAABAAKAAAAAAAAAAAAgAEAAAAAYcKgYnVwBgABybFOPXpQSwUGAAAAAAIAAgBuAAAAPAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [
+        "Overlapped entries: 'a\\xa0b' (possible zip bomb)"
+      ],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\u00a0b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": true,
+      "method": 14,
+      "policy": "ignore",
+      "input": "UEsDBD8AAggOAEmuT10VaixCGgAAAAcAAAAEAAAAYcKgYgkEBQBdAACAAAA4GEuZdQ9GDE7gT//93xAAUEsBAj8DPwACCA4ASa5PXRVqLEIaAAAABwAAAAQAAAAAAAAAAAAAAIABAAAAAGHCoGJQSwECPwM/AAIIDgBJrk9dFWosQhoAAAAHAAAABAAKAAAAAAAAAAAAgAEAAAAAYcKgYnVwBgABybFOPXpQSwUGAAAAAAIAAgBuAAAAPAAAAAAA",
+      "events": [
+        "callback"
+      ],
+      "warnings": [],
+      "error": null,
+      "accepted": true,
+      "parts": [
+        {
+          "name": "a\u00a0b",
+          "data": "cGF5bG9hZA=="
+        },
+        {
+          "name": "z",
+          "data": "cGF5bG9hZA=="
+        }
+      ],
+      "outputs": 1
+    },
+    {
+      "name": "a\u00a0b",
+      "overlap": true,
+      "method": 14,
+      "policy": "error",
+      "input": "UEsDBD8AAggOAEmuT10VaixCGgAAAAcAAAAEAAAAYcKgYgkEBQBdAACAAAA4GEuZdQ9GDE7gT//93xAAUEsBAj8DPwACCA4ASa5PXRVqLEIaAAAABwAAAAQAAAAAAAAAAAAAAIABAAAAAGHCoGJQSwECPwM/AAIIDgBJrk9dFWosQhoAAAAHAAAABAAKAAAAAAAAAAAAgAEAAAAAYcKgYnVwBgABybFOPXpQSwUGAAAAAAIAAgBuAAAAPAAAAAAA",
+      "events": [],
+      "warnings": [],
+      "error": {
+        "type": "UserWarning",
+        "message": "Overlapped entries: 'a\\xa0b' (possible zip bomb)"
+      },
+      "accepted": false,
+      "parts": [],
+      "outputs": 0
+    }
+  ]
+}

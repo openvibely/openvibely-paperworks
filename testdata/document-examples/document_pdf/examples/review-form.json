@@ -1,0 +1,12 @@
+{
+ "paper":"A4",
+ "pages":[{
+  "text":[
+   {"value":"Revenue report","pos":[72,760],"font":{"name":"Helvetica-Bold","size":18}},
+   {"value":"Revenue totaled $200 across subscriptions and services.","pos":[72,720],"width":450,"font":{"name":"Helvetica","size":10}}
+  ],
+  "tables":[{"pos":[72,540],"width":400,"rows":3,"cols":2,"colWidths":[75,25],"lheight":25,"grid":true,"border":{"width":1,"col":"#D3D3D3"},"font":{"name":"Helvetica","size":10},"header":{"values":["Item","Amount"],"bgCol":"#17324D","font":{"name":"Helvetica","size":10,"col":"#FFFFFF"}},"values":[["Subscriptions","$120"],["Services","$80"],["Total","$200"]]}],
+  "text_fields":[{"id":"reviewer","pos":[72,450],"width":220,"height":24,"value":"Draft","font":{"name":"Helvetica","size":10}}],
+  "checkboxes":[{"id":"approved","pos":[320,450],"width":16,"value":false}]
+ }]
+}

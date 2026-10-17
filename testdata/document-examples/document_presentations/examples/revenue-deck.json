@@ -1,0 +1,31 @@
+{
+ "width_in":13.333333,"height_in":7.5,"font":"Arial",
+ "slides":[
+ {"notes":"Illustrative planning scenario only. All figures are sample USD thousands, not measured results.","elements":[
+ {"type":"text","x":0.7,"y":1.8,"w":12,"h":1.8,"text":"A subscription-led revenue plan","font_size":42,"bold":true},
+ {"type":"text","x":0.7,"y":4.2,"w":11,"h":1,"text":"Sample projections | FY2027–FY2029","font_size":24}]},
+ {"notes":"Source: sample figures supplied for this acceptance case. Subscriptions 120 plus services 80 equals 200. Subscription share: 60%.","elements":[
+ {"type":"text","x":0.7,"y":0.3,"w":12,"h":1,"text":"Subscriptions generated 60% of sample revenue","font_size":30,"bold":true},
+ {"type":"chart","x":0.7,"y":1.6,"w":7,"h":4.8,"chart":{"type":"column","title":"Sample revenue (USD thousands)","categories":["Subscriptions","Services"],"series":[{"name":"Revenue","values":[120,80]}]}},
+ {"type":"table","x":8.2,"y":2,"w":4.3,"h":2.8,"font_size":18,"rows":[["Item","Revenue"],["Subscriptions","$120"],["Services","$80"],["Total","$200"]]}]},
+ {"notes":"Sample assumptions: subscription revenue grows 20% annually; services grows 5%. Values are scenario inputs, not promises.","elements":[
+ {"type":"text","x":0.7,"y":0.3,"w":12,"h":1,"text":"Two explicit growth assumptions drive the projection","font_size":30,"bold":true},
+ {"type":"table","x":0.7,"y":1.8,"w":11.9,"h":3,"rows":[["Driver","Annual growth"],["Subscriptions","20%"],["Services","5%"]]}]},
+ {"notes":"FY2027 baseline 200; FY2028 144+84=228; FY2029 172.8+88.2=261. Values shown in thousands of USD.","elements":[
+ {"type":"text","x":0.7,"y":0.3,"w":12,"h":1,"text":"The sample plan reaches $261k by FY2029","font_size":30,"bold":true},
+ {"type":"chart","x":0.7,"y":1.6,"w":11.9,"h":4.8,"chart":{"type":"line","title":"Sample projection (USD thousands)","categories":["FY2027","FY2028","FY2029"],"series":[{"name":"Subscriptions","values":[120,144,172.8]},{"name":"Services","values":[80,84,88.2]},{"name":"Total","values":[200,228,261]}]}}]},
+ {"notes":"Revenue components reconcile exactly before display rounding. FY2028 total is 228; FY2029 total is 261.","elements":[
+ {"type":"text","x":0.7,"y":0.3,"w":12,"h":1,"text":"The underlying sample figures reconcile","font_size":30,"bold":true},
+ {"type":"table","x":0.7,"y":1.8,"w":11.9,"h":3.4,"rows":[["USD thousands","FY2027","FY2028","FY2029"],["Subscriptions","120","144","172.8"],["Services","80","84","88.2"],["Total","200","228","261"]]}]},
+ {"notes":"Sample risks: acquisition cost, churn, service delivery capacity. No risk probabilities were estimated.","elements":[
+ {"type":"text","x":0.7,"y":0.3,"w":12,"h":1,"text":"Validate retention before committing capacity","font_size":30,"bold":true},
+ {"type":"text","x":0.8,"y":2,"w":11.5,"h":3.5,"font_size":24,"paragraphs":[{"text":"Measure churn by subscription cohort","bullet":true},{"text":"Check acquisition cost against retained revenue","bullet":true},{"text":"Confirm services delivery capacity","bullet":true}]}]},
+ {"notes":"Editable native shapes depict an illustrative three-stage decision process. Timing and owners are not committed.","elements":[
+ {"type":"text","x":0.7,"y":0.3,"w":12,"h":1,"text":"Gate spending on evidence at each stage","font_size":30,"bold":true},
+ {"type":"shape","shape":"chevron","x":0.8,"y":2.6,"w":3.6,"h":1.5,"text":"Measure","fill":"2463EB","color":"FFFFFF","font_size":24,"align":"ctr"},
+ {"type":"shape","shape":"chevron","x":4.6,"y":2.6,"w":3.6,"h":1.5,"text":"Review","fill":"10A58E","color":"FFFFFF","font_size":24,"align":"ctr"},
+ {"type":"shape","shape":"chevron","x":8.4,"y":2.6,"w":3.6,"h":1.5,"text":"Commit","fill":"527A91","color":"FFFFFF","font_size":24,"align":"ctr"}]},
+ {"notes":"Decision requested for this illustrative scenario: approve validation work, not the projected revenue. Replace sample inputs before business use.","elements":[
+ {"type":"text","x":0.7,"y":1.2,"w":12,"h":1.5,"text":"Approve validation of the assumptions","font_size":36,"bold":true},
+ {"type":"text","x":0.7,"y":3.2,"w":11.8,"h":2,"text":"Confirm the baseline, test retention, and update the editable model before committing spend.","font_size":24}]}]
+}

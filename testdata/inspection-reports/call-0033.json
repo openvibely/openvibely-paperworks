@@ -1,0 +1,217 @@
+{
+  "external_relationships": [],
+  "issues": [
+    "Table without designated header row; review whether appropriate",
+    "Table without designated header row; review whether appropriate",
+    "Duplicate footnote ID 1"
+  ],
+  "package_parts": {
+    "word/document.xml": {
+      "bytes": 825,
+      "sha256": "eb596cb916f3f9eccff648efd10daa55e09674c9b7f3799ebadbdef18a8a9166"
+    },
+    "word/_rels/document.xml.rels": {
+      "bytes": 74,
+      "sha256": "dcb2ee9c563183757da1bc0f5f9c2e2e04aebd291d1a7a7648b1991c1fb71d90"
+    },
+    "word/header1.xml": {
+      "bytes": 125,
+      "sha256": "e8930f346d45ddf87eaab17a9189a2d132682998ccf12c465e328229cbbf5da4"
+    },
+    "word/footnotes.xml": {
+      "bytes": 191,
+      "sha256": "d39eada52777b01d4aa1700b6e6f586cb291fb63bd3b056ad44bf76433ba34b6"
+    }
+  },
+  "tracked_insertions": 0,
+  "tracked_deletions": 1,
+  "comments": 0,
+  "equations": 0,
+  "headings": [],
+  "sections": [
+    {},
+    {}
+  ],
+  "fields": [
+    {
+      "part": "word/document.xml",
+      "instruction": "PAGE"
+    }
+  ],
+  "controls": [],
+  "notes": [
+    {
+      "part": "word/footnotes.xml",
+      "kind": "footnote",
+      "id": "1",
+      "text": "Note"
+    },
+    {
+      "part": "word/footnotes.xml",
+      "kind": "footnote",
+      "id": "1",
+      "text": ""
+    }
+  ],
+  "comment_details": [],
+  "images": [],
+  "watermarks": [],
+  "direct_formatting": [
+    {
+      "part": "word/document.xml",
+      "paragraph": 0,
+      "style": null,
+      "text": "Looks like heading2",
+      "properties": [
+        {
+          "property": "b"
+        },
+        {
+          "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}ascii": "Arial",
+          "property": "rFonts"
+        }
+      ]
+    }
+  ],
+  "stories": [
+    {
+      "part": "word/document.xml",
+      "content": [
+        {
+          "kind": "text",
+          "text": "Looks like heading"
+        },
+        {
+          "kind": "deleted",
+          "text": "Removed"
+        },
+        {
+          "kind": "field",
+          "text": "PAGE"
+        },
+        {
+          "kind": "text",
+          "text": "2"
+        },
+        {
+          "kind": "text",
+          "text": "Cell"
+        },
+        {
+          "kind": "text",
+          "text": "Nested"
+        },
+        {
+          "kind": "text",
+          "text": "Textbox"
+        }
+      ]
+    },
+    {
+      "part": "word/header1.xml",
+      "content": [
+        {
+          "kind": "text",
+          "text": "Header"
+        }
+      ]
+    },
+    {
+      "part": "word/footnotes.xml",
+      "content": [
+        {
+          "kind": "text",
+          "text": "Note"
+        }
+      ]
+    }
+  ],
+  "style_warnings": [
+    {
+      "part": "word/document.xml",
+      "paragraph": 0,
+      "reason": "possible heading without outline level",
+      "text": "Looks like heading2"
+    }
+  ],
+  "font_usage": {
+    "Arial": 1
+  },
+  "section_links": [
+    {
+      "section": 0,
+      "links": {
+        "header:default": {
+          "target": "header1.xml",
+          "inherited": false
+        },
+        "header:first": {
+          "target": null,
+          "inherited": false
+        },
+        "header:even": {
+          "target": null,
+          "inherited": false
+        },
+        "footer:default": {
+          "target": null,
+          "inherited": false
+        },
+        "footer:first": {
+          "target": null,
+          "inherited": false
+        },
+        "footer:even": {
+          "target": null,
+          "inherited": false
+        }
+      }
+    },
+    {
+      "section": 1,
+      "links": {
+        "header:default": {
+          "target": "header1.xml",
+          "inherited": true
+        },
+        "header:first": {
+          "target": null,
+          "inherited": false
+        },
+        "header:even": {
+          "target": null,
+          "inherited": false
+        },
+        "footer:default": {
+          "target": null,
+          "inherited": false
+        },
+        "footer:first": {
+          "target": null,
+          "inherited": false
+        },
+        "footer:even": {
+          "target": null,
+          "inherited": false
+        }
+      }
+    }
+  ],
+  "section_details": [
+    {
+      "part": "word/document.xml",
+      "properties": [
+        {
+          "headerReference": {
+            "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}type": "default",
+            "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id": "h"
+          }
+        }
+      ]
+    },
+    {
+      "part": "word/document.xml",
+      "properties": []
+    }
+  ]
+}

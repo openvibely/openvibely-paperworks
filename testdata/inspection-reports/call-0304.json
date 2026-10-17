@@ -1,0 +1,28 @@
+{
+  "root": "'Output'!C2",
+  "nodes": {
+    "'Output'!C2": {
+      "sheet": "Output",
+      "cell": "C2",
+      "formula": "='[other.xlsx]Sheet1'!A1+Table1[Amount]",
+      "cached_value": null
+    }
+  },
+  "edges": [],
+  "cycles": [],
+  "unresolved": [
+    {
+      "cell": "'Output'!C2",
+      "reference": "'[other.xlsx]Sheet1'!A1",
+      "reason": "External, 3D, or missing worksheet"
+    },
+    {
+      "cell": "'Output'!C2",
+      "reference": "Table1[Amount]",
+      "reason": "Unresolved name, structured, external, or spill reference"
+    }
+  ],
+  "truncated": false,
+  "complete": false,
+  "method": "Formula precedents for saved inputs; all branches included. Whole-row/column references use saved populated extents of the referenced rows/columns. INDIRECT/OFFSET targets use literals or non-formula inputs only. Cached values may be stale. No calculation performed."
+}

@@ -1,0 +1,1341 @@
+{
+  "TestAcceptRejectCanPreserveTrackingSetting": {
+    "python": "test_word_edit.WordEditing.test_accept_reject_can_preserve_tracking_setting",
+    "calls": [
+      {
+        "name": "tracked-option",
+        "operation": "redline",
+        "default_source": true,
+        "success": true,
+        "original_source": true
+      },
+      {
+        "name": "accept-tracking-True",
+        "operation": "accept",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "accept-tracking-False",
+        "operation": "accept",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "reject-tracking-True",
+        "operation": "reject",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "reject-tracking-False",
+        "operation": "reject",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestAccessibilityAndMetadataAreScoped": {
+    "python": "test_word_edit.WordEditing.test_accessibility_and_metadata_are_scoped",
+    "calls": [
+      {
+        "name": "access",
+        "operation": "accessibility",
+        "default_source": true,
+        "success": true,
+        "original_source": true
+      },
+      {
+        "name": "metadata",
+        "operation": "metadata",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestAmbiguousEditFailsWithoutFile": {
+    "python": "test_word_edit.WordEditing.test_ambiguous_edit_fails_without_file",
+    "calls": [
+      {
+        "name": "bad",
+        "operation": "redline",
+        "default_source": true,
+        "success": false,
+        "original_source": true
+      }
+    ]
+  },
+  "TestBookmarksAndReferences": {
+    "python": "test_word_edit.WordEditing.test_bookmarks_and_navigation",
+    "calls": [
+      {
+        "name": "bookmarked",
+        "operation": "bookmark",
+        "default_source": true,
+        "success": true,
+        "original_source": true
+      },
+      {
+        "name": "linked",
+        "operation": "reference",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "duplicate",
+        "operation": "bookmark",
+        "default_source": false,
+        "success": false,
+        "original_source": false
+      },
+      {
+        "name": "missing",
+        "operation": "reference",
+        "default_source": false,
+        "success": false,
+        "original_source": false
+      }
+    ]
+  },
+  "TestCaptionAndTocAreFields": {
+    "python": "test_word_edit.WordEditing.test_caption_and_toc_are_fields",
+    "calls": [
+      {
+        "name": "caption",
+        "operation": "caption",
+        "default_source": true,
+        "success": true,
+        "original_source": true
+      },
+      {
+        "name": "toc",
+        "operation": "toc",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestCaptionNumberReferenceAtMarkerAndFreeze": {
+    "python": "test_word_edit.WordEditing.test_caption_number_reference_at_marker_and_freeze",
+    "calls": [
+      {
+        "name": "caption-position",
+        "operation": "caption",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "reference-marker",
+        "operation": "reference",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "reference-values",
+        "operation": "materialize",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "frozen",
+        "operation": "freeze-references",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestReferenceWordCaptionReferencesInBodyAndHeader": {
+    "python": "test_word_edit.WordEditing.test_caption_references_materialize_in_body_and_header",
+    "calls": [
+      {
+        "name": "positioned-caption",
+        "operation": "caption",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "body-ref",
+        "operation": "reference",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "header-ref",
+        "operation": "reference",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "all-story-fields",
+        "operation": "materialize",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestCommentAppendResolutionAndReopen": {
+    "python": "test_word_edit.WordEditing.test_comment_append_resolution_and_reopen",
+    "calls": [
+      {
+        "name": "comment-source",
+        "operation": "comment",
+        "default_source": true,
+        "success": true,
+        "original_source": true
+      },
+      {
+        "name": "comment-done",
+        "operation": "comment-edit",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "comment-more",
+        "operation": "comment-edit",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "comment-reopened",
+        "operation": "comment-edit",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestReferenceWordCommentInspectionWhitespace": {
+    "python": "test_word_edit.WordEditing.test_comment_inspection_preserves_paragraphs_tabs_and_breaks",
+    "calls": []
+  },
+  "TestCommentSubstringMatchesTrackedTextAndTables": {
+    "python": "test_word_edit.WordEditing.test_comment_substring_matches_tracked_text_and_tables",
+    "calls": [
+      {
+        "name": "matched-comments",
+        "operation": "comment",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestCommentUpdateAndRemoval": {
+    "python": "test_word_edit.WordEditing.test_comment_update_and_removal",
+    "calls": [
+      {
+        "name": "commented",
+        "operation": "comment",
+        "default_source": true,
+        "success": true,
+        "original_source": true
+      },
+      {
+        "name": "updated",
+        "operation": "comment-edit",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "stripped",
+        "operation": "comments-remove",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestCommentsAreRealComments": {
+    "python": "test_word_edit.WordEditing.test_comments_are_real_comments",
+    "calls": [
+      {
+        "name": "comment",
+        "operation": "comment",
+        "default_source": true,
+        "success": true,
+        "original_source": true
+      }
+    ]
+  },
+  "TestContentControlFillRetainsPropertiesAndStyle": {
+    "python": "test_word_edit.WordEditing.test_content_control_fill_retains_properties_and_text_style",
+    "calls": [
+      {
+        "name": "control",
+        "operation": "control",
+        "default_source": true,
+        "success": true,
+        "original_source": true
+      },
+      {
+        "name": "filled",
+        "operation": "control-fill",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "missing",
+        "operation": "control-fill",
+        "default_source": false,
+        "success": false,
+        "original_source": false
+      }
+    ]
+  },
+  "TestTrackedHyperlinkReplacementPreservesTargetAndFormat": {
+    "python": "test_word_edit.WordEditing.test_create_tracked_hyperlink_replacement_preserves_target_and_format",
+    "calls": [
+      {
+        "name": "link-redline-False",
+        "operation": "redline",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "link-final-False-accept",
+        "operation": "accept",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "link-final-False-reject",
+        "operation": "reject",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "link-redline-True",
+        "operation": "redline",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "link-final-True-accept",
+        "operation": "accept",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "link-final-True-reject",
+        "operation": "reject",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestDotxStylePackPreservesDocumentPart": {
+    "python": "test_word_edit.WordEditing.test_dotx_style_pack_preserves_document_part",
+    "calls": [
+      {
+        "name": "styled",
+        "operation": "style-pack",
+        "default_source": true,
+        "success": true,
+        "original_source": true
+      }
+    ]
+  },
+  "TestEditableMatrixAndRoots": {
+    "python": "test_word_edit.WordEditing.test_editable_matrix_and_roots",
+    "calls": [
+      {
+        "name": "matrix",
+        "operation": "equation",
+        "default_source": true,
+        "success": true,
+        "original_source": true
+      }
+    ]
+  },
+  "TestEditingRestrictionNotEncryption": {
+    "python": "test_word_edit.WordEditing.test_editing_restriction_not_encryption",
+    "calls": [
+      {
+        "name": "restricted",
+        "operation": "protection",
+        "default_source": true,
+        "success": true,
+        "original_source": true
+      },
+      {
+        "name": "unrestricted",
+        "operation": "protection",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestEmptyControlsFillInlineAndBlock": {
+    "python": "test_word_edit.WordEditing.test_empty_controls_fill_in_inline_and_block_locations",
+    "calls": [
+      {
+        "name": "empty-filled-False",
+        "operation": "control-fill",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "empty-filled-True",
+        "operation": "control-fill",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestExistingOutputIsNotOverwritten": {
+    "python": "test_word_edit.WordEditing.test_existing_output_is_not_overwritten",
+    "calls": []
+  },
+  "TestFreezeComplexCachedReferencePreservesStyle": {
+    "python": "test_word_edit.WordEditing.test_freeze_complex_cached_reference_preserves_style",
+    "calls": [
+      {
+        "name": "flat-field",
+        "operation": "freeze-references",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestGoogleTitleRemovesTitleBordersOnly": {
+    "python": "test_word_edit.WordEditing.test_google_title_removes_title_borders_only",
+    "calls": [
+      {
+        "name": "clean-title",
+        "operation": "google-title",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestHyperlinkFormatRevisionRejectedWithoutOutput": {
+    "python": "test_word_edit.WordEditing.test_hyperlink_format_revision_still_rejected_without_output",
+    "calls": [
+      {
+        "name": "link-format-accept",
+        "operation": "accept",
+        "default_source": false,
+        "success": false,
+        "original_source": false
+      },
+      {
+        "name": "link-format-reject",
+        "operation": "reject",
+        "default_source": false,
+        "success": false,
+        "original_source": false
+      }
+    ]
+  },
+  "TestReferenceWordHyperlinkRevisionsAllStories": {
+    "python": "test_word_edit.WordEditing.test_hyperlink_revisions_accept_reject_preserve_link_and_format",
+    "calls": [
+      {
+        "name": "link-result-ins-accept",
+        "operation": "accept",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "link-result-ins-reject",
+        "operation": "reject",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "link-result-del-accept",
+        "operation": "accept",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "link-result-del-reject",
+        "operation": "reject",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "link-result-moveTo-accept",
+        "operation": "accept",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "link-result-moveTo-reject",
+        "operation": "reject",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "link-result-moveFrom-accept",
+        "operation": "accept",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "link-result-moveFrom-reject",
+        "operation": "reject",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestInlineControlRevisionsKeepControlAndSurroundingText": {
+    "python": "test_word_edit.WordEditing.test_inline_control_revisions_keep_control_and_surrounding_text",
+    "calls": [
+      {
+        "name": "control-result-ins-False-accept",
+        "operation": "accept",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "control-result-ins-False-reject",
+        "operation": "reject",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "control-result-ins-True-accept",
+        "operation": "accept",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "control-result-ins-True-reject",
+        "operation": "reject",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "control-result-del-False-accept",
+        "operation": "accept",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "control-result-del-False-reject",
+        "operation": "reject",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "control-result-del-True-accept",
+        "operation": "accept",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "control-result-del-True-reject",
+        "operation": "reject",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "control-result-moveTo-False-accept",
+        "operation": "accept",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "control-result-moveTo-False-reject",
+        "operation": "reject",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "control-result-moveTo-True-accept",
+        "operation": "accept",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "control-result-moveTo-True-reject",
+        "operation": "reject",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "control-result-moveFrom-False-accept",
+        "operation": "accept",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "control-result-moveFrom-False-reject",
+        "operation": "reject",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "control-result-moveFrom-True-accept",
+        "operation": "accept",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "control-result-moveFrom-True-reject",
+        "operation": "reject",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestInspectCombinesSplitFieldInstructions": {
+    "python": "test_word_edit.WordEditing.test_inspect_combines_split_field_instructions_without_merging_fields",
+    "calls": []
+  },
+  "TestReferenceWordImportedCommentStateAndAlias": {
+    "python": "test_word_edit.WordEditing.test_inspect_imported_comment_state_and_control_alias",
+    "calls": [
+      {
+        "name": "legacy-comment",
+        "operation": "comment",
+        "default_source": true,
+        "success": true,
+        "original_source": true
+      },
+      {
+        "name": "aliased-control",
+        "operation": "control",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "legacy-reopen",
+        "operation": "comment-edit",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestReferenceWordMarkerCannotJoinAcrossField": {
+    "python": "test_word_edit.WordEditing.test_marker_cannot_join_across_a_field",
+    "calls": [
+      {
+        "name": "bad-marker",
+        "operation": "control",
+        "default_source": false,
+        "success": false,
+        "original_source": false
+      }
+    ]
+  },
+  "TestMarkersInHeaderAndBodyPreserveAdjacentRuns": {
+    "python": "test_word_edit.WordEditing.test_markers_in_header_and_body_preserve_adjacent_runs",
+    "calls": [
+      {
+        "name": "note-marker",
+        "operation": "note",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "inline-control",
+        "operation": "control",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "duplicate-header-tag",
+        "operation": "control",
+        "default_source": false,
+        "success": false,
+        "original_source": false
+      },
+      {
+        "name": "fill-inline",
+        "operation": "control-fill",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestMaterializeEmptyResultAndCrossParagraphBookmark": {
+    "python": "test_word_edit.WordEditing.test_materialize_empty_result_and_cross_paragraph_bookmark",
+    "calls": [
+      {
+        "name": "empty-field-refreshed",
+        "operation": "materialize",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestMaterializeInvalidComplexFieldDoesNotPublish": {
+    "python": "test_word_edit.WordEditing.test_materialize_invalid_complex_field_does_not_publish",
+    "calls": [
+      {
+        "name": "unterminated-out",
+        "operation": "materialize",
+        "default_source": false,
+        "success": false,
+        "original_source": false
+      },
+      {
+        "name": "missing-target-out",
+        "operation": "materialize",
+        "default_source": false,
+        "success": false,
+        "original_source": false
+      },
+      {
+        "name": "switch-out",
+        "operation": "materialize",
+        "default_source": false,
+        "success": false,
+        "original_source": false
+      },
+      {
+        "name": "nested-out",
+        "operation": "materialize",
+        "default_source": false,
+        "success": false,
+        "original_source": false
+      }
+    ]
+  },
+  "TestMaterializeMixedFieldsKeepsFormat": {
+    "python": "test_word_edit.WordEditing.test_materialize_mixed_fields_updates_references_without_losing_format",
+    "calls": [
+      {
+        "name": "mixed-refreshed",
+        "operation": "materialize",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestReferenceWordMaterializeOnlySelectedFieldTypes": {
+    "python": "test_word_edit.WordEditing.test_materialize_only_selected_field_types",
+    "calls": [
+      {
+        "name": "only-SEQ",
+        "operation": "materialize",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "only-REF",
+        "operation": "materialize",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "invalid-only",
+        "operation": "materialize",
+        "default_source": false,
+        "success": false,
+        "original_source": false
+      }
+    ]
+  },
+  "TestReferenceWordMergeNumberingAndImages": {
+    "python": "test_word_edit.WordEditing.test_merge_retains_numbering_and_images",
+    "calls": [
+      {
+        "name": "merged",
+        "operation": "merge",
+        "default_source": true,
+        "success": true,
+        "original_source": true
+      }
+    ]
+  },
+  "TestReferenceWordMultipleReferencesPreserveExistingLinks": {
+    "python": "test_word_edit.WordEditing.test_multiple_references_preserve_existing_links_and_fields",
+    "calls": [
+      {
+        "name": "target-mark",
+        "operation": "bookmark",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "number",
+        "operation": "caption",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "ref-0",
+        "operation": "reference",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "ref-1",
+        "operation": "reference",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "ref-2",
+        "operation": "reference",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "ref-3",
+        "operation": "reference",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "multi-values",
+        "operation": "materialize",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestReferenceWordMultipleWatermarksUniqueAndIndependent": {
+    "python": "test_word_edit.WordEditing.test_multiple_watermarks_have_unique_ids_and_independent_removal",
+    "calls": [
+      {
+        "name": "draft",
+        "operation": "watermark",
+        "default_source": true,
+        "success": true,
+        "original_source": true
+      },
+      {
+        "name": "confidential",
+        "operation": "watermark",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "without-draft",
+        "operation": "watermark-remove",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestNativeEquationAndUnsupportedMath": {
+    "python": "test_word_edit.WordEditing.test_native_equation_and_unsupported_math",
+    "calls": [
+      {
+        "name": "equation",
+        "operation": "equation",
+        "default_source": true,
+        "success": true,
+        "original_source": true
+      },
+      {
+        "name": "badmath",
+        "operation": "equation",
+        "default_source": true,
+        "success": false,
+        "original_source": true
+      }
+    ]
+  },
+  "TestNavigationIncludesOutlineHeadingsAndCaptions": {
+    "python": "test_word_edit.WordEditing.test_navigation_includes_outline_headings_and_captions",
+    "calls": [
+      {
+        "name": "field-caption",
+        "operation": "caption",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "field-cache",
+        "operation": "materialize",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "outline-nav",
+        "operation": "navigation",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestNontextRevisionNotSilentlyAccepted": {
+    "python": "test_word_edit.WordEditing.test_nontext_revision_not_silently_accepted",
+    "calls": [
+      {
+        "name": "bad",
+        "operation": "accept",
+        "default_source": false,
+        "success": false,
+        "original_source": false
+      }
+    ]
+  },
+  "TestReferenceWordNotesPartsAndReferences": {
+    "python": "test_word_edit.WordEditing.test_notes_have_parts_and_references",
+    "calls": [
+      {
+        "name": "note0",
+        "operation": "note",
+        "default_source": false,
+        "success": true,
+        "original_source": true
+      },
+      {
+        "name": "note1",
+        "operation": "note",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "note2",
+        "operation": "note",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestReferenceWordPrivacyPreservesText": {
+    "python": "test_word_edit.WordEditing.test_privacy_preserves_text_and_removes_personal_properties",
+    "calls": [
+      {
+        "name": "commented",
+        "operation": "comment",
+        "default_source": true,
+        "success": true,
+        "original_source": true
+      },
+      {
+        "name": "private",
+        "operation": "privacy",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestReferenceWordPrivacyNoteStories": {
+    "python": "test_word_edit.WordEditing.test_privacy_scrubs_note_parts_and_preserves_their_content",
+    "calls": [
+      {
+        "name": "scrubbed-notes",
+        "operation": "privacy",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestReferenceWordRedactionAcrossStoriesAndMetadata": {
+    "python": "test_word_edit.WordEditing.test_redaction_removes_text_across_runs_headers_and_comments",
+    "calls": [
+      {
+        "name": "redacted",
+        "operation": "redact",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestRedlineCrossRunAcceptRejectPreserveFormat": {
+    "python": "test_word_edit.WordEditing.test_redline_cross_run_accept_and_reject_preserve_format",
+    "calls": [
+      {
+        "name": "revised",
+        "operation": "redline",
+        "default_source": true,
+        "success": true,
+        "original_source": true
+      },
+      {
+        "name": "accepted",
+        "operation": "accept",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "rejected",
+        "operation": "reject",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestRefillMultilineAndTabbedControlKeepsStyle": {
+    "python": "test_word_edit.WordEditing.test_refill_multiline_and_tabbed_control_keeps_style",
+    "calls": [
+      {
+        "name": "refill-template",
+        "operation": "control",
+        "default_source": true,
+        "success": true,
+        "original_source": true
+      },
+      {
+        "name": "refill-first",
+        "operation": "control-fill",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "refill-second",
+        "operation": "control-fill",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestRegexRedactionPreservesRunLengths": {
+    "python": "test_word_edit.WordEditing.test_regex_redaction_preserves_run_lengths_and_source",
+    "calls": [
+      {
+        "name": "masked",
+        "operation": "redact",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "empty-pattern",
+        "operation": "redact",
+        "default_source": false,
+        "success": false,
+        "original_source": false
+      }
+    ]
+  },
+  "TestRepeatedControlTagFillsAllStoriesAndBarriers": {
+    "python": "test_word_edit.WordEditing.test_repeated_content_control_tag_fills_all_stories_and_preserves_styles",
+    "calls": [
+      {
+        "name": "control-template",
+        "operation": "control",
+        "default_source": true,
+        "success": true,
+        "original_source": true
+      },
+      {
+        "name": "repeated-filled",
+        "operation": "control-fill",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "lock-filled",
+        "operation": "control-fill",
+        "default_source": false,
+        "success": false,
+        "original_source": false
+      },
+      {
+        "name": "dataBinding-filled",
+        "operation": "control-fill",
+        "default_source": false,
+        "success": false,
+        "original_source": false
+      },
+      {
+        "name": "richText-filled",
+        "operation": "control-fill",
+        "default_source": false,
+        "success": false,
+        "original_source": false
+      }
+    ]
+  },
+  "TestReplaceExistingInsertionKeepsRevisionChoicesAndFormat": {
+    "python": "test_word_edit.WordEditing.test_replace_existing_insertion_keeps_revision_choices_and_format",
+    "calls": [
+      {
+        "name": "superseded",
+        "operation": "redline-insertion",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "superseded-accept",
+        "operation": "accept",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "superseded-reject",
+        "operation": "reject",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "unknown-insertion",
+        "operation": "redline-insertion",
+        "default_source": false,
+        "success": false,
+        "original_source": false
+      }
+    ]
+  },
+  "TestScopedHeadingNormalizationPreservesNumbering": {
+    "python": "test_word_edit.WordEditing.test_scoped_heading_normalization_preserves_numbering_and_sections",
+    "calls": [
+      {
+        "name": "headings-normalized",
+        "operation": "normalize",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestReferenceWordSequenceMaterialization": {
+    "python": "test_word_edit.WordEditing.test_sequence_materialization",
+    "calls": [
+      {
+        "name": "caption1",
+        "operation": "caption",
+        "default_source": true,
+        "success": true,
+        "original_source": true
+      },
+      {
+        "name": "caption2",
+        "operation": "caption",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "evaluated",
+        "operation": "materialize",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestStaticNavigationResolvesAllLinks": {
+    "python": "test_word_edit.WordEditing.test_static_navigation_resolves_all_links",
+    "calls": [
+      {
+        "name": "navigation",
+        "operation": "navigation",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestReferenceWordScopedStyleNormalization": {
+    "python": "test_word_edit.WordEditing.test_style_normalization_is_scoped",
+    "calls": [
+      {
+        "name": "normal",
+        "operation": "normalize",
+        "default_source": true,
+        "success": true,
+        "original_source": true
+      }
+    ]
+  },
+  "TestTableGeometryHandlesMergedCells": {
+    "python": "test_word_edit.WordEditing.test_table_geometry_handles_merged_cells",
+    "calls": [
+      {
+        "name": "widths",
+        "operation": "table-geometry",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestTableGeometryObeysSectionAndIndent": {
+    "python": "test_word_edit.WordEditing.test_table_geometry_obeys_its_section_and_indent",
+    "calls": [
+      {
+        "name": "invalid-width",
+        "operation": "table-geometry",
+        "default_source": false,
+        "success": false,
+        "original_source": false
+      },
+      {
+        "name": "invalid-width",
+        "operation": "table-geometry",
+        "default_source": false,
+        "success": false,
+        "original_source": false
+      },
+      {
+        "name": "invalid-width",
+        "operation": "table-geometry",
+        "default_source": false,
+        "success": false,
+        "original_source": false
+      },
+      {
+        "name": "page-width",
+        "operation": "table-geometry",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestTemplateSlotFillPreservesUnrelatedParts": {
+    "python": "test_word_edit.WordEditing.test_template_slot_fill_preserves_related_opaque_part",
+    "calls": [
+      {
+        "name": "template-slot",
+        "operation": "control",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "template-filled",
+        "operation": "control-fill",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestTrackedMovesAcceptRejectAndRemoveMarkers": {
+    "python": "test_word_edit.WordEditing.test_tracked_moves_accept_reject_and_remove_markers",
+    "calls": [
+      {
+        "name": "moves-accept",
+        "operation": "accept",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "moves-reject",
+        "operation": "reject",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestReferenceWordWatermarkRemovalPreservesHeader": {
+    "python": "test_word_edit.WordEditing.test_watermark_removal_preserves_header_text",
+    "calls": [
+      {
+        "name": "watermarked",
+        "operation": "watermark",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "clean",
+        "operation": "watermark-remove",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  },
+  "TestWrapRepeatedPlaceholdersAndFillAll": {
+    "python": "test_word_edit.WordEditing.test_wrap_repeated_placeholders_and_fill_all_without_losing_format",
+    "calls": [
+      {
+        "name": "repeated-wrapped",
+        "operation": "control",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      },
+      {
+        "name": "repeated-wrap-filled",
+        "operation": "control-fill",
+        "default_source": false,
+        "success": true,
+        "original_source": false
+      }
+    ]
+  }
+}
