@@ -232,7 +232,7 @@ func TestReferenceFunnelAndWaterfallGeometry(t *testing.T) {
 					centers = append(centers, referenceShapeMetric(t, b, "off", "x")+w/2)
 				}
 				if widths[1] == 0 {
-					t.Fatal("zero width: Python division would fail")
+					t.Fatal("zero width: reference division would fail")
 				}
 				referencePreviewAlmostFourPlaces(t, widths[0]/widths[1], .5)
 				referencePreviewAlmostFourPlaces(t, widths[2]/widths[1], .25)
@@ -250,7 +250,7 @@ func TestReferenceFunnelAndWaterfallGeometry(t *testing.T) {
 				h1 := referenceShapeMetric(t, bars[1], "ext", "cy")
 				h2 := referenceShapeMetric(t, bars[2], "ext", "cy")
 				if h0 == 0 {
-					t.Fatal("zero height: Python division would fail")
+					t.Fatal("zero height: reference division would fail")
 				}
 				referencePreviewAlmostFourPlaces(t, h1/h0, 2)
 				referencePreviewAlmostFourPlaces(t, h2/h0, .5)

@@ -318,7 +318,7 @@ func TestReferenceWaterfallNegativeTotal(t *testing.T) {
 	}
 	denominator := height(0)
 	if denominator == 0 {
-		t.Fatal("zero bar height: Python division would fail")
+		t.Fatal("zero bar height: reference division would fail")
 	}
 	referencePreviewAlmostFourPlaces(t, height(1)/denominator, 1.5)
 	referencePreviewAlmostFourPlaces(t, height(2)/denominator, .5)

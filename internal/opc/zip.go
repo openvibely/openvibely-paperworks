@@ -39,19 +39,19 @@ func ReferenceZIPBytesWithAttrs(p *Package, clock func() time.Time, compress fun
 	// Reference starts ZIP64 well below uint32 overflow. This adapter deliberately
 	// rejects those archives instead of claiming that CreateRaw matches that path.
 	if len(p.Parts) >= 65535 {
-		return nil, fmt.Errorf("Python ZIP requires classic ZIP member count")
+		return nil, fmt.Errorf("ZIP requires classic ZIP member count")
 	}
 	for _, part := range p.Parts {
 		if len(part.Name) == 0 || len(part.Name) > 65535 || !utf8.ValidString(part.Name) || strings.ContainsRune(part.Name, 0) || strings.HasSuffix(part.Name, "/") || len(part.Data) > 1<<30 {
-			return nil, fmt.Errorf("unsupported Python ZIP member: %q", part.Name)
+			return nil, fmt.Errorf("unsupported ZIP member: %q", part.Name)
 		}
 		now := clock()
 		if now.Year() < 1980 || now.Year() > 2107 {
-			return nil, fmt.Errorf("Python ZIP timestamp outside DOS range")
+			return nil, fmt.Errorf("ZIP timestamp outside DOS range")
 		}
 		compressed, err := compress(part.Data)
 		if err != nil {
-			return nil, fmt.Errorf("Python ZIP member %q: %w", part.Name, err)
+			return nil, fmt.Errorf("ZIP member %q: %w", part.Name, err)
 		}
 
 		h := zip.FileHeader{Name: part.Name, Method: zip.Deflate, CreatorVersion: 3<<8 | 20, ReaderVersion: 20, ExternalAttrs: 0600 << 16, CRC32: crc32.ChecksumIEEE(part.Data), UncompressedSize64: uint64(len(part.Data)), CompressedSize64: uint64(len(compressed))}
@@ -74,7 +74,7 @@ func ReferenceZIPBytesWithAttrs(p *Package, clock func() time.Time, compress fun
 			return nil, err
 		}
 		if out.Len() > 1<<30 {
-			return nil, fmt.Errorf("Python ZIP exceeds bounded archive size")
+			return nil, fmt.Errorf("ZIP exceeds bounded archive size")
 		}
 	}
 	if err := zw.Close(); err != nil {

@@ -69,5 +69,5 @@ func TestMutationLocalHeaderNameMismatch(t *testing.T) {
 	if len(entries) != 2 || entries[0].Name() != "2.pptx" || entries[1].Name() != "source.zip" {
 		t.Fatal("directory entries changed")
 	}
-	t.Log("Python and Go reject before callback and preserve the destination sentinel")
+	t.Log("The reference and Go reject before callback and preserve the destination sentinel")
 }

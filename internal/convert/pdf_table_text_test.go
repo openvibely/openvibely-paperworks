@@ -172,7 +172,7 @@ func TestReferencePDFUprightCellTextContracts(t *testing.T) {
 		{"inclusive-gap", []referencePDFTableChar{c("A", 0, 0, 4), c("B", 7, 0, 10)}, "AB"},
 		{"beyond-gap", []referencePDFTableChar{c("A", 0, 0, 4), c("B", 7.01, 0, 10)}, "A B"},
 		{"blank-break", []referencePDFTableChar{c("A", 0, 0, 4), c("\u00a0", 4, 0, 5), c("B", 5, 0, 9)}, "A B"},
-		{"python-control-space", []referencePDFTableChar{c("A", 0, 0, 4), c("\x1c", 4, 0, 5), c("B", 5, 0, 9)}, "A B"},
+		{"reference-control-space", []referencePDFTableChar{c("A", 0, 0, 4), c("\x1c", 4, 0, 5), c("B", 5, 0, 9)}, "A B"},
 		{"ligatures", []referencePDFTableChar{c("ﬀ", 0, 0, 2), c("ﬃ", 2, 0, 4), c("ﬄ", 4, 0, 6), c("ﬁ", 6, 0, 8), c("ﬂ", 8, 0, 10), c("ﬆ", 10, 0, 12), c("ﬅ", 12, 0, 14)}, "ffffifflfiflstst"},
 		{"line-break", []referencePDFTableChar{c("B", 0, 12, 4), c("A", 0, 0, 4)}, "A\nB"},
 		{"chained-tops", []referencePDFTableChar{c("A", 0, 0, 4), c("B", 4, 3, 8), c("C", 8, 6, 12)}, "ABC"},

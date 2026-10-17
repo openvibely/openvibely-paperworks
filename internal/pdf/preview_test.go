@@ -49,10 +49,10 @@ func TestReferenceFallbackPreviewExactPixels(t *testing.T) {
 		actual := load(path)
 		expected := load(fmt.Sprintf("../../testdata/reference-mirror/form-page-%04d.png", i+1))
 		if !sameImage(actual, expected) {
-			t.Fatalf("page %d differs from Python pixels", i+1)
+			t.Fatalf("page %d differs from reference pixels", i+1)
 		}
 		if !sameImage(reference[i], expected) {
-			t.Fatalf("independent images helper differs from pinned Python pixels on page %d", i+1)
+			t.Fatalf("independent images helper differs from pinned reference pixels on page %d", i+1)
 		}
 		if i == 0 && !equalBools(radioMarks(actual), []bool{true, false, false}) {
 			t.Fatal("radio state changed")

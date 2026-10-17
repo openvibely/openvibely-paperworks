@@ -74,5 +74,5 @@ func TestMutationInvalidUTF8Name(t *testing.T) {
 	if len(entries) != 2 || entries[0].Name() != "2.pptx" || entries[1].Name() != "source.zip" {
 		t.Fatal("directory entries changed")
 	}
-	t.Log("Python UnicodeDecodeError / Go wrapped zip.ErrFormat: callback absent, source and destination preserved")
+	t.Log("Reference UnicodeDecodeError / Go wrapped zip.ErrFormat: callback absent, source and destination preserved")
 }

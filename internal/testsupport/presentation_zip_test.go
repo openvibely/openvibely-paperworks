@@ -68,7 +68,7 @@ func TestReferencePresentationZIPMetadata(t *testing.T) {
 			u16 := binary.LittleEndian.Uint16
 			u32 := binary.LittleEndian.Uint32
 			if u32(h) != 0x04034b50 || u16(h[6:]) != c.LocalFlags || u16(h[28:]) != c.LocalExtra || u32(h[14:]) != c.CRC || uint64(u32(h[18:])) != f.CompressedSize64 || uint64(u32(h[22:])) != c.Size {
-				t.Fatal("local header differs from seekable Python semantics")
+				t.Fatal("local header differs from seekable reference semantics")
 			}
 			offset, e := f.DataOffset()
 			if e != nil {

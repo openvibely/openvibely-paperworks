@@ -99,7 +99,7 @@ func TestMutationCP437Name(t *testing.T) {
 	for i, member := range z.File {
 		t.Logf("saved_member=%d name_hex=%x flags=%04x", i, []byte(member.Name), member.Flags)
 	}
-	t.Log("CP437 callback and decoded saved names match Python; container bytes and unrelated acquisition gaps remain open")
+	t.Log("CP437 callback and decoded saved names match the reference; container bytes and unrelated acquisition gaps remain open")
 }
 
 func TestMutationCP437DecodedDuplicate(t *testing.T) {

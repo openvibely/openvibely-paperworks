@@ -31,7 +31,7 @@ func referenceParagraphIsCaption(p, styles *etree.Element) (bool, error) {
 		selected = fallback
 	}
 	if selected == nil {
-		return false, fmt.Errorf("paragraph has no resolved style (Python p.style.name would fail)")
+		return false, fmt.Errorf("paragraph has no resolved style (reference style-name lookup would fail)")
 	}
 	name := office.AttrV(office.Child(selected, nsW, "name"), nsW, "val")
 	// BabelFish maps internal 'caption' to UI 'Caption'; other aliases cannot
