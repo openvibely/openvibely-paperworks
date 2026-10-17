@@ -2,3 +2,6 @@
 /paperworks
 /paperworks.exe
 /dist/
+
+.worktrees/
+.openvibely/
