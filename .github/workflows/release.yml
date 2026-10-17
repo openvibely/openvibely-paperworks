@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.26.4'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends zip libreoffice-writer libreoffice-calc libreoffice-impress fonts-liberation fonts-dejavu-core fonts-noto-core
+      - name: Test and vet
+        run: make test
+      - name: Build release archives
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          [[ "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?$ ]]
+          PAPERWORKS_VERSION="${RELEASE_TAG#v}" bash scripts/release.sh
+      - name: Smoke test Linux binary
+        run: bash scripts/smoke.sh "$PWD/dist/paperworks-linux-amd64" "$RUNNER_TEMP/release-smoke"
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          # Do not overwrite assets of an existing release.
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "Release already exists; leaving its assets unchanged."
+            exit 0
+          fi
+          flags=()
+          if [[ "$RELEASE_TAG" == *-* ]]; then flags+=(--prerelease --latest=false); fi
+          gh release create "$RELEASE_TAG" dist/*.zip dist/SHA256SUMS dist/*.buildinfo.txt \
+            --verify-tag --title "Paperworks $RELEASE_TAG" --generate-notes "${flags[@]}"

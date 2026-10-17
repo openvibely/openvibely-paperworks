@@ -21,6 +21,23 @@ go test ./...
 bash scripts/build.sh
 ```
 
+Release packages are built with Go 1.26.4:
+
+```sh
+PAPERWORKS_VERSION=0.0.1-rc1 bash scripts/release.sh
+```
+
+This creates `dist/paperworks-{os}-{arch}.zip`, `SHA256SUMS`, and build-information
+files. Each ZIP contains `paperworks` at its root (`paperworks.exe` on Windows).
+Publish the ZIPs and checksums, then use each asset URL and ZIP checksum in the
+OpenVibely skill dependency's `packages` entry (`format: zip`). LibreOffice is a
+separate dependency; Node and SheetJS are test-only and are not bundled.
+
+Pushing a version tag such as `v0.0.1-rc1` runs `.github/workflows/release.yml`:
+tests and vet, cross-platform builds, a Linux smoke test, then GitHub publication.
+Tags containing a prerelease suffix are marked prereleases, not the latest stable
+release. Existing release assets are never overwritten automatically.
+
 GitHub Actions installs LibreOffice, Node, and fonts, then uses `make deps` for
 the checksum-verified SheetJS 0.20.3 reader and shared dependency checks. Downloaded
 tools are cached between runs. CI runs the full Go suite and vet. Test logs are retained
