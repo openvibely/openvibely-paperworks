@@ -1,0 +1,1595 @@
+{
+  "reference": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-reference/repository/internal/builtinskills/documents/scripts/test_presentation_native.py": "6199f9f1767fa49fa3743f11fb6545468da586c68aabe28e79ba942fdb0513fb",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-reference/repository/internal/builtinskills/documents/scripts/document_native.py": "eb2407fed420206fc34ad88f3fceb613ee694d3bf7f239b19cce3a73a6b9c420",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-reference/repository/internal/builtinskills/documents/scripts/document_check.py": "f7f724147f3678383b5d64b2d128639c2df3115404f07624dbcca4419ef15e94"
+  },
+  "zipfile_source_sha256": "94c53aedba0b0f7d6f71bf8ec34973e666ee0c0e56e6800ff4c26d2e3951987a",
+  "scope": "Original PresentationNative.mutate unchanged. Fixed fixture timestamps; no output byte-equality claim. Error types are Python observations, not Go type-equivalence.",
+  "cases": [
+    {
+      "name": "plain-method-0-field-24-0-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8AAA==",
+      "input_sha256": "d19941bf6dd277039fcc018dbed054399a6eb2a39c4760e5ddee756763203ed1",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "comment-method-0-field-24-0-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8HAGNvbW1lbnQ=",
+      "input_sha256": "e088105ff5ad370d9bc44859156eacc7efe89abcbeb46c6cc1e2fed4dd1aecd0",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-method-0-field-24-0-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8AAHRyYWlsaW5n",
+      "input_sha256": "cdb5adbbb907b3032b566302ce9010b69f7e592c62ab239f3e817c7c16de87c8",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "plain-method-0-field-24-0-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8AAA==",
+      "input_sha256": "bffeb4eb3ad3ef7881ab7fff4c407904217023477f03ac02f71c17454e75a272",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-method-0-field-24-0-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8HAGNvbW1lbnQ=",
+      "input_sha256": "a4105709b294507749dd7ec4d4f6467a5227d1939d80ab74392c12f286a58cad",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-method-0-field-24-0-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8AAHRyYWlsaW5n",
+      "input_sha256": "c378f82bd844298c1e5ad8d113bd3bdbb6dabdb528aa05c5423ef5f3b0d76caa",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-method-0-field-24-99-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAABjAAAAAAAAAAEAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8AAA==",
+      "input_sha256": "5aa2ca8254fdbf76233280e5224d77ad3ab4a926606360c083d94aecdf013f88",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "comment-method-0-field-24-99-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAABjAAAAAAAAAAEAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8HAGNvbW1lbnQ=",
+      "input_sha256": "801fc0042bb968e25d52d4565eaac7ae985e8dea3dd3592c9e05ec489908a455",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-method-0-field-24-99-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAABjAAAAAAAAAAEAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8AAHRyYWlsaW5n",
+      "input_sha256": "f3e93bff17b2d48a4d50ff1a49274e3d272bb95c02f7216ad64342534671bca4",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "plain-method-0-field-24-99-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAABjAAAAAAAAAAEAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8AAA==",
+      "input_sha256": "551619c763f92391e0f7ddf9bdf406665c113878d62fb656a6a3e4a26e2b00e3",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-method-0-field-24-99-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAABjAAAAAAAAAAEAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8HAGNvbW1lbnQ=",
+      "input_sha256": "2a0ba8cc8bd3ac72d1ef54b89ea70119980c172190d7f3bbab04f9a5b5b8c74e",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-method-0-field-24-99-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAABjAAAAAAAAAAEAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8AAHRyYWlsaW5n",
+      "input_sha256": "b4b2e3eb685b3f7bbc623286b140bf94bab3102b7184c69095fef624e05302b7",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-method-0-field-32-0-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8AAA==",
+      "input_sha256": "3686b24f3402d92ca5c2086c479088d49e9b44e4812348a12105af748fa014da",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "comment-method-0-field-32-0-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8HAGNvbW1lbnQ=",
+      "input_sha256": "856f15eb045cd75208561b88cd55bf674a8b2e2a177670d28a74735e992207eb",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-method-0-field-32-0-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8AAHRyYWlsaW5n",
+      "input_sha256": "c9db3a77547eac29125f84e12c5eb1b15782cb12aa8f59529f572e1fcd690688",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "plain-method-0-field-32-0-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8AAA==",
+      "input_sha256": "d60ef60477d0946e2aa591e3312d256cd952402d26eee65d866eada7600cc003",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-method-0-field-32-0-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8HAGNvbW1lbnQ=",
+      "input_sha256": "b866a7ad0cdff46182ebbca743e6a6995e87d41847f393709fd310dfe6080ea0",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-method-0-field-32-0-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8AAHRyYWlsaW5n",
+      "input_sha256": "bf4626a0e1ec90eb1d8e1889cae7d7129f703861bcf3d286b19069d1b3d860be",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-method-0-field-32-99-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAAABAAAAAAAAAGMAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8AAA==",
+      "input_sha256": "f9ea02e3332d6e1d66b300e0b9351c757187193702359cbe874c8c393259b623",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "comment-method-0-field-32-99-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAAABAAAAAAAAAGMAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8HAGNvbW1lbnQ=",
+      "input_sha256": "55216ee2e2d003ed52e820bbd05cc8f5478443e9f34379b81892092a75354fec",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-method-0-field-32-99-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAAABAAAAAAAAAGMAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8AAHRyYWlsaW5n",
+      "input_sha256": "bcd08ba6b366e596ff4aee09b0702c510f2eb5162fdab3447754938a933586c4",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "plain-method-0-field-32-99-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAAABAAAAAAAAAGMAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8AAA==",
+      "input_sha256": "414c83157e31110e642e262b1f0772827720d1db5f8a3d5e17b3e5f95a6ae2b7",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-method-0-field-32-99-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAAABAAAAAAAAAGMAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8HAGNvbW1lbnQ=",
+      "input_sha256": "06a2cbe74dd2d85db60ce638a3b5aa7eac8daa20e5c7c6f316edc31a9a9d8530",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-method-0-field-32-99-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5//////////8FABwAAAAAAAAAAACAAf////9maXJzdAEAGAAFAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABQSwYGLAAAAAAAAAAtAC0AAAAAAAAAAAABAAAAAAAAAGMAAAAAAAAATwAAAAAAAAAoAAAAAAAAAFBLBgcAAAAAdwAAAAAAAAABAAAAUEsFBgAAAAD///////////////8AAHRyYWlsaW5n",
+      "input_sha256": "21a72669348c849e7bac6b4c116ef284bceaca27a86835310d0c96fa1435173b",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-method-8-field-24-0-none",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wAA",
+      "input_sha256": "4b60cb872cd668495f01eb591642b9462bec5489ec09f410e2244b56f7eab987",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "comment-method-8-field-24-0-none",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wcAY29tbWVudA==",
+      "input_sha256": "d67b7a9abd360abc118a5a0529711dda0fc1360cb5c04ed39e67663302d2a1c3",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-method-8-field-24-0-none",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wAAdHJhaWxpbmc=",
+      "input_sha256": "7e2c2f134a9af980075facfad2d9c5aeae4025c9132a731932adb54e1c9afa61",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "plain-method-8-field-24-0-name",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAeGlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wAA",
+      "input_sha256": "3cab70dfa69c3157febb54b1107754410a8b8670d52b8b29b6745aa31e2dfa5a",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-method-8-field-24-0-name",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAeGlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wcAY29tbWVudA==",
+      "input_sha256": "e821714dfae574b55bc0b7603fc30565c90de306d7aaba0d55c6eaf5dc9fc3bf",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-method-8-field-24-0-name",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAeGlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wAAdHJhaWxpbmc=",
+      "input_sha256": "bc444cb28188b50b48be92c0a321b8114e00a2dec859daf1ab8a195a9e2f9734",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-method-8-field-24-99-none",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAGMAAAAAAAAAAQAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wAA",
+      "input_sha256": "8682082212b27d592e8181eb9b63ac133635c2133d031362dae67d9adb82b6fe",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "comment-method-8-field-24-99-none",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAGMAAAAAAAAAAQAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wcAY29tbWVudA==",
+      "input_sha256": "abe45c8579aaf761b67de3d0813546cb3fc5c4cc73bfede7aa38f9698bfc1c00",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-method-8-field-24-99-none",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAGMAAAAAAAAAAQAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wAAdHJhaWxpbmc=",
+      "input_sha256": "4715d401c7a7efc755d7a9bf248e5e7136490f30ca334f19216c95abf99cdd2c",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "plain-method-8-field-24-99-name",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAeGlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAGMAAAAAAAAAAQAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wAA",
+      "input_sha256": "f495e0b13edce21f72f39f500fcb19c69e85fa777ab0b42692c47c95a0f4cc87",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-method-8-field-24-99-name",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAeGlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAGMAAAAAAAAAAQAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wcAY29tbWVudA==",
+      "input_sha256": "f28af409348f9a121135426e49caed986c3f2c780873fb0298db1f316340a656",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-method-8-field-24-99-name",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAeGlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAGMAAAAAAAAAAQAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wAAdHJhaWxpbmc=",
+      "input_sha256": "0cf8e27916e7d7906dd1ecc40c83faceb542d1eb7b57f47a834e3824b1197ff2",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-method-8-field-32-0-none",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wAA",
+      "input_sha256": "a83aa8bbb41cae29458d6b380b88c938ee31dca9b55de848aa48a7b19390b479",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "comment-method-8-field-32-0-none",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wcAY29tbWVudA==",
+      "input_sha256": "237c383fb979e077bc359edbcbae087e21305f010d35f82f2751fc29bfb0b9fa",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-method-8-field-32-0-none",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wAAdHJhaWxpbmc=",
+      "input_sha256": "c9c6e5ec409f9307c47978e22644b0ded3dba1f86edd7a9a6c91fb4996c3c421",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "plain-method-8-field-32-0-name",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAeGlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wAA",
+      "input_sha256": "202d9a6f69cd42182a226376d6550932b628118d8de91babd43552484211ec6b",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-method-8-field-32-0-name",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAeGlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wcAY29tbWVudA==",
+      "input_sha256": "dab3bc69ffd3e37236292bd109477add16e910d6753d2ea3f81531745460c6af",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-method-8-field-32-0-name",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAeGlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wAAdHJhaWxpbmc=",
+      "input_sha256": "793313fe8b8eb173e5906d87a95109f4184cb50391ccb3ae2fe3ef91957456c3",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-method-8-field-32-99-none",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAAEAAAAAAAAAYwAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wAA",
+      "input_sha256": "65c29c52779341ec63fde386555805880bfc7a6927f33c862040e800f66bebdb",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "comment-method-8-field-32-99-none",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAAEAAAAAAAAAYwAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wcAY29tbWVudA==",
+      "input_sha256": "5e6499d6015d36b2d94e291a23db740c47fe0442f208418ca30f625816f8340f",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-method-8-field-32-99-none",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAAEAAAAAAAAAYwAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wAAdHJhaWxpbmc=",
+      "input_sha256": "a185a5ba38f981854495d5df4afef5865bc5c2759a9089468742d1c40fe05df8",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "plain-method-8-field-32-99-name",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAeGlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAAEAAAAAAAAAYwAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wAA",
+      "input_sha256": "37640f3043c89db68e2e4910cd2afd1fbb42fc9ce8fd594dc9088f9606eb32d2",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-method-8-field-32-99-name",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAeGlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAAEAAAAAAAAAYwAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wcAY29tbWVudA==",
+      "input_sha256": "b4a9cc41d0801ca4e7c6e632eb942f18b1193eb3286d8d6b1a4f33f9f59f84bd",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-method-8-field-32-99-name",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAeGlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/n//////////wUAHAAAAAAAAAAAAIAB/////2ZpcnN0AQAYAAUAAAAAAAAABwAAAAAAAAAAAAAAAAAAAFBLBgYsAAAAAAAAAC0ALQAAAAAAAAAAAAEAAAAAAAAAYwAAAAAAAABPAAAAAAAAACoAAAAAAAAAUEsGBwAAAAB5AAAAAAAAAAEAAABQSwUGAAAAAP///////////////wAAdHJhaWxpbmc=",
+      "input_sha256": "eea255958f47e27dc2da1fe04133e890672c3b593a5294a29c77f592231c21e6",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-method-12-field-24-0-none",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAA=",
+      "input_sha256": "71b440f18ba14e7fdcf44058c62db0cc346108a528d5823c86be73dabdfac9df",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "comment-method-12-field-24-0-none",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////BwBjb21tZW50",
+      "input_sha256": "561d553dbb01e092a4d682695efcdb4916a38e55be2720c97968c58a74d8e3e6",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-method-12-field-24-0-none",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAB0cmFpbGluZw==",
+      "input_sha256": "14f128ddb3b1d669c98753ebb4eea701087b01660c43e16351f52f7bec79fa0d",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "plain-method-12-field-24-0-name",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAeGlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAA=",
+      "input_sha256": "dfd0798c3415dc1b4440a9ca4788aaa721bd181771cee1c2dcc07637c05eee02",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-method-12-field-24-0-name",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAeGlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////BwBjb21tZW50",
+      "input_sha256": "11534876cc5085d4b1a41185310a15034e35201bc3d72b4f601c41cdd9219ec9",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-method-12-field-24-0-name",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAeGlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAB0cmFpbGluZw==",
+      "input_sha256": "1cfa682f872f95ab4efa95739bbb79b436e07f92da25157c49e795a26fe5293a",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-method-12-field-24-99-none",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAYwAAAAAAAAABAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAA=",
+      "input_sha256": "aa347db5549d6a91375d80c502531fd382518a4eb592d0e0ac8e30ea2d3317fc",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "comment-method-12-field-24-99-none",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAYwAAAAAAAAABAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////BwBjb21tZW50",
+      "input_sha256": "23b352228d9805f8ab342d7aac0b395063c85f860b23d05a0fb627eceea5e6a5",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-method-12-field-24-99-none",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAYwAAAAAAAAABAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAB0cmFpbGluZw==",
+      "input_sha256": "e3bed9f61cfb7ad9168b30dd1c6008e165d0586c6311c87dad7d4b9325388e0d",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "plain-method-12-field-24-99-name",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAeGlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAYwAAAAAAAAABAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAA=",
+      "input_sha256": "84e8a9baa422d1c51202254507cf2c6e2f26fb29ee432e48856db5cfbe7b3333",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-method-12-field-24-99-name",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAeGlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAYwAAAAAAAAABAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////BwBjb21tZW50",
+      "input_sha256": "62c17326343ac67798557e151f64ab8e57cedc90cd3a4a3d514102dd9b031477",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-method-12-field-24-99-name",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAeGlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAYwAAAAAAAAABAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAB0cmFpbGluZw==",
+      "input_sha256": "05b672ceb686353c5176a91c2743f65bc0bbe312da8959fc602147a8a20dff26",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-method-12-field-32-0-none",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAA=",
+      "input_sha256": "fdfcb56cc3fe36ef3dddaeb3ea40f83e4cdc1b49b28d09493516bb2286818081",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "comment-method-12-field-32-0-none",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////BwBjb21tZW50",
+      "input_sha256": "91f2b9cb55f4115e34bfe78b608c1ccd20e30353668cb91f38f3e1bdd50758d7",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-method-12-field-32-0-none",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAB0cmFpbGluZw==",
+      "input_sha256": "784ab08f9bec86e34ed5a08e0de5dbd7224f3387f998faf02de1eb41b2c314c6",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "plain-method-12-field-32-0-name",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAeGlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAA=",
+      "input_sha256": "738805b1f1ef4c7642b2b9df1c919c3b1c2fe8420154e42509a11b094ef669b1",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-method-12-field-32-0-name",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAeGlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////BwBjb21tZW50",
+      "input_sha256": "7bcaa04cc8f32714b9b4285473db31f014e758c9d5f5e311da7e261d84c77df2",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-method-12-field-32-0-name",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAeGlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAB0cmFpbGluZw==",
+      "input_sha256": "4bba6e8bb8adf7cf0a057fe831cc1b4bb12a205120bd697c37d9c4ecad1ca2ac",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-method-12-field-32-99-none",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAABjAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAA=",
+      "input_sha256": "82754233f85f9117fbfe415c85852ce1977435344eec081ce4efa46c2255adbc",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "comment-method-12-field-32-99-none",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAABjAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////BwBjb21tZW50",
+      "input_sha256": "24c3edfadc2ad494ce3871a5c0c26b83f4004a5c48d224c7c21525ffccfbe425",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-method-12-field-32-99-none",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAZmlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAABjAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAB0cmFpbGluZw==",
+      "input_sha256": "844603910f6907d5a2a5ed14fd30cf8893ecd3c60da3d76aa9103caf7ceae872",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "plain-method-12-field-32-99-name",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAeGlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAABjAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAA=",
+      "input_sha256": "eefbd2a084212e80d39911731ec98d1032e65b7d2664b1a7254100976b095aa4",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-method-12-field-32-99-name",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAeGlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAABjAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////BwBjb21tZW50",
+      "input_sha256": "79bf70b34cb68e2227eb3746578217c55ca68df60ca7e96aa21177a279fa8f7b",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-method-12-field-32-99-name",
+      "input": "UEsDBC4AAAAMAIMYIlgl0+P5KgAAAAUAAAAFAAAAeGlyc3RCWmg5MUFZJlNZHww0DAAAAYGAJgAJACAAMM0AwabAcXckU4UJAfDDQMBQSwECLgMuAAAADACDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAqAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAABjAAAAAAAAAE8AAAAAAAAATQAAAAAAAABQSwYHAAAAAJwAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAB0cmFpbGluZw==",
+      "input_sha256": "a26f115fb75359af0f244d4e8d0dd917db09818c6cfdf3cd0ad5e954be1a8d07",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-method-14-field-24-0-none",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAZmlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAA=",
+      "input_sha256": "6ff419f8d298e64ceea66fd010cc7e3d61f35ad56c3cfc61cdd7ea25516d26f6",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "comment-method-14-field-24-0-none",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAZmlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////BwBjb21tZW50",
+      "input_sha256": "67be3d1e5625993bacc54ab8d143a6dabdf9f7da6a91002d9f46b97871d74a7e",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-method-14-field-24-0-none",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAZmlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAB0cmFpbGluZw==",
+      "input_sha256": "7f00cec98eb133f4a9a64c6e505e0c972545bb160af6eb8390c951e701c9ff05",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "plain-method-14-field-24-0-name",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAeGlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAA=",
+      "input_sha256": "94f124ef84e00c4ecba85dd44c63982c5b38d96d492b8fbed6a6c05491d2d872",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-method-14-field-24-0-name",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAeGlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////BwBjb21tZW50",
+      "input_sha256": "cc7d012036c0d4cc150032fec0a8fa5d5bf50a40b4f9849c180d32c7acbb83d9",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-method-14-field-24-0-name",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAeGlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAB0cmFpbGluZw==",
+      "input_sha256": "8c8c01176a2019e98952f2adebd3b6db8721e0d4a35bb5d5910e90027c357059",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-method-14-field-24-99-none",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAZmlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAYwAAAAAAAAABAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAA=",
+      "input_sha256": "41e91dc45d6910e040c7af9fe9bc580d1265d78d1533f8a71d8a5bf24ae1ee1d",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "comment-method-14-field-24-99-none",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAZmlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAYwAAAAAAAAABAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////BwBjb21tZW50",
+      "input_sha256": "effa215cf84913b9e38c4921201d514b19433464b8cbdc51a8d6cf861fba0e4d",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-method-14-field-24-99-none",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAZmlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAYwAAAAAAAAABAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAB0cmFpbGluZw==",
+      "input_sha256": "59819588b87e96fffe6f12e79bed042b0aa8c0126d6319040615a81cf8891702",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "plain-method-14-field-24-99-name",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAeGlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAYwAAAAAAAAABAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAA=",
+      "input_sha256": "e255516971bcb890fc19d2f19ee55b2b98c39fa78438a0ea6dd9c8c026488a62",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-method-14-field-24-99-name",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAeGlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAYwAAAAAAAAABAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////BwBjb21tZW50",
+      "input_sha256": "c7db76e1982c740f737d364624739a49d9477a92a95a8ebbde633b84e7eaccbe",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-method-14-field-24-99-name",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAeGlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAYwAAAAAAAAABAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAB0cmFpbGluZw==",
+      "input_sha256": "a3545080f6d5fcd063dc258e773ed5a3400bac95d84d0758a6e1057bc0876ec6",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-method-14-field-32-0-none",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAZmlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAA=",
+      "input_sha256": "2c28ec7324cbe169fd75f93a32c81459f376b39d8c556c15948d9cd7b66dbe96",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "comment-method-14-field-32-0-none",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAZmlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////BwBjb21tZW50",
+      "input_sha256": "99c5b5d2e70f1ff155aaa52c5c4bd126eb371fb98d203177d5e1d014b982bff0",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-method-14-field-32-0-none",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAZmlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAB0cmFpbGluZw==",
+      "input_sha256": "f4eb9c4c8303d4a11f5ab8555d4b70b7a1571593cb220f302c02ec7b8d56be2d",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "plain-method-14-field-32-0-name",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAeGlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAA=",
+      "input_sha256": "51760a322d8ac24df7468d42e2b6d13c66b0fb5dc0af72d39f3961b975a7998d",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-method-14-field-32-0-name",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAeGlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////BwBjb21tZW50",
+      "input_sha256": "37cc5bdcd08f4879b2663085fc36e6bce1b5c57d848979ffe0b277108340f835",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-method-14-field-32-0-name",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAeGlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAB0cmFpbGluZw==",
+      "input_sha256": "ac0dbe23bbd1f2619ab56e5cdb7c3da8f98902a95784409aeed7273fc85b67fb",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-method-14-field-32-99-none",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAZmlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAABjAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAA=",
+      "input_sha256": "48b4c1f6553d2e682d6acd4f9a5ebc234c12084098aa908ef4f84061fb7bad8c",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "comment-method-14-field-32-99-none",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAZmlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAABjAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////BwBjb21tZW50",
+      "input_sha256": "5658f34a691320cb12ee2b193d614fb03f427bc54aed54426d121947930aa571",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-method-14-field-32-99-none",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAZmlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAABjAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAB0cmFpbGluZw==",
+      "input_sha256": "1d3f91ae9c976aa16d04c4cee1ed04f8cadadec29417f82e1c6746e37b72c8b0",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "plain-method-14-field-32-99-name",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAeGlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAABjAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAA=",
+      "input_sha256": "68994cad8f5551c6df0f2737208ba5bd826358860dc8f0b4933b8bc07a606254",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-method-14-field-32-99-name",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAeGlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAABjAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////BwBjb21tZW50",
+      "input_sha256": "7cf24306f4365ab29166ff100d9927b69c6d375bad255840da7642a59101b430",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-method-14-field-32-99-name",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAUAAAAFAAAAeGlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+f//////////BQAcAAAAAAAAAAAAgAH/////Zmlyc3QBABgABQAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAUEsGBiwAAAAAAAAALQAtAAAAAAAAAAAAAQAAAAAAAABjAAAAAAAAAE8AAAAAAAAAOwAAAAAAAABQSwYHAAAAAIoAAAAAAAAAAQAAAFBLBQYAAAAA////////////////AAB0cmFpbGluZw==",
+      "input_sha256": "a9fed9a4b3616b0c7ff5b6409b6c68077f9208b0d5c414bb0acc857c323eae0c",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    }
+  ]
+}

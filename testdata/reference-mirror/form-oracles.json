@@ -1,0 +1,98 @@
+{
+  "source_sha256": "4d08ca935a31cd01f6122a113afd4fb98f4d313be0f7e27db17545c6ccdf099b",
+  "versions": {
+    "pypdf": "6.20.1",
+    "pypdfium2": "5.14.0"
+  },
+  "pixel_format": "RGB, scale=2, optimize_mode=lcd",
+  "cases": {
+    "filled": [
+      {
+        "width": 800,
+        "height": 800,
+        "rgb_sha256": "502402427a269197e853645b3c83a8bd024a69862c563c4c8ab268a98a91550d"
+      },
+      {
+        "width": 800,
+        "height": 800,
+        "rgb_sha256": "f1bf59889686678dc19313d00c6c42ed8826e8bcfe42471f4c883da1c7ecac25"
+      }
+    ],
+    "resource": [
+      {
+        "width": 800,
+        "height": 800,
+        "rgb_sha256": "1b128b7cabfc1679433e51b754b0bc7a4a9ba6e611a668328b704dab88b701fa"
+      },
+      {
+        "width": 800,
+        "height": 800,
+        "rgb_sha256": "898be1fbd9714d54a37a69b3b57cbda0d71f940d93dd3a8f006906141a4a9dda"
+      }
+    ],
+    "stale": [
+      {
+        "width": 800,
+        "height": 800,
+        "rgb_sha256": "1b128b7cabfc1679433e51b754b0bc7a4a9ba6e611a668328b704dab88b701fa"
+      },
+      {
+        "width": 800,
+        "height": 800,
+        "rgb_sha256": "4f503073015f40f61ef567ca9240bffefcb6f9f899fcfbc770638d1af314e9c4"
+      }
+    ],
+    "missing": [
+      {
+        "width": 800,
+        "height": 800,
+        "rgb_sha256": "1b128b7cabfc1679433e51b754b0bc7a4a9ba6e611a668328b704dab88b701fa"
+      },
+      {
+        "width": 800,
+        "height": 800,
+        "rgb_sha256": "4f503073015f40f61ef567ca9240bffefcb6f9f899fcfbc770638d1af314e9c4"
+      }
+    ],
+    "state": [
+      {
+        "width": 800,
+        "height": 800,
+        "rgb_sha256": "1b128b7cabfc1679433e51b754b0bc7a4a9ba6e611a668328b704dab88b701fa"
+      },
+      {
+        "width": 800,
+        "height": 800,
+        "rgb_sha256": "898be1fbd9714d54a37a69b3b57cbda0d71f940d93dd3a8f006906141a4a9dda"
+      }
+    ],
+    "transform-0": [
+      {
+        "width": 800,
+        "height": 800,
+        "rgb_sha256": "56d5d9ddc19ca7d752fa1599b132c1db55af896ac8263a544cab512c6831bb31"
+      }
+    ],
+    "transform-1": [
+      {
+        "width": 800,
+        "height": 800,
+        "rgb_sha256": "f7a5e8f9c4c45436a20ccc7e7e0ceb680e9e0a3c4042fafd4e28a62025c00694"
+      }
+    ],
+    "transform-2": [
+      {
+        "width": 800,
+        "height": 800,
+        "rgb_sha256": "56d5d9ddc19ca7d752fa1599b132c1db55af896ac8263a544cab512c6831bb31"
+      }
+    ],
+    "transform-3": [
+      {
+        "width": 800,
+        "height": 800,
+        "rgb_sha256": "56d68b3bbc5118c2be4eee0abdcbb1d115c288747efeee26cc16609386e55638"
+      }
+    ]
+  }
+}

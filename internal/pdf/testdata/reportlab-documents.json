@@ -1,0 +1,179 @@
+{
+  "sources": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/reportlab/pdfbase/pdfdoc.py": "22019a5fae551f3b430b666e568e5ba0d199376b59474675f96a659de8cd0a86",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/reportlab/lib/utils.py": "53d6a039afe4323aeda0935b7c5fb819405db47b3a9e49bfbd2ff3a8e6332d67",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/reportlab/platypus/doctemplate.py": "15d6585be6c6e26e8db33e8df1836063e643c7cbd53c5a20a7d1a2b10a05d717",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/reportlab/pdfgen/canvas.py": "a5583a68a867e903b3b4d28e5c60ac5904fc812fa8dae2aa50d709461fd2a290"
+  },
+  "clock": "1706933107",
+  "cases": [
+    {
+      "name": "title",
+      "spec": {
+        "pages": [
+          {
+            "size": [
+              600,
+              850
+            ],
+            "fixed_paragraphs": [
+              {
+                "text": "Revenue report",
+                "font": "Helvetica-Bold",
+                "font_size": 18,
+                "leading": 22,
+                "align": "center",
+                "width": 439.2756,
+                "pos": [
+                  78,
+                  741.8898
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "sha256": "b2b9e1c0167d6ff1a6abf47d7344bc47054f6eb342d7d0db9f22ab4579ff45b9"
+    },
+    {
+      "name": "body",
+      "spec": {
+        "pages": [
+          {
+            "size": [
+              600,
+              850
+            ],
+            "fixed_paragraphs": [
+              {
+                "text": "Revenue totaled $200 across subscriptions and services.",
+                "font": "Helvetica",
+                "font_size": 10,
+                "leading": 12,
+                "align": "left",
+                "width": 439.2756,
+                "pos": [
+                  78,
+                  723.8898
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "sha256": "3691682b203dbebd8b59283f1f416ababa009e003bdcd8aa78588b201cc9d5a3"
+    },
+    {
+      "name": "escaped",
+      "spec": {
+        "pages": [
+          {
+            "size": [
+              600,
+              850
+            ],
+            "fixed_paragraphs": [
+              {
+                "text": "Price (USD) \\\\ total tax",
+                "font": "Helvetica",
+                "font_size": 11,
+                "leading": 15,
+                "align": "right",
+                "width": 320.125,
+                "pos": [
+                  -12.5,
+                  65.25
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "sha256": "19d4f48f0dfb8476974d756806fd14f9485208ba3a66c08be230419689365149"
+    },
+    {
+      "name": "bold",
+      "spec": {
+        "pages": [
+          {
+            "size": [
+              600,
+              850
+            ],
+            "fixed_paragraphs": [
+              {
+                "text": "A short bold line",
+                "font": "Helvetica-Bold",
+                "font_size": 14.5,
+                "leading": 18,
+                "align": "left",
+                "width": 250,
+                "pos": [
+                  0,
+                  0
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "sha256": "6e6399e2050b30824e9d0ce96ef7ee56111920f5ae111d3a7220c5afc904d32d"
+    },
+    {
+      "name": "center",
+      "spec": {
+        "pages": [
+          {
+            "size": [
+              600,
+              850
+            ],
+            "fixed_paragraphs": [
+              {
+                "text": "Small centered",
+                "font": "Helvetica",
+                "font_size": 8,
+                "leading": 10,
+                "align": "center",
+                "width": 130,
+                "pos": [
+                  12,
+                  24
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "sha256": "338ef7ff4a2817dce8017ed74a5736fd41bde1e60eefa25c04161fa5ad6ae00d"
+    },
+    {
+      "name": "right",
+      "spec": {
+        "pages": [
+          {
+            "size": [
+              600,
+              850
+            ],
+            "fixed_paragraphs": [
+              {
+                "text": "Right edge",
+                "font": "Helvetica-Bold",
+                "font_size": 22,
+                "leading": 30,
+                "align": "right",
+                "width": 300,
+                "pos": [
+                  20,
+                  30
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "sha256": "acb60237382bb714d7f0816260a8630525c849ad823f75f0e68899ca19654f90"
+    }
+  ]
+}

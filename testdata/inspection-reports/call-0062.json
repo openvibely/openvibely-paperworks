@@ -1,0 +1,67 @@
+{
+  "external_relationships": [],
+  "issues": [
+    "xl/worksheets/sheet1.xml:B1 has no formula cache"
+  ],
+  "package_parts": {
+    "docProps/app.xml": {
+      "bytes": 205,
+      "sha256": "209fca6b00afe72a5029754b94be5953d8f16d96f67130325566b9366ad4ccc5"
+    },
+    "docProps/core.xml": {
+      "bytes": 555,
+      "sha256": "cd5667a031c4f5ad61fb5b446e98b56a5b719de6987c8a697003e2b2378cc060"
+    },
+    "xl/theme/theme1.xml": {
+      "bytes": 10140,
+      "sha256": "d15e8ebf78ef7b9720839d7ae8fdc81a7df5bc24706d8e137df61a5683c358d9"
+    },
+    "xl/worksheets/sheet1.xml": {
+      "bytes": 758,
+      "sha256": "f3b263ad79a8508115cfd60e3b36ce5aa1c75fcab8a8fb04d284015c4baa4124"
+    },
+    "xl/styles.xml": {
+      "bytes": 2550,
+      "sha256": "ceabc26839ae8c5285c667366bffa538562f76e219eb4f2f5188626232d96900"
+    },
+    "_rels/.rels": {
+      "bytes": 531,
+      "sha256": "c545941ba36c15fcdce4ae4568c663f3ced1a2226ad5082d3fd66b178bfac11a"
+    },
+    "xl/workbook.xml": {
+      "bytes": 546,
+      "sha256": "0118136ea9ff4b7a8178fc79b6a9a5fa285927dc238c79c67b418fdb505dd400"
+    },
+    "xl/_rels/workbook.xml.rels": {
+      "bytes": 504,
+      "sha256": "26ad8fcc38d41229833e624496df364492772697ad2e5d6696e1738f05ba225f"
+    },
+    "[Content_Types].xml": {
+      "bytes": 975,
+      "sha256": "ba5af858089dd3357b4e4408a86694ff0a62ec37f21ef57a3a09544dc0ab18c4"
+    }
+  },
+  "sheets": [
+    "Sheet"
+  ],
+  "calculation_settings": {
+    "calcId": "124519",
+    "fullCalcOnLoad": "1"
+  },
+  "formulas": [
+    {
+      "part": "xl/worksheets/sheet1.xml",
+      "sheet": "Sheet",
+      "cell": "B1",
+      "formula": "_xlfn.SEQUENCE(A1)",
+      "attributes": {
+        "t": "array",
+        "ref": "B1:B2"
+      },
+      "cached": null
+    }
+  ],
+  "errors": [],
+  "cache_warning": "Existing cached values do not prove recent recalculation.",
+  "native_features": {}
+}

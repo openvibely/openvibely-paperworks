@@ -1,0 +1,38 @@
+```sh
+paperworks create-xlsx --spec "$SKILL_DIR/examples/report.json" --output report.xlsx
+paperworks inspect report.xlsx > before.json
+paperworks trace report.xlsx --sheet Revenue --cell D4 > trace.json
+cat > inputs.json <<'JSON'
+{"sheet":"Revenue","cells":{"B2":5}}
+JSON
+paperworks workbook-inputs report.xlsx --requirements inputs.json --output changed.xlsx
+cat > contract.json <<'JSON'
+{"allow_changed":["xl/worksheets/sheet1.xml"]}
+JSON
+paperworks verify-preservation report.xlsx --against changed.xlsx --requirements contract.json
+cat > comment.json <<'JSON'
+{"action":"add","sheet":"Revenue","cell":"B2","author":"Analyst","text":"Quantity updated to five; recalculate before delivery."}
+JSON
+paperworks comments changed.xlsx --requirements comment.json --output commented.xlsx
+paperworks comments commented.xlsx > threads.json
+paperworks inspect commented.xlsx > after.json
+```
+
+```sh
+paperworks recalculate commented.xlsx --output calculated
+paperworks render commented.xlsx --sheet Revenue --range A1:D4 --output sheet-pages
+```
+
+```sh
+paperworks create-xlsx --spec "$SKILL_DIR/examples/sensitivity.json" --output sensitivity.xlsx
+paperworks inspect sensitivity.xlsx > sensitivity-before.json
+```
+
+```sh
+paperworks recalculate sensitivity.xlsx --output sensitivity-calculated
+cat > sensitivity-inputs.json <<'JSON'
+{"sheet":"Model","cells":{"B4":20}}
+JSON
+paperworks workbook-inputs sensitivity.xlsx --requirements sensitivity-inputs.json --output sensitivity-changed.xlsx
+paperworks recalculate sensitivity-changed.xlsx --output sensitivity-recalculated
+```

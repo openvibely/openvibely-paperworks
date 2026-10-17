@@ -1,0 +1,1341 @@
+{
+  "reference": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-reference/repository/internal/builtinskills/documents/scripts/test_presentation_native.py": "6199f9f1767fa49fa3743f11fb6545468da586c68aabe28e79ba942fdb0513fb",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-reference/repository/internal/builtinskills/documents/scripts/document_native.py": "eb2407fed420206fc34ad88f3fceb613ee694d3bf7f239b19cce3a73a6b9c420",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/python/cpython-3.12.12-macos-aarch64-none/lib/python3.12/zipfile/__init__.py": "94c53aedba0b0f7d6f71bf8ec34973e666ee0c0e56e6800ff4c26d2e3951987a"
+  },
+  "cases": [
+    {
+      "name": "0-rename",
+      "policy": "always",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFAAsAZmlyc3R1cAcAAVfucZLOsXZhbHVlUEsBAhQDFAAAAAAAgxgiWDRYdx0FAAAABQAAAAUACwAAAAAAAAAAAIABAAAAAGZpcnN0dXAHAAFX7nGSzrFQSwUGAAAAAAEAAQA+AAAAMwAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "0-rename",
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFAAsAZmlyc3R1cAcAAVfucZLOsXZhbHVlUEsBAhQDFAAAAAAAgxgiWDRYdx0FAAAABQAAAAUACwAAAAAAAAAAAIABAAAAAGZpcnN0dXAHAAFX7nGSzrFQSwUGAAAAAAEAAQA+AAAAMwAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "0-rename",
+      "policy": "error",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFAAsAZmlyc3R1cAcAAVfucZLOsXZhbHVlUEsBAhQDFAAAAAAAgxgiWDRYdx0FAAAABQAAAAUACwAAAAAAAAAAAIABAAAAAGZpcnN0dXAHAAFX7nGSzrFQSwUGAAAAAAEAAQA+AAAAMwAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "0-nul",
+      "policy": "always",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFABMAZmlyc3R1cA8AAVfucZJuZXcAc3VmZml4dmFsdWVQSwECFAMUAAAAAACDGCJYNFh3HQUAAAAFAAAABQATAAAAAAAAAAAAgAEAAAAAZmlyc3R1cA8AAVfucZJuZXcAc3VmZml4UEsFBgAAAAABAAEARgAAADsAAAAAAA==",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "0-nul",
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFABMAZmlyc3R1cA8AAVfucZJuZXcAc3VmZml4dmFsdWVQSwECFAMUAAAAAACDGCJYNFh3HQUAAAAFAAAABQATAAAAAAAAAAAAgAEAAAAAZmlyc3R1cA8AAVfucZJuZXcAc3VmZml4UEsFBgAAAAABAAEARgAAADsAAAAAAA==",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "0-nul",
+      "policy": "error",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFABMAZmlyc3R1cA8AAVfucZJuZXcAc3VmZml4dmFsdWVQSwECFAMUAAAAAACDGCJYNFh3HQUAAAAFAAAABQATAAAAAAAAAAAAgAEAAAAAZmlyc3R1cA8AAVfucZJuZXcAc3VmZml4UEsFBgAAAAABAAEARgAAADsAAAAAAA==",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "0-empty",
+      "policy": "always",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFAAkAZmlyc3R1cAUAAVfucZJ2YWx1ZVBLAQIUAxQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFAAkAAAAAAAAAAACAAQAAAABmaXJzdHVwBQABV+5xklBLBQYAAAAAAQABADwAAAAxAAAAAAA=",
+      "warnings": [
+        "Empty unicode path extra field (0x7075)"
+      ],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "0-empty",
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFAAkAZmlyc3R1cAUAAVfucZJ2YWx1ZVBLAQIUAxQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFAAkAAAAAAAAAAACAAQAAAABmaXJzdHVwBQABV+5xklBLBQYAAAAAAQABADwAAAAxAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "0-empty",
+      "policy": "error",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFAAkAZmlyc3R1cAUAAVfucZJ2YWx1ZVBLAQIUAxQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFAAkAAAAAAAAAAACAAQAAAABmaXJzdHVwBQABV+5xklBLBQYAAAAAAQABADwAAAAxAAAAAAA=",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "UserWarning",
+        "message": "Empty unicode path extra field (0x7075)"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "0-bad-utf8",
+      "policy": "always",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFAAoAZmlyc3R1cAYAAVfucZL/dmFsdWVQSwECFAMUAAAAAACDGCJYNFh3HQUAAAAFAAAABQAKAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAYAAVfucZL/UEsFBgAAAAABAAEAPQAAADIAAAAAAA==",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075): invalid utf-8 bytes"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "0-bad-utf8",
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFAAoAZmlyc3R1cAYAAVfucZL/dmFsdWVQSwECFAMUAAAAAACDGCJYNFh3HQUAAAAFAAAABQAKAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAYAAVfucZL/UEsFBgAAAAABAAEAPQAAADIAAAAAAA==",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075): invalid utf-8 bytes"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "0-bad-utf8",
+      "policy": "error",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFAAoAZmlyc3R1cAYAAVfucZL/dmFsdWVQSwECFAMUAAAAAACDGCJYNFh3HQUAAAAFAAAABQAKAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAYAAVfucZL/UEsFBgAAAAABAAEAPQAAADIAAAAAAA==",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075): invalid utf-8 bytes"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "0-wrong-crc",
+      "policy": "always",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFAAoAZmlyc3R1cAYAAQAAAAD/dmFsdWVQSwECFAMUAAAAAACDGCJYNFh3HQUAAAAFAAAABQAKAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAYAAQAAAAD/UEsFBgAAAAABAAEAPQAAADIAAAAAAA==",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "0-wrong-crc",
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFAAoAZmlyc3R1cAYAAQAAAAD/dmFsdWVQSwECFAMUAAAAAACDGCJYNFh3HQUAAAAFAAAABQAKAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAYAAQAAAAD/UEsFBgAAAAABAAEAPQAAADIAAAAAAA==",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "0-wrong-crc",
+      "policy": "error",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFAAoAZmlyc3R1cAYAAQAAAAD/dmFsdWVQSwECFAMUAAAAAACDGCJYNFh3HQUAAAAFAAAABQAKAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAYAAQAAAAD/UEsFBgAAAAABAAEAPQAAADIAAAAAAA==",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "0-version",
+      "policy": "always",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFAAoAZmlyc3R1cAYAAlfucZL/dmFsdWVQSwECFAMUAAAAAACDGCJYNFh3HQUAAAAFAAAABQAKAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAYAAlfucZL/UEsFBgAAAAABAAEAPQAAADIAAAAAAA==",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "0-version",
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFAAoAZmlyc3R1cAYAAlfucZL/dmFsdWVQSwECFAMUAAAAAACDGCJYNFh3HQUAAAAFAAAABQAKAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAYAAlfucZL/UEsFBgAAAAABAAEAPQAAADIAAAAAAA==",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "0-version",
+      "policy": "error",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFAAoAZmlyc3R1cAYAAlfucZL/dmFsdWVQSwECFAMUAAAAAACDGCJYNFh3HQUAAAAFAAAABQAKAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAYAAlfucZL/UEsFBgAAAAABAAEAPQAAADIAAAAAAA==",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "0-short",
+      "policy": "always",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFAAgAZmlyc3R1cAQAMTIzNHZhbHVlUEsBAhQDFAAAAAAAgxgiWDRYdx0FAAAABQAAAAUACAAAAAAAAAAAAIABAAAAAGZpcnN0dXAEADEyMzRQSwUGAAAAAAEAAQA7AAAAMAAAAAAA",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075)"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "0-short",
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFAAgAZmlyc3R1cAQAMTIzNHZhbHVlUEsBAhQDFAAAAAAAgxgiWDRYdx0FAAAABQAAAAUACAAAAAAAAAAAAIABAAAAAGZpcnN0dXAEADEyMzRQSwUGAAAAAAEAAQA7AAAAMAAAAAAA",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075)"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "0-short",
+      "policy": "error",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFAAgAZmlyc3R1cAQAMTIzNHZhbHVlUEsBAhQDFAAAAAAAgxgiWDRYdx0FAAAABQAAAAUACAAAAAAAAAAAAIABAAAAAGZpcnN0dXAEADEyMzRQSwUGAAAAAAEAAQA7AAAAMAAAAAAA",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075)"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "0-repeat",
+      "policy": "always",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFABgAZmlyc3R1cAgAAVfucZJvbmV1cAgAAVfucZJ0d292YWx1ZVBLAQIUAxQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFABgAAAAAAAAAAACAAQAAAABmaXJzdHVwCAABV+5xkm9uZXVwCAABV+5xknR3b1BLBQYAAAAAAQABAEsAAABAAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "0-repeat",
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFABgAZmlyc3R1cAgAAVfucZJvbmV1cAgAAVfucZJ0d292YWx1ZVBLAQIUAxQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFABgAAAAAAAAAAACAAQAAAABmaXJzdHVwCAABV+5xkm9uZXVwCAABV+5xknR3b1BLBQYAAAAAAQABAEsAAABAAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "0-repeat",
+      "policy": "error",
+      "input": "UEsDBBQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFABgAZmlyc3R1cAgAAVfucZJvbmV1cAgAAVfucZJ0d292YWx1ZVBLAQIUAxQAAAAAAIMYIlg0WHcdBQAAAAUAAAAFABgAAAAAAAAAAACAAQAAAABmaXJzdHVwCAABV+5xkm9uZXVwCAABV+5xknR3b1BLBQYAAAAAAQABAEsAAABAAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "0-collision",
+      "policy": "always",
+      "input": "UEsDBBQAAAAAAIMYIljl1F0/AwAAAAMAAAAFAA0AZmlyc3R1cAkAAVfucZJzYW1lb2xkUEsDBBQAAAAAAIMYIlhFRONrAwAAAAMAAAAGAA0Ac2Vjb25kdXAJAAFpER+2c2FtZW5ld1BLAQIUAxQAAAAAAIMYIljl1F0/AwAAAAMAAAAFAA0AAAAAAAAAAACAAQAAAABmaXJzdHVwCQABV+5xknNhbWVQSwECFAMUAAAAAACDGCJYRUTjawMAAAADAAAABgANAAAAAAAAAAAAgAEzAAAAc2Vjb25kdXAJAAFpER+2c2FtZVBLBQYAAAAAAgACAIEAAABnAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "0-collision",
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAAAIMYIljl1F0/AwAAAAMAAAAFAA0AZmlyc3R1cAkAAVfucZJzYW1lb2xkUEsDBBQAAAAAAIMYIlhFRONrAwAAAAMAAAAGAA0Ac2Vjb25kdXAJAAFpER+2c2FtZW5ld1BLAQIUAxQAAAAAAIMYIljl1F0/AwAAAAMAAAAFAA0AAAAAAAAAAACAAQAAAABmaXJzdHVwCQABV+5xknNhbWVQSwECFAMUAAAAAACDGCJYRUTjawMAAAADAAAABgANAAAAAAAAAAAAgAEzAAAAc2Vjb25kdXAJAAFpER+2c2FtZVBLBQYAAAAAAgACAIEAAABnAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "0-collision",
+      "policy": "error",
+      "input": "UEsDBBQAAAAAAIMYIljl1F0/AwAAAAMAAAAFAA0AZmlyc3R1cAkAAVfucZJzYW1lb2xkUEsDBBQAAAAAAIMYIlhFRONrAwAAAAMAAAAGAA0Ac2Vjb25kdXAJAAFpER+2c2FtZW5ld1BLAQIUAxQAAAAAAIMYIljl1F0/AwAAAAMAAAAFAA0AAAAAAAAAAACAAQAAAABmaXJzdHVwCQABV+5xknNhbWVQSwECFAMUAAAAAACDGCJYRUTjawMAAAADAAAABgANAAAAAAAAAAAAgAEzAAAAc2Vjb25kdXAJAAFpER+2c2FtZVBLBQYAAAAAAgACAIEAAABnAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "8-rename",
+      "policy": "always",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAsAZmlyc3R1cAcAAVfucZLOsStLzClNBQBQSwECFAMUAAAACACDGCJYNFh3HQcAAAAFAAAABQALAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAcAAVfucZLOsVBLBQYAAAAAAQABAD4AAAA1AAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "8-rename",
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAsAZmlyc3R1cAcAAVfucZLOsStLzClNBQBQSwECFAMUAAAACACDGCJYNFh3HQcAAAAFAAAABQALAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAcAAVfucZLOsVBLBQYAAAAAAQABAD4AAAA1AAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "8-rename",
+      "policy": "error",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAsAZmlyc3R1cAcAAVfucZLOsStLzClNBQBQSwECFAMUAAAACACDGCJYNFh3HQcAAAAFAAAABQALAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAcAAVfucZLOsVBLBQYAAAAAAQABAD4AAAA1AAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "8-nul",
+      "policy": "always",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFABMAZmlyc3R1cA8AAVfucZJuZXcAc3VmZml4K0vMKU0FAFBLAQIUAxQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFABMAAAAAAAAAAACAAQAAAABmaXJzdHVwDwABV+5xkm5ldwBzdWZmaXhQSwUGAAAAAAEAAQBGAAAAPQAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "8-nul",
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFABMAZmlyc3R1cA8AAVfucZJuZXcAc3VmZml4K0vMKU0FAFBLAQIUAxQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFABMAAAAAAAAAAACAAQAAAABmaXJzdHVwDwABV+5xkm5ldwBzdWZmaXhQSwUGAAAAAAEAAQBGAAAAPQAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "8-nul",
+      "policy": "error",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFABMAZmlyc3R1cA8AAVfucZJuZXcAc3VmZml4K0vMKU0FAFBLAQIUAxQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFABMAAAAAAAAAAACAAQAAAABmaXJzdHVwDwABV+5xkm5ldwBzdWZmaXhQSwUGAAAAAAEAAQBGAAAAPQAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "8-empty",
+      "policy": "always",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAkAZmlyc3R1cAUAAVfucZIrS8wpTQUAUEsBAhQDFAAAAAgAgxgiWDRYdx0HAAAABQAAAAUACQAAAAAAAAAAAIABAAAAAGZpcnN0dXAFAAFX7nGSUEsFBgAAAAABAAEAPAAAADMAAAAAAA==",
+      "warnings": [
+        "Empty unicode path extra field (0x7075)"
+      ],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "8-empty",
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAkAZmlyc3R1cAUAAVfucZIrS8wpTQUAUEsBAhQDFAAAAAgAgxgiWDRYdx0HAAAABQAAAAUACQAAAAAAAAAAAIABAAAAAGZpcnN0dXAFAAFX7nGSUEsFBgAAAAABAAEAPAAAADMAAAAAAA==",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "8-empty",
+      "policy": "error",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAkAZmlyc3R1cAUAAVfucZIrS8wpTQUAUEsBAhQDFAAAAAgAgxgiWDRYdx0HAAAABQAAAAUACQAAAAAAAAAAAIABAAAAAGZpcnN0dXAFAAFX7nGSUEsFBgAAAAABAAEAPAAAADMAAAAAAA==",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "UserWarning",
+        "message": "Empty unicode path extra field (0x7075)"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "8-bad-utf8",
+      "policy": "always",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAoAZmlyc3R1cAYAAVfucZL/K0vMKU0FAFBLAQIUAxQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAoAAAAAAAAAAACAAQAAAABmaXJzdHVwBgABV+5xkv9QSwUGAAAAAAEAAQA9AAAANAAAAAAA",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075): invalid utf-8 bytes"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "8-bad-utf8",
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAoAZmlyc3R1cAYAAVfucZL/K0vMKU0FAFBLAQIUAxQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAoAAAAAAAAAAACAAQAAAABmaXJzdHVwBgABV+5xkv9QSwUGAAAAAAEAAQA9AAAANAAAAAAA",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075): invalid utf-8 bytes"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "8-bad-utf8",
+      "policy": "error",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAoAZmlyc3R1cAYAAVfucZL/K0vMKU0FAFBLAQIUAxQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAoAAAAAAAAAAACAAQAAAABmaXJzdHVwBgABV+5xkv9QSwUGAAAAAAEAAQA9AAAANAAAAAAA",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075): invalid utf-8 bytes"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "8-wrong-crc",
+      "policy": "always",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAoAZmlyc3R1cAYAAQAAAAD/K0vMKU0FAFBLAQIUAxQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAoAAAAAAAAAAACAAQAAAABmaXJzdHVwBgABAAAAAP9QSwUGAAAAAAEAAQA9AAAANAAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "8-wrong-crc",
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAoAZmlyc3R1cAYAAQAAAAD/K0vMKU0FAFBLAQIUAxQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAoAAAAAAAAAAACAAQAAAABmaXJzdHVwBgABAAAAAP9QSwUGAAAAAAEAAQA9AAAANAAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "8-wrong-crc",
+      "policy": "error",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAoAZmlyc3R1cAYAAQAAAAD/K0vMKU0FAFBLAQIUAxQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAoAAAAAAAAAAACAAQAAAABmaXJzdHVwBgABAAAAAP9QSwUGAAAAAAEAAQA9AAAANAAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "8-version",
+      "policy": "always",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAoAZmlyc3R1cAYAAlfucZL/K0vMKU0FAFBLAQIUAxQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAoAAAAAAAAAAACAAQAAAABmaXJzdHVwBgACV+5xkv9QSwUGAAAAAAEAAQA9AAAANAAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "8-version",
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAoAZmlyc3R1cAYAAlfucZL/K0vMKU0FAFBLAQIUAxQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAoAAAAAAAAAAACAAQAAAABmaXJzdHVwBgACV+5xkv9QSwUGAAAAAAEAAQA9AAAANAAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "8-version",
+      "policy": "error",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAoAZmlyc3R1cAYAAlfucZL/K0vMKU0FAFBLAQIUAxQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAoAAAAAAAAAAACAAQAAAABmaXJzdHVwBgACV+5xkv9QSwUGAAAAAAEAAQA9AAAANAAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "8-short",
+      "policy": "always",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAgAZmlyc3R1cAQAMTIzNCtLzClNBQBQSwECFAMUAAAACACDGCJYNFh3HQcAAAAFAAAABQAIAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAQAMTIzNFBLBQYAAAAAAQABADsAAAAyAAAAAAA=",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075)"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "8-short",
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAgAZmlyc3R1cAQAMTIzNCtLzClNBQBQSwECFAMUAAAACACDGCJYNFh3HQcAAAAFAAAABQAIAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAQAMTIzNFBLBQYAAAAAAQABADsAAAAyAAAAAAA=",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075)"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "8-short",
+      "policy": "error",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFAAgAZmlyc3R1cAQAMTIzNCtLzClNBQBQSwECFAMUAAAACACDGCJYNFh3HQcAAAAFAAAABQAIAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAQAMTIzNFBLBQYAAAAAAQABADsAAAAyAAAAAAA=",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075)"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "8-repeat",
+      "policy": "always",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFABgAZmlyc3R1cAgAAVfucZJvbmV1cAgAAVfucZJ0d28rS8wpTQUAUEsBAhQDFAAAAAgAgxgiWDRYdx0HAAAABQAAAAUAGAAAAAAAAAAAAIABAAAAAGZpcnN0dXAIAAFX7nGSb25ldXAIAAFX7nGSdHdvUEsFBgAAAAABAAEASwAAAEIAAAAAAA==",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "8-repeat",
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFABgAZmlyc3R1cAgAAVfucZJvbmV1cAgAAVfucZJ0d28rS8wpTQUAUEsBAhQDFAAAAAgAgxgiWDRYdx0HAAAABQAAAAUAGAAAAAAAAAAAAIABAAAAAGZpcnN0dXAIAAFX7nGSb25ldXAIAAFX7nGSdHdvUEsFBgAAAAABAAEASwAAAEIAAAAAAA==",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "8-repeat",
+      "policy": "error",
+      "input": "UEsDBBQAAAAIAIMYIlg0WHcdBwAAAAUAAAAFABgAZmlyc3R1cAgAAVfucZJvbmV1cAgAAVfucZJ0d28rS8wpTQUAUEsBAhQDFAAAAAgAgxgiWDRYdx0HAAAABQAAAAUAGAAAAAAAAAAAAIABAAAAAGZpcnN0dXAIAAFX7nGSb25ldXAIAAFX7nGSdHdvUEsFBgAAAAABAAEASwAAAEIAAAAAAA==",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "8-collision",
+      "policy": "always",
+      "input": "UEsDBBQAAAAIAIMYIljl1F0/BQAAAAMAAAAFAA0AZmlyc3R1cAkAAVfucZJzYW1ly89JAQBQSwMEFAAAAAgAgxgiWEVE42sFAAAAAwAAAAYADQBzZWNvbmR1cAkAAWkRH7ZzYW1ly0stBwBQSwECFAMUAAAACACDGCJY5dRdPwUAAAADAAAABQANAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAkAAVfucZJzYW1lUEsBAhQDFAAAAAgAgxgiWEVE42sFAAAAAwAAAAYADQAAAAAAAAAAAIABNQAAAHNlY29uZHVwCQABaREftnNhbWVQSwUGAAAAAAIAAgCBAAAAawAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "8-collision",
+      "policy": "ignore",
+      "input": "UEsDBBQAAAAIAIMYIljl1F0/BQAAAAMAAAAFAA0AZmlyc3R1cAkAAVfucZJzYW1ly89JAQBQSwMEFAAAAAgAgxgiWEVE42sFAAAAAwAAAAYADQBzZWNvbmR1cAkAAWkRH7ZzYW1ly0stBwBQSwECFAMUAAAACACDGCJY5dRdPwUAAAADAAAABQANAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAkAAVfucZJzYW1lUEsBAhQDFAAAAAgAgxgiWEVE42sFAAAAAwAAAAYADQAAAAAAAAAAAIABNQAAAHNlY29uZHVwCQABaREftnNhbWVQSwUGAAAAAAIAAgCBAAAAawAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "8-collision",
+      "policy": "error",
+      "input": "UEsDBBQAAAAIAIMYIljl1F0/BQAAAAMAAAAFAA0AZmlyc3R1cAkAAVfucZJzYW1ly89JAQBQSwMEFAAAAAgAgxgiWEVE42sFAAAAAwAAAAYADQBzZWNvbmR1cAkAAWkRH7ZzYW1ly0stBwBQSwECFAMUAAAACACDGCJY5dRdPwUAAAADAAAABQANAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAkAAVfucZJzYW1lUEsBAhQDFAAAAAgAgxgiWEVE42sFAAAAAwAAAAYADQAAAAAAAAAAAIABNQAAAHNlY29uZHVwCQABaREftnNhbWVQSwUGAAAAAAIAAgCBAAAAawAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "12-rename",
+      "policy": "always",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAsAZmlyc3R1cAcAAVfucZLOsUJaaDkxQVkmU1lym6PgAAACAYAiBAMAIAAwzQDBoFDi7kinChIOU3R8AFBLAQIuAy4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAsAAAAAAAAAAACAAQAAAABmaXJzdHVwBwABV+5xks6xUEsFBgAAAAABAAEAPgAAAFgAAAAAAA==",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "12-rename",
+      "policy": "ignore",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAsAZmlyc3R1cAcAAVfucZLOsUJaaDkxQVkmU1lym6PgAAACAYAiBAMAIAAwzQDBoFDi7kinChIOU3R8AFBLAQIuAy4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAsAAAAAAAAAAACAAQAAAABmaXJzdHVwBwABV+5xks6xUEsFBgAAAAABAAEAPgAAAFgAAAAAAA==",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "12-rename",
+      "policy": "error",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAsAZmlyc3R1cAcAAVfucZLOsUJaaDkxQVkmU1lym6PgAAACAYAiBAMAIAAwzQDBoFDi7kinChIOU3R8AFBLAQIuAy4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAsAAAAAAAAAAACAAQAAAABmaXJzdHVwBwABV+5xks6xUEsFBgAAAAABAAEAPgAAAFgAAAAAAA==",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "12-nul",
+      "policy": "always",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFABMAZmlyc3R1cA8AAVfucZJuZXcAc3VmZml4QlpoOTFBWSZTWXKbo+AAAAIBgCIEAwAgADDNAMGgUOLuSKcKEg5TdHwAUEsBAi4DLgAAAAwAgxgiWDRYdx0qAAAABQAAAAUAEwAAAAAAAAAAAIABAAAAAGZpcnN0dXAPAAFX7nGSbmV3AHN1ZmZpeFBLBQYAAAAAAQABAEYAAABgAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "12-nul",
+      "policy": "ignore",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFABMAZmlyc3R1cA8AAVfucZJuZXcAc3VmZml4QlpoOTFBWSZTWXKbo+AAAAIBgCIEAwAgADDNAMGgUOLuSKcKEg5TdHwAUEsBAi4DLgAAAAwAgxgiWDRYdx0qAAAABQAAAAUAEwAAAAAAAAAAAIABAAAAAGZpcnN0dXAPAAFX7nGSbmV3AHN1ZmZpeFBLBQYAAAAAAQABAEYAAABgAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "12-nul",
+      "policy": "error",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFABMAZmlyc3R1cA8AAVfucZJuZXcAc3VmZml4QlpoOTFBWSZTWXKbo+AAAAIBgCIEAwAgADDNAMGgUOLuSKcKEg5TdHwAUEsBAi4DLgAAAAwAgxgiWDRYdx0qAAAABQAAAAUAEwAAAAAAAAAAAIABAAAAAGZpcnN0dXAPAAFX7nGSbmV3AHN1ZmZpeFBLBQYAAAAAAQABAEYAAABgAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "12-empty",
+      "policy": "always",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAkAZmlyc3R1cAUAAVfucZJCWmg5MUFZJlNZcpuj4AAAAgGAIgQDACAAMM0AwaBQ4u5IpwoSDlN0fABQSwECLgMuAAAADACDGCJYNFh3HSoAAAAFAAAABQAJAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAUAAVfucZJQSwUGAAAAAAEAAQA8AAAAVgAAAAAA",
+      "warnings": [
+        "Empty unicode path extra field (0x7075)"
+      ],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "12-empty",
+      "policy": "ignore",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAkAZmlyc3R1cAUAAVfucZJCWmg5MUFZJlNZcpuj4AAAAgGAIgQDACAAMM0AwaBQ4u5IpwoSDlN0fABQSwECLgMuAAAADACDGCJYNFh3HSoAAAAFAAAABQAJAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAUAAVfucZJQSwUGAAAAAAEAAQA8AAAAVgAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "12-empty",
+      "policy": "error",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAkAZmlyc3R1cAUAAVfucZJCWmg5MUFZJlNZcpuj4AAAAgGAIgQDACAAMM0AwaBQ4u5IpwoSDlN0fABQSwECLgMuAAAADACDGCJYNFh3HSoAAAAFAAAABQAJAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAUAAVfucZJQSwUGAAAAAAEAAQA8AAAAVgAAAAAA",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "UserWarning",
+        "message": "Empty unicode path extra field (0x7075)"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "12-bad-utf8",
+      "policy": "always",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAoAZmlyc3R1cAYAAVfucZL/QlpoOTFBWSZTWXKbo+AAAAIBgCIEAwAgADDNAMGgUOLuSKcKEg5TdHwAUEsBAi4DLgAAAAwAgxgiWDRYdx0qAAAABQAAAAUACgAAAAAAAAAAAIABAAAAAGZpcnN0dXAGAAFX7nGS/1BLBQYAAAAAAQABAD0AAABXAAAAAAA=",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075): invalid utf-8 bytes"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "12-bad-utf8",
+      "policy": "ignore",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAoAZmlyc3R1cAYAAVfucZL/QlpoOTFBWSZTWXKbo+AAAAIBgCIEAwAgADDNAMGgUOLuSKcKEg5TdHwAUEsBAi4DLgAAAAwAgxgiWDRYdx0qAAAABQAAAAUACgAAAAAAAAAAAIABAAAAAGZpcnN0dXAGAAFX7nGS/1BLBQYAAAAAAQABAD0AAABXAAAAAAA=",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075): invalid utf-8 bytes"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "12-bad-utf8",
+      "policy": "error",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAoAZmlyc3R1cAYAAVfucZL/QlpoOTFBWSZTWXKbo+AAAAIBgCIEAwAgADDNAMGgUOLuSKcKEg5TdHwAUEsBAi4DLgAAAAwAgxgiWDRYdx0qAAAABQAAAAUACgAAAAAAAAAAAIABAAAAAGZpcnN0dXAGAAFX7nGS/1BLBQYAAAAAAQABAD0AAABXAAAAAAA=",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075): invalid utf-8 bytes"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "12-wrong-crc",
+      "policy": "always",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAoAZmlyc3R1cAYAAQAAAAD/QlpoOTFBWSZTWXKbo+AAAAIBgCIEAwAgADDNAMGgUOLuSKcKEg5TdHwAUEsBAi4DLgAAAAwAgxgiWDRYdx0qAAAABQAAAAUACgAAAAAAAAAAAIABAAAAAGZpcnN0dXAGAAEAAAAA/1BLBQYAAAAAAQABAD0AAABXAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "12-wrong-crc",
+      "policy": "ignore",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAoAZmlyc3R1cAYAAQAAAAD/QlpoOTFBWSZTWXKbo+AAAAIBgCIEAwAgADDNAMGgUOLuSKcKEg5TdHwAUEsBAi4DLgAAAAwAgxgiWDRYdx0qAAAABQAAAAUACgAAAAAAAAAAAIABAAAAAGZpcnN0dXAGAAEAAAAA/1BLBQYAAAAAAQABAD0AAABXAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "12-wrong-crc",
+      "policy": "error",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAoAZmlyc3R1cAYAAQAAAAD/QlpoOTFBWSZTWXKbo+AAAAIBgCIEAwAgADDNAMGgUOLuSKcKEg5TdHwAUEsBAi4DLgAAAAwAgxgiWDRYdx0qAAAABQAAAAUACgAAAAAAAAAAAIABAAAAAGZpcnN0dXAGAAEAAAAA/1BLBQYAAAAAAQABAD0AAABXAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "12-version",
+      "policy": "always",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAoAZmlyc3R1cAYAAlfucZL/QlpoOTFBWSZTWXKbo+AAAAIBgCIEAwAgADDNAMGgUOLuSKcKEg5TdHwAUEsBAi4DLgAAAAwAgxgiWDRYdx0qAAAABQAAAAUACgAAAAAAAAAAAIABAAAAAGZpcnN0dXAGAAJX7nGS/1BLBQYAAAAAAQABAD0AAABXAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "12-version",
+      "policy": "ignore",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAoAZmlyc3R1cAYAAlfucZL/QlpoOTFBWSZTWXKbo+AAAAIBgCIEAwAgADDNAMGgUOLuSKcKEg5TdHwAUEsBAi4DLgAAAAwAgxgiWDRYdx0qAAAABQAAAAUACgAAAAAAAAAAAIABAAAAAGZpcnN0dXAGAAJX7nGS/1BLBQYAAAAAAQABAD0AAABXAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "12-version",
+      "policy": "error",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAoAZmlyc3R1cAYAAlfucZL/QlpoOTFBWSZTWXKbo+AAAAIBgCIEAwAgADDNAMGgUOLuSKcKEg5TdHwAUEsBAi4DLgAAAAwAgxgiWDRYdx0qAAAABQAAAAUACgAAAAAAAAAAAIABAAAAAGZpcnN0dXAGAAJX7nGS/1BLBQYAAAAAAQABAD0AAABXAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "12-short",
+      "policy": "always",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAgAZmlyc3R1cAQAMTIzNEJaaDkxQVkmU1lym6PgAAACAYAiBAMAIAAwzQDBoFDi7kinChIOU3R8AFBLAQIuAy4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAgAAAAAAAAAAACAAQAAAABmaXJzdHVwBAAxMjM0UEsFBgAAAAABAAEAOwAAAFUAAAAAAA==",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075)"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "12-short",
+      "policy": "ignore",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAgAZmlyc3R1cAQAMTIzNEJaaDkxQVkmU1lym6PgAAACAYAiBAMAIAAwzQDBoFDi7kinChIOU3R8AFBLAQIuAy4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAgAAAAAAAAAAACAAQAAAABmaXJzdHVwBAAxMjM0UEsFBgAAAAABAAEAOwAAAFUAAAAAAA==",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075)"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "12-short",
+      "policy": "error",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAgAZmlyc3R1cAQAMTIzNEJaaDkxQVkmU1lym6PgAAACAYAiBAMAIAAwzQDBoFDi7kinChIOU3R8AFBLAQIuAy4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFAAgAAAAAAAAAAACAAQAAAABmaXJzdHVwBAAxMjM0UEsFBgAAAAABAAEAOwAAAFUAAAAAAA==",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075)"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "12-repeat",
+      "policy": "always",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFABgAZmlyc3R1cAgAAVfucZJvbmV1cAgAAVfucZJ0d29CWmg5MUFZJlNZcpuj4AAAAgGAIgQDACAAMM0AwaBQ4u5IpwoSDlN0fABQSwECLgMuAAAADACDGCJYNFh3HSoAAAAFAAAABQAYAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAgAAVfucZJvbmV1cAgAAVfucZJ0d29QSwUGAAAAAAEAAQBLAAAAZQAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "12-repeat",
+      "policy": "ignore",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFABgAZmlyc3R1cAgAAVfucZJvbmV1cAgAAVfucZJ0d29CWmg5MUFZJlNZcpuj4AAAAgGAIgQDACAAMM0AwaBQ4u5IpwoSDlN0fABQSwECLgMuAAAADACDGCJYNFh3HSoAAAAFAAAABQAYAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAgAAVfucZJvbmV1cAgAAVfucZJ0d29QSwUGAAAAAAEAAQBLAAAAZQAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "12-repeat",
+      "policy": "error",
+      "input": "UEsDBC4AAAAMAIMYIlg0WHcdKgAAAAUAAAAFABgAZmlyc3R1cAgAAVfucZJvbmV1cAgAAVfucZJ0d29CWmg5MUFZJlNZcpuj4AAAAgGAIgQDACAAMM0AwaBQ4u5IpwoSDlN0fABQSwECLgMuAAAADACDGCJYNFh3HSoAAAAFAAAABQAYAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAgAAVfucZJvbmV1cAgAAVfucZJ0d29QSwUGAAAAAAEAAQBLAAAAZQAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "12-collision",
+      "policy": "always",
+      "input": "UEsDBC4AAAAMAIMYIljl1F0/JgAAAAMAAAAFAA0AZmlyc3R1cAkAAVfucZJzYW1lQlpoOTFBWSZTWR9DmKgAAAEBAAQEoAAhmBmBYXckU4UJAfQ5ioBQSwMELgAAAAwAgxgiWEVE42soAAAAAwAAAAYADQBzZWNvbmR1cAkAAWkRH7ZzYW1lQlpoOTFBWSZTWQeYSwgAAACBgAIBAIAgACGYGYFhdyRThQkAeYSwgFBLAQIuAy4AAAAMAIMYIljl1F0/JgAAAAMAAAAFAA0AAAAAAAAAAACAAQAAAABmaXJzdHVwCQABV+5xknNhbWVQSwECLgMuAAAADACDGCJYRUTjaygAAAADAAAABgANAAAAAAAAAAAAgAFWAAAAc2Vjb25kdXAJAAFpER+2c2FtZVBLBQYAAAAAAgACAIEAAACvAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "12-collision",
+      "policy": "ignore",
+      "input": "UEsDBC4AAAAMAIMYIljl1F0/JgAAAAMAAAAFAA0AZmlyc3R1cAkAAVfucZJzYW1lQlpoOTFBWSZTWR9DmKgAAAEBAAQEoAAhmBmBYXckU4UJAfQ5ioBQSwMELgAAAAwAgxgiWEVE42soAAAAAwAAAAYADQBzZWNvbmR1cAkAAWkRH7ZzYW1lQlpoOTFBWSZTWQeYSwgAAACBgAIBAIAgACGYGYFhdyRThQkAeYSwgFBLAQIuAy4AAAAMAIMYIljl1F0/JgAAAAMAAAAFAA0AAAAAAAAAAACAAQAAAABmaXJzdHVwCQABV+5xknNhbWVQSwECLgMuAAAADACDGCJYRUTjaygAAAADAAAABgANAAAAAAAAAAAAgAFWAAAAc2Vjb25kdXAJAAFpER+2c2FtZVBLBQYAAAAAAgACAIEAAACvAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "12-collision",
+      "policy": "error",
+      "input": "UEsDBC4AAAAMAIMYIljl1F0/JgAAAAMAAAAFAA0AZmlyc3R1cAkAAVfucZJzYW1lQlpoOTFBWSZTWR9DmKgAAAEBAAQEoAAhmBmBYXckU4UJAfQ5ioBQSwMELgAAAAwAgxgiWEVE42soAAAAAwAAAAYADQBzZWNvbmR1cAkAAWkRH7ZzYW1lQlpoOTFBWSZTWQeYSwgAAACBgAIBAIAgACGYGYFhdyRThQkAeYSwgFBLAQIuAy4AAAAMAIMYIljl1F0/JgAAAAMAAAAFAA0AAAAAAAAAAACAAQAAAABmaXJzdHVwCQABV+5xknNhbWVQSwECLgMuAAAADACDGCJYRUTjaygAAAADAAAABgANAAAAAAAAAAAAgAFWAAAAc2Vjb25kdXAJAAFpER+2c2FtZVBLBQYAAAAAAgACAIEAAACvAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "14-rename",
+      "policy": "always",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAsAZmlyc3R1cAcAAVfucZLOsQkEBQBdAACAAAA7GEncQfr2yJ///NKQAFBLAQI/Az8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAsAAAAAAAAAAACAAQAAAABmaXJzdHVwBwABV+5xks6xUEsFBgAAAAABAAEAPgAAAEYAAAAAAA==",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "14-rename",
+      "policy": "ignore",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAsAZmlyc3R1cAcAAVfucZLOsQkEBQBdAACAAAA7GEncQfr2yJ///NKQAFBLAQI/Az8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAsAAAAAAAAAAACAAQAAAABmaXJzdHVwBwABV+5xks6xUEsFBgAAAAABAAEAPgAAAEYAAAAAAA==",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "14-rename",
+      "policy": "error",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAsAZmlyc3R1cAcAAVfucZLOsQkEBQBdAACAAAA7GEncQfr2yJ///NKQAFBLAQI/Az8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAsAAAAAAAAAAACAAQAAAABmaXJzdHVwBwABV+5xks6xUEsFBgAAAAABAAEAPgAAAEYAAAAAAA==",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "14-nul",
+      "policy": "always",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFABMAZmlyc3R1cA8AAVfucZJuZXcAc3VmZml4CQQFAF0AAIAAADsYSdxB+vbIn//80pAAUEsBAj8DPwACAA4AgxgiWDRYdx0YAAAABQAAAAUAEwAAAAAAAAAAAIABAAAAAGZpcnN0dXAPAAFX7nGSbmV3AHN1ZmZpeFBLBQYAAAAAAQABAEYAAABOAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "14-nul",
+      "policy": "ignore",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFABMAZmlyc3R1cA8AAVfucZJuZXcAc3VmZml4CQQFAF0AAIAAADsYSdxB+vbIn//80pAAUEsBAj8DPwACAA4AgxgiWDRYdx0YAAAABQAAAAUAEwAAAAAAAAAAAIABAAAAAGZpcnN0dXAPAAFX7nGSbmV3AHN1ZmZpeFBLBQYAAAAAAQABAEYAAABOAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "14-nul",
+      "policy": "error",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFABMAZmlyc3R1cA8AAVfucZJuZXcAc3VmZml4CQQFAF0AAIAAADsYSdxB+vbIn//80pAAUEsBAj8DPwACAA4AgxgiWDRYdx0YAAAABQAAAAUAEwAAAAAAAAAAAIABAAAAAGZpcnN0dXAPAAFX7nGSbmV3AHN1ZmZpeFBLBQYAAAAAAQABAEYAAABOAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "14-empty",
+      "policy": "always",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAkAZmlyc3R1cAUAAVfucZIJBAUAXQAAgAAAOxhJ3EH69sif//zSkABQSwECPwM/AAIADgCDGCJYNFh3HRgAAAAFAAAABQAJAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAUAAVfucZJQSwUGAAAAAAEAAQA8AAAARAAAAAAA",
+      "warnings": [
+        "Empty unicode path extra field (0x7075)"
+      ],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "14-empty",
+      "policy": "ignore",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAkAZmlyc3R1cAUAAVfucZIJBAUAXQAAgAAAOxhJ3EH69sif//zSkABQSwECPwM/AAIADgCDGCJYNFh3HRgAAAAFAAAABQAJAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAUAAVfucZJQSwUGAAAAAAEAAQA8AAAARAAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "14-empty",
+      "policy": "error",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAkAZmlyc3R1cAUAAVfucZIJBAUAXQAAgAAAOxhJ3EH69sif//zSkABQSwECPwM/AAIADgCDGCJYNFh3HRgAAAAFAAAABQAJAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAUAAVfucZJQSwUGAAAAAAEAAQA8AAAARAAAAAAA",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "UserWarning",
+        "message": "Empty unicode path extra field (0x7075)"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "14-bad-utf8",
+      "policy": "always",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAoAZmlyc3R1cAYAAVfucZL/CQQFAF0AAIAAADsYSdxB+vbIn//80pAAUEsBAj8DPwACAA4AgxgiWDRYdx0YAAAABQAAAAUACgAAAAAAAAAAAIABAAAAAGZpcnN0dXAGAAFX7nGS/1BLBQYAAAAAAQABAD0AAABFAAAAAAA=",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075): invalid utf-8 bytes"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "14-bad-utf8",
+      "policy": "ignore",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAoAZmlyc3R1cAYAAVfucZL/CQQFAF0AAIAAADsYSdxB+vbIn//80pAAUEsBAj8DPwACAA4AgxgiWDRYdx0YAAAABQAAAAUACgAAAAAAAAAAAIABAAAAAGZpcnN0dXAGAAFX7nGS/1BLBQYAAAAAAQABAD0AAABFAAAAAAA=",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075): invalid utf-8 bytes"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "14-bad-utf8",
+      "policy": "error",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAoAZmlyc3R1cAYAAVfucZL/CQQFAF0AAIAAADsYSdxB+vbIn//80pAAUEsBAj8DPwACAA4AgxgiWDRYdx0YAAAABQAAAAUACgAAAAAAAAAAAIABAAAAAGZpcnN0dXAGAAFX7nGS/1BLBQYAAAAAAQABAD0AAABFAAAAAAA=",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075): invalid utf-8 bytes"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "14-wrong-crc",
+      "policy": "always",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAoAZmlyc3R1cAYAAQAAAAD/CQQFAF0AAIAAADsYSdxB+vbIn//80pAAUEsBAj8DPwACAA4AgxgiWDRYdx0YAAAABQAAAAUACgAAAAAAAAAAAIABAAAAAGZpcnN0dXAGAAEAAAAA/1BLBQYAAAAAAQABAD0AAABFAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "14-wrong-crc",
+      "policy": "ignore",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAoAZmlyc3R1cAYAAQAAAAD/CQQFAF0AAIAAADsYSdxB+vbIn//80pAAUEsBAj8DPwACAA4AgxgiWDRYdx0YAAAABQAAAAUACgAAAAAAAAAAAIABAAAAAGZpcnN0dXAGAAEAAAAA/1BLBQYAAAAAAQABAD0AAABFAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "14-wrong-crc",
+      "policy": "error",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAoAZmlyc3R1cAYAAQAAAAD/CQQFAF0AAIAAADsYSdxB+vbIn//80pAAUEsBAj8DPwACAA4AgxgiWDRYdx0YAAAABQAAAAUACgAAAAAAAAAAAIABAAAAAGZpcnN0dXAGAAEAAAAA/1BLBQYAAAAAAQABAD0AAABFAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "14-version",
+      "policy": "always",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAoAZmlyc3R1cAYAAlfucZL/CQQFAF0AAIAAADsYSdxB+vbIn//80pAAUEsBAj8DPwACAA4AgxgiWDRYdx0YAAAABQAAAAUACgAAAAAAAAAAAIABAAAAAGZpcnN0dXAGAAJX7nGS/1BLBQYAAAAAAQABAD0AAABFAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "14-version",
+      "policy": "ignore",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAoAZmlyc3R1cAYAAlfucZL/CQQFAF0AAIAAADsYSdxB+vbIn//80pAAUEsBAj8DPwACAA4AgxgiWDRYdx0YAAAABQAAAAUACgAAAAAAAAAAAIABAAAAAGZpcnN0dXAGAAJX7nGS/1BLBQYAAAAAAQABAD0AAABFAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "14-version",
+      "policy": "error",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAoAZmlyc3R1cAYAAlfucZL/CQQFAF0AAIAAADsYSdxB+vbIn//80pAAUEsBAj8DPwACAA4AgxgiWDRYdx0YAAAABQAAAAUACgAAAAAAAAAAAIABAAAAAGZpcnN0dXAGAAJX7nGS/1BLBQYAAAAAAQABAD0AAABFAAAAAAA=",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "14-short",
+      "policy": "always",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAgAZmlyc3R1cAQAMTIzNAkEBQBdAACAAAA7GEncQfr2yJ///NKQAFBLAQI/Az8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAgAAAAAAAAAAACAAQAAAABmaXJzdHVwBAAxMjM0UEsFBgAAAAABAAEAOwAAAEMAAAAAAA==",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075)"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "14-short",
+      "policy": "ignore",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAgAZmlyc3R1cAQAMTIzNAkEBQBdAACAAAA7GEncQfr2yJ///NKQAFBLAQI/Az8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAgAAAAAAAAAAACAAQAAAABmaXJzdHVwBAAxMjM0UEsFBgAAAAABAAEAOwAAAEMAAAAAAA==",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075)"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "14-short",
+      "policy": "error",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAgAZmlyc3R1cAQAMTIzNAkEBQBdAACAAAA7GEncQfr2yJ///NKQAFBLAQI/Az8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFAAgAAAAAAAAAAACAAQAAAABmaXJzdHVwBAAxMjM0UEsFBgAAAAABAAEAOwAAAEMAAAAAAA==",
+      "warnings": [],
+      "events": [],
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Corrupt unicode path extra field (0x7075)"
+      },
+      "outputs": 0
+    },
+    {
+      "name": "14-repeat",
+      "policy": "always",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFABgAZmlyc3R1cAgAAVfucZJvbmV1cAgAAVfucZJ0d28JBAUAXQAAgAAAOxhJ3EH69sif//zSkABQSwECPwM/AAIADgCDGCJYNFh3HRgAAAAFAAAABQAYAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAgAAVfucZJvbmV1cAgAAVfucZJ0d29QSwUGAAAAAAEAAQBLAAAAUwAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "14-repeat",
+      "policy": "ignore",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFABgAZmlyc3R1cAgAAVfucZJvbmV1cAgAAVfucZJ0d28JBAUAXQAAgAAAOxhJ3EH69sif//zSkABQSwECPwM/AAIADgCDGCJYNFh3HRgAAAAFAAAABQAYAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAgAAVfucZJvbmV1cAgAAVfucZJ0d29QSwUGAAAAAAEAAQBLAAAAUwAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "14-repeat",
+      "policy": "error",
+      "input": "UEsDBD8AAgAOAIMYIlg0WHcdGAAAAAUAAAAFABgAZmlyc3R1cAgAAVfucZJvbmV1cAgAAVfucZJ0d28JBAUAXQAAgAAAOxhJ3EH69sif//zSkABQSwECPwM/AAIADgCDGCJYNFh3HRgAAAAFAAAABQAYAAAAAAAAAAAAgAEAAAAAZmlyc3R1cAgAAVfucZJvbmV1cAgAAVfucZJ0d29QSwUGAAAAAAEAAQBLAAAAUwAAAAAA",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "14-collision",
+      "policy": "always",
+      "input": "UEsDBD8AAgAOAIMYIljl1F0/FgAAAAMAAAAFAA0AZmlyc3R1cAkAAVfucZJzYW1lCQQFAF0AAIAAADebCLtIM///9zxAAFBLAwQ/AAIADgCDGCJYRUTjaxYAAAADAAAABgANAHNlY29uZHVwCQABaREftnNhbWUJBAUAXQAAgAAANxlLX4ib///3gEAAUEsBAj8DPwACAA4AgxgiWOXUXT8WAAAAAwAAAAUADQAAAAAAAAAAAIABAAAAAGZpcnN0dXAJAAFX7nGSc2FtZVBLAQI/Az8AAgAOAIMYIlhFRONrFgAAAAMAAAAGAA0AAAAAAAAAAACAAUYAAABzZWNvbmR1cAkAAWkRH7ZzYW1lUEsFBgAAAAACAAIAgQAAAI0AAAAAAA==",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "14-collision",
+      "policy": "ignore",
+      "input": "UEsDBD8AAgAOAIMYIljl1F0/FgAAAAMAAAAFAA0AZmlyc3R1cAkAAVfucZJzYW1lCQQFAF0AAIAAADebCLtIM///9zxAAFBLAwQ/AAIADgCDGCJYRUTjaxYAAAADAAAABgANAHNlY29uZHVwCQABaREftnNhbWUJBAUAXQAAgAAANxlLX4ib///3gEAAUEsBAj8DPwACAA4AgxgiWOXUXT8WAAAAAwAAAAUADQAAAAAAAAAAAIABAAAAAGZpcnN0dXAJAAFX7nGSc2FtZVBLAQI/Az8AAgAOAIMYIlhFRONrFgAAAAMAAAAGAA0AAAAAAAAAAACAAUYAAABzZWNvbmR1cAkAAWkRH7ZzYW1lUEsFBgAAAAACAAIAgQAAAI0AAAAAAA==",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    },
+    {
+      "name": "14-collision",
+      "policy": "error",
+      "input": "UEsDBD8AAgAOAIMYIljl1F0/FgAAAAMAAAAFAA0AZmlyc3R1cAkAAVfucZJzYW1lCQQFAF0AAIAAADebCLtIM///9zxAAFBLAwQ/AAIADgCDGCJYRUTjaxYAAAADAAAABgANAHNlY29uZHVwCQABaREftnNhbWUJBAUAXQAAgAAANxlLX4ib///3gEAAUEsBAj8DPwACAA4AgxgiWOXUXT8WAAAAAwAAAAUADQAAAAAAAAAAAIABAAAAAGZpcnN0dXAJAAFX7nGSc2FtZVBLAQI/Az8AAgAOAIMYIlhFRONrFgAAAAMAAAAGAA0AAAAAAAAAAACAAUYAAABzZWNvbmR1cAkAAWkRH7ZzYW1lUEsFBgAAAAACAAIAgQAAAI0AAAAAAA==",
+      "warnings": [],
+      "events": [
+        "callback"
+      ],
+      "accepted": true,
+      "error": null,
+      "outputs": 1
+    }
+  ]
+}

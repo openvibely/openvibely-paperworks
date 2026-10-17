@@ -1,0 +1,221 @@
+{
+  "reference": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-reference/repository/internal/builtinskills/documents/scripts/test_presentation_native.py": "6199f9f1767fa49fa3743f11fb6545468da586c68aabe28e79ba942fdb0513fb",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/python/cpython-3.12.12-macos-aarch64-none/lib/python3.12/zipfile/__init__.py": "94c53aedba0b0f7d6f71bf8ec34973e666ee0c0e56e6800ff4c26d2e3951987a"
+  },
+  "scope": "Unchanged mutate and output algorithm; ordered payload/state comparison, not timestamp or whole archive equality",
+  "steps": [
+    {
+      "action": "replace",
+      "events": [
+        "callback",
+        "output"
+      ],
+      "error": null,
+      "output": "1.pptx",
+      "source_preserved": true,
+      "parts": [
+        {
+          "name": "a",
+          "data": "6e6577"
+        },
+        {
+          "name": "b",
+          "data": "6b657074"
+        },
+        {
+          "name": "folder/",
+          "data": ""
+        }
+      ],
+      "entries": [
+        "1.pptx",
+        "input.zip"
+      ]
+    },
+    {
+      "action": "reinsert",
+      "events": [
+        "callback",
+        "output"
+      ],
+      "error": null,
+      "output": "2.pptx",
+      "source_preserved": true,
+      "parts": [
+        {
+          "name": "b",
+          "data": "6b657074"
+        },
+        {
+          "name": "folder/",
+          "data": ""
+        },
+        {
+          "name": "a",
+          "data": "6c617374"
+        }
+      ],
+      "entries": [
+        "1.pptx",
+        "2.pptx",
+        "input.zip"
+      ]
+    },
+    {
+      "action": "callback-error",
+      "events": [
+        "callback"
+      ],
+      "error": "ValueError",
+      "output": "",
+      "source_preserved": true,
+      "parts": [],
+      "entries": [
+        "1.pptx",
+        "2.pptx",
+        "input.zip",
+        "marker"
+      ]
+    },
+    {
+      "action": "add",
+      "events": [
+        "callback",
+        "output"
+      ],
+      "error": null,
+      "output": "4.pptx",
+      "source_preserved": true,
+      "parts": [
+        {
+          "name": "b",
+          "data": "6b657074"
+        },
+        {
+          "name": "folder/",
+          "data": "7061796c6f6164"
+        },
+        {
+          "name": "a",
+          "data": "6c617374"
+        },
+        {
+          "name": "\u03bb",
+          "data": "756e69636f6465"
+        }
+      ],
+      "entries": [
+        "1.pptx",
+        "2.pptx",
+        "4.pptx",
+        "input.zip",
+        "marker"
+      ]
+    },
+    {
+      "action": "clear",
+      "events": [
+        "callback",
+        "output"
+      ],
+      "error": null,
+      "output": "5.pptx",
+      "source_preserved": true,
+      "parts": [],
+      "entries": [
+        "1.pptx",
+        "2.pptx",
+        "4.pptx",
+        "5.pptx",
+        "input.zip",
+        "marker"
+      ]
+    },
+    {
+      "action": "empty-name",
+      "events": [
+        "callback",
+        "output"
+      ],
+      "error": null,
+      "output": "6.pptx",
+      "source_preserved": true,
+      "parts": [
+        {
+          "name": "",
+          "data": "656d707479206b6579"
+        }
+      ],
+      "entries": [
+        "1.pptx",
+        "2.pptx",
+        "4.pptx",
+        "5.pptx",
+        "6.pptx",
+        "input.zip",
+        "marker"
+      ]
+    },
+    {
+      "action": "delete-output",
+      "events": [
+        "callback",
+        "output"
+      ],
+      "error": null,
+      "output": "6.pptx",
+      "source_preserved": false,
+      "parts": [
+        {
+          "name": "",
+          "data": "656d707479206b6579"
+        },
+        {
+          "name": "next",
+          "data": "76616c7565"
+        }
+      ],
+      "entries": [
+        "2.pptx",
+        "4.pptx",
+        "5.pptx",
+        "6.pptx",
+        "input.zip",
+        "marker"
+      ]
+    },
+    {
+      "action": "collision",
+      "events": [
+        "callback",
+        "output"
+      ],
+      "error": null,
+      "output": "6.pptx",
+      "source_preserved": false,
+      "parts": [
+        {
+          "name": "",
+          "data": "656d707479206b6579"
+        },
+        {
+          "name": "next",
+          "data": "76616c7565"
+        },
+        {
+          "name": "collision",
+          "data": "6c617374"
+        }
+      ],
+      "entries": [
+        "2.pptx",
+        "4.pptx",
+        "5.pptx",
+        "6.pptx",
+        "input.zip",
+        "marker"
+      ]
+    }
+  ]
+}

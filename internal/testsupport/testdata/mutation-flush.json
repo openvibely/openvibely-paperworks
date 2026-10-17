@@ -1,0 +1,142 @@
+{
+  "reference": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-reference/repository/internal/builtinskills/documents/scripts/test_presentation_native.py": "6199f9f1767fa49fa3743f11fb6545468da586c68aabe28e79ba942fdb0513fb",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-reference/repository/internal/builtinskills/documents/scripts/document_native.py": "eb2407fed420206fc34ad88f3fceb613ee694d3bf7f239b19cce3a73a6b9c420",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-reference/repository/internal/builtinskills/documents/scripts/document_check.py": "f7f724147f3678383b5d64b2d128639c2df3115404f07624dbcca4419ef15e94",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/python/cpython-3.12.12-macos-aarch64-none/lib/python3.12/zipfile/__init__.py": "94c53aedba0b0f7d6f71bf8ec34973e666ee0c0e56e6800ff4c26d2e3951987a"
+  },
+  "cases": [
+    {
+      "stage": "header",
+      "persistent": false,
+      "events": [
+        "callback",
+        "output",
+        "write-error",
+        "flush",
+        "close"
+      ],
+      "error": "injected write",
+      "members": [
+        "first"
+      ],
+      "read_error": null,
+      "output": "UEsDBBQAAAAAAKMgQ1jVhdAkDQAAAA0AAAAFAAAAZmlyc3RmaXJzdCBwYXlsb2FkUEsBAhQDFAAAAAAAoyBDWNWF0CQNAAAADQAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAADAAAAAAAA=="
+    },
+    {
+      "stage": "header",
+      "persistent": true,
+      "events": [
+        "callback",
+        "output",
+        "write-error",
+        "flush",
+        "close"
+      ],
+      "error": "injected close",
+      "members": [
+        "first"
+      ],
+      "read_error": null,
+      "output": "UEsDBBQAAAAAAKMgQ1jVhdAkDQAAAA0AAAAFAAAAZmlyc3RmaXJzdCBwYXlsb2FkUEsBAhQDFAAAAAAAoyBDWNWF0CQNAAAADQAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAADAAAAAAAA=="
+    },
+    {
+      "stage": "payload",
+      "persistent": false,
+      "events": [
+        "callback",
+        "output",
+        "write-error",
+        "flush",
+        "close"
+      ],
+      "error": "injected write",
+      "members": [
+        "first",
+        "second"
+      ],
+      "read_error": "BadZipFile: Overlapped entries: 'second' (possible zip bomb)",
+      "output": "UEsDBBQAAAAAAKMgQ1jVhdAkDQAAAA0AAAAFAAAAZmlyc3RmaXJzdCBwYXlsb2FkUEsDBBQAAAAAAKMgQ1hEaR4gDgAAAA4AAAAGAAAAc2Vjb25kc2VjUEsBAhQDFAAAAAAAoyBDWNWF0CQNAAAADQAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsBAhQDFAAAAAAAoyBDWERpHiAOAAAADgAAAAYAAAAAAAAAAAAAAIABMAAAAHNlY29uZFBLBQYAAAAAAgACAGcAAABXAAAAAAA="
+    },
+    {
+      "stage": "payload",
+      "persistent": true,
+      "events": [
+        "callback",
+        "output",
+        "write-error",
+        "flush",
+        "close"
+      ],
+      "error": "injected close",
+      "members": [
+        "first",
+        "second"
+      ],
+      "read_error": "BadZipFile: Overlapped entries: 'second' (possible zip bomb)",
+      "output": "UEsDBBQAAAAAAKMgQ1jVhdAkDQAAAA0AAAAFAAAAZmlyc3RmaXJzdCBwYXlsb2FkUEsDBBQAAAAAAKMgQ1hEaR4gDgAAAA4AAAAGAAAAc2Vjb25kc2VjUEsBAhQDFAAAAAAAoyBDWNWF0CQNAAAADQAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsBAhQDFAAAAAAAoyBDWERpHiAOAAAADgAAAAYAAAAAAAAAAAAAAIABMAAAAHNlY29uZFBLBQYAAAAAAgACAGcAAABXAAAAAAA="
+    },
+    {
+      "stage": "directory",
+      "persistent": false,
+      "events": [
+        "callback",
+        "output",
+        "write-error",
+        "close"
+      ],
+      "error": "injected write",
+      "members": null,
+      "read_error": null,
+      "output": "UEsDBBQAAAAAAKMgQ1jVhdAkDQAAAA0AAAAFAAAAZmlyc3RmaXJzdCBwYXlsb2FkUEsDBBQAAAAAAKMgQ1hEaR4gDgAAAA4AAAAGAAAAc2Vjb25kc2Vjb25kIHBheWxvYWRQSwE="
+    },
+    {
+      "stage": "directory",
+      "persistent": true,
+      "events": [
+        "callback",
+        "output",
+        "write-error",
+        "close"
+      ],
+      "error": "injected close",
+      "members": null,
+      "read_error": null,
+      "output": "UEsDBBQAAAAAAKMgQ1jVhdAkDQAAAA0AAAAFAAAAZmlyc3RmaXJzdCBwYXlsb2FkUEsDBBQAAAAAAKMgQ1hEaR4gDgAAAA4AAAAGAAAAc2Vjb25kc2Vjb25kIHBheWxvYWRQSwE="
+    },
+    {
+      "stage": "flush",
+      "persistent": false,
+      "events": [
+        "callback",
+        "output",
+        "flush",
+        "close"
+      ],
+      "error": "injected flush",
+      "members": [
+        "first",
+        "second"
+      ],
+      "read_error": null,
+      "output": "UEsDBBQAAAAAAKMgQ1jVhdAkDQAAAA0AAAAFAAAAZmlyc3RmaXJzdCBwYXlsb2FkUEsDBBQAAAAAAKMgQ1hEaR4gDgAAAA4AAAAGAAAAc2Vjb25kc2Vjb25kIHBheWxvYWRQSwECFAMUAAAAAACjIENY1YXQJA0AAAANAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwECFAMUAAAAAACjIENYRGkeIA4AAAAOAAAABgAAAAAAAAAAAAAAgAEwAAAAc2Vjb25kUEsFBgAAAAACAAIAZwAAAGIAAAAAAA=="
+    },
+    {
+      "stage": "flush",
+      "persistent": true,
+      "events": [
+        "callback",
+        "output",
+        "flush",
+        "close"
+      ],
+      "error": "injected close",
+      "members": [
+        "first",
+        "second"
+      ],
+      "read_error": null,
+      "output": "UEsDBBQAAAAAAKMgQ1jVhdAkDQAAAA0AAAAFAAAAZmlyc3RmaXJzdCBwYXlsb2FkUEsDBBQAAAAAAKMgQ1hEaR4gDgAAAA4AAAAGAAAAc2Vjb25kc2Vjb25kIHBheWxvYWRQSwECFAMUAAAAAACjIENY1YXQJA0AAAANAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwECFAMUAAAAAACjIENYRGkeIA4AAAAOAAAABgAAAAAAAAAAAAAAgAEwAAAAc2Vjb25kUEsFBgAAAAACAAIAZwAAAGIAAAAAAA=="
+    }
+  ]
+}

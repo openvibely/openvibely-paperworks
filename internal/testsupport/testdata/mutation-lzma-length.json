@@ -1,0 +1,243 @@
+{
+  "reference": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/test_presentation_native.py": "6199f9f1767fa49fa3743f11fb6545468da586c68aabe28e79ba942fdb0513fb",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/document_native.py": "eb2407fed420206fc34ad88f3fceb613ee694d3bf7f239b19cce3a73a6b9c420",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/document_check.py": "f7f724147f3678383b5d64b2d128639c2df3115404f07624dbcca4419ef15e94"
+  },
+  "zipfile_source_sha256": "94c53aedba0b0f7d6f71bf8ec34973e666ee0c0e56e6800ff4c26d2e3951987a",
+  "scope": "Original PresentationNative.mutate unchanged. Fixed fixture timestamps; no output byte-equality claim. Error types are Python observations, not Go type-equivalence.",
+  "cases": [
+    {
+      "name": "long-6",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAYAAAAFAAAAZmlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+RgAAAAGAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAOwAAAAAA",
+      "input_sha256": "c5c3b93ae492869e273724f7d3a660aab540b928bd1afbb63de35ed9a70e2c05",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "long-9",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAkAAAAFAAAAZmlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+RgAAAAJAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAOwAAAAAA",
+      "input_sha256": "b02f03b660dd70c15c3a6616d6569ded7e09a50cde32066541fa4fc234333b23",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "long-4096",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAAQAAAFAAAAZmlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+RgAAAAAEAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAOwAAAAAA",
+      "input_sha256": "3969ee644b8700046398d040c71a72f45b23f932c8360d87df69c028aaa59bc8",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "long-4294967295",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAP////8FAAAAZmlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+RgAAAD/////BQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAOwAAAAAA",
+      "input_sha256": "5e67bc10f2f1254c4ef698f99299abcbca77afc7e25aa515ae6e0db8e6d5b37c",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "long-bad-crc",
+      "input": "UEsDBD8AAgAOAIMYIlgAAAAAGAAAAAkAAAAFAAAAZmlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYAAAAABgAAAAJAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAOwAAAAAA",
+      "input_sha256": "6b0ec37ea9d59ce81783045550bfb2affc5c31b815ed9bc727486ae4a51d6861",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "long-truncated-footer",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5FQAAAAkAAAAFAAAAZmlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xQSwECPwM/AAIADgCDGCJYJdPj+RUAAAAJAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAOAAAAAAA",
+      "input_sha256": "58b832a73bbf1c52c695153a6d319131b7d5a3a36c664b9a4fd4585744141700",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "long-corrupt-range",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5GAAAAAkAAAAFAAAAZmlyc3QJBAUAXQAAgAD/OZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+RgAAAAJAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAOwAAAAAA",
+      "input_sha256": "3f52a353ca2faeed831c6bd84449a3b80289ad0ea55bd46939c60fcfaa4182f8",
+      "accepted": false,
+      "error": {
+        "type": "LZMAError",
+        "message": "Corrupt input data"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "long-trailing-data",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5HAAAAAkAAAAFAAAAZmlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABqdW5rUEsBAj8DPwACAA4AgxgiWCXT4/kcAAAACQAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAAD8AAAAAAA==",
+      "input_sha256": "8ab8be945d62d5664f2f246006513c2c0cafc6cee6c657be52ef8d85e76b629d",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "long-concatenated",
+      "input": "UEsDBD8AAgAOAIMYIlgl0+P5MAAAAAkAAAAFAAAAZmlyc3QJBAUAXQAAgAAAOZhLMuwMgGFr//xnQAAJBAUAXQAAgAAAOZhLMuwMgGFr//xnQABQSwECPwM/AAIADgCDGCJYJdPj+TAAAAAJAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAUwAAAAAA",
+      "input_sha256": "fb22334aff32d0003565610439347ec224b59f8209f0b0772fe5ef24dba294b4",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "empty-long",
+      "input": "UEsDBD8AAgAOAIMYIlgAAAAAEwAAAAkAAAAFAAAAZmlyc3QJBAUAXQAAgAAAg//7///AAAAAUEsBAj8DPwACAA4AgxgiWAAAAAATAAAACQAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAADYAAAAAAA==",
+      "input_sha256": "b60a747674777e1844a49ffa17f0b78c4aaf333909701c2e8aa73320f308deee",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": ""
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "empty-long-bad-crc",
+      "input": "UEsDBD8AAgAOAIMYIlgBAAAAEwAAAAkAAAAFAAAAZmlyc3QJBAUAXQAAgAAAg//7///AAAAAUEsBAj8DPwACAA4AgxgiWAEAAAATAAAACQAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAADYAAAAAAA==",
+      "input_sha256": "f88c1c13ef06353e1b1cb6670539ff6988dff837b95ba86e82ffab24a6a95fb0",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "long-incomplete-properties",
+      "input": "UEsDBD8AAgAOAIMYIlgAAAAABwAAAAkAAAAFAAAAZmlyc3QJBAUAXQAAUEsBAj8DPwACAA4AgxgiWAAAAAAHAAAACQAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAACoAAAAAAA==",
+      "input_sha256": "3acd23eda746b3a4fab7ecafdc31f474d97e097dd6f05ed81ad88a82ae015902",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": ""
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "long-incomplete-properties-crc",
+      "input": "UEsDBD8AAgAOAIMYIlgBAAAABwAAAAkAAAAFAAAAZmlyc3QJBAUAXQAAUEsBAj8DPwACAA4AgxgiWAEAAAAHAAAACQAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAACoAAAAAAA==",
+      "input_sha256": "a69b2f626d60d68af7d536f80db485713b3898c7308e0d5f4a4d0d4d3c810c3e",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    }
+  ]
+}

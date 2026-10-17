@@ -1,0 +1,23 @@
+{
+  "root": "'Output'!C3",
+  "nodes": {
+    "'Output'!C3": {
+      "sheet": "Output",
+      "cell": "C3",
+      "formula": "='[other.xlsx]Inputs'!Driver",
+      "cached_value": null
+    }
+  },
+  "edges": [],
+  "cycles": [],
+  "unresolved": [
+    {
+      "cell": "'Output'!C3",
+      "reference": "'[other.xlsx]Inputs'!Driver",
+      "reason": "External or missing worksheet for defined name"
+    }
+  ],
+  "truncated": false,
+  "complete": false,
+  "method": "Formula precedents for saved inputs; all branches included. Whole-row/column references use saved populated extents of the referenced rows/columns. INDIRECT/OFFSET targets use literals or non-formula inputs only. Cached values may be stale. No calculation performed."
+}

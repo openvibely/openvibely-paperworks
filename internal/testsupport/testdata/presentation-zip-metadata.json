@@ -1,0 +1,89 @@
+{
+  "sources": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/pptx/opc/serialized.py": "ee21f7bf72e7f795b6e8fd42d1762cc2f3ce35dc13a7e84cfe577b401e655c74",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/python/cpython-3.12.12-macos-aarch64-none/lib/python3.12/zipfile/__init__.py": "94c53aedba0b0f7d6f71bf8ec34973e666ee0c0e56e6800ff4c26d2e3951987a"
+  },
+  "scope": "Unchanged python-pptx writer with an explicitly controlled localtime result; no compression equivalence claim. Fresh runtime comparison has uncontrolled timestamps.",
+  "clock": [
+    2024,
+    2,
+    3,
+    4,
+    5,
+    7
+  ],
+  "cases": [
+    {
+      "name": "first.xml",
+      "data": "PGEvPg==",
+      "crc32": 30481620,
+      "size": 4,
+      "flags": 0,
+      "creator_version": 788,
+      "reader_version": 20,
+      "external_attrs": 25165824,
+      "internal_attrs": 0,
+      "method": 8,
+      "extra": "",
+      "comment": "",
+      "dos_date": 22595,
+      "dos_time": 8355,
+      "local_flags": 0,
+      "local_extra_size": 0
+    },
+    {
+      "name": "empty.bin",
+      "data": "",
+      "crc32": 0,
+      "size": 0,
+      "flags": 0,
+      "creator_version": 788,
+      "reader_version": 20,
+      "external_attrs": 25165824,
+      "internal_attrs": 0,
+      "method": 8,
+      "extra": "",
+      "comment": "",
+      "dos_date": 22595,
+      "dos_time": 8355,
+      "local_flags": 0,
+      "local_extra_size": 0
+    },
+    {
+      "name": "media/caf\u00e9.bin",
+      "data": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/wABAgMEBQYHCAkKCwwNDg8QERITFBUWFxgZGhscHR4fICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj9AQUJDREVGR0hJSktMTU5PUFFSU1RVVldYWVpbXF1eX2BhYmNkZWZnaGlqa2xtbm9wcXJzdHV2d3h5ent8fX5/gIGCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp+goaKjpKWmp6ipqqusra6vsLGys7S1tre4ubq7vL2+v8DBwsPExcbHyMnKy8zNzs/Q0dLT1NXW19jZ2tvc3d7f4OHi4+Tl5ufo6err7O3u7/Dx8vP09fb3+Pn6+/z9/v8AAQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8wMTIzNDU2Nzg5Ojs8PT4/QEFCQ0RFRkdISUpLTE1OT1BRUlNUVVZXWFlaW1xdXl9gYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXp7fH1+f4CBgoOEhYaHiImKi4yNjo+QkZKTlJWWl5iZmpucnZ6foKGio6SlpqeoqaqrrK2ur7CxsrO0tba3uLm6u7y9vr/AwcLDxMXGx8jJysvMzc7P0NHS09TV1tfY2drb3N3e3+Dh4uPk5ebn6Onq6+zt7u/w8fLz9PX29/j5+vv8/f7/AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3eHl6e3x9fn+AgYKDhIWGh4iJiouMjY6PkJGSk5SVlpeYmZqbnJ2en6ChoqOkpaanqKmqq6ytrq+wsbKztLW2t7i5uru8vb6/wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t/g4eLj5OXm5+jp6uvs7e7v8PHy8/T19vf4+fr7/P3+/w==",
+      "crc32": 3070970918,
+      "size": 1024,
+      "flags": 2048,
+      "creator_version": 788,
+      "reader_version": 20,
+      "external_attrs": 25165824,
+      "internal_attrs": 0,
+      "method": 8,
+      "extra": "",
+      "comment": "",
+      "dos_date": 22595,
+      "dos_time": 8355,
+      "local_flags": 2048,
+      "local_extra_size": 0
+    },
+    {
+      "name": "last.xml",
+      "data": "PHJvb3Q+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PGNoaWxkPnNhbXBsZTwvY2hpbGQ+PC9yb290Pg==",
+      "crc32": 2204783383,
+      "size": 4213,
+      "flags": 0,
+      "creator_version": 788,
+      "reader_version": 20,
+      "external_attrs": 25165824,
+      "internal_attrs": 0,
+      "method": 8,
+      "extra": "",
+      "comment": "",
+      "dos_date": 22595,
+      "dos_time": 8355,
+      "local_flags": 0,
+      "local_extra_size": 0
+    }
+  ]
+}

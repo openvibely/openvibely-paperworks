@@ -1,0 +1,47 @@
+{
+  "paper": "A4",
+  "flow": {
+    "margin": 72,
+    "font_size": 12,
+    "leading": 17,
+    "blocks": [
+      {
+        "kind": "heading",
+        "text": "Revenue report"
+      },
+      {
+        "kind": "paragraph",
+        "text": "Revenue totaled $200 across subscriptions and services."
+      },
+      {
+        "kind": "spacer",
+        "height": 16
+      },
+      {
+        "kind": "table",
+        "header": [
+          "Item",
+          "Amount"
+        ],
+        "column_widths": [
+          75,
+          25
+        ],
+        "rows": [
+          [
+            "Subscriptions\nMonthly recurring access and support, including all currently active customer accounts.",
+            "$120"
+          ],
+          [
+            "Services",
+            "$80"
+          ],
+          [
+            "Total",
+            "$200"
+          ]
+        ]
+      }
+    ]
+  }
+}

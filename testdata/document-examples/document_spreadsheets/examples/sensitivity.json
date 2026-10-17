@@ -1,0 +1,15 @@
+{
+ "sheets":[{
+  "name":"Model",
+  "cells":{
+   "A1":{"value":"Row input"},"B1":{"value":1},
+   "A2":{"value":"Column input"},"B2":{"value":5},
+   "A3":{"value":"Output"},"B3":{"formula":"B1+B4*B2"},
+   "A4":{"value":"Factor"},"B4":{"value":10},
+   "D2":{"formula":"B3"},"E2":{"value":2},"F2":{"value":3},
+   "D3":{"value":10},"D4":{"value":20}
+  },
+  "columns":{"A":22,"B:F":14},
+  "data_tables":[{"range":"E3:F4","input1":"B1","input2":"B2"}]
+ }]
+}

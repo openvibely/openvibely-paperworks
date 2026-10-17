@@ -1,0 +1,29 @@
+{
+  "external_relationships": [],
+  "issues": [],
+  "package_parts": {
+    "xl/workbook.xml": {
+      "bytes": 77,
+      "sha256": "114a06d503116c5e9c44666e17f0b4163b593fabf4c6ef12b86499c52164c6e6"
+    },
+    "xl/worksheets/sheet1.xml": {
+      "bytes": 168,
+      "sha256": "d2963bce4435a47a2b41c155192eb36f4ee4360ef0acb2e696278576ae417af3"
+    }
+  },
+  "sheets": [],
+  "calculation_settings": {},
+  "formulas": [
+    {
+      "part": "xl/worksheets/sheet1.xml",
+      "sheet": "xl/worksheets/sheet1.xml",
+      "cell": "A1",
+      "formula": "IF(1=1,\"\",1)",
+      "attributes": {},
+      "cached": null
+    }
+  ],
+  "errors": [],
+  "cache_warning": "Existing cached values do not prove recent recalculation.",
+  "native_features": {}
+}

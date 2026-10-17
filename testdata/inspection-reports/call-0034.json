@@ -1,0 +1,63 @@
+{
+  "external_relationships": [],
+  "issues": [
+    "Image without alternative text: Chart",
+    "Table without designated header row; review whether appropriate"
+  ],
+  "package_parts": {
+    "word/document.xml": {
+      "bytes": 274,
+      "sha256": "bd50e906008d0675640d36d3bce0a1a97a2238949cd8bfd605d1ed004b832949"
+    },
+    "word/comments.xml": {
+      "bytes": 108,
+      "sha256": "2b6adba9cf6261f78bc3e83bf9071ec282f2cc1cb7e916a5414175771311ba46"
+    }
+  },
+  "tracked_insertions": 1,
+  "tracked_deletions": 1,
+  "comments": 1,
+  "equations": 0,
+  "headings": [],
+  "sections": [],
+  "fields": [],
+  "controls": [],
+  "notes": [],
+  "comment_details": [
+    {
+      "id": null,
+      "author": null,
+      "text": "",
+      "date": null,
+      "initials": null,
+      "resolved": false,
+      "anchored_text": []
+    }
+  ],
+  "images": [],
+  "watermarks": [],
+  "direct_formatting": [],
+  "stories": [
+    {
+      "part": "word/document.xml",
+      "content": [
+        {
+          "kind": "text",
+          "text": "New"
+        },
+        {
+          "kind": "deleted",
+          "text": "Old"
+        }
+      ]
+    },
+    {
+      "part": "word/comments.xml",
+      "content": []
+    }
+  ],
+  "style_warnings": [],
+  "font_usage": {},
+  "section_links": [],
+  "section_details": []
+}

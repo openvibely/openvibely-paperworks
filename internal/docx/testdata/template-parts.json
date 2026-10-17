@@ -1,0 +1,39 @@
+{
+  "sources": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/builtin/skills/document_word/SKILL.md": "a1ba5e82a08b434606044a72e83e1bb6315aadc5d8b2d5417cc27e936baddebb",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/document_check.py": "f7f724147f3678383b5d64b2d128639c2df3115404f07624dbcca4419ef15e94",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/docx/templates/default.docx": "2094b5bddffe9cf973d61fe03388413804f034160718494a65db7e98da40d35d",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/docx/api.py": "d77539ea23d2336b4c44311bd373a64994240c03e6c068dfc68b189164b6b5c7"
+  },
+  "scope": "Unchanged original Word example block and fresh blank Document(); static template payloads, not generated output substitution.",
+  "block_sha256": "cbf6a92793076fa876678dde486478666a6c790d8720f40a4466bd5e1b735fb8",
+  "parts": {
+    "word/stylesWithEffects.xml": "463ae0928cf0d84775dbf8cf18d6c3029f6707c81bf590f6d6dd8757a5e93f15",
+    "word/webSettings.xml": "349d36de7434d09f86987ff671d8814964a0588c1e630c06e562cda7e75e9f95",
+    "word/fontTable.xml": "79385fb7f60247507ecaffc292e9ebd52ea0657b8634f629ba6fccc54011d6bb",
+    "customXml/item1.xml": "a86086ffc5d8e83ebd6c71a55d1d2efaa31b137977f5f3a752366e1023612144",
+    "customXml/_rels/item1.xml.rels": "1ca6c9a64edcebe24ee703a54403611b322d96da33371779e742d2d3f7ed7a6c",
+    "customXml/itemProps1.xml": "c542307b13ec29a8b546217bb37936ab4822e044b265d2952985ec3d6afed24e",
+    "docProps/thumbnail.jpeg": "96367138dc44ce09bf2c8f0f8e49348a1478d2c5c0af69bbc2bbc38b63cdcead"
+  },
+  "names": [
+    "[Content_Types].xml",
+    "_rels/.rels",
+    "docProps/core.xml",
+    "docProps/app.xml",
+    "word/document.xml",
+    "word/_rels/document.xml.rels",
+    "word/styles.xml",
+    "word/stylesWithEffects.xml",
+    "word/settings.xml",
+    "word/webSettings.xml",
+    "word/fontTable.xml",
+    "word/theme/theme1.xml",
+    "customXml/item1.xml",
+    "customXml/_rels/item1.xml.rels",
+    "customXml/itemProps1.xml",
+    "word/numbering.xml",
+    "docProps/thumbnail.jpeg"
+  ],
+  "asset_sha256": "46ff14557432a2c7dfe0ffbcae49652fcd0a67225a4336f4f0779e05a9faddf1"
+}

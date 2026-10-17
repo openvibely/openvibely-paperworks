@@ -1,0 +1,92 @@
+{
+  "sources": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/equation.cjs": "b7e87685d7a23c04015d15fa9a5494137d6efb6fce12d8bf59446ab525a436a0",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/Wrappers/mmultiscripts.js": "4b90f7df1b753e1b9624bcee5c700d778573db3f230e77114dc4d6994459ba15",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/Wrappers/mmultiscripts.js": "a0632d6430a11f13a192b3e897105979602d7d1c6f842797a83daf004e8ea1b0",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/Wrappers/msubsup.js": "13e426be514e7442399a4a93d3e440a4d17d5d203c4bea425eef4758891efdf6",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/Wrappers/scriptbase.js": "c6c2e601a6042258262e80e2c464f5bdee024c39e63ea714fc655712dffef694",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/input/tex/ams/AmsMethods.js": "ed831554f913bcda801bfd5a1f2f3f08cff9ab5f7e12f4893fac0c691a345f29",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/input/tex/mathtools/MathtoolsMethods.js": "ae33957b5143d6c912e184f9973d3cffcdac9a0988c805861f313927efdda115",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/input/tex/ams/AmsMappings.js": "85a4576a5018f167e8bd5063d223f2c76bc691e2095e48d9dba413409ba0b638",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/input/tex/ParseUtil.js": "57a1071396ced6527157d185054b886843c750a2d86e4b590cf2b519e939f1b8",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/delimiters.js": "d3baf85fcb39d8277cecae51c48440a10776e12c79260338c5987ea21274655d",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/normal.js": "2bd111364fc0383901ac7d4c74156067fa43fe7f509bd974d0e557261be7867a",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/Wrappers/mo.js": "6eebbc9509cf4d1adee05f27725831de9ec29100609ef55e479389b744ec1751",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/Wrappers/mo.js": "ec361161688a97002b608518ddf524643b6157f5ed95ef2eb8612a0b8aa94cf1",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/Wrappers/munderover.js": "476d4f5a838b2922f95c3d3d2cda2d6b1e104d0b1b741cc1fdbcb15b1fde0d5b",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/core/MmlTree/MmlNodes/munderover.js": "37dae045a77f5fe828fc0ceda2989310de35fd247842a208eda8d05bfef0a30d",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/Wrapper.js": "34ff5c7941071cf4a8a99a941e97562fe026b7857143ef380e39ff66bc0c777d"
+  },
+  "cases": [
+    {
+      "name": "xrightarrow",
+      "tex": "A\\xrightarrow[below]{above}B",
+      "png_sha256": "e42897fb63a7d8198a74470f3dc88715e3731c9a605828dd0571a1b9c43eff6f"
+    },
+    {
+      "name": "xleftrightarrow",
+      "tex": "A\\xleftrightarrow{above}B",
+      "png_sha256": "6b6e4ef9224709d46d54ae211e587f8979daa0f3f514f50cf8e2534c1ae39d8a"
+    },
+    {
+      "name": "short",
+      "tex": "\\xrightarrow{x}",
+      "inline": false,
+      "png_sha256": "554d20340bb22d1cb7b79354aa58d60256187b917065c31f81a6908aef144a7e"
+    },
+    {
+      "name": "left",
+      "tex": "A\\xleftarrow[b]{a}B",
+      "inline": false,
+      "png_sha256": "c8f37d5de7ec60d88eccda93e957035bcdcca9f270723ae57fb129f85fbdc130"
+    },
+    {
+      "name": "double-short",
+      "tex": "\\xleftrightarrow{x}",
+      "inline": false,
+      "png_sha256": "80c57f9784ef369de6fed0fd683622670847656c104689cf8f1a15b10a0c1db7"
+    },
+    {
+      "name": "long",
+      "tex": "\\xrightarrow{abcdefghij}",
+      "inline": false,
+      "png_sha256": "7e36133390bd3e9ecef81a895f03a623d468cf9daa32cc9a0de3def29e5c472c"
+    },
+    {
+      "name": "lower-wide",
+      "tex": "\\xrightarrow[abcdefgh]{x}",
+      "inline": false,
+      "png_sha256": "d4ca7a540e0a3e43d6e58fb786c80b0a57ac24bca423ecfa36bdca8174d352ad"
+    },
+    {
+      "name": "fraction",
+      "tex": "\\xleftrightarrow[\\frac{x}{y}]{\\frac{a}{b}}",
+      "inline": false,
+      "png_sha256": "b7e74ee7936f40b6c22b9c9b4584ecce71e00b9282679dda44a4e2c06371c3f3"
+    },
+    {
+      "name": "inline",
+      "tex": "A\\xrightarrow[b]{a}B",
+      "inline": true,
+      "png_sha256": "72a08ab0d4d6e5618f6d3aa4ae1fed3242b750b05dcf31998f0b5f54aff13954"
+    },
+    {
+      "name": "empty",
+      "tex": "\\xrightarrow{}",
+      "inline": false,
+      "png_sha256": "9b0342e2d37d25c8433ae40f9250afcf628e9d56bf00c72a3c63f1db25878563"
+    },
+    {
+      "name": "colored",
+      "tex": "\\color{red}{\\xleftarrow{abc}}",
+      "inline": false,
+      "png_sha256": "9df1464c8603e0cc7f5ef326b1c4851716635b13764276d06011f470b70231f8"
+    },
+    {
+      "name": "nested",
+      "tex": "\\xrightarrow{\\xrightarrow{x}}",
+      "inline": false,
+      "png_sha256": "e1f406419a5faab1984a763004ed2c07bc27ba57c16fec56f6141bdc1c33b178"
+    }
+  ]
+}

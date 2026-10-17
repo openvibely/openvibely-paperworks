@@ -1,0 +1,1115 @@
+{
+  "reference": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-reference/repository/internal/builtinskills/documents/scripts/test_presentation_native.py": "6199f9f1767fa49fa3743f11fb6545468da586c68aabe28e79ba942fdb0513fb",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-reference/repository/internal/builtinskills/documents/scripts/document_native.py": "eb2407fed420206fc34ad88f3fceb613ee694d3bf7f239b19cce3a73a6b9c420",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-reference/repository/internal/builtinskills/documents/scripts/document_check.py": "f7f724147f3678383b5d64b2d128639c2df3115404f07624dbcca4419ef15e94"
+  },
+  "zipfile_source_sha256": "94c53aedba0b0f7d6f71bf8ec34973e666ee0c0e56e6800ff4c26d2e3951987a",
+  "scope": "Original PresentationNative.mutate unchanged. Fixed fixture timestamps; no output byte-equality claim. Error types are Python observations, not Go type-equivalence.",
+  "cases": [
+    {
+      "name": "plain-field-4-1-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYBAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "aafa8bc1526efa9ec50a026b55ac91e35bb63df88d74307c9fbbf00952250eba",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "prefix-field-4-1-none",
+      "input": "cHJlZml4IGJ5dGVzUEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYBAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "0a0e817bbef45afffb7ca08c735a9d6fd83b9177b40c74f81e0f62e82282b924",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "comment-field-4-1-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYBAAAAAQABADMAAAAoAAAABwBjb21tZW50",
+      "input_sha256": "31eccc958edf1d92b4190ce6345322be43c113564ee18b6225c6d0883501468d",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-field-4-1-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYBAAAAAQABADMAAAAoAAAAAAB0cmFpbGluZw==",
+      "input_sha256": "8ea952111eb112424e341874b8e0ab3c7ff7b29071f5d95606ada52cae02466d",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "plain-field-4-1-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYBAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "7dc8190d06b58e36c0524b5ba4a8c09306b2438809b566da5603a0798ae77507",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "prefix-field-4-1-name",
+      "input": "cHJlZml4IGJ5dGVzUEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYBAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "cd12e20673aeb656bdbb78a0ee606168abb8b9142e3a3c3808f88b3552894075",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-field-4-1-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYBAAAAAQABADMAAAAoAAAABwBjb21tZW50",
+      "input_sha256": "ca3190ea64af8889f804768fab52c5cd3029eb0b17ad326528cbf26ea248fe30",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-field-4-1-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYBAAAAAQABADMAAAAoAAAAAAB0cmFpbGluZw==",
+      "input_sha256": "b870dda1d62f9aac925a6582f585a73693fbaa8a6431c93ef8878ca70c8c009e",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-field-4-1-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYBAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "e9bf332d3f5571e018a9281f313585a512beeaf0c3bb5f2de5b8e7673b2f829d",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "prefix-field-4-1-overlap",
+      "input": "cHJlZml4IGJ5dGVzUEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYBAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "7e7d08693abec7eb327f3b9c79637be72dad60c13bd0fd99278257a11f95b4ef",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-field-4-1-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYBAAAAAQABADMAAAAoAAAABwBjb21tZW50",
+      "input_sha256": "84c79ac94220b1e8127f8d9e541e2a676eee9b9cfbedf23c8b509550afb4ebca",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-field-4-1-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYBAAAAAQABADMAAAAoAAAAAAB0cmFpbGluZw==",
+      "input_sha256": "eeeaef23b5d5d8e5656deb79957acaa8365b5093e9d25bc3f39743ca5529c434",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-field-6-1-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAEAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "d4aee861e1a3b17874a125a4c4a16e0d988c5302f0bdd0b811f30a41a0a8a376",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "prefix-field-6-1-none",
+      "input": "cHJlZml4IGJ5dGVzUEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAEAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "762790c2b2fe6a7ede7ddf0dc0625b09293e07453ca8c27482a2080ff29821c3",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "comment-field-6-1-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAEAAQABADMAAAAoAAAABwBjb21tZW50",
+      "input_sha256": "0e216ea1583b0b0b48f9333ccdd721d684e237212f627a47bbad269998b7edb4",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-field-6-1-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAEAAQABADMAAAAoAAAAAAB0cmFpbGluZw==",
+      "input_sha256": "ab2765f2264fdb7fe68609001f385056ac7fa2bc5fe26e456c41d370ad3fc3ca",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "plain-field-6-1-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAEAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "b122573ce022205592c3690c32197d3c908f45ed2f868034a8c5fc3e4f3e5afd",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "prefix-field-6-1-name",
+      "input": "cHJlZml4IGJ5dGVzUEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAEAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "5a5ba2666bc64b3f971e80ad149798f791741feb6218c72411f9c7287b237514",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-field-6-1-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAEAAQABADMAAAAoAAAABwBjb21tZW50",
+      "input_sha256": "4b1cc139843dc309a01251733923f66016b90726f0cbe76a464b8ecb43e40265",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-field-6-1-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAEAAQABADMAAAAoAAAAAAB0cmFpbGluZw==",
+      "input_sha256": "cf933d765c7dd6e5af88e4c9c0f2c12ff9e305db88b002b104febe71800fceeb",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-field-6-1-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAEAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "f1abd82bc568545859ba659284f0c573e36aff00857a0d56d85da32ac7fd4a50",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "prefix-field-6-1-overlap",
+      "input": "cHJlZml4IGJ5dGVzUEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAEAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "d72616a3ef7a0b844177db425f3141b860f57827b2a03b19d089663ff9c05311",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-field-6-1-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAEAAQABADMAAAAoAAAABwBjb21tZW50",
+      "input_sha256": "57a3b004a07be331fbcd6b8f953dd48bc202692ba477bdf1c167c6d077cf1653",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-field-6-1-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAEAAQABADMAAAAoAAAAAAB0cmFpbGluZw==",
+      "input_sha256": "18b1b13a1bb9de98f2c21db657e05b18ab1b08807efeba84f52a5a483116f219",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-field-8-0-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAAABADMAAAAoAAAAAAA=",
+      "input_sha256": "add6418a9eb6f29d51d022c3129d1c093ad205ab6f265e4d3108456ae09fa23b",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "prefix-field-8-0-none",
+      "input": "cHJlZml4IGJ5dGVzUEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAAABADMAAAAoAAAAAAA=",
+      "input_sha256": "dd8b511e3a9afec22631c078aaf0e2face1672057347a517d79ca123346b20b0",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "comment-field-8-0-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAAABADMAAAAoAAAABwBjb21tZW50",
+      "input_sha256": "b8140938ad51f524f47be0310672f4001851e47e0833a89a6b934dd90561a8d8",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-field-8-0-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAAABADMAAAAoAAAAAAB0cmFpbGluZw==",
+      "input_sha256": "cf216dd3e4f5131a1aa5e4fd9c70846e2a77f30b05208c1e7bfa3d37dbfc7e1e",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "plain-field-8-0-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAAABADMAAAAoAAAAAAA=",
+      "input_sha256": "58ccca5e7ac60bbe54cf40d383028e49546ff5df4a4adce6d9e3556a3024540b",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "prefix-field-8-0-name",
+      "input": "cHJlZml4IGJ5dGVzUEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAAABADMAAAAoAAAAAAA=",
+      "input_sha256": "99eb548f7301430b57622cb225bd034e66a9c485acfd313703e275f782d30043",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-field-8-0-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAAABADMAAAAoAAAABwBjb21tZW50",
+      "input_sha256": "c7866b6186c0f8a3021cfd47daef8644255d1f310d368013253bf25ee2380932",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-field-8-0-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAAABADMAAAAoAAAAAAB0cmFpbGluZw==",
+      "input_sha256": "7214a402299b147313424973faa3e240d9c0ee983a945108f5845bdea37e143d",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-field-8-0-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAAABADMAAAAoAAAAAAA=",
+      "input_sha256": "4dcfdc7c8498d9d1ed8c099427987521efff4bf39a69f2a8ce191de7ae3a4199",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "prefix-field-8-0-overlap",
+      "input": "cHJlZml4IGJ5dGVzUEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAAABADMAAAAoAAAAAAA=",
+      "input_sha256": "2236c181b0ad8073e8cdb4cdadaa7ed9508c152c0e831449b1fa3ea7d5e548f2",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-field-8-0-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAAABADMAAAAoAAAABwBjb21tZW50",
+      "input_sha256": "fe68f926c99e82a82a8ec0407103d29b48eeb381720548e81b7c25c803883430",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-field-8-0-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAAABADMAAAAoAAAAAAB0cmFpbGluZw==",
+      "input_sha256": "67d57f9bb4a00a95231277c4b1948dc20a91ec09f04e55e015e3298994c24b12",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-field-8-65535-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAA//8BADMAAAAoAAAAAAA=",
+      "input_sha256": "d66c1540c3e21480376a49912d228409e0f6657f2407b5e20f370c7fd4d3e63a",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "prefix-field-8-65535-none",
+      "input": "cHJlZml4IGJ5dGVzUEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAA//8BADMAAAAoAAAAAAA=",
+      "input_sha256": "da71882bc92d0eeea821caaf66d19f611a9450b8518aa8b24431fcb42e611ff8",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "comment-field-8-65535-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAA//8BADMAAAAoAAAABwBjb21tZW50",
+      "input_sha256": "a64327494641b6990fccaf91356d4ed0ffa4e99c1844fa6f4a5ec0f85c8a591f",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-field-8-65535-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAA//8BADMAAAAoAAAAAAB0cmFpbGluZw==",
+      "input_sha256": "d74b0795cfeff3ec60b468328eaeda4d628f0e8faed57c8539282df7d6fe80a3",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "plain-field-8-65535-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAA//8BADMAAAAoAAAAAAA=",
+      "input_sha256": "3d43602cba042a8f53b3bf4359c8c3a58b6c4e0072f2ab292c87aa9aa3ec0c4d",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "prefix-field-8-65535-name",
+      "input": "cHJlZml4IGJ5dGVzUEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAA//8BADMAAAAoAAAAAAA=",
+      "input_sha256": "3d84541f61c7e73c23d63c1debea2168ecd182aef6da00539ee3ac4079eb6abe",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-field-8-65535-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAA//8BADMAAAAoAAAABwBjb21tZW50",
+      "input_sha256": "65a34f14de9942a154b95f1449e94bf5ae4de588342994fe638e902782946509",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-field-8-65535-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAA//8BADMAAAAoAAAAAAB0cmFpbGluZw==",
+      "input_sha256": "9daf066503b40e96ffee12504d9edd87f93b760d2a01a0577e52b1eb2f0bf077",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-field-8-65535-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAA//8BADMAAAAoAAAAAAA=",
+      "input_sha256": "6cac564296fcded08029847a505ec3dd6c2eb38b7ef09d4ed55ac90d2fa8c61e",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "prefix-field-8-65535-overlap",
+      "input": "cHJlZml4IGJ5dGVzUEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAA//8BADMAAAAoAAAAAAA=",
+      "input_sha256": "19cff4b4dbb74f4d54a04b1bc77f25a93f30377fc12fdb6aea4d18f35e11407e",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-field-8-65535-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAA//8BADMAAAAoAAAABwBjb21tZW50",
+      "input_sha256": "a6c6a08f551e5195b10329728128b5a998514024f60b9964aeca21911ded957c",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-field-8-65535-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAA//8BADMAAAAoAAAAAAB0cmFpbGluZw==",
+      "input_sha256": "54fa7df2b294becfdccf3b025376d97c44fd85ece90aa7e48f6024be3895e77f",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-field-10-0-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQAAADMAAAAoAAAAAAA=",
+      "input_sha256": "8533c5d212b19e3f92ae9a196cd89e0d68fc5898499201a9deeaa89adf7d60fe",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "prefix-field-10-0-none",
+      "input": "cHJlZml4IGJ5dGVzUEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQAAADMAAAAoAAAAAAA=",
+      "input_sha256": "5687a8fb400ff3d0c77d83c338c97525a35e98e4530e6b8f8c2b854f0809bd43",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "comment-field-10-0-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQAAADMAAAAoAAAABwBjb21tZW50",
+      "input_sha256": "2d4f8189dfd5638d64cbcb134519484365aafe2066a7a2685f85b01a23237d56",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-field-10-0-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQAAADMAAAAoAAAAAAB0cmFpbGluZw==",
+      "input_sha256": "3c076c1c9631d70dd6794bc8b884bc0ce792bf007830652fd34758e5404b8051",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "plain-field-10-0-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQAAADMAAAAoAAAAAAA=",
+      "input_sha256": "a43136f43b72adc022de812bc29a173ecf13d3b3e7d350bf02f4add036731a4b",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "prefix-field-10-0-name",
+      "input": "cHJlZml4IGJ5dGVzUEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQAAADMAAAAoAAAAAAA=",
+      "input_sha256": "58b80b933da622f37fec4d10398d6351dbe89dce145a0841a0d3e6cc99c23a1c",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-field-10-0-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQAAADMAAAAoAAAABwBjb21tZW50",
+      "input_sha256": "f09bb6b47109f63a9008613c7bf1d649b4af626122f5fdb985c1cfe1a581dc56",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-field-10-0-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQAAADMAAAAoAAAAAAB0cmFpbGluZw==",
+      "input_sha256": "ed712b9e83195754362614996ea359b5ac831a28c9e6b21050d48a3fe9b9671f",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-field-10-0-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQAAADMAAAAoAAAAAAA=",
+      "input_sha256": "30cd8999c016823a052fd0fe62b4f8f83c6678bf832f57f1e458e466bc03c73f",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "prefix-field-10-0-overlap",
+      "input": "cHJlZml4IGJ5dGVzUEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQAAADMAAAAoAAAAAAA=",
+      "input_sha256": "643f974f9a02c7203665559008067a3762117eed2aed20c90267bc7b3120fb75",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-field-10-0-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQAAADMAAAAoAAAABwBjb21tZW50",
+      "input_sha256": "0a0f5a067968210ff212fc4a0f5876ef6fb7bd2b973d57a0e431928ae7eda6c5",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-field-10-0-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQAAADMAAAAoAAAAAAB0cmFpbGluZw==",
+      "input_sha256": "22b5d5dac71fa52d06472eb3e0889e0704bad2e4f78b421ac904c6328a5c3236",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-field-10-65535-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQD//zMAAAAoAAAAAAA=",
+      "input_sha256": "821d7bf23b319f6b68f75c4756ca664d7a0f8c6d06e54d287dc1b9223fc8f306",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "prefix-field-10-65535-none",
+      "input": "cHJlZml4IGJ5dGVzUEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQD//zMAAAAoAAAAAAA=",
+      "input_sha256": "36c889b3e087fb827749ff7c7380bc0554c58abb317dd84a18fc2895bb1da00e",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "comment-field-10-65535-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQD//zMAAAAoAAAABwBjb21tZW50",
+      "input_sha256": "36aff94b32c275f4e29e4c5b12372210b6009b394b9121c793fa98749dd1e7a0",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-field-10-65535-none",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQD//zMAAAAoAAAAAAB0cmFpbGluZw==",
+      "input_sha256": "003998f92e8330a86360787cddf5a98c40196fc1407162263fdb5598805b0b0b",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "plain-field-10-65535-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQD//zMAAAAoAAAAAAA=",
+      "input_sha256": "eeb45c8505366ca09fb67c630d03bcd2b51189769b7cd9cbd917ba61c525cad7",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "prefix-field-10-65535-name",
+      "input": "cHJlZml4IGJ5dGVzUEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQD//zMAAAAoAAAAAAA=",
+      "input_sha256": "735d0b7e0215ba565e53fe295e09c405a55181e88f1f4dd48dd5157b40ae05d0",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-field-10-65535-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQD//zMAAAAoAAAABwBjb21tZW50",
+      "input_sha256": "92f8d735900f2c96b7d290a1eb55bf11d59e227e0a21bf03d5dc15aeaf4c7eef",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-field-10-65535-name",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAeGlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQD//zMAAAAoAAAAAAB0cmFpbGluZw==",
+      "input_sha256": "318fd385f8f70fe521eb1ba71c36ba7f6940ae5fae28560bab060c9865a53007",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "File name in directory 'first' and header b'xirst' differ."
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "plain-field-10-65535-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQD//zMAAAAoAAAAAAA=",
+      "input_sha256": "0206f19cf1561e74d5d6d656b68844fb70fcf58167d08d396c55b825394fbe57",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "prefix-field-10-65535-overlap",
+      "input": "cHJlZml4IGJ5dGVzUEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQD//zMAAAAoAAAAAAA=",
+      "input_sha256": "ae419474102ec9365a283958f34016c97ab2d16aa427e267560d3e95fded1f1e",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "comment-field-10-65535-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQD//zMAAAAoAAAABwBjb21tZW50",
+      "input_sha256": "91ab34f16aee0dbe60a8a7d29b9d0b959f90fb41a00437bc9b8d4a648878cc8b",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "trailing-field-10-65535-overlap",
+      "input": "UEsDBBQAAAAAAIMYIlgl0+P5BQAAAAUAAAAFAAAAZmlyc3RzYXZlZFBLAQIUAxQAAAAAAIMYIlgl0+P5BgAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQD//zMAAAAoAAAAAAB0cmFpbGluZw==",
+      "input_sha256": "32c443014f545c4271230448548b353745b01fd70faf47d1de74d46cb2735a0f",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Overlapped entries: 'first' (possible zip bomb)"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    }
+  ]
+}

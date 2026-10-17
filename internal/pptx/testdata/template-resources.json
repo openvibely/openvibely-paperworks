@@ -1,0 +1,28 @@
+{
+  "template": "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/pptx/templates/default.pptx",
+  "template_sha256": "e10cc9e120961f6bd4074a373c9c80d2a06c497157e8f4972977b7bea83a8f34",
+  "reference": ".scratch/completion-runtime83-artifacts/python/examples/example.pptx",
+  "reference_sha256": "5d08efb3ceee5b009cc6a4a09dbac40a2b354067221208e5fc5c03b13edc5998",
+  "parts": [
+    {
+      "name": "docProps/app.xml",
+      "sha256": "77fbd43c41b96be9a40d41a267cd83108a274ee5860675dfb543828472d76867"
+    },
+    {
+      "name": "ppt/presProps.xml",
+      "sha256": "b42af61236cda9ea4d781f60908296da476489b2828df32fc9625d996808087b"
+    },
+    {
+      "name": "ppt/viewProps.xml",
+      "sha256": "f2e3578e8a2a2607ca7f850d99f2cbe5f22806084c8e519bb754388ed7ebdb69"
+    },
+    {
+      "name": "ppt/printerSettings/printerSettings1.bin",
+      "sha256": "d7768f87e07d29634782e448ece1cddd05a52b9499254222b1190bc8f6dc579e"
+    },
+    {
+      "name": "docProps/thumbnail.jpeg",
+      "sha256": "116f9aa8ea038e39ef47ee99a23592ab569cf77feafecd0a30e222369e931d25"
+    }
+  ]
+}

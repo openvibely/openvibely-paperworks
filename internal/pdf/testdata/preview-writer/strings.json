@@ -1,0 +1,1435 @@
+{
+  "sources": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/pypdf/generic/_base.py": "e0e8fb5466f5a028f412e7489fcca22c5373472c18e960f25ac7440dc112a632",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/pypdf/generic/_utils.py": "0dcef7c1b7cfeb17d2f962d63fa77b98d116c9b0cee7779de94dbb243f5f1df9",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/pypdf/_codecs/__init__.py": "bd56ce01215af54c771e42b4228dd415aba640fe0970d2f1f63341353351d980",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/pypdf/_codecs/pdfdoc.py": "c5f4af30562cbf1b9a490d14bbdbd90ca681d16bbce61d6e0a20758bdac07145"
+  },
+  "cases": [
+    {
+      "raw": "00",
+      "output": "<00>",
+      "kind": "ByteStringObject"
+    },
+    {
+      "raw": "01",
+      "output": "(\\001)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "02",
+      "output": "(\\002)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "03",
+      "output": "(\\003)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "04",
+      "output": "(\\004)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "05",
+      "output": "(\\005)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "06",
+      "output": "(\\006)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "07",
+      "output": "(\\007)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "08",
+      "output": "(\\010)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "09",
+      "output": "(\\011)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "0a",
+      "output": "(\\012)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "0b",
+      "output": "(\\013)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "0c",
+      "output": "(\\014)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "0d",
+      "output": "(\\015)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "0e",
+      "output": "(\\016)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "0f",
+      "output": "(\\017)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "10",
+      "output": "(\\020)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "11",
+      "output": "(\\021)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "12",
+      "output": "(\\022)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "13",
+      "output": "(\\023)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "14",
+      "output": "(\\024)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "15",
+      "output": "(\\025)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "16",
+      "output": "<16>",
+      "kind": "ByteStringObject"
+    },
+    {
+      "raw": "17",
+      "output": "(\\027)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "18",
+      "output": "(\\030)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "19",
+      "output": "(\\031)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "1a",
+      "output": "(\\032)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "1b",
+      "output": "(\\033)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "1c",
+      "output": "(\\034)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "1d",
+      "output": "(\\035)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "1e",
+      "output": "(\\036)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "1f",
+      "output": "(\\037)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "20",
+      "output": "( )",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "21",
+      "output": "(\\041)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "22",
+      "output": "(\\042)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "23",
+      "output": "(\\043)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "24",
+      "output": "(\\044)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "25",
+      "output": "(\\045)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "26",
+      "output": "(\\046)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "27",
+      "output": "(\\047)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "28",
+      "output": "(\\050)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "29",
+      "output": "(\\051)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "2a",
+      "output": "(\\052)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "2b",
+      "output": "(\\053)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "2c",
+      "output": "(\\054)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "2d",
+      "output": "(\\055)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "2e",
+      "output": "(\\056)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "2f",
+      "output": "(\\057)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "30",
+      "output": "(0)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "31",
+      "output": "(1)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "32",
+      "output": "(2)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "33",
+      "output": "(3)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "34",
+      "output": "(4)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "35",
+      "output": "(5)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "36",
+      "output": "(6)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "37",
+      "output": "(7)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "38",
+      "output": "(8)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "39",
+      "output": "(9)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "3a",
+      "output": "(\\072)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "3b",
+      "output": "(\\073)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "3c",
+      "output": "(\\074)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "3d",
+      "output": "(\\075)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "3e",
+      "output": "(\\076)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "3f",
+      "output": "(\\077)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "40",
+      "output": "(\\100)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "41",
+      "output": "(A)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "42",
+      "output": "(B)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "43",
+      "output": "(C)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "44",
+      "output": "(D)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "45",
+      "output": "(E)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "46",
+      "output": "(F)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "47",
+      "output": "(G)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "48",
+      "output": "(H)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "49",
+      "output": "(I)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "4a",
+      "output": "(J)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "4b",
+      "output": "(K)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "4c",
+      "output": "(L)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "4d",
+      "output": "(M)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "4e",
+      "output": "(N)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "4f",
+      "output": "(O)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "50",
+      "output": "(P)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "51",
+      "output": "(Q)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "52",
+      "output": "(R)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "53",
+      "output": "(S)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "54",
+      "output": "(T)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "55",
+      "output": "(U)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "56",
+      "output": "(V)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "57",
+      "output": "(W)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "58",
+      "output": "(X)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "59",
+      "output": "(Y)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "5a",
+      "output": "(Z)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "5b",
+      "output": "(\\133)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "5c",
+      "output": "(\\134)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "5d",
+      "output": "(\\135)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "5e",
+      "output": "(\\136)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "5f",
+      "output": "(\\137)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "60",
+      "output": "(\\140)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "61",
+      "output": "(a)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "62",
+      "output": "(b)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "63",
+      "output": "(c)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "64",
+      "output": "(d)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "65",
+      "output": "(e)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "66",
+      "output": "(f)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "67",
+      "output": "(g)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "68",
+      "output": "(h)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "69",
+      "output": "(i)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "6a",
+      "output": "(j)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "6b",
+      "output": "(k)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "6c",
+      "output": "(l)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "6d",
+      "output": "(m)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "6e",
+      "output": "(n)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "6f",
+      "output": "(o)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "70",
+      "output": "(p)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "71",
+      "output": "(q)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "72",
+      "output": "(r)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "73",
+      "output": "(s)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "74",
+      "output": "(t)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "75",
+      "output": "(u)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "76",
+      "output": "(v)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "77",
+      "output": "(w)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "78",
+      "output": "(x)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "79",
+      "output": "(y)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "7a",
+      "output": "(z)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "7b",
+      "output": "(\\173)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "7c",
+      "output": "(\\174)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "7d",
+      "output": "(\\175)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "7e",
+      "output": "(\\176)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "7f",
+      "output": "<7f>",
+      "kind": "ByteStringObject"
+    },
+    {
+      "raw": "80",
+      "output": "(\\200)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "81",
+      "output": "(\\201)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "82",
+      "output": "(\\202)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "83",
+      "output": "(\\203)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "84",
+      "output": "(\\204)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "85",
+      "output": "(\\205)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "86",
+      "output": "(\\206)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "87",
+      "output": "(\\207)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "88",
+      "output": "(\\210)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "89",
+      "output": "(\\211)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "8a",
+      "output": "(\\212)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "8b",
+      "output": "(\\213)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "8c",
+      "output": "(\\214)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "8d",
+      "output": "(\\215)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "8e",
+      "output": "(\\216)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "8f",
+      "output": "(\\217)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "90",
+      "output": "(\\220)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "91",
+      "output": "(\\221)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "92",
+      "output": "(\\222)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "93",
+      "output": "(\\223)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "94",
+      "output": "(\\224)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "95",
+      "output": "(\\225)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "96",
+      "output": "(\\226)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "97",
+      "output": "(\\227)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "98",
+      "output": "(\\230)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "99",
+      "output": "(\\231)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "9a",
+      "output": "(\\232)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "9b",
+      "output": "(\\233)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "9c",
+      "output": "(\\234)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "9d",
+      "output": "(\\235)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "9e",
+      "output": "(\\236)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "9f",
+      "output": "<9f>",
+      "kind": "ByteStringObject"
+    },
+    {
+      "raw": "a0",
+      "output": "(\\240)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "a1",
+      "output": "(\\241)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "a2",
+      "output": "(\\242)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "a3",
+      "output": "(\\243)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "a4",
+      "output": "(\\244)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "a5",
+      "output": "(\\245)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "a6",
+      "output": "(\\246)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "a7",
+      "output": "(\\247)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "a8",
+      "output": "(\\250)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "a9",
+      "output": "(\\251)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "aa",
+      "output": "(\\252)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "ab",
+      "output": "(\\253)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "ac",
+      "output": "(\\254)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "ad",
+      "output": "<ad>",
+      "kind": "ByteStringObject"
+    },
+    {
+      "raw": "ae",
+      "output": "(\\256)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "af",
+      "output": "(\\257)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "b0",
+      "output": "(\\260)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "b1",
+      "output": "(\\261)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "b2",
+      "output": "(\\262)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "b3",
+      "output": "(\\263)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "b4",
+      "output": "(\\264)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "b5",
+      "output": "(\\265)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "b6",
+      "output": "(\\266)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "b7",
+      "output": "(\\267)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "b8",
+      "output": "(\\270)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "b9",
+      "output": "(\\271)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "ba",
+      "output": "(\\272)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "bb",
+      "output": "(\\273)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "bc",
+      "output": "(\\274)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "bd",
+      "output": "(\\275)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "be",
+      "output": "(\\276)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "bf",
+      "output": "(\\277)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "c0",
+      "output": "(\\300)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "c1",
+      "output": "(\\301)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "c2",
+      "output": "(\\302)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "c3",
+      "output": "(\\303)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "c4",
+      "output": "(\\304)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "c5",
+      "output": "(\\305)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "c6",
+      "output": "(\\306)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "c7",
+      "output": "(\\307)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "c8",
+      "output": "(\\310)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "c9",
+      "output": "(\\311)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "ca",
+      "output": "(\\312)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "cb",
+      "output": "(\\313)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "cc",
+      "output": "(\\314)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "cd",
+      "output": "(\\315)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "ce",
+      "output": "(\\316)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "cf",
+      "output": "(\\317)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "d0",
+      "output": "(\\320)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "d1",
+      "output": "(\\321)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "d2",
+      "output": "(\\322)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "d3",
+      "output": "(\\323)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "d4",
+      "output": "(\\324)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "d5",
+      "output": "(\\325)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "d6",
+      "output": "(\\326)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "d7",
+      "output": "(\\327)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "d8",
+      "output": "(\\330)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "d9",
+      "output": "(\\331)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "da",
+      "output": "(\\332)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "db",
+      "output": "(\\333)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "dc",
+      "output": "(\\334)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "dd",
+      "output": "(\\335)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "de",
+      "output": "(\\336)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "df",
+      "output": "(\\337)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "e0",
+      "output": "(\\340)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "e1",
+      "output": "(\\341)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "e2",
+      "output": "(\\342)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "e3",
+      "output": "(\\343)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "e4",
+      "output": "(\\344)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "e5",
+      "output": "(\\345)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "e6",
+      "output": "(\\346)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "e7",
+      "output": "(\\347)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "e8",
+      "output": "(\\350)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "e9",
+      "output": "(\\351)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "ea",
+      "output": "(\\352)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "eb",
+      "output": "(\\353)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "ec",
+      "output": "(\\354)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "ed",
+      "output": "(\\355)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "ee",
+      "output": "(\\356)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "ef",
+      "output": "(\\357)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "f0",
+      "output": "(\\360)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "f1",
+      "output": "(\\361)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "f2",
+      "output": "(\\362)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "f3",
+      "output": "(\\363)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "f4",
+      "output": "(\\364)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "f5",
+      "output": "(\\365)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "f6",
+      "output": "(\\366)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "f7",
+      "output": "(\\367)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "f8",
+      "output": "(\\370)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "f9",
+      "output": "(\\371)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "fa",
+      "output": "(\\372)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "fb",
+      "output": "(\\373)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "fc",
+      "output": "(\\374)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "fd",
+      "output": "(\\375)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "fe",
+      "output": "(\\376)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "ff",
+      "output": "(\\377)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "",
+      "output": "()",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff",
+      "output": "<000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff>",
+      "kind": "ByteStringObject"
+    },
+    {
+      "raw": "286e616d65292f5b646174615d5c200a09",
+      "output": "(\\050name\\051\\057\\133data\\135\\134 \\012\\011)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "41534349492074657874",
+      "output": "(ASCII text)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "0041",
+      "output": "(\\000A)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "4100",
+      "output": "(A\\000)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "feff",
+      "output": "(\\376\\377)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "fffe",
+      "output": "(\\377\\376)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "00",
+      "output": "<00>",
+      "kind": "ByteStringObject"
+    },
+    {
+      "raw": "004142",
+      "output": "<004142>",
+      "kind": "ByteStringObject"
+    },
+    {
+      "raw": "410042",
+      "output": "<410042>",
+      "kind": "ByteStringObject"
+    },
+    {
+      "raw": "feffd800",
+      "output": "<feffd800>",
+      "kind": "ByteStringObject"
+    },
+    {
+      "raw": "fffe00dc",
+      "output": "<fffe00dc>",
+      "kind": "ByteStringObject"
+    },
+    {
+      "raw": "feff00680065006c006c006f",
+      "output": "(\\376\\377\\000h\\000e\\000l\\000l\\000o)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "00680065006c006c006f",
+      "output": "(\\000h\\000e\\000l\\000l\\000o)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "fffe680065006c006c006f00",
+      "output": "(\\377\\376h\\000e\\000l\\000l\\000o\\000)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "680065006c006c006f00",
+      "output": "(h\\000e\\000l\\000l\\000o\\000)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "feff65e5672c8a9e",
+      "output": "(\\376\\377e\\345g\\054\\212\\236)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "65e5672c8a9e",
+      "output": "(e\\345g\\054\\212\\236)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "fffee5652c679e8a",
+      "output": "(\\377\\376\\345e\\054g\\236\\212)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "e5652c679e8a",
+      "output": "(\\345e\\054g\\236\\212)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "feffd834dd1e",
+      "output": "(\\376\\377\\3304\\335\\036)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "d834dd1e",
+      "output": "(\\3304\\335\\036)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "fffe34d81edd",
+      "output": "(\\377\\3764\\330\\036\\335)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "34d81edd",
+      "output": "(4\\330\\036\\335)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "feff004100000042",
+      "output": "(\\376\\377\\000A\\000\\000\\000B)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "004100000042",
+      "output": "(\\000A\\000\\000\\000B)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "fffe410000004200",
+      "output": "(\\377\\376A\\000\\000\\000B\\000)",
+      "kind": "TextStringObject"
+    },
+    {
+      "raw": "410000004200",
+      "output": "(A\\000\\000\\000B\\000)",
+      "kind": "TextStringObject"
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "sources": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/equation.cjs": "b7e87685d7a23c04015d15fa9a5494137d6efb6fce12d8bf59446ab525a436a0",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/Wrappers/mmultiscripts.js": "4b90f7df1b753e1b9624bcee5c700d778573db3f230e77114dc4d6994459ba15",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/Wrappers/mmultiscripts.js": "a0632d6430a11f13a192b3e897105979602d7d1c6f842797a83daf004e8ea1b0",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/Wrappers/msubsup.js": "13e426be514e7442399a4a93d3e440a4d17d5d203c4bea425eef4758891efdf6",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/Wrappers/scriptbase.js": "c6c2e601a6042258262e80e2c464f5bdee024c39e63ea714fc655712dffef694",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/input/tex/ams/AmsMethods.js": "ed831554f913bcda801bfd5a1f2f3f08cff9ab5f7e12f4893fac0c691a345f29",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/input/tex/mathtools/MathtoolsMethods.js": "ae33957b5143d6c912e184f9973d3cffcdac9a0988c805861f313927efdda115"
+  },
+  "cases": [
+    {
+      "name": "prescript",
+      "tex": "\\prescript{14}{6}{C}",
+      "inline": false,
+      "png_sha256": "80d4d4301dafffd0294ec9c536093456102af60f44399b691e6cc7dc71bf5439"
+    },
+    {
+      "name": "sideset",
+      "tex": "\\sideset{_a^b}{_c^d}\\sum",
+      "inline": false,
+      "png_sha256": "85f194083fd331acdea2a9ed22740c55d09a3bd8e419aa7fb8ae84136ad3f1ce"
+    },
+    {
+      "name": "left-wide",
+      "tex": "\\prescript{a+b}{c}{X}",
+      "inline": false,
+      "png_sha256": "8839709bb25ba13f08dd54649a38b64d109202a26a4e729468eaecdc7cacf15c"
+    },
+    {
+      "name": "left-sub-wide",
+      "tex": "\\prescript{a}{b+c}{Y}",
+      "inline": false,
+      "png_sha256": "30075b9ebc6d4c42b2d44c95627072bc346a5f8578130c60e9a4912007a20b1f"
+    },
+    {
+      "name": "left-inline",
+      "tex": "\\prescript{14}{6}{C}",
+      "inline": true,
+      "png_sha256": "d6b9e045cd775f2fab919d07d9df9c1718ec5a3ea651abf8582372613dc151c6"
+    },
+    {
+      "name": "left-fraction",
+      "tex": "\\prescript{\\frac{1}{2}}{n}{X}",
+      "inline": false,
+      "png_sha256": "5a204716f718ca1286cf9d794cfd4bfe1d37d62111ac6ce050e5d23b392c4a59"
+    },
+    {
+      "name": "side-wide",
+      "tex": "\\sideset{_{abc}^{d}}{_{e}^{fg}}\\sum",
+      "inline": false,
+      "png_sha256": "494553fa3c7c3cf21946fd0331083541abdd8aeb58df8b440756ff0a26edf893"
+    },
+    {
+      "name": "side-inline",
+      "tex": "\\sideset{_a^b}{_c^d}\\sum",
+      "inline": true,
+      "png_sha256": "3c9c40bad935ab2ee61fbebccf2a88c08238e2a44d2fd616741a28c7fa691300"
+    },
+    {
+      "name": "side-product",
+      "tex": "\\sideset{_a^b}{_c^d}\\prod",
+      "inline": false,
+      "png_sha256": "712debf5ef0de9b75aeadff6aefe584e069a6b10ec9fcb6840e1982aa0861870"
+    },
+    {
+      "name": "left-empty-sub",
+      "tex": "\\prescript{x}{}{C}",
+      "inline": false,
+      "png_sha256": "0ffa59332e8a8636900c983178104c49e2cd3886fd909fd64de4c3a6b8196822"
+    },
+    {
+      "name": "left-empty-sup",
+      "tex": "\\prescript{}{x}{C}",
+      "inline": false,
+      "png_sha256": "20014a56138b33b01709f1184331f307423432daf4639d9f5ae5fdfca1b1576e"
+    },
+    {
+      "name": "nested",
+      "tex": "\\frac{\\prescript{14}{6}{C}}{2}",
+      "inline": false,
+      "png_sha256": "537d88db0708c500fe02e4790e140b2e52c37957417e646fddbec5c89c22c293"
+    }
+  ]
+}

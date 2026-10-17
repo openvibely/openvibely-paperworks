@@ -1,0 +1,743 @@
+{
+  "reference": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/test_presentation_native.py": "6199f9f1767fa49fa3743f11fb6545468da586c68aabe28e79ba942fdb0513fb",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/document_native.py": "eb2407fed420206fc34ad88f3fceb613ee694d3bf7f239b19cce3a73a6b9c420",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/document_check.py": "f7f724147f3678383b5d64b2d128639c2df3115404f07624dbcca4419ef15e94"
+  },
+  "zipfile_source_sha256": "94c53aedba0b0f7d6f71bf8ec34973e666ee0c0e56e6800ff4c26d2e3951987a",
+  "scope": "Original PresentationNative.mutate unchanged. Fixed fixture timestamps; no output byte-equality claim. Error types are Python observations, not Go type-equivalence.",
+  "cases": [
+    {
+      "name": "size-0-valid",
+      "input": "UEsDBBQAAAAIAIMYIlgAAAAABwAAAAAAAAAFAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWAAAAAAHAAAAAAAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAACoAAAAAAA==",
+      "input_sha256": "ef97aa2a586de871e79607ccc3371c512adb6aff4f1614eb5c231c779b9db771",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": ""
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "size-0-bad-crc",
+      "input": "UEsDBBQAAAAIAIMYIlgBAAAABwAAAAAAAAAFAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWAEAAAAHAAAAAAAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAACoAAAAAAA==",
+      "input_sha256": "e8de6cedf45b4190ef388c6e29220962b8607d1d39207a917ff5121252593d2b",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "size-1-valid",
+      "input": "UEsDBBQAAAAIAIMYIlgLzw4bBwAAAAEAAAAFAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWAvPDhsHAAAAAQAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAACoAAAAAAA==",
+      "input_sha256": "4b0323ab7977e70a568b9064b7e36edd72b35c8c35ed8f4c33b66b8a6f6f8ca9",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "cw=="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "size-1-bad-crc",
+      "input": "UEsDBBQAAAAIAIMYIlgKzw4bBwAAAAEAAAAFAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWArPDhsHAAAAAQAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAACoAAAAAAA==",
+      "input_sha256": "ea62a203d32d263fd91c89e142389c775e353e3ae1faa75393c011dfe4e0c365",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "size-4-valid",
+      "input": "UEsDBBQAAAAIAIMYIljeOmZVBwAAAAQAAAAFAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWN46ZlUHAAAABAAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAACoAAAAAAA==",
+      "input_sha256": "bbf7daade295de8ffcc22991f0b4f824675bec659431b57b2f7199bbb44a0d51",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZQ=="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "size-4-bad-crc",
+      "input": "UEsDBBQAAAAIAIMYIljfOmZVBwAAAAQAAAAFAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWN86ZlUHAAAABAAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAACoAAAAAAA==",
+      "input_sha256": "5fcd8884e4b2ae1764e990897a159704f66258583efa2f3cdf3240fb5ad7e038",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "size-5-valid",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAUAAAAFAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/kHAAAABQAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAACoAAAAAAA==",
+      "input_sha256": "41d4d83ee87ccf52e9d2822b6346047a3f1957b33b331b1a0b1a88a4dd6b7687",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "size-5-bad-crc",
+      "input": "UEsDBBQAAAAIAIMYIlgk0+P5BwAAAAUAAAAFAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCTT4/kHAAAABQAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAACoAAAAAAA==",
+      "input_sha256": "bd9439cd5bbfe28acca4c435b15d546860708d9d424d6981950e44b6f7f5742d",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "size-9-valid",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAAkAAAAFAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/kHAAAACQAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAACoAAAAAAA==",
+      "input_sha256": "16ef6fc9984b07b71c04e770c933dc6a651f3ca6ef79a3b01d020e9ff7269604",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "size-9-bad-crc",
+      "input": "UEsDBBQAAAAIAIMYIlgk0+P5BwAAAAkAAAAFAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCTT4/kHAAAACQAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAACoAAAAAAA==",
+      "input_sha256": "fcbe8ae18e7c55460cfa28636c35e2347596b78dd17b68b006ffe7e686f66b8f",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "size-4294967295-valid",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BwAAAP////8FAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCXT4/kHAAAA/////wUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAACoAAAAAAA==",
+      "input_sha256": "100f71471a2bce59137607962877dbda33c3e1e83346c0b9ba0758e08bbc9b90",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "size-4294967295-bad-crc",
+      "input": "UEsDBBQAAAAIAIMYIlgk0+P5BwAAAP////8FAAAAZmlyc3QrTixLTQEAUEsBAhQDFAAAAAgAgxgiWCTT4/kHAAAA/////wUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAACoAAAAAAA==",
+      "input_sha256": "94de41b80e370c03b1c30425b3a7f8e58253d4f67bca1150acf8c6c94423c326",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "empty",
+      "input": "UEsDBBQAAAAIAIMYIlgAAAAAAgAAAAkAAAAFAAAAZmlyc3QDAFBLAQIUAxQAAAAIAIMYIlgAAAAAAgAAAAkAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAlAAAAAAA=",
+      "input_sha256": "4ea9db04f43106cfea14c6f9a8ece87a7ddf3d8b5b93a5b40496b6c8564f37cd",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": ""
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "directory",
+      "input": "UEsDBBQAAAAIAIMYIlhDvrfoBQAAAAEAAAAHAAAAZm9sZGVyL0tMSgYAUEsBAhQDFAAAAAgAgxgiWEO+t+gFAAAAAQAAAAcAAAAAAAAAAAAAAIABAAAAAGZvbGRlci9QSwUGAAAAAAEAAQA1AAAAKgAAAAAA",
+      "input_sha256": "fa014659bcaeda2440767bdd928b50d655c51a499d2c944d4239c032e0b96fd6",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "folder/",
+          "data": "YQ=="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "large",
+      "input": "UEsDBBQAAAAIAIMYIlh9HdBMvwEAAAEgAAAFAAAAZmlyc3Ttz9dCCAAAQNFSaCChQRqEopQiJRoyk7Q0kBKVkQiJVBrIbFAUlXYymnYUaVmVMlP2jrKirT7C6z1/cAQE+wgJ9+3XX0RUTHzAwEESgyWHDB0mJS0jO3yE3Eh5BUWlUaOVx4wdp6I6foKa+kQNzUla2pOn6EzV1ZumP32GgaGR8UyTWbPnzJ0333SB2ULzRRaWVtY2i23t7B2WLF3muNzJeYXLylWubu6r16xd57Hec8NGr02bt3hv9dm23XeHn3/AzsCg4JBdu/eE7t23/8DBQ2HhEZGHj0RFHz0WE3v8RFx8wsnEpOSU1LT0jFOZp8+cPZeVnZObl3/+wsVLl69cLbh2vbDoxs3iWyWlZeUVt+/cvXe/sqr6QU3tw0ePnzx9Vve8vuHFy1ev37x99/7Dx0+fvzR+/dbU/P3Hz1+/W/78bW1r7+js6v7XI8CfP3/+/Pnz58+fP3/+/Pnz58+fP3/+/Pnz58+fP3/+/Pnz58+fP3/+/Pnz58+fP3/+/Pnz58+fP3/+/Pnz58+fP3/+/Pnz58+fP3/+/Pnz58+fP3/+/Pnz58+fP3/+/Pnz58+fP3/+/Pnz58+f/3/8ewFQSwECFAMUAAAACACDGCJYfR3QTL8BAAABIAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAA4gEAAAAA",
+      "input_sha256": "79e43cc0294f11c9e71afa17e6e00539c2ed08c0ceb5757f64da1bbde0609884",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "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"
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "shadowed-bad-crc",
+      "input": "UEsDBBQAAAAIAIMYIljl1F0/BQAAAAMAAAAEAAAAc2FtZcvPSQEAUEsDBBQAAAAAAIMYIlgGaij7BAAAAAQAAAAGAAAAbWlkZGxla2VwdFBLAwQUAAAACACDGCJYoKnbSgYAAAAEAAAABAAAAHNhbWXLSSwuAQBQSwECFAMUAAAACACDGCJY5NRdPwUAAAADAAAABAAAAAAAAAAAAAAAgAEAAAAAc2FtZVBLAQIUAxQAAAAAAIMYIlgGaij7BAAAAAQAAAAGAAAAAAAAAAAAAACAAScAAABtaWRkbGVQSwECFAMUAAAACACDGCJYoKnbSgYAAAAEAAAABAAAAAAAAAAAAAAAgAFPAAAAc2FtZVBLBQYAAAAAAwADAJgAAAB3AAAAAAA=",
+      "input_sha256": "9e0011f4f3c97840c5a8357a3de7e7611e54ce80defe3306aefc10616a92ce46",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "same",
+          "data": "bGFzdA=="
+        },
+        {
+          "name": "middle",
+          "data": "a2VwdA=="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "selected-bad-crc",
+      "input": "UEsDBBQAAAAIAIMYIljl1F0/BQAAAAMAAAAEAAAAc2FtZcvPSQEAUEsDBBQAAAAAAIMYIlgGaij7BAAAAAQAAAAGAAAAbWlkZGxla2VwdFBLAwQUAAAACACDGCJYoKnbSgYAAAAEAAAABAAAAHNhbWXLSSwuAQBQSwECFAMUAAAACACDGCJY5dRdPwUAAAADAAAABAAAAAAAAAAAAAAAgAEAAAAAc2FtZVBLAQIUAxQAAAAAAIMYIlgGaij7BAAAAAQAAAAGAAAAAAAAAAAAAACAAScAAABtaWRkbGVQSwECFAMUAAAACACDGCJYoanbSgYAAAAEAAAABAAAAAAAAAAAAAAAgAFPAAAAc2FtZVBLBQYAAAAAAwADAJgAAAB3AAAAAAA=",
+      "input_sha256": "b923cf252253be2a7716cb1cbfe9e50ceae5dd76ee22abfa0cc8191a810db3a1",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'same'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "descriptor-disagrees-0",
+      "input": "UEsDBBQACAAIAAY6T10AAAAAAAAAAAAAAAAFAAAAZmlyc3QrTixLTQEAUEsHCP///////////////1BLAQIUAxQACAAIAAY6T10AAAAABwAAAAAAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAA6AAAAAAA=",
+      "input_sha256": "4db58cb152be1ce9351d9f7f5aeadac6047931d6822e22fd0c20bba5d2c9636d",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": ""
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "descriptor-disagrees-2",
+      "input": "UEsDBBQACAAIAAY6T10AAAAAAAAAAAAAAAAFAAAAZmlyc3QrTixLTQEAUEsHCP///////////////1BLAQIUAxQACAAIAAY6T10EaX5/BwAAAAIAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAA6AAAAAAA=",
+      "input_sha256": "0df8b7722adec94f8bde938a6bbed0759b561cb20f8380dce2b7f51ae2579687",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2E="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "descriptor-disagrees-5",
+      "input": "UEsDBBQACAAIAAY6T10AAAAAAAAAAAAAAAAFAAAAZmlyc3QrTixLTQEAUEsHCP///////////////1BLAQIUAxQACAAIAAY6T10l0+P5BwAAAAUAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAA6AAAAAAA=",
+      "input_sha256": "79f78c763a446741a484e7543cba40f6ee1bf626ac612756f84b6bdd5d803721",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "descriptor-disagrees-9",
+      "input": "UEsDBBQACAAIAAY6T10AAAAAAAAAAAAAAAAFAAAAZmlyc3QrTixLTQEAUEsHCP///////////////1BLAQIUAxQACAAIAAY6T10l0+P5BwAAAAkAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAA6AAAAAAA=",
+      "input_sha256": "d365c251d6fb2b5bdb8a3ede1833fd6f84e205017ae32797d8294dde5b895628",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-0",
+      "input": "UEsDBBQAAAAIAIMYIlgAAAAACwAAAAAAAAAFAAAAZmlyc3QrTixLTQEAanVua1BLAQIUAxQAAAAIAIMYIlgAAAAACwAAAAAAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAuAAAAAAA=",
+      "input_sha256": "ecb8520da48f2884a09c7b40d87ddc78cd7689cbf8173584d541c71843650f29",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": ""
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-2",
+      "input": "UEsDBBQAAAAIAIMYIlgEaX5/CwAAAAIAAAAFAAAAZmlyc3QrTixLTQEAanVua1BLAQIUAxQAAAAIAIMYIlgEaX5/CwAAAAIAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAuAAAAAAA=",
+      "input_sha256": "2d43e08a4429a7580592e68805aac36653d8bc9357ca32cdebd230613da4758c",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2E="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "trailing-9",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5CwAAAAkAAAAFAAAAZmlyc3QrTixLTQEAanVua1BLAQIUAxQAAAAIAIMYIlgl0+P5CwAAAAkAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAuAAAAAAA=",
+      "input_sha256": "8336a38720db803a598616b9f27ebd26a63e3640416dcf9292b406b3778cdf2c",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "concatenated-0",
+      "input": "UEsDBBQAAAAIAIMYIlgAAAAADgAAAAAAAAAFAAAAZmlyc3QrTixLTQEAK04sS00BAFBLAQIUAxQAAAAIAIMYIlgAAAAADgAAAAAAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAxAAAAAAA=",
+      "input_sha256": "6297d9c25a07b981866941dc3f640ec525743951b087b21ba4d6c7eefbe6f5f7",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": ""
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "concatenated-2",
+      "input": "UEsDBBQAAAAIAIMYIlgEaX5/DgAAAAIAAAAFAAAAZmlyc3QrTixLTQEAK04sS00BAFBLAQIUAxQAAAAIAIMYIlgEaX5/DgAAAAIAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAxAAAAAAA=",
+      "input_sha256": "caec5beca6e1e54e8f8adc4c57de3d82df84dcc469d091c9c28eaba97048e79f",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2E="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "concatenated-9",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5DgAAAAkAAAAFAAAAZmlyc3QrTixLTQEAK04sS00BAFBLAQIUAxQAAAAIAIMYIlgl0+P5DgAAAAkAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAxAAAAAAA=",
+      "input_sha256": "288bb3d4d93c6363491641f40fb25f1574e59ac4d5bde435d307bd8f58b5577d",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "truncated-one-0",
+      "input": "UEsDBBQAAAAIAIMYIlgAAAAABgAAAAAAAAAFAAAAZmlyc3QrTixLTQFQSwECFAMUAAAACACDGCJYAAAAAAYAAAAAAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAKQAAAAAA",
+      "input_sha256": "0777cb5df291a30f79e9c0b3a49af3b598e808e7c562790727359f3348a56209",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": ""
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "truncated-one-2",
+      "input": "UEsDBBQAAAAIAIMYIlgEaX5/BgAAAAIAAAAFAAAAZmlyc3QrTixLTQFQSwECFAMUAAAACACDGCJYBGl+fwYAAAACAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAKQAAAAAA",
+      "input_sha256": "b49cbb04c7bd458155ecab3a8d09ebd52c50ee2ce572afad845e2574e5a88c15",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2E="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "truncated-one-9",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BgAAAAkAAAAFAAAAZmlyc3QrTixLTQFQSwECFAMUAAAACACDGCJYJdPj+QYAAAAJAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAKQAAAAAA",
+      "input_sha256": "2d8926f029477263a76773db872f6e62e7c3f3ec8345507435443de75054190a",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2F2ZWQ="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "truncated-two-0",
+      "input": "UEsDBBQAAAAIAIMYIlgAAAAABQAAAAAAAAAFAAAAZmlyc3QrTixLTVBLAQIUAxQAAAAIAIMYIlgAAAAABQAAAAAAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "976cfe81ae5a97e04cca29a01b4e258cefd3292424b6d36ec36d497230992823",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": ""
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "truncated-two-2",
+      "input": "UEsDBBQAAAAIAIMYIlgEaX5/BQAAAAIAAAAFAAAAZmlyc3QrTixLTVBLAQIUAxQAAAAIAIMYIlgEaX5/BQAAAAIAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "231d8292cd59b5a5c1b81e673e001990c3a3b1a327c5be02b03bd1567074bb6f",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": "c2E="
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "truncated-two-9",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5BQAAAAkAAAAFAAAAZmlyc3QrTixLTVBLAQIUAxQAAAAIAIMYIlgl0+P5BQAAAAkAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAoAAAAAAA=",
+      "input_sha256": "c7e440c73cdafc9d8746a2cb1d6a18fce0835631b99b3349ddf3f9119145d086",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "none-0",
+      "input": "UEsDBBQAAAAIAIMYIlgAAAAAAAAAAAAAAAAFAAAAZmlyc3RQSwECFAMUAAAACACDGCJYAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAIwAAAAAA",
+      "input_sha256": "7474faf94f56e8ece5bfa4f70b1ba5dc39c285836c6eddadaf59a3bb9b6726b8",
+      "accepted": true,
+      "error": null,
+      "events": [
+        "callback",
+        "output"
+      ],
+      "parts": [
+        {
+          "name": "first",
+          "data": ""
+        }
+      ],
+      "entries": [
+        "0.pptx"
+      ]
+    },
+    {
+      "name": "none-2",
+      "input": "UEsDBBQAAAAIAIMYIlgEaX5/AAAAAAIAAAAFAAAAZmlyc3RQSwECFAMUAAAACACDGCJYBGl+fwAAAAACAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAIwAAAAAA",
+      "input_sha256": "c74e0a914c20541b4c991c30efca9354ee7530062f02e062c42bf7e76320a8f7",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "none-9",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5AAAAAAkAAAAFAAAAZmlyc3RQSwECFAMUAAAACACDGCJYJdPj+QAAAAAJAAAABQAAAAAAAAAAAAAAgAEAAAAAZmlyc3RQSwUGAAAAAAEAAQAzAAAAIwAAAAAA",
+      "input_sha256": "c1cc8470685ee458797e77e48c8a97a43c712a690739bfa64faaa70d664edb38",
+      "accepted": false,
+      "error": {
+        "type": "BadZipFile",
+        "message": "Bad CRC-32 for file 'first'"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "invalid-block-0",
+      "input": "UEsDBBQAAAAIAIMYIlgAAAAAAQAAAAAAAAAFAAAAZmlyc3QHUEsBAhQDFAAAAAgAgxgiWAAAAAABAAAAAAAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAACQAAAAAAA==",
+      "input_sha256": "7691170481bbcf88f991431f4e95da783a7995928424bdd4ba11e6cc2224acf7",
+      "accepted": false,
+      "error": {
+        "type": "error",
+        "message": "Error -3 while decompressing data: invalid block type"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "invalid-block-2",
+      "input": "UEsDBBQAAAAIAIMYIlgEaX5/AQAAAAIAAAAFAAAAZmlyc3QHUEsBAhQDFAAAAAgAgxgiWARpfn8BAAAAAgAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAACQAAAAAAA==",
+      "input_sha256": "e954221e2bcd80d3eed6646f020bc83a3fe51b66e94ca0b4aae03fd4153fd0be",
+      "accepted": false,
+      "error": {
+        "type": "error",
+        "message": "Error -3 while decompressing data: invalid block type"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "invalid-block-9",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5AQAAAAkAAAAFAAAAZmlyc3QHUEsBAhQDFAAAAAgAgxgiWCXT4/kBAAAACQAAAAUAAAAAAAAAAAAAAIABAAAAAGZpcnN0UEsFBgAAAAABAAEAMwAAACQAAAAAAA==",
+      "input_sha256": "ba09f0226c22d9b1e01813438a8d410c872dea11beb908c0a6e6ec146cc5d525",
+      "accepted": false,
+      "error": {
+        "type": "error",
+        "message": "Error -3 while decompressing data: invalid block type"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "invalid-after-prefix-0",
+      "input": "UEsDBBQAAAAIAIMYIlgAAAAACwAAAAAAAAAFAAAAZmlyc3QABQD6/3NhdmVkB1BLAQIUAxQAAAAIAIMYIlgAAAAACwAAAAAAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAuAAAAAAA=",
+      "input_sha256": "7d9eb634e8883435a421cf122b9fb0cfc334f34783b45e9493a56a7103be75f6",
+      "accepted": false,
+      "error": {
+        "type": "error",
+        "message": "Error -3 while decompressing data: invalid block type"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "invalid-after-prefix-2",
+      "input": "UEsDBBQAAAAIAIMYIlgEaX5/CwAAAAIAAAAFAAAAZmlyc3QABQD6/3NhdmVkB1BLAQIUAxQAAAAIAIMYIlgEaX5/CwAAAAIAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAuAAAAAAA=",
+      "input_sha256": "49b6b3bf32c409165601f7df810a087d314411667b97bfa095da72bf3a44ac6d",
+      "accepted": false,
+      "error": {
+        "type": "error",
+        "message": "Error -3 while decompressing data: invalid block type"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    },
+    {
+      "name": "invalid-after-prefix-9",
+      "input": "UEsDBBQAAAAIAIMYIlgl0+P5CwAAAAkAAAAFAAAAZmlyc3QABQD6/3NhdmVkB1BLAQIUAxQAAAAIAIMYIlgl0+P5CwAAAAkAAAAFAAAAAAAAAAAAAACAAQAAAABmaXJzdFBLBQYAAAAAAQABADMAAAAuAAAAAAA=",
+      "input_sha256": "3c02fe09ed9db57872c5ab870f4fdffdfb868dfe2e440159d1eb1ef183072f86",
+      "accepted": false,
+      "error": {
+        "type": "error",
+        "message": "Error -3 while decompressing data: invalid block type"
+      },
+      "events": [],
+      "parts": [],
+      "entries": []
+    }
+  ]
+}

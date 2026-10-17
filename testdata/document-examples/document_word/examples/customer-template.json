@@ -1,0 +1,11 @@
+{
+ "page":{"width_in":8.5,"height_in":11,"margin_in":1},
+ "font":"Arial","font_size":11,"title":"Revenue report","page_numbers":false,
+ "blocks":[
+  {"type":"heading","level":0,"text":"Revenue report"},
+  {"type":"paragraph","text":"Revenue totaled $200 across subscriptions and services."},
+  {"type":"heading","level":1,"text":"Breakdown"},
+  {"type":"table","header_bold":false,"rows":[["Item","Amount"],["Subscriptions","$120"],["Services","$80"],["Total","$200"]],"widths_twips":[4680,4680],"cell_margin_twips":100},
+  {"type":"paragraph","text":"Prepared for {{NAME}}."}
+ ]
+}

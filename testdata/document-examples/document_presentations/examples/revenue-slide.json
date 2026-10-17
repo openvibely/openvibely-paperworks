@@ -1,0 +1,76 @@
+{
+  "width_in": 13.333,
+  "height_in": 7.5,
+  "font": "Arial",
+  "slides": [
+    {
+      "notes": "Source: user-supplied revenue figures. Total: $200.",
+      "elements": [
+        {
+          "type": "text",
+          "placeholder": "title",
+          "x": 0.7,
+          "y": 0.3,
+          "w": 12,
+          "h": 1,
+          "text": "Subscriptions generated 60% of revenue",
+          "font_size": 30,
+          "inherit_formatting": true
+        },
+        {
+          "type": "chart",
+          "x": 0.7,
+          "y": 1.6,
+          "w": 7,
+          "h": 4.8,
+          "chart": {
+            "type": "column",
+            "categories": [
+              "Subscriptions",
+              "Services"
+            ],
+            "series": [
+              {
+                "name": "Revenue (USD)",
+                "values": [
+                  120,
+                  80
+                ]
+              }
+            ],
+            "inherit_formatting": true
+          }
+        },
+        {
+          "type": "table",
+          "x": 8.2,
+          "y": 2,
+          "w": 4.3,
+          "h": 2,
+          "font_size": 18,
+          "rows": [
+            [
+              "Item",
+              "Revenue"
+            ],
+            [
+              "Subscriptions",
+              "$120"
+            ],
+            [
+              "Services",
+              "$80"
+            ]
+          ],
+          "inherit_formatting": true
+        }
+      ]
+    }
+  ],
+  "style_resources": {
+    "theme": "slide-theme.xml",
+    "template_layout": 5,
+    "default_text": "slide-text.xml",
+    "table_styles": "slide-tables.xml"
+  }
+}

@@ -1,0 +1,247 @@
+{
+  "scope": "Exact pinned equation.cjs PNG bytes for bounded shared tables and operator limits; no full grammar claim.",
+  "sources": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/equation.cjs": "b7e87685d7a23c04015d15fa9a5494137d6efb6fce12d8bf59446ab525a436a0",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/Wrappers/mtable.js": "ee6033a1f3a07d0b2bd0275921cdfc4fc309729715b32dc3d5969d4a53b6fd48",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/input/tex/ams/AmsMethods.js": "ed831554f913bcda801bfd5a1f2f3f08cff9ab5f7e12f4893fac0c691a345f29",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/Wrappers/mtable.js": "385ad528024d5dfffd22299c41908890f6de9de5eb1bed42c6d19854006a301b",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/Wrappers/mtr.js": "573aa857bbf7fd037a96950f9eb4684a86f0c92dbed326c47f50c732c4266363",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/Wrappers/scriptbase.js": "c6c2e601a6042258262e80e2c464f5bdee024c39e63ea714fc655712dffef694",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/Wrappers/munderover.js": "476d4f5a838b2922f95c3d3d2cda2d6b1e104d0b1b741cc1fdbcb15b1fde0d5b",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/Wrappers/munderover.js": "37d74a1ca68ec08ca9ba63f4eb7403dcadfe02664c77db070b0bd0a5a465fbb0",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/largeop.js": "058b96bd8611a6ffca6b8fe87302c731ae3a4361ea89f17894fd3f1976443174",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/svg/fonts/tex/smallop.js": "29fbc79c7a54be8673deddab0a3cd4c8604f76b04ecb9bb8a1d0fa2aa2131d03",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/input/tex/ams/AmsItems.js": "140ec0f29d9b81e2ecb71a0078c9cdea775a3da3328ab6efb334aff010ceed88",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/input/tex/ParseUtil.js": "57a1071396ced6527157d185054b886843c750a2d86e4b590cf2b519e939f1b8",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/FontData.js": "ffe4caef95928475bb9331911bdee964ec602a19f2d5a4e0f71ae42791e05359",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/largeop.js": "c669b9fbeb388602177d95459a002ed9fe8de71707033a11f8b94d01ac182e5f",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/scripts/documents/node_modules/mathjax-full/js/output/common/fonts/tex/smallop.js": "4f5e97c7a06f6e7ade0fc0560dc77798775a1f51ffa87282cc901757b6aea4db"
+  },
+  "cases": [
+    {
+      "name": "aligned",
+      "tex": "\\begin{aligned}x&=1\\\\y&=2\\end{aligned}",
+      "width": 271,
+      "height": 260,
+      "pixels_equal": true,
+      "native_size": [
+        271,
+        260
+      ],
+      "reference_rgba_sha256": "355b3197dc876787400b9ac3641ccbacec298ccfa1041f46b67019466ba10d9d",
+      "native_rgba_sha256": "355b3197dc876787400b9ac3641ccbacec298ccfa1041f46b67019466ba10d9d",
+      "bytes_equal": true,
+      "png_sha256": "ec99e80eba073c1b5e4f5a585637c081fbd7440103cfff5ce422c76b8f06eb8e"
+    },
+    {
+      "name": "align",
+      "tex": "\\begin{align}x&=1\\\\y&=2\\end{align}",
+      "width": 271,
+      "height": 260,
+      "pixels_equal": true,
+      "native_size": [
+        271,
+        260
+      ],
+      "reference_rgba_sha256": "355b3197dc876787400b9ac3641ccbacec298ccfa1041f46b67019466ba10d9d",
+      "native_rgba_sha256": "355b3197dc876787400b9ac3641ccbacec298ccfa1041f46b67019466ba10d9d",
+      "bytes_equal": true,
+      "png_sha256": "ec99e80eba073c1b5e4f5a585637c081fbd7440103cfff5ce422c76b8f06eb8e"
+    },
+    {
+      "name": "multline",
+      "tex": "\\begin{multline}a+b+c\\\\=d+e\\end{multline}",
+      "width": 3566,
+      "height": 280,
+      "pixels_equal": true,
+      "native_size": [
+        3566,
+        280
+      ],
+      "reference_rgba_sha256": "7f6b5f532cd1a69da111d4c02ba2d5e9180fe30ccfe72ed562d6c89c3f1e2911",
+      "native_rgba_sha256": "7f6b5f532cd1a69da111d4c02ba2d5e9180fe30ccfe72ed562d6c89c3f1e2911",
+      "bytes_equal": true,
+      "png_sha256": "085bde17668449f3d07c5d2e483ad482492b7cd43f8b71113033876b7416e4d6"
+    },
+    {
+      "name": "newenvironment",
+      "tex": "\\newenvironment{foo}{\\begin{matrix}}{\\end{matrix}}\\begin{foo}a&b\\end{foo}",
+      "width": 226,
+      "height": 130,
+      "pixels_equal": true,
+      "native_size": [
+        226,
+        130
+      ],
+      "reference_rgba_sha256": "b42dfb958075ce008e598f5ff402a42a3cf78562577ca0eb33852efc0f5fa165",
+      "native_rgba_sha256": "b42dfb958075ce008e598f5ff402a42a3cf78562577ca0eb33852efc0f5fa165",
+      "bytes_equal": true,
+      "png_sha256": "6e8b76170d3dfa88bd62c873f13505141e0639cd0859609948012cc431b4327c"
+    },
+    {
+      "name": "substack",
+      "tex": "\\sum_{\\substack{i>0\\\\j>0}}a_{ij}",
+      "width": 306,
+      "height": 315,
+      "pixels_equal": true,
+      "native_size": [
+        306,
+        315
+      ],
+      "reference_rgba_sha256": "14819cb061e8f108daed40c416718d672bf44539825fa6499cd66edd9f994f03",
+      "native_rgba_sha256": "14819cb061e8f108daed40c416718d672bf44539825fa6499cd66edd9f994f03",
+      "bytes_equal": true,
+      "png_sha256": "c58d149334e62e74037a274f21a48d9c9bca00649430c1ddd9e56253bd68e6b3"
+    },
+    {
+      "name": "hline",
+      "tex": "\\begin{array}{c|c}a&b\\\\\\hline c&d\\end{array}",
+      "width": 242,
+      "height": 277,
+      "pixels_equal": true,
+      "native_size": [
+        242,
+        277
+      ],
+      "reference_rgba_sha256": "2057d33bd28ab5a0239cdaa4d5e6c9ad7947ead0cb04d071bf307d1a63aacb4f",
+      "native_rgba_sha256": "2057d33bd28ab5a0239cdaa4d5e6c9ad7947ead0cb04d071bf307d1a63aacb4f",
+      "bytes_equal": true,
+      "png_sha256": "29d55a350235e50ac90d6548472ae8015bd2bf446df8700be30be6939d473e9d"
+    },
+    {
+      "name": "matrix-three",
+      "tex": "\\begin{matrix}a&b&c\\\\d&e&f\\\\g&h&i\\end{matrix}",
+      "width": 395,
+      "height": 410,
+      "pixels_equal": true,
+      "native_size": [
+        395,
+        410
+      ],
+      "reference_rgba_sha256": "3e4b867e5ccfe02bf9c4ee2182fec6399a1491688895132fc266f3458d0a004d",
+      "native_rgba_sha256": "3e4b867e5ccfe02bf9c4ee2182fec6399a1491688895132fc266f3458d0a004d",
+      "bytes_equal": true,
+      "png_sha256": "3106202073870c9d26bf056e417c6873e7c20f35a1f3f2d9d6c850559795d1d0"
+    },
+    {
+      "name": "align-four",
+      "tex": "\\begin{aligned}a&=b&c&=d\\\\x&=y&z&=1\\end{aligned}",
+      "width": 701,
+      "height": 260,
+      "pixels_equal": true,
+      "native_size": [
+        701,
+        260
+      ],
+      "reference_rgba_sha256": "6718dae92256f00c92391b942928943b39619a121afcd785e6a183518c877ba6",
+      "native_rgba_sha256": "6718dae92256f00c92391b942928943b39619a121afcd785e6a183518c877ba6",
+      "bytes_equal": true,
+      "png_sha256": "5d0a8f76c5e9e920b14075dad4c3c91dcfc0f55b8b24c8d3cb69028758e3316e"
+    },
+    {
+      "name": "ragged",
+      "tex": "\\begin{matrix}x&y\\\\z\\end{matrix}",
+      "width": 236,
+      "height": 270,
+      "pixels_equal": true,
+      "native_size": [
+        236,
+        270
+      ],
+      "reference_rgba_sha256": "10c96bf6a739749c4c140f48c8d6754aacb8fdbed84015ba4551c483830cde8a",
+      "native_rgba_sha256": "10c96bf6a739749c4c140f48c8d6754aacb8fdbed84015ba4551c483830cde8a",
+      "bytes_equal": true,
+      "png_sha256": "eb024f9769175ac3eb50c430824df60086759864c62c03ab642e14ed733aae08"
+    },
+    {
+      "name": "fractions",
+      "tex": "\\begin{aligned}\\frac{a}{b}&=x\\\\y&=\\frac{1}{2}\\end{aligned}",
+      "width": 354,
+      "height": 444,
+      "pixels_equal": true,
+      "native_size": [
+        354,
+        444
+      ],
+      "reference_rgba_sha256": "bfdacba3e1ee77f2bd6f3aa2cb1a3568a92e8b1c9800f7fbb77dc7cc7ee071f6",
+      "native_rgba_sha256": "bfdacba3e1ee77f2bd6f3aa2cb1a3568a92e8b1c9800f7fbb77dc7cc7ee071f6",
+      "bytes_equal": true,
+      "png_sha256": "f955e394dc62aaed2260c448679d7b6d41350bba1eb992031d9cf03655ab22dd"
+    },
+    {
+      "name": "multline-three",
+      "tex": "\\begin{multline}a+b\\\\=c+d\\\\=e\\end{multline}",
+      "width": 3566,
+      "height": 430,
+      "pixels_equal": true,
+      "native_size": [
+        3566,
+        430
+      ],
+      "reference_rgba_sha256": "6341792eec9723fa0c529f1d8c87286d66ca50a72b09a0208bbc680fda7ac422",
+      "native_rgba_sha256": "6341792eec9723fa0c529f1d8c87286d66ca50a72b09a0208bbc680fda7ac422",
+      "bytes_equal": true,
+      "png_sha256": "cafed153f9529288e200de5064e0914591e4d8464873d78ddcceb50c3647178d"
+    },
+    {
+      "name": "product",
+      "tex": "\\prod_{\\substack{i>0\\\\j>0}}x",
+      "width": 232,
+      "height": 315,
+      "pixels_equal": true,
+      "native_size": [
+        232,
+        315
+      ],
+      "reference_rgba_sha256": "75d1cc76dd22efc34cce3503c895292b7dd24358cb052ac49e5d41bbe77aebcd",
+      "native_rgba_sha256": "75d1cc76dd22efc34cce3503c895292b7dd24358cb052ac49e5d41bbe77aebcd",
+      "bytes_equal": true,
+      "png_sha256": "77f80763502ea7784922fb2b97b1e9bd1dc43115d03ecbff43eb2bd0800e1014"
+    },
+    {
+      "name": "sum-both",
+      "tex": "\\sum_{i=0}^{n}x",
+      "width": 248,
+      "height": 311,
+      "pixels_equal": true,
+      "native_size": [
+        248,
+        311
+      ],
+      "reference_rgba_sha256": "d8cbaebb57a7aaa953036df138ebf4d6276eb31ce4089075159bbb5d87197317",
+      "native_rgba_sha256": "d8cbaebb57a7aaa953036df138ebf4d6276eb31ce4089075159bbb5d87197317",
+      "bytes_equal": true,
+      "png_sha256": "b12671b3e99ba30307ff50796e0adaa15bf72375904d759f9bb1764a6e84206f"
+    },
+    {
+      "name": "subarray",
+      "tex": "\\begin{subarray}{c}i>0\\\\j>0\\end{subarray}",
+      "width": 150,
+      "height": 151,
+      "pixels_equal": true,
+      "native_size": [
+        150,
+        151
+      ],
+      "reference_rgba_sha256": "f9c9781d42cd644a16a9b82d4ca521dbe1af7752de4c8d9318e3c17ee500f785",
+      "native_rgba_sha256": "f9c9781d42cd644a16a9b82d4ca521dbe1af7752de4c8d9318e3c17ee500f785",
+      "bytes_equal": true,
+      "png_sha256": "f3192ab86b925485f14bdd7369cdfb83c09cd44cf23074e2f49a399ad619a418"
+    },
+    {
+      "name": "nested-matrix",
+      "tex": "\\frac{\\begin{matrix}a&b\\\\c&d\\end{matrix}}{2}",
+      "width": 279,
+      "height": 385,
+      "pixels_equal": true,
+      "native_size": [
+        279,
+        385
+      ],
+      "reference_rgba_sha256": "b76bf84efc20b0405a2cc1ff37dfbb164f52fc543fb602aaa8a9758f46abe304",
+      "native_rgba_sha256": "b76bf84efc20b0405a2cc1ff37dfbb164f52fc543fb602aaa8a9758f46abe304",
+      "bytes_equal": true,
+      "png_sha256": "bf1cded84a15a9a19b313dc23780e6a2e06ca822fe224ff36ff13edea16f4680"
+    }
+  ]
+}

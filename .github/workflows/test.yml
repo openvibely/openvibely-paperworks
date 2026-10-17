@@ -1,0 +1,48 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Office test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libreoffice-writer libreoffice-calc libreoffice-impress fonts-liberation fonts-dejavu-core fonts-noto-core
+          soffice --version
+          node --version
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/paperworks-tests
+          key: test-deps-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('scripts/test-local.sh') }}
+      - name: Set up cached test dependencies
+        run: make deps
+      - name: Test
+        run: |
+          set -o pipefail
+          go test -json -count=1 -timeout=20m ./... | tee "$RUNNER_TEMP/tests.jsonl"
+      - name: Vet
+        if: always()
+        run: go vet ./...
+      - name: Retain test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: ${{ runner.temp }}/tests.jsonl
+          if-no-files-found: ignore

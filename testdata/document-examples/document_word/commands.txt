@@ -1,0 +1,23 @@
+```sh
+paperworks create-docx --spec "$SKILL_DIR/examples/report.json" --output report.docx
+paperworks inspect report.docx > before.json
+paperworks create-docx --spec "$SKILL_DIR/examples/customer-template.json" --output customer-source.docx
+cat > control.json <<'JSON'
+{"operation":"control","marker":"{{NAME}}","tag":"customer"}
+JSON
+paperworks word-edit customer-source.docx --spec control.json --output template.docx
+cat > fill.json <<'JSON'
+{"operation":"control-fill","tag":"customer","text":"Example customer"}
+JSON
+paperworks word-edit template.docx --spec fill.json --output filled.docx
+cat > contract.json <<'JSON'
+{"allow_changed":["word/document.xml"]}
+JSON
+paperworks verify-preservation customer-source.docx --against filled.docx --requirements contract.json
+paperworks inspect filled.docx > after.json
+paperworks table-exchange filled.docx --table-index 0 --output table.csv
+```
+
+```sh
+paperworks render filled.docx --output word-pages --max-pixels 1600
+```

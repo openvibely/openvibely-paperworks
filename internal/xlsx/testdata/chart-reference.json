@@ -1,0 +1,22 @@
+[
+  {
+    "name": "example",
+    "title": "Revenue by item",
+    "sheet": "Revenue",
+    "parts": {
+      "xl/charts/chart1.xml": "3ee74d2ac1e878bf1eb5674c1553a1c40c4a91ee822df6a76278129c8606347a",
+      "xl/drawings/drawing1.xml": "fe1ee610ca097c412314821679eba44eeee0ec51f15ce6bcade1530b4460bb31",
+      "xl/drawings/_rels/drawing1.xml.rels": "74667459a717caf5ced763d00fd999c3b180fd96c5804b901a08b8ecd5795128"
+    }
+  },
+  {
+    "name": "escaped",
+    "title": "Sales & costs <2026> \"quoted\"",
+    "sheet": "O'Brien",
+    "parts": {
+      "xl/charts/chart1.xml": "029dc5f8d60e780059e9d2c08ad9677e6347b519237fc520531785698769f7dd",
+      "xl/drawings/drawing1.xml": "fe1ee610ca097c412314821679eba44eeee0ec51f15ce6bcade1530b4460bb31",
+      "xl/drawings/_rels/drawing1.xml.rels": "74667459a717caf5ced763d00fd999c3b180fd96c5804b901a08b8ecd5795128"
+    }
+  }
+]

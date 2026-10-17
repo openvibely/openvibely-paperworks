@@ -1,0 +1,58 @@
+{
+  "root": "'Output'!B1",
+  "nodes": {
+    "'Output'!B1": {
+      "sheet": "Output",
+      "cell": "B1",
+      "formula": "=Driver+A1",
+      "cached_value": null
+    },
+    "'O''Brien'!A1": {
+      "sheet": "O'Brien",
+      "cell": "A1",
+      "formula": null,
+      "cached_value": 3
+    },
+    "'Output'!A1": {
+      "sheet": "Output",
+      "cell": "A1",
+      "formula": "=Inputs!$A$1+'O''Brien'!A1",
+      "cached_value": null
+    },
+    "'Inputs'!A1": {
+      "sheet": "Inputs",
+      "cell": "A1",
+      "formula": null,
+      "cached_value": 7
+    }
+  },
+  "edges": [
+    [
+      "'Output'!B1",
+      "'O''Brien'!A1"
+    ],
+    [
+      "'Output'!B1",
+      "'Output'!A1"
+    ],
+    [
+      "'Output'!A1",
+      "'Inputs'!A1"
+    ],
+    [
+      "'Output'!A1",
+      "'O''Brien'!A1"
+    ]
+  ],
+  "cycles": [],
+  "unresolved": [
+    {
+      "cell": "'Output'!B1",
+      "reference": "'O''Brien'!A1",
+      "reason": "Relative defined-name reference needs application context"
+    }
+  ],
+  "truncated": false,
+  "complete": false,
+  "method": "Formula precedents for saved inputs; all branches included. Whole-row/column references use saved populated extents of the referenced rows/columns. INDIRECT/OFFSET targets use literals or non-formula inputs only. Cached values may be stale. No calculation performed."
+}

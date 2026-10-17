@@ -1,0 +1,10 @@
+{
+  "sources": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-reference/repository/internal/builtinskills/builtin/skills/document_spreadsheets/SKILL.md": "df48d3f50b9dad7e31c6eb2ebbdcab930712886f55410c0cb9b06c3989297a84",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/openpyxl/writer/excel.py": "ea2a179f78521c72149e45b6c02c8180f0380a770ee855cbe72192033b2aa7a6",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/openpyxl/workbook/workbook.py": "a1a12bbd21f5a94a615003ce6530878f6507c8a783aac8f60f270a083720a3b3",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/python/cpython-3.12.12-macos-aarch64-none/lib/python3.12/zipfile/__init__.py": "94c53aedba0b0f7d6f71bf8ec34973e666ee0c0e56e6800ff4c26d2e3951987a"
+  },
+  "archive_sha256": "565c40267d354aeb57d19c0a8e0e97855040468425e7742c8359a26f6eecd8a8",
+  "clock": "2024-02-03T04:05:07; ZIP local and core UTC explicitly controlled"
+}

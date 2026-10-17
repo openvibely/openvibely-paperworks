@@ -1,0 +1,144 @@
+{
+  "sources": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/docx/oxml/text/run.py": "be98349fe24fc012de6a4caeb4f790e301d11a92f63e3a9628cceb8162a26e15",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/docx/oxml/table.py": "a92e3a6bf4ecdcaccdca050d794c5a4c854d0c965b6d6349a8cb1ea376556910",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/docx/document.py": "b54354a7f068191e37dc9b4256480f0222665b60d22951f365402b0a7b46d9ce",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/docx/templates/default.docx": "2094b5bddffe9cf973d61fe03388413804f034160718494a65db7e98da40d35d",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/builtin/skills/document_word/SKILL.md": "a1ba5e82a08b434606044a72e83e1bb6315aadc5d8b2d5417cc27e936baddebb",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely/.worktrees/task_9ecf6be339f6904e7779215c52b4cccb/internal/builtinskills/documents/scripts/document_check.py": "f7f724147f3678383b5d64b2d128639c2df3115404f07624dbcca4419ef15e94",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/docx/api.py": "d77539ea23d2336b4c44311bd373a64994240c03e6c068dfc68b189164b6b5c7"
+  },
+  "installed_document_sha256": "2ea56170a8a65fce094cfa9192d965c84832d576f1c0df55135ccf5a8fe22974",
+  "cases": [
+    {
+      "name": "text",
+      "spec": {
+        "page": {
+          "width_in": 8.5,
+          "height_in": 11,
+          "margin_in": 1,
+          "landscape": false
+        },
+        "blocks": [
+          {
+            "type": "paragraph",
+            "runs": [
+              {
+                "text": "ordinary text"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "runs": [
+              {
+                "text": " leading"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "runs": [
+              {
+                "text": "trailing "
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "runs": [
+              {
+                "text": "both "
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "runs": [
+              {
+                "text": "a\tb\nc"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "runs": [
+              {
+                "text": "A & B < C \"quoted\""
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "runs": [
+              {
+                "text": "\u00a0unicode\u00a0"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "runs": [
+              {
+                "text": "line\rbreak\r\nend"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "runs": [
+              {
+                "text": ""
+              }
+            ]
+          }
+        ]
+      },
+      "document_sha256": "2693a982cfb6b9b44296abf6a7a892102be254d3e14cfbf494c7f4756b2468fb"
+    },
+    {
+      "name": "landscape",
+      "spec": {
+        "page": {
+          "width_in": 8.5,
+          "height_in": 11,
+          "margin_in": 1,
+          "landscape": true
+        },
+        "blocks": [
+          {
+            "type": "paragraph",
+            "runs": [
+              {
+                "text": "Wide report"
+              }
+            ]
+          }
+        ]
+      },
+      "document_sha256": "1d8d7af9c7d662c2efac6982954ab248a2c4b86968f4352c7edd1550af5e67c9"
+    },
+    {
+      "name": "portrait",
+      "spec": {
+        "page": {
+          "width_in": 7,
+          "height_in": 9,
+          "margin_in": 0.5,
+          "landscape": false
+        },
+        "blocks": [
+          {
+            "type": "paragraph",
+            "runs": [
+              {
+                "text": "Small report"
+              }
+            ]
+          }
+        ]
+      },
+      "document_sha256": "d756b266b1374f9a464a6f09cd64782e89d5fa0853ec6849147a98955821ecfc"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "sources": {
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/openpyxl/writer/excel.py": "ea2a179f78521c72149e45b6c02c8180f0380a770ee855cbe72192033b2aa7a6",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/openpyxl/packaging/manifest.py": "cb9ce80d09e1275696fc73cb22d63f584f787d22d2e23c6f7c8aa7fc9db327a4",
+    "/Users/dubee/go/src/github.com/openvibely/openvibely-paperworks/.worktrees/task_50222a33438aaa794b1dec6f76dc1048/.scratch/pinned-venv/lib/python3.12/site-packages/openpyxl/packaging/relationship.py": "8cb86f16f0d56414536535e8911aebb0488b23d0a6165ba5846cc0fce60a3344"
+  },
+  "cases": [
+    {
+      "name": "installed",
+      "parts": {
+        "xl/worksheets/_rels/sheet1.xml.rels": "0043881ca7f803da685c9fc201bc7c04f045356813c7b94a5d00253d3b5df9ee",
+        "_rels/.rels": "c545941ba36c15fcdce4ae4568c663f3ced1a2226ad5082d3fd66b178bfac11a",
+        "[Content_Types].xml": "63cf0c3306f3bf41b32d5ce2f43b3e5eed98b2eee6acd6a57e1a6ee524527893"
+      }
+    },
+    {
+      "name": "supplemental",
+      "parts": {
+        "xl/worksheets/_rels/sheet1.xml.rels": "0043881ca7f803da685c9fc201bc7c04f045356813c7b94a5d00253d3b5df9ee",
+        "xl/worksheets/_rels/sheet2.xml.rels": "6aa1b747ce5b580d8b0761e375824f323fea38fd16e8cd933e97a643c48cb367",
+        "_rels/.rels": "c545941ba36c15fcdce4ae4568c663f3ced1a2226ad5082d3fd66b178bfac11a",
+        "[Content_Types].xml": "7616f64affd0e9ed999cf3d19aca5025001c644d24010457f5313b5e536670dc"
+      }
+    }
+  ]
+}
