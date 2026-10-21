@@ -104,7 +104,7 @@ revision markup and annotation boundaries are not flattened into plain text.
 | `image-replace` | `image`, PNG/JPEG `path`, optional dimensions |
 | `image-resize/delete` | `image`; resize needs `width_in` and/or `height_in` |
 | `section-format` | `section`; `width/height/top/bottom/left/right/header/footer/gutter` in twips |
-| `section-insert` | `section` whose settings to copy, terminating `paragraph`, `type: nextPage/continuous/evenPage/oddPage` |
+| `section-insert` | `section` whose settings to copy, terminating `paragraph`, `type: nextPage/continuous/evenPage/oddPage` controlling where the following section starts; existing section starts are preserved |
 | `header-footer` | `section`, `kind: header/footer`, `type: default/first/even`, `text` |
 | `batch` | `edits` array of general operations; nested batches are rejected |
 

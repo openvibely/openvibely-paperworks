@@ -33,8 +33,36 @@ func sectionEdit(d *Doc, s map[string]any) error {
 		default:
 			return fmt.Errorf("invalid section break type")
 		}
+		// sectPr describes the section ending at that element, but its type
+		// controls how that section starts. Find the section being split;
+		// the requested template section need not be the paragraph's owner.
+		var following *etree.Element
+		for _, block := range d.Body().ChildElements() {
+			if block.Index() <= p.Index() {
+				continue
+			}
+			if is(block, "sectPr") {
+				following = block
+			} else if is(block, "p") {
+				following = child(child(block, "pPr"), "sectPr")
+			}
+			if following != nil {
+				break
+			}
+		}
+		if following == nil {
+			return fmt.Errorf("paragraph has no terminating section properties")
+		}
+		// Keep the original start of the preceding portion; only the new
+		// following portion should use the requested break type.
 		insertInPPr(pr, copy)
-		valProp(copy, "type", kind)
+		if old := child(copy, "type"); old != nil {
+			remove(old)
+		}
+		if start := child(following, "type"); start != nil {
+			insertWordProperty(copy, start.Copy())
+		}
+		valProp(following, "type", kind)
 		d.Touch(d.Main)
 		return nil
 	}
