@@ -155,3 +155,105 @@ func TestCopyRepeatedSheetRangeCalculatesCorrectTotal(t *testing.T) {
 		}
 	}
 }
+
+func TestCopyPreservesNumericBlankAndTextCells(t *testing.T) {
+	for _, operation := range []string{"copy", "copy-values", "copy-formulas"} {
+		t.Run(operation, func(t *testing.T) {
+			dir := t.TempDir()
+			in, out := filepath.Join(dir, "in.xlsx"), filepath.Join(dir, "out.xlsx")
+			f := excelize.NewFile()
+			defer f.Close()
+			for cell, value := range map[string]any{"A1": 42, "A2": 1.25, "A4": "42", "A5": "", "A6": true} {
+				if err := f.SetCellValue("Sheet1", cell, value); err != nil {
+					t.Fatal(err)
+				}
+			}
+			// A3 is blank. The destination must clear an existing value/formula.
+			if err := f.SetCellFormula("Sheet1", "B3", "99"); err != nil {
+				t.Fatal(err)
+			}
+			if err := f.SaveAs(in); err != nil {
+				t.Fatal(err)
+			}
+			if err := EditFile(context.Background(), in, out, dir, EditSpec{Edits: []Edit{{Operation: operation, Sheet: "Sheet1", Range: "A1:A6", Target: "B1"}}}); err != nil {
+				t.Fatal(err)
+			}
+			got, err := excelize.OpenFile(out)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer got.Close()
+			for _, check := range []struct{ formula, want string }{
+				{"ISNUMBER(B1)", "TRUE"}, {"ISNUMBER(B2)", "TRUE"},
+				{"B1+B2", "43.25"}, {"ISBLANK(B3)", "TRUE"},
+				{"ISTEXT(B5)", "TRUE"}, {"ISLOGICAL(B6)", "TRUE"},
+			} {
+				if err := got.SetCellFormula("Sheet1", "D1", check.formula); err != nil {
+					t.Fatal(err)
+				}
+				value, err := got.CalcCellValue("Sheet1", "D1")
+				if err != nil || value != check.want {
+					t.Errorf("%s = %q (%v), want %q", check.formula, value, err, check.want)
+				}
+			}
+			// Check the saved string type directly: Excelize ISTEXT coerces
+			// numeric-looking strings before testing their type.
+			if kind, err := got.GetCellType("Sheet1", "B4"); err != nil || kind != excelize.CellTypeSharedString {
+				t.Fatalf("text copy type = %v (%v)", kind, err)
+			}
+			if value, err := got.GetCellValue("Sheet1", "B4"); err != nil || value != "42" {
+				t.Fatalf("text copy value = %q (%v)", value, err)
+			}
+			if formula, err := got.GetCellFormula("Sheet1", "B3"); err != nil || formula != "" {
+				t.Fatalf("blank copy retained formula: %q (%v)", formula, err)
+			}
+		})
+	}
+}
+
+func TestRenamePreservesQualifiedRangeEndpoints(t *testing.T) {
+	dir := t.TempDir()
+	in, out := filepath.Join(dir, "in.xlsx"), filepath.Join(dir, "out.xlsx")
+	f := excelize.NewFile()
+	defer f.Close()
+	for cell, value := range map[string]int{"A1": 1, "A2": 2} {
+		if err := f.SetCellValue("Sheet1", cell, value); err != nil {
+			t.Fatal(err)
+		}
+	}
+	cases := []struct{ cell, formula, want string }{
+		{"D1", "SUM(Sheet1!A1:Sheet1!A2)", "SUM('New Data'!A1:'New Data'!A2)"},
+		{"D2", "SUM(Sheet1!$A$1:Sheet1!$A$2)", "SUM('New Data'!$A$1:'New Data'!$A$2)"},
+		{"D3", "SUM('Sheet1'!A1:Sheet1!A2)", "SUM('New Data'!A1:'New Data'!A2)"},
+		{"D4", "SUM(Sheet1!$A1:Sheet1!A$2)", "SUM('New Data'!$A1:'New Data'!A$2)"},
+		{"D5", "SUM(Sheet1:Other!A1)", "SUM('New Data:Other'!A1)"},
+		{"D6", "SUM([1]Sheet1!A1:[1]Sheet1!A2)", "SUM([1]Sheet1!A1:[1]Sheet1!A2)"},
+	}
+	if _, err := f.NewSheet("Other"); err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range cases {
+		if err := f.SetCellFormula("Sheet1", tc.cell, tc.formula); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := f.SaveAs(in); err != nil {
+		t.Fatal(err)
+	}
+	if err := EditFile(context.Background(), in, out, dir, EditSpec{Edits: []Edit{{Operation: "rename-sheet", Sheet: "Sheet1", Name: "New Data"}}}); err != nil {
+		t.Fatal(err)
+	}
+	got, err := excelize.OpenFile(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer got.Close()
+	for _, tc := range cases {
+		formula, err := got.GetCellFormula("New Data", tc.cell)
+		if err != nil || formula != tc.want {
+			t.Errorf("%s: got %q (%v), want %q", tc.cell, formula, err, tc.want)
+		}
+	}
+	// Calculation is covered by TestLibreOfficeCopyAndRenameRanges: Excelize
+	// mis-evaluates even untouched, valid quoted range endpoints.
+}

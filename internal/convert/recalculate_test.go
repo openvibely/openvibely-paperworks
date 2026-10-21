@@ -123,3 +123,50 @@ func TestLibreOfficeExplicitRecalculationAndPreservation(t *testing.T) {
 		t.Fatal(result)
 	}
 }
+
+func TestLibreOfficeCopyAndRenameRanges(t *testing.T) {
+	ctx := context.Background()
+	dir := t.TempDir()
+	in, edited := filepath.Join(dir, "in.xlsx"), filepath.Join(dir, "edited.xlsx")
+	f := excelize.NewFile()
+	defer f.Close()
+	for cell, value := range map[string]any{"A1": 1, "A2": 2, "A4": "42", "A5": ""} {
+		if err := f.SetCellValue("Sheet1", cell, value); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for cell, formula := range map[string]string{
+		"D1": "SUM(Sheet1!A1:Sheet1!A2)",
+		"D2": "SUM(Sheet1!$A$1:Sheet1!$A$2)",
+		"D3": "SUM(B1:B2)", "D4": "ISNUMBER(B1)",
+		"D5": "ISBLANK(B3)", "D6": "ISTEXT(B4)", "D7": "ISBLANK(B5)=ISBLANK(A5)",
+	} {
+		if err := f.SetCellFormula("Sheet1", cell, formula); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := f.SaveAs(in); err != nil {
+		t.Fatal(err)
+	}
+	if err := xlsx.EditFile(ctx, in, edited, dir, xlsx.EditSpec{Edits: []xlsx.Edit{
+		{Operation: "copy", Sheet: "Sheet1", Range: "A1:A5", Target: "B1"},
+		{Operation: "rename-sheet", Sheet: "Sheet1", Name: "New Data"},
+	}}); err != nil {
+		t.Fatal(err)
+	}
+	result, err := Convert(ctx, edited, filepath.Join(dir, "calculated"), Options{Recalculate: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := excelize.OpenFile(result["output"].(string))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer got.Close()
+	for cell, want := range map[string]string{"D1": "3", "D2": "3", "D3": "3", "D4": "1", "D5": "1", "D6": "1", "D7": "1"} {
+		value, err := got.GetCellValue("New Data", cell, excelize.Options{RawCellValue: true})
+		if err != nil || value != want {
+			t.Errorf("%s = %q (%v), want %q", cell, value, err, want)
+		}
+	}
+}

@@ -162,7 +162,14 @@ func renameFormulaSheet(formula, source, target string) string {
 				i++
 			}
 
-			if i < len(formula) && formula[i] == ':' {
+			// After ! this token is a cell coordinate, not the first sheet
+			// of a 3-D qualifier. Include $ markers in absolute references.
+			refStart := start
+			for refStart > 0 && (nameByte(formula[refStart-1]) || formula[refStart-1] == '$') {
+				refStart--
+			}
+			qualifiedCell := refStart > 0 && formula[refStart-1] == '!'
+			if !qualifiedCell && i < len(formula) && formula[i] == ':' {
 				end := i + 1
 				for end < len(formula) && nameByte(formula[end]) {
 					end++

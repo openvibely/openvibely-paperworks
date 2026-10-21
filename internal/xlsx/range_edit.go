@@ -218,7 +218,8 @@ func copyRange(f *excelize.File, e Edit) error {
 				err = f.SetCellRichText(targetSheet, c.target, c.rich)
 			} else {
 				switch c.kind {
-				case excelize.CellTypeNumber, excelize.CellTypeFormula:
+				// XLSX omits the type for ordinary numbers and empty cells.
+				case excelize.CellTypeUnset, excelize.CellTypeNumber, excelize.CellTypeFormula:
 					if c.value == "" {
 						err = f.SetCellValue(targetSheet, c.target, nil)
 					} else {
