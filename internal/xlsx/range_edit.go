@@ -312,7 +312,105 @@ func restoreCopiedErrors(f *excelize.File, sheet string, values map[string]strin
 	return excelize.OpenReader(bytes.NewReader(data))
 }
 
-var r1c1Ref = regexp.MustCompile(`(?i)^R(\[-?[0-9]+\]|[0-9]*)C(\[-?[0-9]+\]|[0-9]*)`)
+var r1c1Ref = regexp.MustCompile(`(?i)^R(\[[+-]?[0-9]+\]|[0-9]*)C(\[[+-]?[0-9]+\]|[0-9]*)`)
+var r1c1AxisRef = regexp.MustCompile(`(?i)^([RC])(\[[+-]?[0-9]+\]|[0-9]*)`)
+
+func r1c1ReferenceEnd(s string, end int) bool {
+	return end == len(s) || !nameByte(s[end]) && s[end] != '[' && s[end] != '(' && s[end] != '!'
+}
+
+func r1c1Coordinate(v string, current, limit int) (int, string, error) {
+	n, prefix := current, ""
+	if v != "" {
+		if strings.HasPrefix(v, "[") {
+			delta, err := strconv.Atoi(v[1 : len(v)-1])
+			if err != nil || delta < 1-current || delta > limit-current {
+				return 0, "", fmt.Errorf("R1C1 coordinate out of bounds")
+			}
+			n += delta
+		} else {
+			var err error
+			n, err = strconv.Atoi(v)
+			if err != nil || n < 1 || n > limit {
+				return 0, "", fmt.Errorf("R1C1 coordinate out of bounds")
+			}
+			prefix = "$"
+		}
+	}
+	return n, prefix, nil
+}
+
+// Single-axis R1C1 references denote entire rows/columns, not A1 cells.
+// Consume both endpoints together so C1:C3 becomes $A:$C, not $A:$A:$C:$C.
+func r1c1WholeAxis(s string, start, x, y int) (string, int, error) {
+	m := r1c1AxisRef.FindStringSubmatch(s[start:])
+	if m == nil || !r1c1ReferenceEnd(s, start+len(m[0])) {
+		return "", start, nil
+	}
+	axis := strings.ToUpper(m[1])
+	coordinate := func(v string) (string, error) {
+		current, limit := y, 1048576
+		if axis == "C" {
+			current, limit = x, 16384
+		}
+		n, prefix, err := r1c1Coordinate(v, current, limit)
+		if err != nil {
+			return "", err
+		}
+		name := strconv.Itoa(n)
+		if axis == "C" {
+			name, _ = excelize.ColumnNumberToName(n)
+		}
+		return prefix + name, nil
+	}
+	first, err := coordinate(m[2])
+	if err != nil {
+		return "", start, err
+	}
+	end := start + len(m[0])
+	separator := end
+	for separator < len(s) && strings.ContainsRune(" \t\r\n", rune(s[separator])) {
+		separator++
+	}
+	if separator == len(s) || s[separator] != ':' {
+		return first + ":" + first, end, nil
+	}
+	next := separator + 1
+	for next < len(s) && strings.ContainsRune(" \t\r\n", rune(s[next])) {
+		next++
+	}
+	// A range may repeat its sheet/workbook qualifier on the second endpoint.
+	qualifierStart := next
+	if next < len(s) && s[next] == '\'' {
+		next++
+		for next < len(s) {
+			if s[next] == '\'' {
+				next++
+				if next == len(s) || s[next] != '\'' {
+					break
+				}
+			}
+			next++
+		}
+		if next < len(s) && s[next] == '!' {
+			next++
+		}
+	} else {
+		if next < len(s) && s[next] == '[' {
+			next = formulaBracketEnd(s, next)
+		}
+		next = formulaSheetQualifierEnd(s, next)
+	}
+	second := r1c1AxisRef.FindStringSubmatch(s[next:])
+	if second == nil || !strings.EqualFold(second[1], axis) || !r1c1ReferenceEnd(s, next+len(second[0])) {
+		return "", start, fmt.Errorf("invalid R1C1 whole-row/column range")
+	}
+	last, err := coordinate(second[2])
+	if err != nil {
+		return "", start, err
+	}
+	return first + ":" + s[qualifierStart:next] + last, next + len(second[0]), nil
+}
 
 func r1c1Formula(s, cell string) (string, error) {
 	x, y, err := excelize.CellNameToCoordinates(cell)
@@ -340,19 +438,9 @@ func r1c1Formula(s, cell string) (string, error) {
 			continue
 		}
 		if s[i] == '[' {
-			start := i
-			depth := 1
-			i++
-			for i < len(s) && depth > 0 {
-				if s[i] == '[' {
-					depth++
-				}
-				if s[i] == ']' {
-					depth--
-				}
-				i++
-			}
-			out.WriteString(s[start:i])
+			end := formulaBracketEnd(s, i)
+			out.WriteString(s[i:end])
+			i = end
 			continue
 		}
 		if end := formulaSheetQualifierEnd(s, i); end > i {
@@ -363,36 +451,28 @@ func r1c1Formula(s, cell string) (string, error) {
 		m := r1c1Ref.FindStringSubmatch(s[i:])
 		if m != nil && (i == 0 || !nameByte(s[i-1])) {
 			end := i + len(m[0])
-			if end == len(s) || !nameByte(s[end]) {
-				coord := func(v string, current, limit int) (int, string, error) {
-					prefix := "$"
-					n := current
-					var err error
-					if v == "" {
-						prefix = ""
-					} else if strings.HasPrefix(v, "[") {
-						delta, e := strconv.Atoi(v[1 : len(v)-1])
-						err = e
-						n += delta
-						prefix = ""
-					} else {
-						n, err = strconv.Atoi(v)
-					}
-					if err != nil || n < 1 || n > limit {
-						return 0, "", fmt.Errorf("R1C1 coordinate out of bounds")
-					}
-					return n, prefix, nil
-				}
-				row, rabs, err := coord(m[1], y, 1048576)
+			if r1c1ReferenceEnd(s, end) {
+				row, rabs, err := r1c1Coordinate(m[1], y, 1048576)
 				if err != nil {
 					return "", err
 				}
-				col, cabs, err := coord(m[2], x, 16384)
+				col, cabs, err := r1c1Coordinate(m[2], x, 16384)
 				if err != nil {
 					return "", err
 				}
 				name, _ := excelize.ColumnNumberToName(col)
 				out.WriteString(cabs + name + rabs + strconv.Itoa(row))
+				i = end
+				continue
+			}
+		}
+		if i == 0 || !nameByte(s[i-1]) {
+			translated, end, err := r1c1WholeAxis(s, i, x, y)
+			if err != nil {
+				return "", err
+			}
+			if end > i {
+				out.WriteString(translated)
 				i = end
 				continue
 			}
