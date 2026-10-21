@@ -270,6 +270,7 @@ func editObject(pkg *opc.Package, part string, shape *etree.Element, e Edit) err
 		}
 		blips[0].RemoveAttr("r:link")
 		blips[0].CreateAttr("r:embed", id)
+		office.RemoveSVGImageSource(blips[0])
 	case "crop":
 		if e.Crop == nil {
 			return fmt.Errorf("crop required")

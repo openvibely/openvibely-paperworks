@@ -89,6 +89,7 @@ func imageEdit(d *Doc, part string, root *etree.Element, s map[string]any) error
 				return fmt.Errorf("drawing must contain exactly one image")
 			}
 			blips[0].CreateAttr("r:embed", rid)
+			office.RemoveSVGImageSource(blips[0])
 		} else {
 			container := root
 			if part == d.Main {
