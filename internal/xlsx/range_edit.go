@@ -17,7 +17,8 @@ var wholeRows = regexp.MustCompile(`^(\$?)([1-9][0-9]*):(\$?)([1-9][0-9]*)`)
 var a1Ref = regexp.MustCompile(`^(\$?)([A-Za-z]{1,3})(\$?)([1-9][0-9]*)`)
 
 // TranslateFormula shifts A1 references while leaving strings, quoted sheet
-// names, structured references, absolute coordinates and function names alone.
+// names, defined names, structured references, absolute coordinates and
+// function names alone.
 func TranslateFormula(s string, dx, dy int) (string, error) {
 	var out strings.Builder
 	for i := 0; i < len(s); {
@@ -65,6 +66,18 @@ func TranslateFormula(s string, dx, dy int) (string, error) {
 				if end < len(s) && nameByte(s[end]) {
 					continue
 				}
+				// A colon can also join defined names. Outside the column grid,
+				// bare identifiers such as XFE:XFF are names, not column ranges.
+				if axis.column && m[1] == "" && m[3] == "" {
+					_, firstErr := excelize.ColumnNameToNumber(m[2])
+					_, lastErr := excelize.ColumnNameToNumber(m[4])
+					if firstErr != nil || lastErr != nil {
+						out.WriteString(m[0])
+						i = end
+						matched = true
+						break
+					}
+				}
 				vals := []string{}
 				for k := 1; k <= 3; k += 2 {
 					var n int
@@ -102,13 +115,17 @@ func TranslateFormula(s string, dx, dy int) (string, error) {
 		if m != nil && (i == 0 || !nameByte(s[i-1])) {
 			end := i + len(m[0])
 			if end == len(s) || (!nameByte(s[end]) && s[end] != '(' && s[end] != '!' && s[end] != '[') {
-				x, err := excelize.ColumnNameToNumber(m[2])
-				if err != nil {
-					return "", err
-				}
-				y, err := strconv.Atoi(m[4])
-				if err != nil {
-					return "", err
+				x, colErr := excelize.ColumnNameToNumber(m[2])
+				y, rowErr := strconv.Atoi(m[4])
+				// Check the original coordinates before applying an offset:
+				// A1048577 and XFE1 are valid names outside Excel's cell grid.
+				if colErr != nil || rowErr != nil || y > 1048576 {
+					if m[1] != "" || m[3] != "" {
+						return "", fmt.Errorf("invalid absolute cell reference")
+					}
+					out.WriteString(m[0])
+					i = end
+					continue
 				}
 				if m[1] == "" {
 					x += dx
@@ -131,7 +148,7 @@ func TranslateFormula(s string, dx, dy int) (string, error) {
 	return out.String(), nil
 }
 func nameByte(c byte) bool {
-	return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '_' || c == '.' || c >= 128
+	return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '_' || c == '.' || c == '\\' || c >= 128
 }
 func copyRange(f *excelize.File, e Edit) (*excelize.File, error) {
 	a, b, err := bounds(e.Range)

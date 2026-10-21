@@ -54,7 +54,8 @@ All operations except add-sheet and defined-name operations require `sheet`.
 | `note`, `delete-note` | add needs Excelize `note`; delete needs `cell` |
 
 A1 copies translate relative references and retain absolute references and string
-literals. Overlapping copies use a snapshot. `copy-formulas` also copies source
+literals. Names outside the cell grid, such as `A1048577` and `XFE1`, remain names
+when copying or filling formulas. Overlapping copies use a snapshot. `copy-formulas` also copies source
 literals, without styles. `copy-values` uses saved results: recalculate first.
 R1C1 formulas accept cells, whole rows/columns, and ranges, including relative
 coordinates and sheet qualifiers. For example, `SUM(C1)` sums column A;
