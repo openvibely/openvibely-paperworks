@@ -9,7 +9,7 @@ func wordSchema() map[string]any {
 	for _, k := range []string{"operation", "part", "old", "new", "text", "position", "font", "color", "style", "alignment", "fill", "path", "description", "kind", "type"} {
 		props[k] = map[string]any{"type": "string"}
 	}
-	for _, k := range []string{"paragraph", "run", "table", "row", "column", "end_column", "occurrence", "image", "section", "width", "height", "top", "bottom", "left", "right", "header", "footer", "gutter", "before", "after", "line"} {
+	for _, k := range []string{"start", "end", "paragraph", "run", "table", "row", "column", "end_column", "occurrence", "image", "section", "width", "height", "top", "bottom", "left", "right", "header", "footer", "gutter", "before", "after", "line"} {
 		props[k] = map[string]any{"type": "integer", "minimum": 0}
 	}
 	for _, k := range []string{"font_size", "width_in", "height_in"} {

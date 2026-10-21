@@ -294,11 +294,12 @@ These are native command implementations, not a guarantee of the entire API
 surface of the reference's document libraries. Unsupported operations fail
 rather than being described as completed edits. In particular:
 
-- Word table restructuring does not handle vertical merges. There is no generic
-  template-component cloning API or arbitrary floating-picture position editor.
-- PowerPoint table restructuring requires unmerged tables. General table merges,
-  composed layout trees, named-style authoring, patterned/image shape fills and
-  rich speaker-note controls are not exposed by these new commands.
+- Word table restructuring does not handle vertical merges. Template-component
+  cloning has the dependency restrictions below; arbitrary floating-picture
+  positioning is not exposed.
+- PowerPoint row/column insertion and deletion require unmerged tables. Named-style
+  authoring is not exposed. Table merge/unmerge, nested layouts, pattern/image
+  fills and formatted notes are covered by the local extensions below.
 - Chart type names not listed above are not newly enabled. Full reference chart
   export support is itself not established; do not infer it from an API name.
 - PDF layout extraction needs explicit table boundaries. Canvas drawing provides
@@ -310,3 +311,118 @@ Use the new CLI alongside the existing specialized commands. The app's external
 skills and distributed binary must be updated separately to advertise newly
 added commands to a model. Creating preview files does not itself make the model
 see them: it still needs its image-reading tool.
+
+## Local document-editing extensions (unreleased)
+
+These commands require a build from this checkout. They are not in OV's pinned
+`v0.0.1-rc2` binary. To try them without publishing a release:
+
+```sh
+go build -o /tmp/paperworks-local ./cmd/paperworks
+/tmp/paperworks-local schema slide-edit
+```
+
+### Copy a Word template component
+
+`word-edit` accepts `clone-component`. `start` and `end` are inclusive, zero-based
+indices of direct body blocks (paragraphs, tables and content controls), excluding
+the final section properties. `path` is an optional source template, relative to
+the spec file; omitted means the input document. `before` selects a destination
+block, or omit it to append before the final section properties.
+
+```json
+{"operation":"clone-component","path":"template.docx","start":1,"end":2,"before":0}
+```
+
+The copy imports related images, links, charts and their related parts, styles
+and numbering. Conflicting style IDs and bookmark names are renamed; internal
+hyperlinks follow the cloned bookmarks. The destination keeps its page setup,
+headers, footers, theme and document-wide defaults. Explicit source styles
+(including a conflicting default paragraph style) are imported. Unsupported
+dependencies fail explicitly: section
+breaks, partial bookmark ranges, fields, comments, footnotes/endnotes, tracked
+revisions, externally bound controls and embedded `altChunk` documents. Cloning
+is not a replacement for copying complete document stories.
+
+### Merge or unmerge a PowerPoint table
+
+```json
+{"edits":[
+  {"operation":"table-merge","slide":1,"shape_id":"3",
+   "row":0,"column":0,"end_row":1,"end_column":1}
+]}
+```
+
+The inclusive rectangle uses zero-based cells. Text from every selected cell is
+kept in the top-left cell, in row order, preserving paragraph/run formatting.
+Other cells and grid dimensions remain unchanged. Existing merged regions cannot
+be overlapped. To split a merge, use `table-unmerge` with its top-left `row` and
+`column` only. Combined text stays at the top-left; original text distribution
+is not reconstructed. Edit merged text using that origin, not a covered cell.
+Row/column insertion and deletion still require an unmerged table.
+
+### Pattern and image shape fills
+
+Use `drawing_style` on a created element, or `drawing-style` through `slide-edit`:
+
+```json
+{"edits":[
+  {"operation":"drawing-style","slide":1,"shape_id":"2",
+   "drawing_style":{"pattern":{"preset":"diagCross","foreground":"16324F","background":"FFFFFF"}}},
+  {"operation":"drawing-style","slide":1,"shape_id":"4",
+   "drawing_style":{"image":{"path":"texture.png","fit":"cover"}}}
+]}
+```
+
+`pattern.preset` accepts DrawingML preset pattern names, such as `pct50`, `cross`,
+`diagCross`, `smCheck`, `horzBrick`, `weave` and `zigZag`. Colors use six hex digits.
+Image fills embed PNG/JPEG data and accept `stretch` (default), `cover` or `tile`.
+Cover uses the shape's current dimensions, with optional `anchor` and `crop` in
+the same format as image elements. Apply geometry/layout edits before the cover
+fill when both change. Creation applies slide layout before calculating fills.
+Fill paths resolve relative to the spec file. Solid, gradient, pattern and image
+fills are mutually exclusive. Outline and shadow can accompany any fill.
+
+### Formatted speaker notes
+
+A created slide can use `notes_paragraphs` instead of `notes`. A `notes` edit can
+use `paragraphs` instead of `text`. Both accept the existing paragraph/run fields:
+
+```json
+{"edits":[{"operation":"notes","slide":1,"paragraphs":[
+  {"runs":[{"text":"Opening: ","bold":true},{"text":"Explain the result.","italic":true}]},
+  {"text":"Mention the caveat","bullet":true,"level":1,"format":{"after":6}}
+]}]}
+```
+
+This replaces the notes body's paragraphs while retaining other notes
+placeholders. Runs support bold, italic, underline, font size and color;
+paragraphs support bullets, levels, alignment, spacing and indentation.
+An empty array clears the notes text.
+
+### Nested slide layout
+
+Use `layout.root` for a tree, instead of the original flat `shape_ids`/`mode`
+fields. It is available in `slide-edit` and as `layout` on a created slide:
+
+```json
+{"edits":[{"operation":"layout","slide":1,"layout":{
+  "x":0.5,"y":0.5,"width":12,"height":6,
+  "root":{"mode":"row","gap":0.3,"children":[
+    {"shape_id":"2","width":3},
+    {"mode":"column","gap":0.2,"children":[
+      {"shape_id":"3","weight":1},
+      {"shape_id":"4","weight":2}
+    ]}
+  ]}
+}}]}
+```
+
+Containers support `row`, `column` and `grid` (with `columns`), plus `gap` and
+`padding`. A leaf names a top-level slide shape. Dimensions and spacing are in
+inches. Optional positive `width`/`height` fix a node's size; otherwise it fills
+available space. Row/column siblings divide remaining space by `weight` (default
+1). Grid cells are equal-sized. Fixed cross-axis sizes align at the top/left.
+This positions/resizes existing native shapes; it does not measure text, wrap
+children, or maintain a reactive layout after later edits. Nested grouped shapes
+must be edited in their own coordinate system and are rejected here.

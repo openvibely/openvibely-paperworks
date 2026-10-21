@@ -42,9 +42,11 @@ type Spec struct {
 	Slides         []Slide         `json:"slides"`
 }
 type Slide struct {
-	Background string    `json:"background"`
-	Notes      string    `json:"notes"`
-	Elements   []Element `json:"elements"`
+	NotesParagraphs []Paragraph `json:"notes_paragraphs,omitempty"`
+	Layout          *Layout     `json:"layout,omitempty"`
+	Background      string      `json:"background"`
+	Notes           string      `json:"notes"`
+	Elements        []Element   `json:"elements"`
 }
 type Run struct {
 	Text      string  `json:"text"`
@@ -578,6 +580,12 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 		if err != nil {
 			return err
 		}
+		if slide.Layout != nil {
+			if err := layoutObjects(b.p, name, d.Root(), slide.Layout); err != nil {
+				return err
+			}
+			changed = true
+		}
 		shapes := office.Child(office.Child(d.Root(), pns, "cSld"), pns, "spTree").ChildElements()[2:]
 		ids := map[string]bool{}
 		for _, prop := range office.All(d.Root(), pns, "cNvPr") {
@@ -607,10 +615,30 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 				}
 			}
 			if e.DrawingStyle != nil {
-				if err := styleDrawing(shapes[j], e.DrawingStyle); err != nil {
+				if err := styleDrawingInPackage(b.p, name, shapes[j], e.DrawingStyle, base); err != nil {
 					return err
 				}
 				changed = true
+			}
+		}
+		if slide.NotesParagraphs != nil {
+			if slide.Notes != "" {
+				return fmt.Errorf("notes and notes_paragraphs are mutually exclusive")
+			}
+			notesPart := fmt.Sprintf("ppt/notesSlides/notesSlide%d.xml", i+1)
+			nd, err := b.p.XML(notesPart)
+			if err != nil {
+				return err
+			}
+			bodies := office.All(nd.Root(), pns, "txBody")
+			if len(bodies) != 1 {
+				return fmt.Errorf("notes body is ambiguous")
+			}
+			if err := replaceRichNotes(bodies[0], slide.NotesParagraphs, s.Font); err != nil {
+				return err
+			}
+			if err := b.p.SetXML(notesPart, nd); err != nil {
+				return err
 			}
 		}
 		if changed {

@@ -9,17 +9,21 @@ import (
 )
 
 type Layout struct {
-	ShapeIDs []string `json:"shape_ids"`
-	Mode     string   `json:"mode"`
-	X        float64  `json:"x"`
-	Y        float64  `json:"y"`
-	Width    float64  `json:"width"`
-	Height   float64  `json:"height"`
-	Gap      float64  `json:"gap"`
-	Columns  int      `json:"columns,omitempty"`
+	Root     *LayoutNode `json:"root,omitempty"`
+	ShapeIDs []string    `json:"shape_ids"`
+	Mode     string      `json:"mode"`
+	X        float64     `json:"x"`
+	Y        float64     `json:"y"`
+	Width    float64     `json:"width"`
+	Height   float64     `json:"height"`
+	Gap      float64     `json:"gap"`
+	Columns  int         `json:"columns,omitempty"`
 }
 
 func layoutObjects(pkg *opc.Package, part string, root *etree.Element, l *Layout) error {
+	if l != nil && l.Root != nil {
+		return layoutTree(pkg, part, root, l)
+	}
 	if l == nil || len(l.ShapeIDs) == 0 || len(l.ShapeIDs) > 10000 {
 		return fmt.Errorf("layout needs 1..10000 shape_ids")
 	}

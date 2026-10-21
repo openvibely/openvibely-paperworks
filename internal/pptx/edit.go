@@ -16,6 +16,9 @@ type EditSpec struct {
 	Edits []Edit `json:"edits"`
 }
 type Edit struct {
+	EndRow         int             `json:"end_row,omitempty"`
+	EndColumn      int             `json:"end_column,omitempty"`
+	Paragraphs     []Paragraph     `json:"paragraphs,omitempty"`
 	ParagraphStyle *ParagraphStyle `json:"paragraph_style,omitempty"`
 	Hyperlink      *string         `json:"hyperlink,omitempty"`
 	Underline      *bool           `json:"underline,omitempty"`
@@ -145,7 +148,16 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 			if len(bodies) != 1 {
 				return nil, fmt.Errorf("notes must have exactly one body placeholder")
 			}
-			replaceBody(bodies[0], op.Text)
+			if op.Paragraphs != nil {
+				if op.Text != "" {
+					return nil, fmt.Errorf("notes text and paragraphs are mutually exclusive")
+				}
+				if err := replaceRichNotes(bodies[0], op.Paragraphs, "Arial"); err != nil {
+					return nil, err
+				}
+			} else {
+				replaceBody(bodies[0], op.Text)
+			}
 			continue
 		}
 		d, e := load(part)
@@ -169,12 +181,16 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 		}
 		shape := matches[0].Parent().Parent()
 		switch op.Operation {
+		case "table-merge", "table-unmerge":
+			if err := mergeTableCells(shape, op); err != nil {
+				return nil, err
+			}
 		case "table-row-insert", "table-row-delete", "table-column-insert", "table-column-delete", "table-cell-format":
 			if err := tableObject(shape, op); err != nil {
 				return nil, err
 			}
 		case "drawing-style":
-			if err := styleDrawing(shape, op.DrawingStyle); err != nil {
+			if err := styleDrawingInPackage(p, part, shape, op.DrawingStyle, ""); err != nil {
 				return nil, err
 			}
 		case "image-mask", "geometry", "delete", "front", "back", "run-format", "paragraph-format", "fill", "replace-image", "crop":
@@ -222,6 +238,9 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 			cells := office.Children(rows[op.Row], office.NSA, "tc")
 			if op.Column < 0 || op.Column >= len(cells) {
 				return nil, fmt.Errorf("column index out of range")
+			}
+			if mergedContinuation(cells[op.Column]) {
+				return nil, fmt.Errorf("edit the top-left merge origin instead of a covered cell")
 			}
 			body := office.Child(cells[op.Column], office.NSA, "txBody")
 			if body == nil {

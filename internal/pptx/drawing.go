@@ -48,11 +48,13 @@ type Shadow struct {
 	Direction float64  `json:"direction"`
 }
 type DrawingStyle struct {
-	Fill     string    `json:"fill,omitempty"`
-	Opacity  *float64  `json:"opacity,omitempty"`
-	Gradient *Gradient `json:"gradient,omitempty"`
-	Outline  *Outline  `json:"outline,omitempty"`
-	Shadow   *Shadow   `json:"shadow,omitempty"`
+	Pattern  *PatternFill `json:"pattern,omitempty"`
+	Image    *ImageFill   `json:"image,omitempty"`
+	Fill     string       `json:"fill,omitempty"`
+	Opacity  *float64     `json:"opacity,omitempty"`
+	Gradient *Gradient    `json:"gradient,omitempty"`
+	Outline  *Outline     `json:"outline,omitempty"`
+	Shadow   *Shadow      `json:"shadow,omitempty"`
 }
 
 func drawingElement(id int, e Element) (string, error) {
@@ -176,6 +178,9 @@ func insertDrawingProperty(pr, e *etree.Element) {
 func styleDrawing(shape *etree.Element, s *DrawingStyle) error {
 	if s == nil {
 		return fmt.Errorf("drawing_style required")
+	}
+	if s.Pattern != nil || s.Image != nil {
+		return fmt.Errorf("pattern/image fill requires package-aware styling")
 	}
 	pr := office.Child(shape, pns, "spPr")
 	if pr == nil {

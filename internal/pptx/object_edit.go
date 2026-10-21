@@ -73,6 +73,11 @@ func editObject(pkg *opc.Package, part string, shape *etree.Element, e Edit) err
 				return fmt.Errorf("inherited/incomplete geometry requires explicit x, y, w and h")
 			}
 		}
+		if shape.Tag == "graphicFrame" {
+			if err := resizeTableGrid(shape, e.W, e.H); err != nil {
+				return err
+			}
+		}
 		for _, v := range []struct {
 			n     string
 			p     *float64

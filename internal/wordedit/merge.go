@@ -210,7 +210,7 @@ func copyPartTree(d, src *Doc, part string, copied map[string]string) (string, e
 	}
 	for _, r := range rels {
 		if r.TargetMode == "External" {
-			if _, err := d.Pkg.AddRel(target, r.Type, r.Target, true); err != nil {
+			if err := addRelWithMode(d.Pkg, target, r.ID, r.Type, r.Target, "External"); err != nil {
 				return "", err
 			}
 			continue
@@ -238,6 +238,10 @@ func relPathFrom(from, to string) (string, error) {
 }
 
 func addRelWithID(p *opc.Package, owner, id, typ, target string) error {
+	return addRelWithMode(p, owner, id, typ, target, "")
+}
+
+func addRelWithMode(p *opc.Package, owner, id, typ, target, mode string) error {
 	name := opc.RelsName(owner)
 	var x *etree.Document
 	if p.Has(name) {
@@ -254,6 +258,9 @@ func addRelWithID(p *opc.Package, owner, id, typ, target string) error {
 	r.CreateAttr("Id", id)
 	r.CreateAttr("Type", typ)
 	r.CreateAttr("Target", target)
+	if mode != "" {
+		r.CreateAttr("TargetMode", mode)
+	}
 	return p.SetXML(name, x)
 }
 
