@@ -172,11 +172,27 @@ func copyRange(f *excelize.File, e Edit) (*excelize.File, error) {
 		return nil, fmt.Errorf("target sheet missing")
 	}
 	targetSheet = f.GetSheetName(idx)
+	merges, err := f.GetMergeCells(targetSheet, true)
+	if err != nil {
+		return nil, err
+	}
+	type mergedTarget struct {
+		anchor                   string
+		left, top, right, bottom int
+	}
+	var mergedTargets []mergedTarget
+	for _, merge := range merges {
+		left, top, right, bottom, err := office.ParseRange(merge[0])
+		if err != nil {
+			return nil, err
+		}
+		mergedTargets = append(mergedTargets, mergedTarget{merge.GetStartAxis(), left, top, right, bottom})
+	}
 	type cell struct {
-		target, formula, value string
-		kind                   excelize.CellType
-		style                  int
-		rich                   []excelize.RichTextRun
+		target, anchor, formula, value string
+		kind                           excelize.CellType
+		style                          int
+		rich                           []excelize.RichTextRun
 	}
 	var snapshot []cell
 	for row := y; row <= yy; row++ {
@@ -209,12 +225,22 @@ func copyRange(f *excelize.File, e Edit) (*excelize.File, error) {
 				return nil, err
 			}
 			rich, _ := f.GetCellRichText(e.Sheet, source)
-			snapshot = append(snapshot, cell{dest, formula, v, kind, style, rich})
+			anchor := dest
+			for _, merge := range mergedTargets {
+				if dx, dy := tx+col-x, ty+row-y; dx >= merge.left && dx <= merge.right && dy >= merge.top && dy <= merge.bottom {
+					anchor = merge.anchor
+					break
+				}
+			}
+			snapshot = append(snapshot, cell{dest, anchor, formula, v, kind, style, rich})
 		}
 	}
 	errors := map[string]string{}
 	for _, c := range snapshot {
 		if e.Operation != "copy-formats" {
+			// Multiple destinations can write the same merged anchor. Keep only
+			// its final error value, matching the ordinary cell setters.
+			delete(errors, c.anchor)
 			if err = f.SetCellFormula(targetSheet, c.target, ""); err != nil {
 				return nil, err
 			}
@@ -240,7 +266,7 @@ func copyRange(f *excelize.File, e Edit) (*excelize.File, error) {
 					// Excelize has no error-cell setter. Prepare the destination
 					// and restore its error type before the next edit runs.
 					err = f.SetCellStr(targetSheet, c.target, c.value)
-					errors[c.target] = c.value
+					errors[c.anchor] = c.value
 				case excelize.CellTypeBool:
 					err = f.SetCellBool(targetSheet, c.target, c.value == "1" || c.value == "TRUE")
 				default:
