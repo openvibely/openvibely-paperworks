@@ -57,13 +57,21 @@ func EditFile(ctx context.Context, input, output, base string, spec EditSpec) er
 		if err = ctx.Err(); err != nil {
 			return err
 		}
-		if op.Operation == "rename-sheet" {
-			next, renameErr := renameSheet(f, op.Sheet, op.Name)
-			if renameErr != nil {
-				return fmt.Errorf("edit %d (rename-sheet): %w", i, renameErr)
+		switch op.Operation {
+		case "rename-sheet", "copy", "copy-values", "copy-formulas", "copy-formats":
+			var next *excelize.File
+			if op.Operation == "rename-sheet" {
+				next, err = renameSheet(f, op.Sheet, op.Name)
+			} else {
+				next, err = copyRange(f, op)
 			}
-			f.Close()
-			f = next
+			if err != nil {
+				return fmt.Errorf("edit %d (%s): %w", i, op.Operation, err)
+			}
+			if next != f {
+				f.Close()
+				f = next
+			}
 			continue
 		}
 		if err = applyEdit(f, base, op); err != nil {
@@ -109,8 +117,6 @@ func applyEdit(f *excelize.File, base string, e Edit) error {
 		return fmt.Errorf("sheet %q not found", e.Sheet)
 	}
 	switch e.Operation {
-	case "copy", "copy-values", "copy-formulas", "copy-formats":
-		return copyRange(f, e)
 	case "fill-formula":
 		if e.FormulaStyle != "" && e.FormulaStyle != "a1" && e.FormulaStyle != "r1c1" {
 			return fmt.Errorf("formula_style must be a1 or r1c1")

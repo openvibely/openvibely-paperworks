@@ -1,11 +1,15 @@
 package xlsx
 
 import (
+	"bytes"
 	"fmt"
-	"github.com/xuri/excelize/v2"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/openvibely/openvibely-paperworks/internal/office"
+	"github.com/openvibely/openvibely-paperworks/internal/opc"
+	"github.com/xuri/excelize/v2"
 )
 
 var wholeCols = regexp.MustCompile(`^(\$?)([A-Za-z]{1,3}):(\$?)([A-Za-z]{1,3})`)
@@ -145,16 +149,16 @@ func TranslateFormula(s string, dx, dy int) (string, error) {
 func nameByte(c byte) bool {
 	return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '_' || c == '.' || c >= 128
 }
-func copyRange(f *excelize.File, e Edit) error {
+func copyRange(f *excelize.File, e Edit) (*excelize.File, error) {
 	a, b, err := bounds(e.Range)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	x, y, _ := excelize.CellNameToCoordinates(a)
 	xx, yy, _ := excelize.CellNameToCoordinates(b)
 	tx, ty, err := excelize.CellNameToCoordinates(e.Target)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	targetSheet := e.Name
 	if targetSheet == "" {
@@ -162,11 +166,12 @@ func copyRange(f *excelize.File, e Edit) error {
 	}
 	idx, err := f.GetSheetIndex(targetSheet)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if idx < 0 {
-		return fmt.Errorf("target sheet missing")
+		return nil, fmt.Errorf("target sheet missing")
 	}
+	targetSheet = f.GetSheetName(idx)
 	type cell struct {
 		target, formula, value string
 		kind                   excelize.CellType
@@ -179,38 +184,39 @@ func copyRange(f *excelize.File, e Edit) error {
 			source, _ := excelize.CoordinatesToCellName(col, row)
 			dest, err := excelize.CoordinatesToCellName(tx+col-x, ty+row-y)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			formula, err := f.GetCellFormula(e.Sheet, source)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			if formula != "" && e.Operation != "copy-values" && e.Operation != "copy-formats" {
 				formula, err = TranslateFormula(formula, tx-x, ty-y)
 				if err != nil {
-					return err
+					return nil, err
 				}
 			}
 			v, err := f.GetCellValue(e.Sheet, source, excelize.Options{RawCellValue: true})
 			if err != nil {
-				return err
+				return nil, err
 			}
 			kind, err := f.GetCellType(e.Sheet, source)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			style, err := f.GetCellStyle(e.Sheet, source)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			rich, _ := f.GetCellRichText(e.Sheet, source)
 			snapshot = append(snapshot, cell{dest, formula, v, kind, style, rich})
 		}
 	}
+	errors := map[string]string{}
 	for _, c := range snapshot {
 		if e.Operation != "copy-formats" {
 			if err = f.SetCellFormula(targetSheet, c.target, ""); err != nil {
-				return err
+				return nil, err
 			}
 			if c.formula != "" && e.Operation != "copy-values" {
 				err = f.SetCellFormula(targetSheet, c.target, c.formula)
@@ -219,7 +225,7 @@ func copyRange(f *excelize.File, e Edit) error {
 			} else {
 				switch c.kind {
 				// XLSX omits the type for ordinary numbers and empty cells.
-				case excelize.CellTypeUnset, excelize.CellTypeNumber, excelize.CellTypeFormula:
+				case excelize.CellTypeUnset, excelize.CellTypeNumber:
 					if c.value == "" {
 						err = f.SetCellValue(targetSheet, c.target, nil)
 					} else {
@@ -230,6 +236,11 @@ func copyRange(f *excelize.File, e Edit) error {
 							err = f.SetCellFloat(targetSheet, c.target, v, -1, 64)
 						}
 					}
+				case excelize.CellTypeError:
+					// Excelize has no error-cell setter. Prepare the destination
+					// and restore its error type before the next edit runs.
+					err = f.SetCellStr(targetSheet, c.target, c.value)
+					errors[c.target] = c.value
 				case excelize.CellTypeBool:
 					err = f.SetCellBool(targetSheet, c.target, c.value == "1" || c.value == "TRUE")
 				default:
@@ -237,16 +248,58 @@ func copyRange(f *excelize.File, e Edit) error {
 				}
 			}
 			if err != nil {
-				return err
+				return nil, err
 			}
 		}
 		if e.Operation != "copy-values" && e.Operation != "copy-formulas" {
 			if err = f.SetCellStyle(targetSheet, c.target, c.target, c.style); err != nil {
-				return err
+				return nil, err
 			}
 		}
 	}
-	return nil
+	if len(errors) == 0 {
+		return f, nil
+	}
+	return restoreCopiedErrors(f, targetSheet, errors)
+}
+
+// Reopen the corrected package so subsequent edits observe real error values,
+// including another copy, a sheet rename, or an overwrite of these cells.
+func restoreCopiedErrors(f *excelize.File, sheet string, values map[string]string) (*excelize.File, error) {
+	raw, err := f.WriteToBuffer()
+	if err != nil {
+		return nil, err
+	}
+	pkg, err := opc.Read(raw.Bytes())
+	if err != nil {
+		return nil, err
+	}
+	wb, err := office.OpenWorkbook(pkg)
+	if err != nil {
+		return nil, err
+	}
+	sh := wb.Sheets[sheet]
+	if sh == nil {
+		return nil, fmt.Errorf("copy destination sheet missing")
+	}
+	for address, value := range values {
+		cell := sh.Cells[address]
+		if cell == nil {
+			return nil, fmt.Errorf("copy destination %s missing", address)
+		}
+		cell.CreateAttr("t", "e")
+		office.RemoveAll(cell, office.NSS, "v")
+		office.RemoveAll(cell, office.NSS, "is")
+		office.NewChild(cell, office.NSS, "v", nil).SetText(value)
+	}
+	if err = pkg.SetXML(sh.Part, sh.Doc); err != nil {
+		return nil, err
+	}
+	data, err := pkg.Bytes()
+	if err != nil {
+		return nil, err
+	}
+	return excelize.OpenReader(bytes.NewReader(data))
 }
 
 var r1c1Ref = regexp.MustCompile(`(?i)^R(\[-?[0-9]+\]|[0-9]*)C(\[-?[0-9]+\]|[0-9]*)`)

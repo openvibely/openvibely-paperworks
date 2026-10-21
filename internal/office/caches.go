@@ -172,6 +172,14 @@ func PreserveFormulaCaches(source string, calculated []byte, formulas []Formula)
 				return nil, err
 			}
 		}
+		// Inspection deliberately reports empty cached scalars as absent. Here
+		// an explicit string result from the calculation engine is valid,
+		// including <v/>. A missing <v> must still fail the check below.
+		if cell != nil && val.Kind == "" && cell.SelectAttrValue("t", "") == "str" {
+			if cached := Child(cell, NSS, "v"); cached != nil && cached.Text() == "" {
+				val.Kind = "str"
+			}
+		}
 		hasValue := cell != nil && (Child(cell, NSS, "v") != nil || Child(cell, NSS, "is") != nil)
 		if !hasValue && !clear && !it.Child {
 			return nil, fmt.Errorf("calculation produced no saved result for %s!%s", it.Sheet, it.Cell)

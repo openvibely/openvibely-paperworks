@@ -170,3 +170,89 @@ func TestLibreOfficeCopyAndRenameRanges(t *testing.T) {
 		}
 	}
 }
+
+func TestLibreOfficeRecalculateAndCopyCachedResultTypes(t *testing.T) {
+	ctx := context.Background()
+	dir := t.TempDir()
+	in := filepath.Join(dir, "source.xlsx")
+	f := excelize.NewFile()
+	defer f.Close()
+	for cell, formula := range map[string]string{"A1": `"00123"`, "A2": `""`, "A3": "NA()", "A4": "TRUE()", "A5": "42"} {
+		if err := f.SetCellFormula("Sheet1", cell, formula); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := f.SaveAs(in); err != nil {
+		t.Fatal(err)
+	}
+	result, err := Convert(ctx, in, filepath.Join(dir, "calculated"), Options{Recalculate: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	calculated := result["output"].(string)
+	pkg, err := opc.Open(calculated)
+	if err != nil {
+		t.Fatal(err)
+	}
+	wb, err := office.OpenWorkbook(pkg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	empty := wb.Sheets["Sheet1"].Cells["A2"]
+	if empty.SelectAttrValue("t", "") != "str" || office.Child(empty, office.NSS, "v") == nil {
+		t.Fatal("calculated empty-string cache missing")
+	}
+	copied := filepath.Join(dir, "copied.xlsx")
+	if err := xlsx.EditFile(ctx, calculated, copied, dir, xlsx.EditSpec{Edits: []xlsx.Edit{
+		{Operation: "copy-values", Sheet: "Sheet1", Range: "A1:A5", Target: "B1"},
+		{Operation: "formula", Sheet: "Sheet1", Cell: "C1", Formula: "ISNA(B3)"},
+		{Operation: "formula", Sheet: "Sheet1", Cell: "C2", Formula: `IFERROR(B3,"handled")`},
+	}}); err != nil {
+		t.Fatal(err)
+	}
+	got, err := excelize.OpenFile(copied)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer got.Close()
+	for _, tc := range []struct {
+		cell, value string
+		kind        excelize.CellType
+	}{
+		{"B1", "00123", excelize.CellTypeSharedString},
+		{"B2", "", excelize.CellTypeSharedString},
+		{"B3", "#N/A", excelize.CellTypeError},
+		{"B4", "1", excelize.CellTypeBool},
+		{"B5", "42", excelize.CellTypeNumber},
+	} {
+		value, err := got.GetCellValue("Sheet1", tc.cell, excelize.Options{RawCellValue: true})
+		if err != nil || value != tc.value {
+			t.Fatalf("%s value=%q err=%v want=%q", tc.cell, value, err, tc.value)
+		}
+		kind, err := got.GetCellType("Sheet1", tc.cell)
+		if tc.kind == excelize.CellTypeNumber && kind == excelize.CellTypeUnset {
+			kind = excelize.CellTypeNumber
+		}
+		if err != nil || kind != tc.kind {
+			t.Fatalf("%s type=%v err=%v want=%v", tc.cell, kind, err, tc.kind)
+		}
+		if formula, err := got.GetCellFormula("Sheet1", tc.cell); err != nil || formula != "" {
+			t.Fatalf("%s formula=%q err=%v", tc.cell, formula, err)
+		}
+	}
+	checked, err := Convert(ctx, copied, filepath.Join(dir, "verified"), Options{Recalculate: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	verified, err := excelize.OpenFile(checked["output"].(string))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer verified.Close()
+	for cell, want := range map[string]string{"C1": "1", "C2": "handled"} {
+		value, err := verified.GetCellValue("Sheet1", cell, excelize.Options{RawCellValue: true})
+		if err != nil || value != want {
+			t.Fatalf("%s=%q err=%v want=%q", cell, value, err, want)
+		}
+	}
+}
