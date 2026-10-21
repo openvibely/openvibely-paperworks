@@ -114,6 +114,20 @@ func TranslateFormula(s string, dx, dy int) (string, error) {
 		m := a1Ref.FindStringSubmatch(s[i:])
 		if m != nil && (i == 0 || !nameByte(s[i-1])) {
 			end := i + len(m[0])
+			// LOG10 is both a built-in function name and a valid A1 address.
+			// Allow whitespace before its argument list without removing it:
+			// other references such as A1 (A1:B2) use space for intersection.
+			if strings.EqualFold(m[0], "LOG10") {
+				next := end
+				for next < len(s) && strings.ContainsRune(" \t\r\n", rune(s[next])) {
+					next++
+				}
+				if next < len(s) && s[next] == '(' {
+					out.WriteString(s[i:next])
+					i = next
+					continue
+				}
+			}
 			if end == len(s) || (!nameByte(s[end]) && s[end] != '(' && s[end] != '!' && s[end] != '[') {
 				x, colErr := excelize.ColumnNameToNumber(m[2])
 				y, rowErr := strconv.Atoi(m[4])
