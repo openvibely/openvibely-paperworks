@@ -311,3 +311,53 @@ func TestCloneImportsStyleNumberingEvenWhenStyleXMLMatches(t *testing.T) {
 		})
 	}
 }
+
+func TestCloneStyleNamesAvoidExistingNamesAcrossRepeatedClones(t *testing.T) {
+	styles := func(color string) map[string]string {
+		return map[string]string{"word/styles.xml": `<w:styles ` + wNS + `><w:style w:type="paragraph" w:styleId="Shared"><w:name w:val="Shared Style"/><w:rPr><w:color w:val="` + color + `"/></w:rPr></w:style><w:style w:type="paragraph" w:styleId="Reserved"><w:name w:val="Shared Style (clone 1)"/></w:style></w:styles>`}
+	}
+	body := `<w:p><w:pPr><w:pStyle w:val="Shared"/></w:pPr><w:r><w:t>Text</w:t></w:r></w:p>`
+	target, source := mk(t, "dest", body, styles("000000")), mk(t, "source", body, styles("FF0000"))
+	for i := 0; i < 2; i++ {
+		out := filepath.Join(t.TempDir(), "clone.docx")
+		if _, err := Edit(target, out, map[string]any{"operation": "clone-component", "path": source, "start": float64(0), "end": float64(0)}, ""); err != nil {
+			t.Fatal(err)
+		}
+		target = out
+	}
+	raw, err := os.ReadFile(target)
+	if err != nil {
+		t.Fatal(err)
+	}
+	d, err := Open(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	stylesByID := d.styles().byID
+	seen := map[string]bool{}
+	for _, s := range stylesByID {
+		name := getW(child(s, "name"), "val")
+		if seen[name] {
+			t.Fatalf("duplicate output style name %q", name)
+		}
+		seen[name] = true
+	}
+	if got := getW(child(stylesByID["Reserved"], "name"), "val"); got != "Shared Style (clone 1)" {
+		t.Fatalf("shared style renamed: %s", got)
+	}
+	paras := office.Children(d.Body(), nsW, "p")
+	if len(paras) != 3 {
+		t.Fatalf("got %d paragraphs", len(paras))
+	}
+	for i, p := range paras {
+		id := getW(child(child(p, "pPr"), "pStyle"), "val")
+		s := stylesByID[id]
+		want := "FF0000"
+		if i == 0 {
+			want = "000000"
+		}
+		if got := getW(child(child(s, "rPr"), "color"), "val"); got != want {
+			t.Fatalf("paragraph %d color=%s, want %s", i, got, want)
+		}
+	}
+}

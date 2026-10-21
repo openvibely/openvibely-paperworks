@@ -92,3 +92,65 @@ func TestDocumentExtensionsThroughCLI(t *testing.T) {
 		t.Fatal("invalid edit published")
 	}
 }
+
+// Exercise the renderer as well as the package: distinct style IDs alone do not
+// prevent office applications from merging styles with the same display name.
+func TestCloneComponentPreservesRenderedStyleColors(t *testing.T) {
+	for _, sourceID := range []string{"Shared", "DifferentID"} {
+		t.Run(sourceID, func(t *testing.T) {
+			dir := t.TempDir()
+			seed := filepath.Join(dir, "seed.docx")
+			spec := writeSpec(t, dir, "seed.json", map[string]any{"blocks": []any{map[string]any{"type": "paragraph", "text": "Seed"}}})
+			runCLI(t, "create-docx", "--spec", spec, "--output", seed)
+			fixture := func(name, id, color string) string {
+				p, err := opc.Open(seed)
+				if err != nil {
+					t.Fatal(err)
+				}
+				p.Set("word/document.xml", []byte(`<w:document xmlns:w="`+office.NSW+`"><w:body><w:p><w:pPr><w:pStyle w:val="`+id+`"/></w:pPr><w:r><w:t>`+name+`</w:t></w:r></w:p><w:sectPr/></w:body></w:document>`))
+				p.Set("word/styles.xml", []byte(`<w:styles xmlns:w="`+office.NSW+`"><w:style w:type="paragraph" w:styleId="`+id+`"><w:name w:val="Shared Style"/><w:rPr><w:color w:val="`+color+`"/></w:rPr></w:style></w:styles>`))
+				path := filepath.Join(dir, name+".docx")
+				if err := p.SaveNew(path); err != nil {
+					t.Fatal(err)
+				}
+				return path
+			}
+			dest := fixture("Original", "Shared", "000000")
+			src := fixture("Copied", sourceID, "FF0000")
+			out := filepath.Join(dir, "out.docx")
+			clone := writeSpec(t, dir, "clone.json", map[string]any{"operation": "clone-component", "path": src, "start": 0, "end": 0})
+			runCLI(t, "word-edit", dest, "--spec", clone, "--output", out)
+			runCLI(t, "render", out, "--output", filepath.Join(dir, "render"))
+			f, err := os.Open(filepath.Join(dir, "render", "page-0001.png"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer f.Close()
+			img, err := png.Decode(f)
+			if err != nil {
+				t.Fatal(err)
+			}
+			// Each line must retain its own color, in original-then-clone order.
+			black, red, blackY, redY := 0, 0, 0, 0
+			for y := img.Bounds().Min.Y; y < img.Bounds().Max.Y; y++ {
+				for x := img.Bounds().Min.X; x < img.Bounds().Max.X; x++ {
+					r, g, b, _ := img.At(x, y).RGBA()
+					if r < 0x6000 && g < 0x6000 && b < 0x6000 {
+						black++
+						blackY += y
+					}
+					if r > 0xA000 && g < 0x6000 && b < 0x6000 {
+						red++
+						redY += y
+					}
+				}
+			}
+			if black < 20 || red < 20 {
+				t.Fatalf("lost text colors: black pixels=%d, red pixels=%d", black, red)
+			}
+			if blackY/black >= redY/red {
+				t.Fatal("original and cloned text colors were swapped")
+			}
+		})
+	}
+}

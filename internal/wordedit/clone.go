@@ -3,7 +3,9 @@ package wordedit
 import (
 	"fmt"
 	"os"
+	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/beevik/etree"
 	"github.com/openvibely/openvibely-paperworks/internal/office"
@@ -183,6 +185,44 @@ func cloneComponent(d *Doc, source string, spec map[string]any) error {
 				}
 			}
 		}
+	}
+	// Office applications can coalesce styles by name even when their IDs
+	// differ. Give imported styles unique names without renaming shared styles
+	// that importStyles will reuse from the destination.
+	usedStyleNames := map[string]bool{}
+	reservedNames := map[string]bool{}
+	for _, s := range dstStyles.byID {
+		name := strings.ToLower(getW(child(s, "name"), "val"))
+		usedStyleNames[name], reservedNames[name] = true, true
+	}
+	ids := make([]string, 0, len(srcStyles.byID))
+	for id, s := range srcStyles.byID {
+		ids = append(ids, id)
+		reservedNames[strings.ToLower(getW(child(s, "name"), "val"))] = true
+	}
+	sort.Strings(ids)
+	for _, id := range ids {
+		if dstStyles.byID[id] != nil && styleMap[id] == "" {
+			continue
+		}
+		nameElement := child(srcStyles.byID[id], "name")
+		name := getW(nameElement, "val")
+		if name == "" {
+			continue
+		}
+		if usedStyleNames[strings.ToLower(name)] {
+			for n := 1; ; n++ {
+				candidate := name + " (clone " + strconv.Itoa(n) + ")"
+				key := strings.ToLower(candidate)
+				if !reservedNames[key] {
+					setW(nameElement, "val", candidate)
+					reservedNames[key] = true
+					name = candidate
+					break
+				}
+			}
+		}
+		usedStyleNames[strings.ToLower(name)] = true
 	}
 	// Paragraphs without an explicit style still inherit the source default.
 	// Pin it when it differs from the destination default or is renamed.
