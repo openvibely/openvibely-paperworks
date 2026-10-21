@@ -19,9 +19,10 @@ import (
 // origin. Native form elements remain interactive. Flow content is mutually
 // exclusive with explicitly positioned pages.
 type CreateSpec struct {
-	Paper string       `json:"paper"`
-	Pages []CreatePage `json:"pages"`
-	Flow  *FlowSpec    `json:"flow,omitempty"`
+	Canvas *Canvas      `json:"canvas,omitempty"`
+	Paper  string       `json:"paper"`
+	Pages  []CreatePage `json:"pages"`
+	Flow   *FlowSpec    `json:"flow,omitempty"`
 }
 type CreatePage struct {
 	FixedParagraphs []FixedParagraph `json:"fixed_paragraphs,omitempty"`
@@ -49,6 +50,12 @@ func supportedText(s string) error {
 }
 
 func Create(ctx context.Context, spec CreateSpec, base, output string) error {
+	if spec.Canvas != nil {
+		if len(spec.Pages) > 0 || spec.Flow != nil {
+			return fmt.Errorf("canvas, pages and flow are mutually exclusive")
+		}
+		return createCanvasPDF(ctx, *spec.Canvas, base, output)
+	}
 	if spec.Paper == "" {
 		spec.Paper = "A4"
 	}

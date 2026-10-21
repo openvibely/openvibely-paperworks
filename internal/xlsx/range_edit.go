@@ -1,0 +1,357 @@
+package xlsx
+
+import (
+	"fmt"
+	"github.com/xuri/excelize/v2"
+	"regexp"
+	"strconv"
+	"strings"
+)
+
+var wholeCols = regexp.MustCompile(`^(\$?)([A-Za-z]{1,3}):(\$?)([A-Za-z]{1,3})`)
+var wholeRows = regexp.MustCompile(`^(\$?)([1-9][0-9]*):(\$?)([1-9][0-9]*)`)
+var a1Ref = regexp.MustCompile(`^(\$?)([A-Za-z]{1,3})(\$?)([1-9][0-9]*)`)
+
+// TranslateFormula shifts A1 references while leaving strings, quoted sheet
+// names, structured references, absolute coordinates and function names alone.
+func TranslateFormula(s string, dx, dy int) (string, error) {
+	var out strings.Builder
+	for i := 0; i < len(s); {
+		if s[i] == '"' || s[i] == '\'' {
+			q := s[i]
+			start := i
+			i++
+			for i < len(s) {
+				if s[i] == q {
+					i++
+					if i < len(s) && s[i] == q {
+						i++
+						continue
+					}
+					break
+				}
+				i++
+			}
+			out.WriteString(s[start:i])
+			continue
+		}
+		if s[i] == '[' {
+			end := formulaBracketEnd(s, i)
+			out.WriteString(s[i:end])
+			i = end
+			continue
+		}
+		// A sheet qualifier can look like a cell or whole-column range
+		// (S1:S2! or A:C!). Consume it before translating coordinates.
+		// Immediately after ! we already have a sheet qualifier: A1 in
+		// Sheet1!A1:Sheet1!A2 is a cell, not the start of another sheet span.
+		if i == 0 || (!nameByte(s[i-1]) && s[i-1] != '!') {
+			end := i
+			for end < len(s) && nameByte(s[end]) {
+				end++
+			}
+			if end > i && end < len(s) && s[end] == ':' {
+				end++
+				for end < len(s) && nameByte(s[end]) {
+					end++
+				}
+			}
+			if end > i && end < len(s) && s[end] == '!' {
+				out.WriteString(s[i : end+1])
+				i = end + 1
+				continue
+			}
+		}
+		if i == 0 || !nameByte(s[i-1]) {
+			matched := false
+			for _, axis := range []struct {
+				re           *regexp.Regexp
+				delta, limit int
+				column       bool
+			}{{wholeCols, dx, 16384, true}, {wholeRows, dy, 1048576, false}} {
+				m := axis.re.FindStringSubmatch(s[i:])
+				if m == nil {
+					continue
+				}
+				end := i + len(m[0])
+				if end < len(s) && nameByte(s[end]) {
+					continue
+				}
+				vals := []string{}
+				for k := 1; k <= 3; k += 2 {
+					var n int
+					var err error
+					if axis.column {
+						n, err = excelize.ColumnNameToNumber(m[k+1])
+					} else {
+						n, err = strconv.Atoi(m[k+1])
+					}
+					if err != nil {
+						return "", err
+					}
+					if m[k] == "" {
+						n += axis.delta
+					}
+					if n < 1 || n > axis.limit {
+						return "", fmt.Errorf("translated range is out of bounds")
+					}
+					v := strconv.Itoa(n)
+					if axis.column {
+						v, _ = excelize.ColumnNumberToName(n)
+					}
+					vals = append(vals, m[k]+v)
+				}
+				out.WriteString(strings.Join(vals, ":"))
+				i = end
+				matched = true
+				break
+			}
+			if matched {
+				continue
+			}
+		}
+		m := a1Ref.FindStringSubmatch(s[i:])
+		if m != nil && (i == 0 || !nameByte(s[i-1])) {
+			end := i + len(m[0])
+			if end == len(s) || (!nameByte(s[end]) && s[end] != '(' && s[end] != '!' && s[end] != '[') {
+				x, err := excelize.ColumnNameToNumber(m[2])
+				if err != nil {
+					return "", err
+				}
+				y, err := strconv.Atoi(m[4])
+				if err != nil {
+					return "", err
+				}
+				if m[1] == "" {
+					x += dx
+				}
+				if m[3] == "" {
+					y += dy
+				}
+				if x < 1 || x > 16384 || y < 1 || y > 1048576 {
+					return "", fmt.Errorf("formula translation would create an out-of-bounds reference")
+				}
+				col, _ := excelize.ColumnNumberToName(x)
+				out.WriteString(m[1] + col + m[3] + strconv.Itoa(y))
+				i = end
+				continue
+			}
+		}
+		out.WriteByte(s[i])
+		i++
+	}
+	return out.String(), nil
+}
+func nameByte(c byte) bool {
+	return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '_' || c == '.' || c >= 128
+}
+func copyRange(f *excelize.File, e Edit) error {
+	a, b, err := bounds(e.Range)
+	if err != nil {
+		return err
+	}
+	x, y, _ := excelize.CellNameToCoordinates(a)
+	xx, yy, _ := excelize.CellNameToCoordinates(b)
+	tx, ty, err := excelize.CellNameToCoordinates(e.Target)
+	if err != nil {
+		return err
+	}
+	targetSheet := e.Name
+	if targetSheet == "" {
+		targetSheet = e.Sheet
+	}
+	idx, err := f.GetSheetIndex(targetSheet)
+	if err != nil {
+		return err
+	}
+	if idx < 0 {
+		return fmt.Errorf("target sheet missing")
+	}
+	type cell struct {
+		target, formula, value string
+		kind                   excelize.CellType
+		style                  int
+		rich                   []excelize.RichTextRun
+	}
+	var snapshot []cell
+	for row := y; row <= yy; row++ {
+		for col := x; col <= xx; col++ {
+			source, _ := excelize.CoordinatesToCellName(col, row)
+			dest, err := excelize.CoordinatesToCellName(tx+col-x, ty+row-y)
+			if err != nil {
+				return err
+			}
+			formula, err := f.GetCellFormula(e.Sheet, source)
+			if err != nil {
+				return err
+			}
+			if formula != "" && e.Operation != "copy-values" && e.Operation != "copy-formats" {
+				formula, err = TranslateFormula(formula, tx-x, ty-y)
+				if err != nil {
+					return err
+				}
+			}
+			v, err := f.GetCellValue(e.Sheet, source, excelize.Options{RawCellValue: true})
+			if err != nil {
+				return err
+			}
+			kind, err := f.GetCellType(e.Sheet, source)
+			if err != nil {
+				return err
+			}
+			style, err := f.GetCellStyle(e.Sheet, source)
+			if err != nil {
+				return err
+			}
+			rich, _ := f.GetCellRichText(e.Sheet, source)
+			snapshot = append(snapshot, cell{dest, formula, v, kind, style, rich})
+		}
+	}
+	for _, c := range snapshot {
+		if e.Operation != "copy-formats" {
+			if err = f.SetCellFormula(targetSheet, c.target, ""); err != nil {
+				return err
+			}
+			if c.formula != "" && e.Operation != "copy-values" {
+				err = f.SetCellFormula(targetSheet, c.target, c.formula)
+			} else if len(c.rich) > 0 {
+				err = f.SetCellRichText(targetSheet, c.target, c.rich)
+			} else {
+				switch c.kind {
+				case excelize.CellTypeNumber, excelize.CellTypeFormula:
+					if c.value == "" {
+						err = f.SetCellValue(targetSheet, c.target, nil)
+					} else {
+						v, parseErr := strconv.ParseFloat(c.value, 64)
+						if parseErr != nil {
+							err = f.SetCellStr(targetSheet, c.target, c.value)
+						} else {
+							err = f.SetCellFloat(targetSheet, c.target, v, -1, 64)
+						}
+					}
+				case excelize.CellTypeBool:
+					err = f.SetCellBool(targetSheet, c.target, c.value == "1" || c.value == "TRUE")
+				default:
+					err = f.SetCellStr(targetSheet, c.target, c.value)
+				}
+			}
+			if err != nil {
+				return err
+			}
+		}
+		if e.Operation != "copy-values" && e.Operation != "copy-formulas" {
+			if err = f.SetCellStyle(targetSheet, c.target, c.target, c.style); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+var r1c1Ref = regexp.MustCompile(`(?i)^R(\[-?[0-9]+\]|[0-9]*)C(\[-?[0-9]+\]|[0-9]*)`)
+
+func r1c1Formula(s, cell string) (string, error) {
+	x, y, err := excelize.CellNameToCoordinates(cell)
+	if err != nil {
+		return "", err
+	}
+	var out strings.Builder
+	for i := 0; i < len(s); {
+		if s[i] == '"' || s[i] == '\'' {
+			q := s[i]
+			start := i
+			i++
+			for i < len(s) {
+				if s[i] == q {
+					i++
+					if i < len(s) && s[i] == q {
+						i++
+						continue
+					}
+					break
+				}
+				i++
+			}
+			out.WriteString(s[start:i])
+			continue
+		}
+		if s[i] == '[' {
+			start := i
+			depth := 1
+			i++
+			for i < len(s) && depth > 0 {
+				if s[i] == '[' {
+					depth++
+				}
+				if s[i] == ']' {
+					depth--
+				}
+				i++
+			}
+			out.WriteString(s[start:i])
+			continue
+		}
+		m := r1c1Ref.FindStringSubmatch(s[i:])
+		if m != nil && (i == 0 || !nameByte(s[i-1])) {
+			end := i + len(m[0])
+			if end == len(s) || !nameByte(s[end]) {
+				coord := func(v string, current, limit int) (int, string, error) {
+					prefix := "$"
+					n := current
+					var err error
+					if v == "" {
+						prefix = ""
+					} else if strings.HasPrefix(v, "[") {
+						delta, e := strconv.Atoi(v[1 : len(v)-1])
+						err = e
+						n += delta
+						prefix = ""
+					} else {
+						n, err = strconv.Atoi(v)
+					}
+					if err != nil || n < 1 || n > limit {
+						return 0, "", fmt.Errorf("R1C1 coordinate out of bounds")
+					}
+					return n, prefix, nil
+				}
+				row, rabs, err := coord(m[1], y, 1048576)
+				if err != nil {
+					return "", err
+				}
+				col, cabs, err := coord(m[2], x, 16384)
+				if err != nil {
+					return "", err
+				}
+				name, _ := excelize.ColumnNumberToName(col)
+				out.WriteString(cabs + name + rabs + strconv.Itoa(row))
+				i = end
+				continue
+			}
+		}
+		out.WriteByte(s[i])
+		i++
+	}
+	return out.String(), nil
+}
+
+// formulaBracketEnd skips a structured reference (including nested selectors)
+// or an external workbook name. Apostrophes escape special header characters.
+func formulaBracketEnd(s string, start int) int {
+	depth := 0
+	for i := start; i < len(s); i++ {
+		switch s[i] {
+		case '\'':
+			if i+1 < len(s) && strings.ContainsRune("[]#@'", rune(s[i+1])) {
+				i++
+			}
+		case '[':
+			depth++
+		case ']':
+			depth--
+			if depth == 0 {
+				return i + 1
+			}
+		}
+	}
+	return len(s)
+}

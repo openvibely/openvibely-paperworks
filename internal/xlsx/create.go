@@ -32,6 +32,7 @@ type Format struct {
 	Style string `json:"style"`
 }
 type Chart struct {
+	Options    *excelize.Chart        `json:"options,omitempty"`
 	VaryColors *bool                  `json:"vary_colors"`
 	Type       string                 `json:"type"`
 	Cell       string                 `json:"cell"`
@@ -43,11 +44,12 @@ type Chart struct {
 	Height     uint                   `json:"height"`
 }
 type Conditional struct {
-	Range    string `json:"range"`
-	Style    string `json:"style"`
-	Type     string `json:"type"`
-	Criteria string `json:"criteria"`
-	Value    string `json:"value"`
+	Options  *excelize.ConditionalFormatOptions `json:"options,omitempty"`
+	Range    string                             `json:"range"`
+	Style    string                             `json:"style"`
+	Type     string                             `json:"type"`
+	Criteria string                             `json:"criteria"`
+	Value    string                             `json:"value"`
 }
 type Picture struct {
 	Cell    string                   `json:"cell"`
@@ -297,17 +299,28 @@ func createWithClock(ctx context.Context, spec Spec, base, output string, clock 
 			if e != nil {
 				return e
 			}
-			if e = f.SetConditionalFormat(s.Name, v.Range, []excelize.ConditionalFormatOptions{{Type: v.Type, Criteria: v.Criteria, Value: v.Value, Format: &id}}); e != nil {
+			option := excelize.ConditionalFormatOptions{Type: v.Type, Criteria: v.Criteria, Value: v.Value, Format: &id}
+			if v.Options != nil {
+				option = *v.Options
+				option.Format = &id
+			}
+			if e = f.SetConditionalFormat(s.Name, v.Range, []excelize.ConditionalFormatOptions{option}); e != nil {
 				return e
 			}
 		}
-		types := map[string]excelize.ChartType{"bar": excelize.Bar, "column": excelize.Col, "line": excelize.Line, "scatter": excelize.Scatter, "pie": excelize.Pie, "doughnut": excelize.Doughnut, "area": excelize.Area}
+		types := map[string]excelize.ChartType{"bar": excelize.Bar, "column": excelize.Col, "line": excelize.Line, "scatter": excelize.Scatter, "pie": excelize.Pie, "doughnut": excelize.Doughnut, "area": excelize.Area, "radar": excelize.Radar, "bubble": excelize.Bubble, "stock-hlc": excelize.StockHighLowClose, "stock-ohlc": excelize.StockOpenHighLowClose}
 		for _, v := range s.Charts {
 			typ, ok := types[v.Type]
 			if !ok {
 				return fmt.Errorf("unsupported chart type %q", v.Type)
 			}
 			chart := &excelize.Chart{Type: typ, VaryColors: v.VaryColors, Series: v.Series, Title: excelize.ChartTitle{Paragraph: []excelize.RichTextRun{{Text: v.Title}}}, XAxis: v.XAxis, YAxis: v.YAxis}
+			if v.Options != nil {
+				copy := *v.Options
+				chart = &copy
+				chart.Type = typ
+				chart.Series = v.Series
+			}
 			if v.Width > 0 {
 				chart.Dimension.Width = v.Width
 			}

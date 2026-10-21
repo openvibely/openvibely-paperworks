@@ -55,22 +55,25 @@ type Run struct {
 	Underline bool    `json:"underline"`
 }
 type Paragraph struct {
-	Runs   []Run  `json:"runs"`
-	Text   string `json:"text"`
-	Bullet bool   `json:"bullet"`
-	Level  int    `json:"level"`
-	Bold   bool   `json:"bold"`
+	Format *ParagraphStyle `json:"format,omitempty"`
+	Runs   []Run           `json:"runs"`
+	Text   string          `json:"text"`
+	Bullet bool            `json:"bullet"`
+	Level  int             `json:"level"`
+	Bold   bool            `json:"bold"`
 }
 type Series struct {
+	Sizes  []float64 `json:"sizes,omitempty"`
 	Name   string    `json:"name"`
 	Values []float64 `json:"values"`
 }
 type Chart struct {
-	InheritFormatting bool     `json:"inherit_formatting,omitempty"`
-	Type              string   `json:"type"`
-	Title             string   `json:"title"`
-	Categories        []string `json:"categories"`
-	Series            []Series `json:"series"`
+	Options           *excelize.Chart `json:"options,omitempty"`
+	InheritFormatting bool            `json:"inherit_formatting,omitempty"`
+	Type              string          `json:"type"`
+	Title             string          `json:"title"`
+	Categories        []string        `json:"categories"`
+	Series            []Series        `json:"series"`
 }
 
 // Crop fractions describe source pixels removed from each edge (0..1).
@@ -87,29 +90,32 @@ type ImageAnchor struct {
 	Y float64 `json:"y"`
 }
 type Element struct {
-	InheritFormatting bool         `json:"inherit_formatting,omitempty"`
-	Placeholder       string       `json:"placeholder"`
-	Anchor            *ImageAnchor `json:"anchor"`
-	Fit               string       `json:"fit"`
-	Crop              *Crop        `json:"crop"`
-	Type              string       `json:"type"`
-	Name              string       `json:"name"`
-	X                 float64      `json:"x"`
-	Y                 float64      `json:"y"`
-	W                 float64      `json:"w"`
-	H                 float64      `json:"h"`
-	Text              string       `json:"text"`
-	Paragraphs        []Paragraph  `json:"paragraphs"`
-	FontSize          float64      `json:"font_size"`
-	Bold              bool         `json:"bold"`
-	Color             string       `json:"color"`
-	Fill              string       `json:"fill"`
-	Align             string       `json:"align"`
-	Shape             string       `json:"shape"`
-	Rows              [][]string   `json:"rows"`
-	Path              string       `json:"path"`
-	Description       string       `json:"description"`
-	Chart             *Chart       `json:"chart"`
+	DrawingStyle      *DrawingStyle `json:"drawing_style,omitempty"`
+	Connector         *Connector    `json:"connector,omitempty"`
+	Commands          []PathCommand `json:"commands,omitempty"`
+	InheritFormatting bool          `json:"inherit_formatting,omitempty"`
+	Placeholder       string        `json:"placeholder"`
+	Anchor            *ImageAnchor  `json:"anchor"`
+	Fit               string        `json:"fit"`
+	Crop              *Crop         `json:"crop"`
+	Type              string        `json:"type"`
+	Name              string        `json:"name"`
+	X                 float64       `json:"x"`
+	Y                 float64       `json:"y"`
+	W                 float64       `json:"w"`
+	H                 float64       `json:"h"`
+	Text              string        `json:"text"`
+	Paragraphs        []Paragraph   `json:"paragraphs"`
+	FontSize          float64       `json:"font_size"`
+	Bold              bool          `json:"bold"`
+	Color             string        `json:"color"`
+	Fill              string        `json:"fill"`
+	Align             string        `json:"align"`
+	Shape             string        `json:"shape"`
+	Rows              [][]string    `json:"rows"`
+	Path              string        `json:"path"`
+	Description       string        `json:"description"`
+	Chart             *Chart        `json:"chart"`
 }
 
 func esc(s string) string { var b bytes.Buffer; xml.EscapeText(&b, []byte(s)); return b.String() }
@@ -416,13 +422,19 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 			}
 			id := j + 2
 			switch e.Type {
+			case "connector", "path":
+				native, err := drawingElement(id, e)
+				if err != nil {
+					return err
+				}
+				shapes.WriteString(native)
 			case "text", "shape":
 				geom := e.Shape
 				if geom == "" {
 					geom = "rect"
 				}
 				switch geom {
-				case "rect", "roundRect", "ellipse", "triangle", "chevron", "rightArrow":
+				case "rect", "roundRect", "ellipse", "triangle", "chevron", "rightArrow", "leftArrow", "upArrow", "downArrow", "leftRightArrow", "upDownArrow", "pentagon", "hexagon", "heptagon", "octagon", "diamond", "parallelogram", "trapezoid", "star4", "star5", "star6", "star8", "star12", "star16", "star24", "star32", "heart", "cloud", "arc", "pie", "donut", "blockArc", "bracePair", "bracketPair", "plus", "mathMinus", "mathMultiply", "mathDivide", "flowChartProcess", "flowChartDecision", "flowChartTerminator", "flowChartDocument", "wedgeRectCallout", "wedgeRoundRectCallout", "wedgeEllipseCallout":
 				default:
 					return fmt.Errorf("unsupported shape %q", geom)
 				}
@@ -559,6 +571,54 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 			return err
 		}
 	}
+	for i, slide := range s.Slides {
+		name := fmt.Sprintf("ppt/slides/slide%d.xml", i+1)
+		changed := false
+		d, err := b.p.XML(name)
+		if err != nil {
+			return err
+		}
+		shapes := office.Child(office.Child(d.Root(), pns, "cSld"), pns, "spTree").ChildElements()[2:]
+		ids := map[string]bool{}
+		for _, prop := range office.All(d.Root(), pns, "cNvPr") {
+			ids[prop.SelectAttrValue("id", "")] = true
+		}
+		for j, e := range slide.Elements {
+			if e.Connector != nil {
+				for _, conn := range []*Connection{e.Connector.Start, e.Connector.End} {
+					if conn != nil && !ids[conn.ShapeID] {
+						return fmt.Errorf("connector target %s not found", conn.ShapeID)
+					}
+				}
+			}
+
+			if body := office.Child(shapes[j], pns, "txBody"); body != nil {
+				paragraphs := office.Children(body, ans, "p")
+				for k, paragraph := range e.Paragraphs {
+					if paragraph.Format != nil {
+						if k >= len(paragraphs) {
+							return fmt.Errorf("paragraph format index out of range")
+						}
+						if err := styleParagraph(paragraphs[k], paragraph.Format); err != nil {
+							return err
+						}
+						changed = true
+					}
+				}
+			}
+			if e.DrawingStyle != nil {
+				if err := styleDrawing(shapes[j], e.DrawingStyle); err != nil {
+					return err
+				}
+				changed = true
+			}
+		}
+		if changed {
+			if err := b.p.SetXML(name, d); err != nil {
+				return err
+			}
+		}
+	}
 	if s.StyleResources != nil && s.StyleResources.TemplateLayout != nil {
 		raw, err := presentationBytes(b.p, clock)
 		if err != nil {
@@ -584,7 +644,7 @@ func theme(font string) string {
 	return `<a:theme xmlns:a="` + ans + `" name="Paperworks"><a:themeElements><a:clrScheme name="Paperworks">` + c.String() + `</a:clrScheme><a:fontScheme name="Paperworks"><a:majorFont><a:latin typeface="` + esc(font) + `"/><a:ea typeface=""/><a:cs typeface=""/></a:majorFont><a:minorFont><a:latin typeface="` + esc(font) + `"/><a:ea typeface=""/><a:cs typeface=""/></a:minorFont></a:fontScheme><a:fmtScheme name="Paperworks"><a:fillStyleLst>` + strings.Repeat(fill, 3) + `</a:fillStyleLst><a:lnStyleLst>` + strings.Repeat(line, 3) + `</a:lnStyleLst><a:effectStyleLst>` + strings.Repeat(`<a:effectStyle><a:effectLst/></a:effectStyle>`, 3) + `</a:effectStyleLst><a:bgFillStyleLst>` + strings.Repeat(fill, 3) + `</a:bgFillStyleLst></a:fmtScheme></a:themeElements></a:theme>`
 }
 func (b *builder) chart(ctx context.Context, c Chart, font string) (string, error) {
-	types := map[string]excelize.ChartType{"column": excelize.Col, "bar": excelize.Bar, "line": excelize.Line, "pie": excelize.Pie, "doughnut": excelize.Doughnut, "area": excelize.Area, "scatter": excelize.Scatter}
+	types := map[string]excelize.ChartType{"column": excelize.Col, "bar": excelize.Bar, "line": excelize.Line, "pie": excelize.Pie, "doughnut": excelize.Doughnut, "area": excelize.Area, "scatter": excelize.Scatter, "radar": excelize.Radar, "bubble": excelize.Bubble, "area3D": excelize.Area3D, "bar3D": excelize.Bar3DClustered, "pie3D": excelize.Pie3D, "line3D": excelize.Line3D, "stock-hlc": excelize.StockHighLowClose, "stock-ohlc": excelize.StockOpenHighLowClose}
 	typ, ok := types[c.Type]
 	if !ok {
 		return "", fmt.Errorf("unsupported chart type %q", c.Type)
@@ -600,7 +660,7 @@ func (b *builder) chart(ctx context.Context, c Chart, font string) (string, erro
 	f.SetCellStr("Sheet1", "A1", "Category")
 	for i, cat := range c.Categories {
 		cell, _ := excelize.CoordinatesToCellName(1, i+2)
-		if c.Type == "scatter" {
+		if c.Type == "scatter" || c.Type == "bubble" {
 			v, err := strconv.ParseFloat(cat, 64)
 			if err != nil || !finite(v) {
 				return "", fmt.Errorf("scatter categories must contain numeric X coordinates")
@@ -628,6 +688,22 @@ func (b *builder) chart(ctx context.Context, c Chart, font string) (string, erro
 			}
 		}
 		series = append(series, excelize.ChartSeries{Name: "Sheet1!$" + col + "$1", Categories: fmt.Sprintf("Sheet1!$A$2:$A$%d", len(c.Categories)+1), Values: fmt.Sprintf("Sheet1!$%s$2:$%s$%d", col, col, len(s.Values)+1)})
+		if c.Type == "bubble" {
+			if len(s.Sizes) != len(s.Values) {
+				return "", fmt.Errorf("bubble sizes must match values")
+			}
+			sizeCol, _ := excelize.ColumnNumberToName(len(c.Series) + j + 2)
+			for i, v := range s.Sizes {
+				if !finite(v) || v < 0 {
+					return "", fmt.Errorf("bubble sizes must be finite and nonnegative")
+				}
+				if err := f.SetCellFloat("Sheet1", fmt.Sprintf("%s%d", sizeCol, i+2), v, -1, 64); err != nil {
+					return "", err
+				}
+			}
+			series[len(series)-1].Sizes = fmt.Sprintf("Sheet1!$%s$2:$%s$%d", sizeCol, sizeCol, len(s.Sizes)+1)
+		}
+
 	}
 	if err := ctx.Err(); err != nil {
 		return "", err
@@ -638,7 +714,13 @@ func (b *builder) chart(ctx context.Context, c Chart, font string) (string, erro
 	if err != nil {
 		return "", err
 	}
-	if err := f.AddChart("Sheet1", "A20", &excelize.Chart{Type: typ, Series: series, Title: excelize.ChartTitle{Paragraph: []excelize.RichTextRun{{Text: c.Title, Font: &excelize.Font{Family: font, Size: 18}}}}}); err != nil {
+	chartOptions := excelize.Chart{Type: typ, Series: series, Title: excelize.ChartTitle{Paragraph: []excelize.RichTextRun{{Text: c.Title, Font: &excelize.Font{Family: font, Size: 18}}}}}
+	if c.Options != nil {
+		chartOptions = *c.Options
+		chartOptions.Type = typ
+		chartOptions.Series = series
+	}
+	if err := f.AddChart("Sheet1", "A20", &chartOptions); err != nil {
 		return "", err
 	}
 	raw, err := f.WriteToBuffer()

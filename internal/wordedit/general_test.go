@@ -1,0 +1,144 @@
+package wordedit
+
+import (
+	"github.com/openvibely/openvibely-paperworks/internal/opc"
+	"os"
+	"path/filepath"
+	"testing"
+)
+
+func TestTargetedReplacementRetainsOtherOccurrences(t *testing.T) {
+	src := mk(t, "targeted", `<w:p>`+bold("Pa")+run("ver Paver")+`</w:p><w:p>`+run("Paver")+`</w:p>`, nil)
+	out := filepath.Join(t.TempDir(), "out.docx")
+	_, err := Edit(src, out, map[string]any{"operation": "replace-text", "paragraph": float64(0), "old": "Paver", "new": "Acme", "occurrence": float64(0)}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := paras(t, out)
+	if got[0] != "Acme Paver" || got[1] != "Paver" {
+		t.Fatal(got)
+	}
+	a, _ := opc.Open(src)
+	b, _ := opc.Open(out)
+	for _, n := range a.Names() {
+		if n != "word/document.xml" && string(a.Get(n)) != string(b.Get(n)) {
+			t.Fatal("unrelated part changed", n)
+		}
+	}
+}
+func TestTargetedReplacementDoesNotTouchFields(t *testing.T) {
+	src := mk(t, "field", `<w:p><w:fldSimple w:instr="DATE">`+run("Paver")+`</w:fldSimple></w:p>`, nil)
+	out := filepath.Join(t.TempDir(), "out.docx")
+	_, err := Edit(src, out, map[string]any{"operation": "replace-text", "paragraph": float64(0), "old": "Paver", "new": "Acme"}, "")
+	if err == nil {
+		t.Fatal("field replaced")
+	}
+	if _, err = os.Stat(out); !os.IsNotExist(err) {
+		t.Fatal("partial output")
+	}
+}
+func TestGeneralWordBatch(t *testing.T) {
+	src := mk(t, "batch", `<w:p>`+run("Hello")+`</w:p>`, nil)
+	out := filepath.Join(t.TempDir(), "out.docx")
+	_, err := Edit(src, out, map[string]any{"operation": "batch", "edits": []any{map[string]any{"operation": "run-format", "paragraph": float64(0), "run": float64(0), "bold": true}, map[string]any{"operation": "paragraph-insert", "paragraph": float64(0), "position": "after", "text": "Second"}}}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := paras(t, out)
+	if len(got) != 2 || got[1] != "Second" {
+		t.Fatal(got)
+	}
+	p, _ := opc.Open(out)
+	d, _ := p.XML("word/document.xml")
+	if len(d.FindElements("//w:b")) != 1 {
+		t.Fatal("missing bold")
+	}
+}
+
+func TestInsertedTableRowIsBlank(t *testing.T) {
+	src := mk(t, "row", `<w:tbl><w:tblGrid><w:gridCol w:w="1000"/></w:tblGrid><w:tr><w:tc><w:p>`+run("Keep original")+`</w:p></w:tc></w:tr></w:tbl>`, nil)
+	out := filepath.Join(t.TempDir(), "out.docx")
+	_, err := Edit(src, out, map[string]any{"operation": "table-row-insert", "table": float64(0), "row": float64(0)}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	p, _ := opc.Open(out)
+	d, _ := p.XML("word/document.xml")
+	rows := d.FindElements("//w:tbl/w:tr")
+	if len(rows) != 2 {
+		t.Fatal("row count", len(rows))
+	}
+	if len(rows[0].FindElements(".//w:t")) != 0 {
+		t.Fatal("new row copied old values")
+	}
+	if rows[1].FindElement(".//w:t").Text() != "Keep original" {
+		t.Fatal("old row changed")
+	}
+}
+
+func TestInsertedParagraphDoesNotDuplicateSectionBreak(t *testing.T) {
+	src := mk(t, "section", `<w:p><w:pPr><w:sectPr><w:type w:val="continuous"/></w:sectPr></w:pPr>`+run("First")+`</w:p>`, nil)
+	out := filepath.Join(t.TempDir(), "out.docx")
+	_, err := Edit(src, out, map[string]any{"operation": "paragraph-insert", "paragraph": float64(0), "position": "after", "text": "New"}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	p, _ := opc.Open(out)
+	d, _ := p.XML("word/document.xml")
+	paras := d.FindElements("//w:body/w:p")
+	if len(paras) != 2 || paras[1].FindElement("w:pPr/w:sectPr") != nil || paras[0].FindElement("w:pPr/w:sectPr") == nil {
+		t.Fatal("section break copied or lost")
+	}
+}
+
+func TestReplaceTextSkipsComplexFields(t *testing.T) {
+	begin := `<w:r><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:instrText> DOCPROPERTY Product </w:instrText></w:r><w:r><w:fldChar w:fldCharType="separate"/></w:r>`
+	end := `<w:r><w:fldChar w:fldCharType="end"/></w:r>`
+	for _, tc := range []struct {
+		name, body string
+		paragraph  int
+		want       []string
+	}{
+		{"same paragraph", `<w:p>` + begin + run("Paver") + end + run(" Paver") + `</w:p>`, 0, []string{"Paver Acme"}},
+		{"nested fields", `<w:p>` + begin + begin + run("Paver") + end + run(" Paver") + end + run(" Paver") + `</w:p>`, 0, []string{"Paver Paver Acme"}},
+		{"spanning paragraphs", `<w:p>` + begin + run("Paver") + `</w:p><w:p>` + run("Paver") + end + run(" Paver") + `</w:p>`, 1, []string{"Paver", "Paver Acme"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			src := mk(t, "complex-field", tc.body, nil)
+			out := filepath.Join(t.TempDir(), "out.docx")
+			if _, err := Edit(src, out, map[string]any{"operation": "replace-text", "paragraph": float64(tc.paragraph), "old": "Paver", "new": "Acme"}, ""); err != nil {
+				t.Fatal(err)
+			}
+			got := paras(t, out)
+			if len(got) != len(tc.want) {
+				t.Fatal(got)
+			}
+			for i, want := range tc.want {
+				if got[i] != want {
+					t.Fatalf("paragraph %d: %q, want %q", i, got[i], want)
+				}
+			}
+			p, err := opc.Open(out)
+			if err != nil {
+				t.Fatal(err)
+			}
+			d, err := p.XML("word/document.xml")
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, instr := range d.FindElements("//w:instrText") {
+				if instr.Text() != " DOCPROPERTY Product " {
+					t.Fatal("field instruction changed")
+				}
+			}
+		})
+	}
+	src := mk(t, "field-only", `<w:p>`+begin+run("Paver")+end+`</w:p>`, nil)
+	out := filepath.Join(t.TempDir(), "out.docx")
+	if _, err := Edit(src, out, map[string]any{"operation": "replace-text", "paragraph": float64(0), "old": "Paver", "new": "Acme"}, ""); err == nil {
+		t.Fatal("field-only replacement must fail")
+	}
+	if _, err := os.Stat(out); !os.IsNotExist(err) {
+		t.Fatal("failed replacement published output", err)
+	}
+}

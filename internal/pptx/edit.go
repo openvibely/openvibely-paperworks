@@ -3,6 +3,7 @@ package pptx
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/beevik/etree"
@@ -15,16 +16,39 @@ type EditSpec struct {
 	Edits []Edit `json:"edits"`
 }
 type Edit struct {
-	Slide      int    `json:"slide"`
-	ShapeID    string `json:"shape_id"`
-	Operation  string `json:"operation"`
-	Paragraph  int    `json:"paragraph"`
-	Run        int    `json:"run"`
-	Match      string `json:"match"`
-	Occurrence int    `json:"occurrence"`
-	Row        int    `json:"row"`
-	Column     int    `json:"column"`
-	Text       string `json:"text"`
+	ParagraphStyle *ParagraphStyle `json:"paragraph_style,omitempty"`
+	Hyperlink      *string         `json:"hyperlink,omitempty"`
+	Underline      *bool           `json:"underline,omitempty"`
+	Mask           string          `json:"mask,omitempty"`
+	DrawingStyle   *DrawingStyle   `json:"drawing_style,omitempty"`
+	Part           string          `json:"part,omitempty"`
+	Layout         *Layout         `json:"layout,omitempty"`
+	Slide          int             `json:"slide"`
+	ShapeID        string          `json:"shape_id"`
+	Operation      string          `json:"operation"`
+	Paragraph      int             `json:"paragraph"`
+	Run            int             `json:"run"`
+	Match          string          `json:"match"`
+	Occurrence     int             `json:"occurrence"`
+	Row            int             `json:"row"`
+	Column         int             `json:"column"`
+	Text           string          `json:"text"`
+	X              *float64        `json:"x,omitempty"`
+	Y              *float64        `json:"y,omitempty"`
+	W              *float64        `json:"w,omitempty"`
+	H              *float64        `json:"h,omitempty"`
+	Rotation       *float64        `json:"rotation,omitempty"`
+	FlipH          *bool           `json:"flip_h,omitempty"`
+	FlipV          *bool           `json:"flip_v,omitempty"`
+	Font           string          `json:"font,omitempty"`
+	FontSize       *float64        `json:"font_size,omitempty"`
+	Bold           *bool           `json:"bold,omitempty"`
+	Italic         *bool           `json:"italic,omitempty"`
+	Color          string          `json:"color,omitempty"`
+	Fill           string          `json:"fill,omitempty"`
+	Align          string          `json:"align,omitempty"`
+	Path           string          `json:"path,omitempty"`
+	Crop           *Crop           `json:"crop,omitempty"`
 }
 
 func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]string, error) {
@@ -41,6 +65,10 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 	slides, err := office.PresentationSlides(p)
 	if err != nil {
 		return nil, err
+	}
+	before := map[string]string{}
+	for _, part := range p.Parts {
+		before[part.Name] = opc.Hash(part.Data)
 	}
 	dirty := map[string]*etree.Document{}
 	var changed []string
@@ -60,13 +88,25 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 		if err = ctx.Err(); err != nil {
 			return nil, err
 		}
-		if op.Slide < 1 || op.Slide > len(slides) {
+		if op.Part == "" && (op.Slide < 1 || op.Slide > len(slides)) {
 			return nil, fmt.Errorf("slide index must be 1..%d", len(slides))
 		}
 		if len(op.Text) > 1<<20 {
 			return nil, fmt.Errorf("text exceeds 1 MiB")
 		}
-		part := slides[op.Slide-1]
+		part := op.Part
+		if part == "" {
+			part = slides[op.Slide-1]
+		} else {
+			switch p.ContentType(part) {
+			case "application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml", "application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml":
+			default:
+				return nil, fmt.Errorf("part must identify an existing slide master or layout")
+			}
+			if op.Operation == "notes" {
+				return nil, fmt.Errorf("notes apply to slides only")
+			}
+		}
 		if op.Operation == "notes" {
 			rels, e := p.Rels(part)
 			if e != nil {
@@ -82,7 +122,10 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 				}
 			}
 			if notes == "" {
-				return nil, fmt.Errorf("slide has no notes part; adding notes to imported slides is not yet supported")
+				notes, e = addNotes(p, part, op.Text)
+				if e != nil {
+					return nil, e
+				}
 			}
 			d, e := load(notes)
 			if e != nil {
@@ -109,6 +152,12 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 		if e != nil {
 			return nil, e
 		}
+		if op.Operation == "layout" {
+			if err := layoutObjects(p, part, d.Root(), op.Layout); err != nil {
+				return nil, err
+			}
+			continue
+		}
 		var matches []*etree.Element
 		for _, prop := range office.All(d.Root(), office.NSP, "cNvPr") {
 			if prop.SelectAttrValue("id", "") == op.ShapeID {
@@ -120,6 +169,18 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 		}
 		shape := matches[0].Parent().Parent()
 		switch op.Operation {
+		case "table-row-insert", "table-row-delete", "table-column-insert", "table-column-delete", "table-cell-format":
+			if err := tableObject(shape, op); err != nil {
+				return nil, err
+			}
+		case "drawing-style":
+			if err := styleDrawing(shape, op.DrawingStyle); err != nil {
+				return nil, err
+			}
+		case "image-mask", "geometry", "delete", "front", "back", "run-format", "paragraph-format", "fill", "replace-image", "crop":
+			if e := editObject(p, part, shape, op); e != nil {
+				return nil, e
+			}
 		case "text", "run-text", "replace-text":
 			body := office.Child(shape, office.NSP, "txBody")
 			if body == nil {
@@ -179,6 +240,13 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 	if err = p.SaveNew(output); err != nil {
 		return nil, err
 	}
+	changed = nil
+	for _, part := range p.Parts {
+		if before[part.Name] != opc.Hash(part.Data) {
+			changed = append(changed, part.Name)
+		}
+	}
+	sort.Strings(changed)
 	return changed, nil
 }
 func replaceParagraph(p *etree.Element, text string) {

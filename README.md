@@ -60,3 +60,9 @@ acceptance failures or platform-specific skips.
 
 Document skills are maintained outside this repository. Regression examples live
 under `testdata/document-examples/`.
+
+## Editing existing documents
+
+See [document editing commands and JSON examples](docs/document-editing.md) for
+Word, Excel, PowerPoint and PDF editing, field schemas, focused inspection and
+preview export. Run `paperworks schema COMMAND` for the supported typed inputs.

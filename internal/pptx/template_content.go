@@ -103,7 +103,7 @@ func (b *builder) finalizeTemplateContent(s Spec) error {
 					prop.RemoveAttr("descr")
 				}
 				if e.Name == "" {
-					name := map[string]string{"text": "TextBox", "table": "Table", "chart": "Chart", "image": "Picture", "shape": "AutoShape"}[e.Type]
+					name := map[string]string{"text": "TextBox", "table": "Table", "chart": "Chart", "image": "Picture", "shape": "AutoShape", "connector": "Connector", "path": "Freeform"}[e.Type]
 					if e.Placeholder != "" {
 						name = "Title"
 					}
