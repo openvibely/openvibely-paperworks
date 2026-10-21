@@ -148,7 +148,8 @@ are IDs from inspection. Geometry uses inches, rotation degrees, fonts points.
 - `table-cell-format`: row/column and fill/font_size/bold/color.
 - `layout`: a `layout` object containing shape_ids, mode row/column/grid,
   x/y/width/height/gap, and columns for grid. This positions **and resizes** the
-  selected objects into equal cells.
+  selected top-level objects into equal cells. Grouped children are rejected;
+  their coordinates are relative to the group, not the slide.
 
 Use an existing master/layout `part` instead of `slide` to edit master/layout
 objects. Notes apply to slides only; missing notes parts are now created.

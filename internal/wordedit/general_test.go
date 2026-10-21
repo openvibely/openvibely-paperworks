@@ -142,3 +142,105 @@ func TestReplaceTextSkipsComplexFields(t *testing.T) {
 		t.Fatal("failed replacement published output", err)
 	}
 }
+
+func TestExplicitRunFontOverridesTheme(t *testing.T) {
+	src := mk(t, "theme-font", `<w:p><w:r><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:asciiTheme="minorHAnsi" w:hAnsiTheme="minorHAnsi" w:eastAsiaTheme="minorEastAsia" w:cstheme="minorBidi" w:hint="eastAsia"/></w:rPr><w:t>Keep text</w:t></w:r></w:p>`, nil)
+	out := filepath.Join(t.TempDir(), "out.docx")
+	if _, err := Edit(src, out, map[string]any{"operation": "run-format", "paragraph": float64(0), "run": float64(0), "font": "Courier New"}, ""); err != nil {
+		t.Fatal(err)
+	}
+	p, err := opc.Open(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	d, err := p.XML("word/document.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	font := d.FindElement("//w:rFonts")
+	for _, name := range []string{"ascii", "hAnsi", "eastAsia", "cs"} {
+		if getW(font, name) != "Courier New" {
+			t.Fatal("explicit font missing", name)
+		}
+	}
+	for _, name := range []string{"asciiTheme", "hAnsiTheme", "eastAsiaTheme", "cstheme"} {
+		if getW(font, name) != "" {
+			t.Fatal("theme still overrides explicit font", name)
+		}
+	}
+	if getW(font, "hint") != "eastAsia" || paras(t, out)[0] != "Keep text" {
+		t.Fatal("unrelated content changed")
+	}
+}
+
+func TestInsertedRowDoesNotDuplicateWrappedContent(t *testing.T) {
+	src := mk(t, "wrapped-row", `<w:tbl><w:tblGrid><w:gridCol w:w="1000"/></w:tblGrid><w:tr><w:tblPrEx><w:tblCellSpacing w:w="80" w:type="dxa"/></w:tblPrEx><w:trPr><w:trHeight w:val="400"/></w:trPr><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/><w:shd w:fill="FF0000"/></w:tcPr><w:sdt><w:sdtPr><w:id w:val="7"/><w:tag w:val="customer"/></w:sdtPr><w:sdtContent><w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:bookmarkStart w:id="8" w:name="Customer"/>`+run("Existing customer")+`<w:bookmarkEnd w:id="8"/></w:p></w:sdtContent></w:sdt><w:p/></w:tc></w:tr></w:tbl>`, nil)
+	out := filepath.Join(t.TempDir(), "out.docx")
+	if _, err := Edit(src, out, map[string]any{"operation": "table-row-insert", "table": float64(0), "row": float64(0)}, ""); err != nil {
+		t.Fatal(err)
+	}
+	p, err := opc.Open(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	d, err := p.XML("word/document.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	rows := d.FindElements("//w:tbl/w:tr")
+	if len(rows) != 2 {
+		t.Fatal("wrong row count")
+	}
+	for _, tag := range []string{"t", "sdt", "bookmarkStart", "bookmarkEnd"} {
+		if len(rows[0].FindElements(".//w:"+tag)) != 0 {
+			t.Fatal("copied content or identifiers", tag)
+		}
+	}
+	if rows[0].FindElement("w:tc/w:p") == nil {
+		t.Fatal("cell has no paragraph")
+	}
+	if getW(rows[0].FindElement("w:tblPrEx/w:tblCellSpacing"), "w") != "80" {
+		t.Fatal("lost row table properties")
+	}
+	if getW(rows[0].FindElement("w:trPr/w:trHeight"), "val") != "400" || getW(rows[0].FindElement("w:tc/w:tcPr/w:shd"), "fill") != "FF0000" {
+		t.Fatal("lost row/cell formatting")
+	}
+	if rows[1].FindElement(".//w:t").Text() != "Existing customer" || len(d.FindElements("//w:sdtPr/w:id")) != 1 || len(d.FindElements("//w:bookmarkStart")) != 1 {
+		t.Fatal("original content changed or identifiers duplicated")
+	}
+}
+
+func TestInsertedRowKeepsGridWithWrappedAndNestedCells(t *testing.T) {
+	src := mk(t, "wrapped-cells", `<w:tbl><w:tblGrid><w:gridCol w:w="1000"/><w:gridCol w:w="2000"/></w:tblGrid><w:tr><w:tc><w:tcPr><w:tcW w:w="1000" w:type="dxa"/></w:tcPr><w:tbl><w:tblGrid><w:gridCol w:w="500"/></w:tblGrid><w:tr><w:tc><w:p>`+run("Nested")+`</w:p></w:tc></w:tr></w:tbl><w:p/></w:tc><w:sdt><w:sdtPr><w:id w:val="9"/></w:sdtPr><w:sdtContent><w:tc><w:tcPr><w:tcW w:w="2000" w:type="dxa"/></w:tcPr><w:p>`+run("Wrapped")+`</w:p></w:tc></w:sdtContent></w:sdt></w:tr></w:tbl>`, nil)
+	out := filepath.Join(t.TempDir(), "out.docx")
+	if _, err := Edit(src, out, map[string]any{"operation": "table-row-insert", "table": float64(0), "row": float64(0)}, ""); err != nil {
+		t.Fatal(err)
+	}
+	p, err := opc.Open(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	d, err := p.XML("word/document.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	rows := d.FindElements("/w:document/w:body/w:tbl/w:tr")
+	if len(rows) != 2 {
+		t.Fatal("wrong top-level row count", len(rows))
+	}
+	cells := rows[0].FindElements("w:tc")
+	if len(cells) != 2 {
+		t.Fatal("wrapped cell lost or nested cell added to grid", len(cells))
+	}
+	for i, width := range []string{"1000", "2000"} {
+		if getW(cells[i].FindElement("w:tcPr/w:tcW"), "w") != width || cells[i].FindElement("w:p") == nil {
+			t.Fatal("cell formatting or paragraph lost", i)
+		}
+	}
+	if len(rows[0].FindElements(".//w:t"))+len(rows[0].FindElements(".//w:sdt"))+len(rows[0].FindElements(".//w:tbl")) != 0 {
+		t.Fatal("content duplicated into blank row")
+	}
+	if len(rows[1].FindElements(".//w:t")) != 2 || len(rows[1].FindElements(".//w:sdt")) != 1 {
+		t.Fatal("original row changed")
+	}
+}

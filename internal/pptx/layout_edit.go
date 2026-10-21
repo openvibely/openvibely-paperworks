@@ -72,6 +72,9 @@ func layoutObjects(pkg *opc.Package, part string, root *etree.Element, l *Layout
 		if shape == nil {
 			return fmt.Errorf("shape_id %s not found", id)
 		}
+		if shape.Parent() == nil || shape.Parent().Tag != "spTree" {
+			return fmt.Errorf("layout requires top-level slide shapes")
+		}
 		x := l.X + float64(i%cols)*(w+l.Gap)
 		y := l.Y + float64(i/cols)*(h+l.Gap)
 		if err := editObject(pkg, part, shape, Edit{Operation: "geometry", X: &x, Y: &y, W: &w, H: &h}); err != nil {

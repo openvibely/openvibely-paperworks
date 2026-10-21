@@ -4,7 +4,9 @@ import (
 	"context"
 	"github.com/openvibely/openvibely-paperworks/internal/office"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
+	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -152,5 +154,59 @@ func TestParagraphAndHyperlinkFormattingPreservesText(t *testing.T) {
 	}
 	if !found {
 		t.Fatal("hyperlink relationship missing")
+	}
+}
+
+func TestFlatLayoutRejectsGroupedChildrenWithoutPublishing(t *testing.T) {
+	dir := t.TempDir()
+	in, out := filepath.Join(dir, "in.pptx"), filepath.Join(dir, "out.pptx")
+	seed := filepath.Join(dir, "seed.pptx")
+	ctx := context.Background()
+	if err := Create(ctx, Spec{Slides: []Slide{{Elements: []Element{{Type: "text", Text: "Grouped", W: 1, H: 1}}}}}, dir, seed); err != nil {
+		t.Fatal(err)
+	}
+	p, err := opc.Open(seed)
+	if err != nil {
+		t.Fatal(err)
+	}
+	d, err := p.XML("ppt/slides/slide1.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	shape := d.FindElement("//p:sp")
+	tree := shape.Parent()
+	tree.RemoveChild(shape)
+	group := tree.CreateElement("p:grpSp")
+	nv := group.CreateElement("p:nvGrpSpPr")
+	nv.CreateElement("p:cNvPr").CreateAttr("id", "10")
+	nv.CreateElement("p:cNvGrpSpPr")
+	nv.CreateElement("p:nvPr")
+	xfrm := group.CreateElement("p:grpSpPr").CreateElement("a:xfrm")
+	for _, item := range []struct{ tag, a, b, x, y string }{{"off", "x", "y", "2743200", "914400"}, {"ext", "cx", "cy", "3657600", "1828800"}, {"chOff", "x", "y", "0", "0"}, {"chExt", "cx", "cy", "1828800", "914400"}} {
+		e := xfrm.CreateElement("a:" + item.tag)
+		e.CreateAttr(item.a, item.x)
+		e.CreateAttr(item.b, item.y)
+	}
+	group.AddChild(shape)
+	if err := p.SetXML("ppt/slides/slide1.xml", d); err != nil {
+		t.Fatal(err)
+	}
+	if err := p.SaveNew(in); err != nil {
+		t.Fatal(err)
+	}
+	before, err := os.ReadFile(in)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = EditFile(ctx, in, out, EditSpec{Edits: []Edit{{Operation: "layout", Slide: 1, Layout: &Layout{ShapeIDs: []string{"2"}, Mode: "row", X: 1, Y: 1, Width: 2, Height: 1}}}})
+	if err == nil || !strings.Contains(err.Error(), "top-level") {
+		t.Fatal("grouped child must be rejected", err)
+	}
+	if _, err := os.Stat(out); !os.IsNotExist(err) {
+		t.Fatal("failed edit published a file", err)
+	}
+	after, err := os.ReadFile(in)
+	if err != nil || string(before) != string(after) {
+		t.Fatal("source changed", err)
 	}
 }

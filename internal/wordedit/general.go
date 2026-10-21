@@ -167,6 +167,10 @@ func formatRun(r *etree.Element, s map[string]any) error {
 	}
 	if v := str(s, "font"); v != "" {
 		f := property(pr, "rFonts")
+		// Theme bindings take precedence over explicit font names.
+		for _, k := range []string{"asciiTheme", "hAnsiTheme", "eastAsiaTheme", "cstheme"} {
+			removeW(f, k)
+		}
 		for _, k := range []string{"ascii", "hAnsi", "eastAsia", "cs"} {
 			setW(f, k, v)
 		}
@@ -318,18 +322,41 @@ func editTable(root *etree.Element, s map[string]any) error {
 		if len(all(table, "vMerge")) > 0 {
 			return fmt.Errorf("row edits require a table without vertical merges")
 		}
-		copy := r.Copy()
-		r.Parent().InsertChildAt(r.Index(), copy)
-		for _, c := range all(copy, "tc") {
-			for _, p := range office.Children(c, nsW, "p") {
+		// Build a blank row from formatting only. Cloning the content also
+		// duplicates controls, bookmarks, drawings and their identifiers.
+		copy := W("tr")
+		for _, name := range []string{"tblPrEx", "trPr"} {
+			if pr := child(r, name); pr != nil {
+				copy.AddChild(pr.Copy())
+			}
+		}
+		for _, c := range all(r, "tc") {
+			// Include cells wrapped in controls, but not cells in nested tables.
+			owner := c.Parent()
+			for owner != nil && !is(owner, "tr") {
+				owner = owner.Parent()
+			}
+			if owner != r {
+				continue
+			}
+			cell := W("tc")
+			if pr := child(c, "tcPr"); pr != nil {
+				cell.AddChild(pr.Copy())
+			}
+			paragraphs := office.Children(c, nsW, "p")
+			for _, p := range paragraphs {
 				blank := W("p")
 				if pr := child(p, "pPr"); pr != nil {
 					blank.AddChild(pr.Copy())
 				}
-				c.InsertChildAt(p.Index(), blank)
-				c.RemoveChild(p)
+				cell.AddChild(blank)
 			}
+			if len(paragraphs) == 0 {
+				cell.AddChild(W("p"))
+			}
+			copy.AddChild(cell)
 		}
+		r.Parent().InsertChildAt(r.Index(), copy)
 		return nil
 	}
 	if op == "table-row-delete" {

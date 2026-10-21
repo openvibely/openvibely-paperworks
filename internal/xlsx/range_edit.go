@@ -45,26 +45,10 @@ func TranslateFormula(s string, dx, dy int) (string, error) {
 			i = end
 			continue
 		}
-		// A sheet qualifier can look like a cell or whole-column range
-		// (S1:S2! or A:C!). Consume it before translating coordinates.
-		// Immediately after ! we already have a sheet qualifier: A1 in
-		// Sheet1!A1:Sheet1!A2 is a cell, not the start of another sheet span.
-		if i == 0 || (!nameByte(s[i-1]) && s[i-1] != '!') {
-			end := i
-			for end < len(s) && nameByte(s[end]) {
-				end++
-			}
-			if end > i && end < len(s) && s[end] == ':' {
-				end++
-				for end < len(s) && nameByte(s[end]) {
-					end++
-				}
-			}
-			if end > i && end < len(s) && s[end] == '!' {
-				out.WriteString(s[i : end+1])
-				i = end + 1
-				continue
-			}
+		if end := formulaSheetQualifierEnd(s, i); end > i {
+			out.WriteString(s[i:end])
+			i = end
+			continue
 		}
 		if i == 0 || !nameByte(s[i-1]) {
 			matched := false
@@ -371,6 +355,11 @@ func r1c1Formula(s, cell string) (string, error) {
 			out.WriteString(s[start:i])
 			continue
 		}
+		if end := formulaSheetQualifierEnd(s, i); end > i {
+			out.WriteString(s[i:end])
+			i = end
+			continue
+		}
 		m := r1c1Ref.FindStringSubmatch(s[i:])
 		if m != nil && (i == 0 || !nameByte(s[i-1])) {
 			end := i + len(m[0])
@@ -434,4 +423,26 @@ func formulaBracketEnd(s string, start int) int {
 		}
 	}
 	return len(s)
+}
+
+// formulaSheetQualifierEnd skips unquoted sheet names (including 3D spans)
+// before either A1 or R1C1 coordinates are translated.
+func formulaSheetQualifierEnd(s string, i int) int {
+	if i > 0 && (nameByte(s[i-1]) || s[i-1] == '!') {
+		return i
+	}
+	end := i
+	for end < len(s) && nameByte(s[end]) {
+		end++
+	}
+	if end > i && end < len(s) && s[end] == ':' {
+		end++
+		for end < len(s) && nameByte(s[end]) {
+			end++
+		}
+	}
+	if end > i && end < len(s) && s[end] == '!' {
+		return end + 1
+	}
+	return i
 }

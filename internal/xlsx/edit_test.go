@@ -210,3 +210,51 @@ func TestRenameSheetThreeDimensionalReferences(t *testing.T) {
 		}
 	}
 }
+
+func TestR1C1SheetQualifierSurvivesWorkbookEdit(t *testing.T) {
+	dir := t.TempDir()
+	in, out := filepath.Join(dir, "in.xlsx"), filepath.Join(dir, "out.xlsx")
+	f := excelize.NewFile()
+	if _, err := f.NewSheet("R1C1"); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SetCellInt("R1C1", "A1", 17); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SaveAs(in); err != nil {
+		t.Fatal(err)
+	}
+	f.Close()
+	if err := EditFile(context.Background(), in, out, dir, EditSpec{Edits: []Edit{{Operation: "formula", Sheet: "Sheet1", Cell: "B2", FormulaStyle: "r1c1", Formula: "R1C1!R1C1"}}}); err != nil {
+		t.Fatal(err)
+	}
+	g, err := excelize.OpenFile(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer g.Close()
+	if got, err := g.GetCellFormula("Sheet1", "B2"); err != nil || got != "R1C1!$A$1" {
+		t.Fatal("sheet qualifier changed", got, err)
+	}
+	if got, err := g.CalcCellValue("Sheet1", "B2"); err != nil || got != "17" {
+		t.Fatal("wrong formula result", got, err)
+	}
+}
+
+func TestR1C1PreservesSheetQualifiers(t *testing.T) {
+	for _, tc := range []struct{ formula, want string }{
+		{`R1C1!R[-1]C`, `R1C1!B2`},
+		{`SUM(R1C1:R2C2!R1C1)`, `SUM(R1C1:R2C2!$A$1)`},
+		{`'R1C1'!R1C1+LEN("R1C1!R1C1")`, `'R1C1'!$A$1+LEN("R1C1!R1C1")`},
+		{`[Book.xlsx]R1C1!R1C1`, `[Book.xlsx]R1C1!$A$1`},
+		{`R1C1!R1C1:R1C1!R2C2`, `R1C1!$A$1:R1C1!$B$2`},
+		{`SUM(R1C1:R2C2)`, `SUM($A$1:$B$2)`},
+	} {
+		t.Run(tc.formula, func(t *testing.T) {
+			got, err := r1c1Formula(tc.formula, "B3")
+			if err != nil || got != tc.want {
+				t.Fatalf("got %q, %v; want %q", got, err, tc.want)
+			}
+		})
+	}
+}
