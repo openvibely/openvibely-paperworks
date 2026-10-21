@@ -89,7 +89,7 @@ revision markup and annotation boundaries are not flattened into plain text.
 | --- | --- |
 | `replace-text` | `paragraph`, `old`, `new`, optional `occurrence` |
 | `run-format` | `paragraph`, `run`; `font/font_size/bold/italic/strike/color/style` |
-| `paragraph-format` | `paragraph`; `style`, `alignment` (`left/right/center/both`), `before/after/line` in twips |
+| `paragraph-format` | `paragraph`; `style`, `alignment` (`left/right/center/both`), `before/after/line` in twips; `line` sets exact line spacing |
 | `paragraph-insert` | anchor `paragraph`, `position: before/after`, `text` |
 | `paragraph-delete` | `paragraph`; section-break/directly annotated paragraphs are rejected |
 | `table-cell-text` | `table`, `row`, `column`, `text`; replaces the selected cell content |

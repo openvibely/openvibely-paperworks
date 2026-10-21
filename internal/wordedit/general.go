@@ -214,6 +214,11 @@ func formatParagraph(p *etree.Element, s map[string]any) error {
 				insertInPPr(pr, sp)
 			}
 			setW(sp, k, strconv.Itoa(n))
+			if k == "line" {
+				// The API accepts twips; Word's default/auto rule instead
+				// interprets line as 240ths of a line.
+				setW(sp, "lineRule", "exact")
+			}
 		}
 	}
 	return nil
