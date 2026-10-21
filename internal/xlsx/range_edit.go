@@ -250,12 +250,12 @@ func copyRange(f *excelize.File, e Edit) (*excelize.File, error) {
 			snapshot = append(snapshot, cell{dest, anchor, formula, v, kind, style, rich})
 		}
 	}
-	errors := map[string]string{}
+	typedValues := map[string]copiedCellValue{}
 	for _, c := range snapshot {
 		if e.Operation != "copy-formats" {
 			// Multiple destinations can write the same merged anchor. Keep only
-			// its final error value, matching the ordinary cell setters.
-			delete(errors, c.anchor)
+			// its final typed value, matching the ordinary cell setters.
+			delete(typedValues, c.anchor)
 			if err = f.SetCellFormula(targetSheet, c.target, ""); err != nil {
 				return nil, err
 			}
@@ -277,11 +277,16 @@ func copyRange(f *excelize.File, e Edit) (*excelize.File, error) {
 							err = f.SetCellFloat(targetSheet, c.target, v, -1, 64)
 						}
 					}
-				case excelize.CellTypeError:
-					// Excelize has no error-cell setter. Prepare the destination
-					// and restore its error type before the next edit runs.
+				case excelize.CellTypeError, excelize.CellTypeDate:
+					// Excelize has no setter for error cells or raw ISO date cells.
+					// Preserve the original value/type without date parsing or
+					// conversion between workbook date systems.
 					err = f.SetCellStr(targetSheet, c.target, c.value)
-					errors[c.anchor] = c.value
+					kind := "e"
+					if c.kind == excelize.CellTypeDate {
+						kind = "d"
+					}
+					typedValues[c.anchor] = copiedCellValue{kind, c.value}
 				case excelize.CellTypeBool:
 					err = f.SetCellBool(targetSheet, c.target, c.value == "1" || c.value == "TRUE")
 				default:
@@ -298,15 +303,19 @@ func copyRange(f *excelize.File, e Edit) (*excelize.File, error) {
 			}
 		}
 	}
-	if len(errors) == 0 {
+	if len(typedValues) == 0 {
 		return f, nil
 	}
-	return restoreCopiedErrors(f, targetSheet, errors)
+	return restoreCopiedTypes(f, targetSheet, typedValues)
 }
 
-// Reopen the corrected package so subsequent edits observe real error values,
+type copiedCellValue struct {
+	kind, value string
+}
+
+// Reopen the corrected package so subsequent edits observe date/error types,
 // including another copy, a sheet rename, or an overwrite of these cells.
-func restoreCopiedErrors(f *excelize.File, sheet string, values map[string]string) (*excelize.File, error) {
+func restoreCopiedTypes(f *excelize.File, sheet string, values map[string]copiedCellValue) (*excelize.File, error) {
 	raw, err := f.WriteToBuffer()
 	if err != nil {
 		return nil, err
@@ -328,10 +337,10 @@ func restoreCopiedErrors(f *excelize.File, sheet string, values map[string]strin
 		if cell == nil {
 			return nil, fmt.Errorf("copy destination %s missing", address)
 		}
-		cell.CreateAttr("t", "e")
+		cell.CreateAttr("t", value.kind)
 		office.RemoveAll(cell, office.NSS, "v")
 		office.RemoveAll(cell, office.NSS, "is")
-		office.NewChild(cell, office.NSS, "v", nil).SetText(value)
+		office.NewChild(cell, office.NSS, "v", nil).SetText(value.value)
 	}
 	if err = pkg.SetXML(sh.Part, sh.Doc); err != nil {
 		return nil, err
