@@ -95,7 +95,7 @@ revision markup and annotation boundaries are not flattened into plain text.
 | `run-format` | `paragraph`, `run`; `font/font_size/bold/italic/strike/color/style` |
 | `paragraph-format` | `paragraph`; `style`, `alignment` (`left/right/center/both`), `before/after/line` in twips; `line` sets exact line spacing |
 | `paragraph-insert` | anchor `paragraph`, `position: before/after`, `text` |
-| `paragraph-delete` | `paragraph`; section-break/directly annotated paragraphs are rejected |
+| `paragraph-delete` | `paragraph`; section-break/directly annotated paragraphs and partial field deletions are rejected; complete fields may be deleted with their paragraph |
 | `table-cell-text` | `table`, `row`, `column`, `text`; replaces the selected cell content |
 | `table-cell-format` | `table`, `row`, `column`, `fill` and paragraph/run format fields |
 | `table-row-insert/delete` | `table`, `row`; insertion adds a blank row before the anchor |

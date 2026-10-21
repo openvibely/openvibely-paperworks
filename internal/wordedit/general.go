@@ -103,6 +103,9 @@ func generalEdit(d *Doc, s map[string]any) error {
 		if len(all(p, "commentRangeStart"))+len(all(p, "commentRangeEnd"))+len(all(p, "bookmarkStart"))+len(all(p, "bookmarkEnd")) > 0 {
 			return fmt.Errorf("paragraph contains anchored annotations; remove them explicitly first")
 		}
+		if !paragraphContainsCompleteFields(p) {
+			return fmt.Errorf("paragraph crosses a field boundary; refusing partial field deletion")
+		}
 		remove(p)
 	case "paragraph-format":
 		err = formatParagraph(p, s)
@@ -479,6 +482,28 @@ func insertWordProperty(parent, e *etree.Element) {
 		}
 	}
 	parent.AddChild(e)
+}
+
+// A deleted paragraph may contain complete fields, but not a start, end or
+// separator belonging to a field that extends into another paragraph.
+func paragraphContainsCompleteFields(p *etree.Element) bool {
+	depth := 0
+	for _, marker := range all(p, "fldChar") {
+		switch getW(marker, "fldCharType") {
+		case "begin":
+			depth++
+		case "end":
+			if depth == 0 {
+				return false
+			}
+			depth--
+		case "separate":
+			if depth == 0 {
+				return false
+			}
+		}
+	}
+	return depth == 0
 }
 
 func updateFieldDepth(e *etree.Element, depth *int) {
