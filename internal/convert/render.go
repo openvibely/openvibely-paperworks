@@ -180,6 +180,11 @@ func diffImages(a, b image.Image) (*image.RGBA, []int) {
 
 var docxTextPart = regexp.MustCompile(`^word/(document|header\d+|footer\d+|footnotes|endnotes|comments)\.xml$`)
 
+// docxLines extracts text and separators in document order. Deleted text remains
+// included as before. Tabs remain tabs; untyped/textWrapping breaks and
+// carriage returns become line feeds. Page and column breaks use explicit
+// printable markers so they cannot be mistaken for text wrapping; other typed
+// breaks retain their type in a marker.
 func docxLines(path string) ([]string, error) {
 	p, err := opc.Open(path)
 	if err != nil {
@@ -200,15 +205,48 @@ func docxLines(path string) ([]string, error) {
 		for _, para := range office.All(doc.Root(), office.NSW, "p") {
 			var b strings.Builder
 			office.Iter(para, func(e *etree.Element) bool {
-				if office.Is(e, office.NSW, "t") || office.Is(e, office.NSW, "delText") {
+				switch {
+				case office.Is(e, office.NSW, "t"), office.Is(e, office.NSW, "delText"):
 					b.WriteString(e.Text())
+				case office.Is(e, office.NSW, "tab"):
+					b.WriteByte('\t')
+				case office.Is(e, office.NSW, "cr"):
+					b.WriteByte('\n')
+				case office.Is(e, office.NSW, "br"):
+					switch office.AttrV(e, office.NSW, "type") {
+					case "", "textWrapping":
+						b.WriteByte('\n')
+					case "page":
+						b.WriteString("[page break]")
+					case "column":
+						b.WriteString("[column break]")
+					default:
+						b.WriteString("[break type=")
+						b.WriteString(office.AttrV(e, office.NSW, "type"))
+						b.WriteByte(']')
+					}
 				}
 				return true
 			})
-			lines = append(lines, b.String()+"\n")
+			appendDocxDiffLines(&lines, b.String()+"\n")
 		}
 	}
 	return lines, nil
+}
+
+// appendDocxDiffLines splits text at line feeds while retaining each line's
+// newline. This keeps the artifact text byte-for-byte faithful and gives the
+// unified diff line boundaries for both paragraphs and inline text breaks.
+func appendDocxDiffLines(lines *[]string, text string) {
+	for len(text) > 0 {
+		end := strings.IndexByte(text, '\n')
+		if end < 0 {
+			*lines = append(*lines, text)
+			return
+		}
+		*lines = append(*lines, text[:end+1])
+		text = text[end+1:]
+	}
 }
 
 // Compare renders both files and writes per-page pixel diffs, plus a text
