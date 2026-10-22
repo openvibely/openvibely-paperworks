@@ -97,6 +97,12 @@ func Create(ctx context.Context, spec CreateSpec, base, output string) error {
 		return checkFont(label.Font)
 	}
 	doc := &primitives.PDF{Paper: spec.Paper, Origin: "ll", Fonts: map[string]*primitives.FormFont{"input": {Name: "Helvetica", Size: 12}, "label": {Name: "Helvetica", Size: 12}, "text": {Name: "Helvetica", Size: 12}}, Pages: map[string]*primitives.PDFPage{}}
+	imageRoot := ""
+	defer func() {
+		if imageRoot != "" {
+			_ = os.RemoveAll(imageRoot)
+		}
+	}()
 	elements := 0
 	for i, p := range spec.Pages {
 		if e := ctx.Err(); e != nil {
@@ -223,7 +229,8 @@ func Create(ctx context.Context, spec CreateSpec, base, output string) error {
 				return err
 			}
 		}
-		for _, v := range p.Images {
+		p.Images = append([]*primitives.ImageBox(nil), p.Images...)
+		for j, v := range p.Images {
 			if v == nil {
 				return fmt.Errorf("null image")
 			}
@@ -240,6 +247,26 @@ func Create(ctx context.Context, spec CreateSpec, base, output string) error {
 			if !info.Mode().IsRegular() || info.Size() > 32<<20 {
 				return fmt.Errorf("image must be a regular file of at most 32 MiB")
 			}
+			// Give pdfcpu access only to explicitly supplied image assets.
+			if imageRoot == "" {
+				imageRoot, e = os.MkdirTemp("", "paperworks-pdf-images-*")
+				if e != nil {
+					return e
+				}
+			}
+			data, e := os.ReadFile(v.Src)
+			if e != nil {
+				return e
+			}
+			if len(data) > 32<<20 {
+				return fmt.Errorf("image must be at most 32 MiB")
+			}
+			image := *v
+			image.Src = fmt.Sprintf("page-%d-image-%d%s", i, j, filepath.Ext(v.Src))
+			if e = os.WriteFile(filepath.Join(imageRoot, image.Src), data, 0600); e != nil {
+				return e
+			}
+			p.Images[j] = &image
 		}
 		doc.Pages[strconv.Itoa(i+1)] = &primitives.PDFPage{Paper: p.Paper, Content: &primitives.Content{TextBoxes: p.Text, Tables: p.Tables, ImageBoxes: p.Images, TextFields: p.TextFields, CheckBoxes: p.Checkboxes, RadioButtonGroups: p.RadioGroups, ComboBoxes: p.ComboBoxes}}
 	}
@@ -249,6 +276,7 @@ func Create(ctx context.Context, spec CreateSpec, base, output string) error {
 	}
 	conf := config()
 	conf.Offline = true
+	conf.LocalImageRoot = imageRoot
 	var out bytes.Buffer
 	if e = api.Create(ctx, nil, bytes.NewReader(data), &out, conf); e != nil {
 		return e
