@@ -38,16 +38,15 @@ func sectionEdit(d *Doc, s map[string]any) error {
 		// controls how that section starts. Find the section being split;
 		// the requested template section need not be the paragraph's owner.
 		var following *etree.Element
-		for _, block := range d.Body().ChildElements() {
-			if block.Index() <= p.Index() {
-				continue
+		for _, candidate := range sections {
+			// Paragraph indices select direct body paragraphs. A later section
+			// may end inside a content wrapper, so compare its body ancestor.
+			block := candidate
+			for block.Parent() != d.Body() {
+				block = block.Parent()
 			}
-			if is(block, "sectPr") {
-				following = block
-			} else if is(block, "p") {
-				following = child(child(block, "pPr"), "sectPr")
-			}
-			if following != nil {
+			if block.Index() > p.Index() {
+				following = candidate
 				break
 			}
 		}
