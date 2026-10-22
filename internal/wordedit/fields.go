@@ -581,8 +581,7 @@ func freezeReferences(d *Doc) error {
 		root, _ := d.Root(part)
 		changed := false
 		for _, f := range all(root, "fldSimple") {
-			tokens := strings.Fields(getW(f, "instr"))
-			if len(tokens) == 0 || (tokens[0] != "REF" && tokens[0] != "PAGEREF") {
+			if !refInstr.MatchString(strings.TrimSpace(getW(f, "instr"))) {
 				continue
 			}
 			if strings.TrimSpace(textOf(f)) == "" {
