@@ -9,6 +9,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"hash/crc32"
 	"io"
 	"net/url"
 	"os"
@@ -38,6 +39,14 @@ type Part struct {
 	Name   string
 	Data   []byte
 	Header zip.FileHeader
+	src    *rawSource
+}
+
+// rawSource is the original compressed member, reused by Bytes only while
+// Data still matches it (same length and CRC-32).
+type rawSource struct {
+	compressed []byte
+	header     zip.FileHeader
 }
 
 type Package struct {
@@ -69,6 +78,8 @@ func Read(raw []byte) (*Package, error) {
 	if total > MaxTotalBytes {
 		return nil, errors.New("package exceeds inspection limits; nothing was inspected")
 	}
+	// Private copy so later caller mutations of raw cannot leak into Bytes.
+	retained := bytes.Clone(raw)
 	p := &Package{index: map[string]*Part{}}
 	for _, f := range zr.File {
 		if strings.HasSuffix(f.Name, "/") {
@@ -92,7 +103,7 @@ func Read(raw []byte) (*Package, error) {
 		if _, dup := p.index[f.Name]; dup {
 			return nil, fmt.Errorf("duplicate part: %s", f.Name)
 		}
-		part := &Part{Name: f.Name, Data: data, Header: f.FileHeader}
+		part := &Part{Name: f.Name, Data: data, Header: f.FileHeader, src: rawSourceOf(retained, f)}
 		p.Parts = append(p.Parts, part)
 		p.index[f.Name] = part
 	}
@@ -123,6 +134,7 @@ func (p *Package) Set(name string, data []byte) {
 	}
 	if part := p.index[name]; part != nil {
 		part.Data = data
+		part.src = nil
 		return
 	}
 	part := &Part{Name: name, Data: data, Header: zip.FileHeader{Name: name, Method: zip.Deflate}}
@@ -146,10 +158,56 @@ func (p *Package) Remove(name string) {
 	}
 }
 
+// rawSourceOf aliases f's compressed bytes within raw when they can be copied
+// verbatim. Stored members with data descriptors are excluded because
+// LibreOffice mishandles them; Bytes re-deflates those.
+func rawSourceOf(raw []byte, f *zip.File) *rawSource {
+	switch {
+	case f.Flags&0x1 != 0:
+		return nil
+	case f.Method == zip.Deflate:
+	case f.Method == zip.Store && f.Flags&0x8 == 0 && f.CompressedSize64 == f.UncompressedSize64:
+	default:
+		return nil
+	}
+	off, err := f.DataOffset()
+	if err != nil || off < 0 || f.CompressedSize64 > uint64(len(raw)) || uint64(off) > uint64(len(raw))-f.CompressedSize64 {
+		return nil
+	}
+	h := f.FileHeader
+	h.Flags &^= 0x8
+	h.Extra = nil
+	return &rawSource{compressed: raw[off : uint64(off)+f.CompressedSize64 : uint64(off)+f.CompressedSize64], header: h}
+}
+
+func (part *Part) rawCopyable() bool {
+	s := part.src
+	return s != nil && part.Name == s.header.Name &&
+		uint64(len(part.Data)) == s.header.UncompressedSize64 &&
+		crc32.ChecksumIEEE(part.Data) == s.header.CRC32
+}
+
+// Bytes serializes the package. Unmodified members are copied in their
+// original compressed form; all other members are deflated.
 func (p *Package) Bytes() ([]byte, error) {
 	var buf bytes.Buffer
 	zw := zip.NewWriter(&buf)
 	for _, part := range p.Parts {
+		if part.rawCopyable() {
+			h := part.Header
+			s := part.src
+			h.Name, h.Method, h.Flags = s.header.Name, s.header.Method, s.header.Flags
+			h.CRC32, h.CompressedSize64, h.UncompressedSize64 = s.header.CRC32, s.header.CompressedSize64, s.header.UncompressedSize64
+			h.Extra = nil
+			w, err := zw.CreateRaw(&h)
+			if err != nil {
+				return nil, err
+			}
+			if _, err := w.Write(s.compressed); err != nil {
+				return nil, err
+			}
+			continue
+		}
 		h := part.Header
 		h.Name = part.Name
 		// LibreOffice cannot reliably read stored OPC members with streaming
