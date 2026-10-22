@@ -89,3 +89,73 @@ func TestSystemBitmap(t *testing.T) {
 		t.Fatal("accepted out-of-bounds glyph")
 	}
 }
+
+// A file can be truncated after Stat; exercise short reads with the original size.
+func TestSystemBitmapReaderAtBounds(t *testing.T) {
+	data := bitmapFixture(t)
+	for n := 0; n < len(data); n++ {
+		if _, err := loadSystemBitmapReaderAt(bytes.NewReader(data[:n]), int64(len(data)), 0, 0, 0); err == nil {
+			t.Fatalf("accepted short reader at %d", n)
+		}
+	}
+	for _, c := range []struct {
+		name   string
+		offset int
+		value  uint32
+	}{
+		{"table offset", 36, 0xffffffff}, {"table length", 40, 0xffffffff},
+		{"strike offset", 58, 0xffffffff}, {"glyph offset", 70, 0xffffffff},
+	} {
+		t.Run(c.name, func(t *testing.T) {
+			bad := bytes.Clone(data)
+			binary.BigEndian.PutUint32(bad[c.offset:], c.value)
+			if _, err := loadSystemBitmapReaderAt(bytes.NewReader(bad), int64(len(bad)), 0, 0, 0); err == nil {
+				t.Fatal("accepted invalid range")
+			}
+			if c.offset != 70 {
+				if _, err := largestSystemStrikeReaderAt(bytes.NewReader(bad), int64(len(bad))); err == nil {
+					t.Fatal("accepted invalid strike directory")
+				}
+			}
+		})
+	}
+	// TTC face directory offsets are absolute and must stay within the file.
+	for _, base := range []uint32{0xfffffff0, uint32(len(data) - 8)} {
+		bad := bytes.Clone(data)
+		copy(bad, "ttcf")
+		binary.BigEndian.PutUint32(bad[8:], 1)
+		binary.BigEndian.PutUint32(bad[12:], base)
+		if _, err := loadSystemBitmapReaderAt(bytes.NewReader(bad), int64(len(bad)), 0, 0, 0); err == nil {
+			t.Fatal("accepted invalid TTC face offset")
+		}
+		if _, err := largestSystemStrikeReaderAt(bytes.NewReader(bad), int64(len(bad))); err == nil {
+			t.Fatal("accepted invalid TTC strike directory")
+		}
+	}
+	for n := 0; n < 66; n++ {
+		if _, err := largestSystemStrikeReaderAt(bytes.NewReader(data[:n]), int64(len(data))); err == nil {
+			t.Fatalf("accepted truncated strike header %d", n)
+		}
+	}
+	// Extra font bytes must not be read just because the file is large.
+	r := &countingFontReader{Reader: bytes.NewReader(data)}
+	if _, err := loadSystemBitmapReaderAt(r, 256<<20, 0, 0, 0); err != nil {
+		t.Fatal(err)
+	}
+	if r.total > len(data)*2 {
+		t.Fatalf("read %d bytes for %d-byte fixture", r.total, len(data))
+	}
+	if _, err := loadSystemBitmapReaderAt(r, 256<<20+1, 0, 0, 0); err == nil {
+		t.Fatal("accepted oversized font")
+	}
+}
+
+type countingFontReader struct {
+	*bytes.Reader
+	total int
+}
+
+func (r *countingFontReader) ReadAt(p []byte, off int64) (int, error) {
+	r.total += len(p)
+	return r.Reader.ReadAt(p, off)
+}

@@ -78,7 +78,8 @@ func PNG(ctx context.Context, expression string, o Options) ([]byte, error) {
 	}
 	opts := layout.DefaultOptions()
 	opts.SystemUnicode = make(map[rune][]path.Command)
-	resolve := newSystemEmojiResolver(ctx)
+	resolve, closeResolver := newSystemEmojiResolver(ctx)
+	defer closeResolver()
 	var systemErr error
 	opts.MathJaxGlyphs = layout.SupportsMathJaxGlyphsWithSystem(nodes, func(cp rune) bool {
 		if _, ok := opts.SystemUnicode[cp]; ok {

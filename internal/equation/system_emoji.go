@@ -1,9 +1,11 @@
 package equation
 
 import (
+	"bytes"
 	"context"
 	"encoding/binary"
 	"fmt"
+	"io"
 	"math"
 	"os"
 
@@ -14,8 +16,9 @@ import (
 // The reference's serif fallback on macOS selects Apple Color Emoji. Keep that
 // font as a runtime input; neither its bitmap nor a captured mask is embedded.
 // Other hosts can supply this same font explicitly. Missing fonts fail clearly.
-func newSystemEmojiResolver(ctx context.Context) func(rune) ([]path.Command, error) {
-	var data []byte
+func newSystemEmojiResolver(ctx context.Context) (func(rune) ([]path.Command, error), func()) {
+	var file *os.File
+	var size int64
 	var face *sfnt.Font
 	var strike int
 	var initErr error
@@ -31,16 +34,19 @@ func newSystemEmojiResolver(ctx context.Context) func(rune) ([]path.Command, err
 				filename = "/System/Library/Fonts/Apple Color Emoji.ttc"
 			}
 			var info os.FileInfo
-			info, initErr = os.Stat(filename)
+			file, initErr = os.Open(filename)
+			if initErr == nil {
+				info, initErr = file.Stat()
+			}
 			if initErr == nil && (info.Size() <= 0 || info.Size() > 256<<20) {
 				initErr = fmt.Errorf("emoji font exceeds size limit")
 			}
 			if initErr == nil {
-				data, initErr = os.ReadFile(filename)
+				size = info.Size()
 			}
 			if initErr == nil {
 				var col *sfnt.Collection
-				col, initErr = sfnt.ParseCollection(data)
+				col, initErr = sfnt.ParseCollectionReaderAt(io.NewSectionReader(file, 0, size))
 				if initErr == nil {
 					face, initErr = col.Font(0)
 				}
@@ -52,7 +58,7 @@ func newSystemEmojiResolver(ctx context.Context) func(rune) ([]path.Command, err
 						initErr = fmt.Errorf("unsupported bitmap font profile %q", name)
 					}
 					if initErr == nil {
-						strike, initErr = largestSystemStrike(data)
+						strike, initErr = largestSystemStrikeReaderAt(file, size)
 					}
 				}
 			}
@@ -68,7 +74,7 @@ func newSystemEmojiResolver(ctx context.Context) func(rune) ([]path.Command, err
 		if glyph == 0 {
 			return nil, fmt.Errorf("system emoji font has no glyph for U+%04X", cp)
 		}
-		bitmap, err := loadSystemBitmap(data, 0, int(glyph), strike)
+		bitmap, err := loadSystemBitmapReaderAt(file, size, 0, int(glyph), strike)
 		if err != nil {
 			return nil, err
 		}
@@ -92,52 +98,78 @@ func newSystemEmojiResolver(ctx context.Context) func(rune) ([]path.Command, err
 			commands[i].Y /= 1000
 		}
 		return commands, ctx.Err()
+	}, func() {
+		if file != nil {
+			_ = file.Close()
+		}
 	}
 }
 
 // Select the largest available strike for the 884-unit SVG-local text path.
 // Bounds are checked independently of the glyph decoder before indexing tables.
 func largestSystemStrike(data []byte) (int, error) {
+	return largestSystemStrikeReaderAt(bytes.NewReader(data), int64(len(data)))
+}
+
+func largestSystemStrikeReaderAt(reader io.ReaderAt, size int64) (int, error) {
 	bad := fmt.Errorf("invalid emoji font strike directory")
-	if len(data) < 12 || len(data) > 256<<20 {
+	if size < 12 || size > 256<<20 {
+		return 0, bad
+	}
+	data := fontRange{reader, 0, uint64(size)}
+	head, ok := data.read(0, 12)
+	if !ok {
 		return 0, bad
 	}
 	u32 := func(b []byte) uint64 { return uint64(binary.BigEndian.Uint32(b)) }
 	base := uint64(0)
-	if string(data[:4]) == "ttcf" {
-		if len(data) < 16 || u32(data[8:]) == 0 {
+	if string(head[:4]) == "ttcf" {
+		if u32(head[8:]) == 0 || u32(head[8:]) > 65536 {
 			return 0, bad
 		}
-		base = u32(data[12:])
+		p, ok := data.read(12, 4)
+		if !ok {
+			return 0, bad
+		}
+		base = u32(p)
 	}
-	if base > uint64(len(data))-12 {
+	head, ok = data.read(base, 12)
+	if !ok {
 		return 0, bad
 	}
-	n := uint64(binary.BigEndian.Uint16(data[base+4:]))
-	end := base + 12 + 16*n
-	if end > uint64(len(data)) {
+	n := uint64(binary.BigEndian.Uint16(head[4:]))
+	records, ok := data.read(base+12, 16*n)
+	if !ok {
 		return 0, bad
 	}
-	for pos := base + 12; pos < end; pos += 16 {
-		if string(data[pos:pos+4]) != "sbix" {
+	for pos := uint64(0); pos < 16*n; pos += 16 {
+		r := records[pos:]
+		if string(r[:4]) != "sbix" {
 			continue
 		}
-		off, length := u32(data[pos+8:]), u32(data[pos+12:])
-		if off > uint64(len(data)) || length > uint64(len(data))-off || length < 8 {
+		sb, ok := data.section(u32(r[8:]), u32(r[12:]))
+		if !ok {
 			return 0, bad
 		}
-		sb := data[off : off+length]
-		count := u32(sb[4:])
-		if count == 0 || count > 65536 || 8+4*count > length {
+		head, ok := sb.read(0, 8)
+		if !ok {
+			return 0, bad
+		}
+		count := u32(head[4:])
+		if count == 0 || count > 65536 {
+			return 0, bad
+		}
+		offsets, ok := sb.read(8, 4*count)
+		if !ok {
 			return 0, bad
 		}
 		best, maxPPEM := 0, uint16(0)
 		for i := uint64(0); i < count; i++ {
-			offset := u32(sb[8+4*i:])
-			if offset > length-4 {
+			head, ok := sb.read(u32(offsets[4*i:]), 4)
+			if !ok {
 				return 0, bad
 			}
-			ppem := binary.BigEndian.Uint16(sb[offset:])
+			ppem := binary.BigEndian.Uint16(head)
 			if ppem > maxPPEM {
 				best, maxPPEM = int(i), ppem
 			}

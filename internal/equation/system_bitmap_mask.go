@@ -38,12 +38,29 @@ func sampleSystemBitmap(bitmap systemBitmap, x, y, width, height float64, quanti
 		return nil, 0, 0, fmt.Errorf("bitmap mask exceeds bounds")
 	}
 	out := image.NewAlpha(image.Rect(0, 0, w, h))
+	// Preserve 16-bit alpha precision for arbitrary image implementations.
+	// Decoded PNGs normally use the direct 8-bit Pix paths below.
+	alphas := make([]float64, bounds.Dx()*bounds.Dy())
+	for py := 0; py < bounds.Dy(); py++ {
+		for px := 0; px < bounds.Dx(); px++ {
+			var a float64
+			switch im := bitmap.Image.(type) {
+			case *image.NRGBA:
+				a = float64(im.Pix[py*im.Stride+px*4+3])
+			case *image.RGBA:
+				a = float64(im.Pix[py*im.Stride+px*4+3])
+			default:
+				_, _, _, value := im.At(px+bounds.Min.X, py+bounds.Min.Y).RGBA()
+				a = float64(value) / 257
+			}
+			alphas[py*bounds.Dx()+px] = a
+		}
+	}
 	alpha := func(px, py int) float64 {
 		if px < 0 || py < 0 || px >= bounds.Dx() || py >= bounds.Dy() {
 			return 0
 		}
-		_, _, _, a := bitmap.Image.At(px+bounds.Min.X, py+bounds.Min.Y).RGBA()
-		return float64(a) / 257
+		return alphas[py*bounds.Dx()+px]
 	}
 	for row := 0; row < h; row++ {
 		sy := (top+float64(row)+.5+y+height)*float64(bounds.Dy())/height - .5
@@ -53,8 +70,10 @@ func sampleSystemBitmap(bitmap systemBitmap, x, y, width, height float64, quanti
 			sx := (left+float64(col)+.5-x)*float64(bounds.Dx())/width - .5
 			ix := int(math.Floor(sx))
 			fx := sx - float64(ix)
-			a := (alpha(ix, iy)*(1-fx)+alpha(ix+1, iy)*fx)*(1-fy) + (alpha(ix, iy+1)*(1-fx)+alpha(ix+1, iy+1)*fx)*fy
-			if quantized {
+			var a float64
+			if !quantized {
+				a = (alpha(ix, iy)*(1-fx)+alpha(ix+1, iy)*fx)*(1-fy) + (alpha(ix, iy+1)*(1-fx)+alpha(ix+1, iy+1)*fx)*fy
+			} else {
 				a = bitmapInterpolate(bitmapInterpolate(alpha(ix, iy), alpha(ix, iy+1), fy), bitmapInterpolate(alpha(ix+1, iy), alpha(ix+1, iy+1), fy), fx)
 			}
 			out.Pix[row*out.Stride+col] = uint8(math.Floor(a + .5))

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"image"
 	"image/png"
+	"io"
 )
 
 // systemBitmap is an explicitly selected sbix strike. Origins are signed pixel
@@ -22,26 +23,52 @@ type systemBitmap struct {
 // establish face, glyph and strike selection independently. Unsupported image
 // formats fail explicitly; empty outline/color data never counts as a glyph.
 func loadSystemBitmap(data []byte, face, glyph, strike int) (systemBitmap, error) {
+	return loadSystemBitmapReaderAt(bytes.NewReader(data), int64(len(data)), face, glyph, strike)
+}
+
+// fontRange keeps every read within its enclosing font/table/strike boundary.
+type fontRange struct {
+	r         io.ReaderAt
+	off, size uint64
+}
+
+func (r fontRange) section(off, n uint64) (fontRange, bool) {
+	if off > r.size || n > r.size-off {
+		return fontRange{}, false
+	}
+	return fontRange{r.r, r.off + off, n}, true
+}
+
+func (r fontRange) read(off, n uint64) ([]byte, bool) {
+	sub, ok := r.section(off, n)
+	if !ok {
+		return nil, false
+	}
+	b := make([]byte, int(n))
+	count, err := sub.r.ReadAt(b, int64(sub.off))
+	return b, count == len(b) && err == nil
+}
+
+func loadSystemBitmapReaderAt(reader io.ReaderAt, size int64, face, glyph, strike int) (systemBitmap, error) {
 	var out systemBitmap
 	bad := func() (systemBitmap, error) { return out, fmt.Errorf("invalid or unsupported sbix glyph") }
-	if len(data) < 12 || len(data) > 256<<20 || face < 0 || glyph < 0 || strike < 0 {
+	if size < 12 || size > 256<<20 || face < 0 || glyph < 0 || strike < 0 {
+		return bad()
+	}
+	data := fontRange{reader, 0, uint64(size)}
+	header, ok := data.read(0, 12)
+	if !ok {
 		return bad()
 	}
 	u16 := func(b []byte) uint16 { return binary.BigEndian.Uint16(b) }
 	u32 := func(b []byte) uint64 { return uint64(binary.BigEndian.Uint32(b)) }
-	slice := func(b []byte, off, n uint64) ([]byte, bool) {
-		if off > uint64(len(b)) || n > uint64(len(b))-off {
-			return nil, false
-		}
-		return b[off : off+n], true
-	}
 	base := uint64(0)
-	if string(data[:4]) == "ttcf" {
-		n := u32(data[8:])
+	if string(header[:4]) == "ttcf" {
+		n := u32(header[8:])
 		if uint64(face) >= n || n > 65536 {
 			return bad()
 		}
-		p, ok := slice(data, 12+4*uint64(face), 4)
+		p, ok := data.read(12+4*uint64(face), 4)
 		if !ok {
 			return bad()
 		}
@@ -49,16 +76,16 @@ func loadSystemBitmap(data []byte, face, glyph, strike int) (systemBitmap, error
 	} else if face != 0 {
 		return bad()
 	}
-	head, ok := slice(data, base, 12)
+	head, ok := data.read(base, 12)
 	if !ok {
 		return bad()
 	}
 	n := uint64(u16(head[4:]))
-	records, ok := slice(data, base+12, n*16)
+	records, ok := data.read(base+12, n*16)
 	if !ok {
 		return bad()
 	}
-	tables := map[string][]byte{}
+	tables := map[string]fontRange{}
 	for i := uint64(0); i < n; i++ {
 		r := records[i*16:]
 		tag := string(r[:4])
@@ -68,42 +95,48 @@ func loadSystemBitmap(data []byte, face, glyph, strike int) (systemBitmap, error
 		if _, exists := tables[tag]; exists {
 			return bad()
 		}
-		b, ok := slice(data, u32(r[8:]), u32(r[12:]))
+		b, ok := data.section(u32(r[8:]), u32(r[12:]))
 		if !ok {
 			return bad()
 		}
 		tables[tag] = b
 	}
-	maxp, sb := tables["maxp"], tables["sbix"]
-	if len(maxp) < 6 || len(sb) < 8 || u16(sb) != 1 {
+	maxp, ok := tables["maxp"].read(0, 6)
+	sb := tables["sbix"]
+	sbhead, sbOK := sb.read(0, 8)
+	if !ok || !sbOK || u16(sbhead) != 1 {
 		return bad()
 	}
 	ng := uint64(u16(maxp[4:]))
-	ns := u32(sb[4:])
+	ns := u32(sbhead[4:])
 	if uint64(glyph) >= ng || uint64(strike) >= ns || ns > 65536 {
 		return bad()
 	}
-	offsets, ok := slice(sb, 8, ns*4)
+	offsets, ok := sb.read(8, ns*4)
 	if !ok {
 		return bad()
 	}
 	start := u32(offsets[strike*4:])
-	end := uint64(len(sb))
+	end := sb.size
 	if uint64(strike)+1 < ns {
 		end = u32(offsets[(strike+1)*4:])
 	}
 	if start < 8+4*ns || start > end {
 		return bad()
 	}
-	st, ok := slice(sb, start, end-start)
-	if !ok || len(st) < 4 {
+	st, ok := sb.section(start, end-start)
+	if !ok || st.size < 4 {
 		return bad()
 	}
-	out.PPEM, out.PPI = u16(st), u16(st[2:])
+	sthead, ok := st.read(0, 4)
+	if !ok {
+		return bad()
+	}
+	out.PPEM, out.PPI = u16(sthead), u16(sthead[2:])
 	if out.PPEM == 0 {
 		return bad()
 	}
-	goff, ok := slice(st, 4, (ng+1)*4)
+	goff, ok := st.read(4, (ng+1)*4)
 	if !ok {
 		return bad()
 	}
@@ -117,7 +150,7 @@ func loadSystemBitmap(data []byte, face, glyph, strike int) (systemBitmap, error
 		if a < 4+(ng+1)*4 || z < a {
 			return bad()
 		}
-		b, ok := slice(st, a, z-a)
+		b, ok := st.read(a, z-a)
 		if !ok || len(b) < 8 {
 			return bad()
 		}
@@ -141,7 +174,7 @@ func loadSystemBitmap(data []byte, face, glyph, strike int) (systemBitmap, error
 				return out, e
 			}
 			out.Image = im
-			out.PNG = bytes.Clone(b[8:])
+			out.PNG = b[8:]
 			return out, nil
 		default:
 			return bad()

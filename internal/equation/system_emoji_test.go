@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -63,5 +64,48 @@ func TestQuartzBitmapInterpolation(t *testing.T) {
 		if got := bitmapInterpolate(c.a, c.b, c.f); got != c.want {
 			t.Fatalf("%+v got %v", c, got)
 		}
+	}
+}
+
+func BenchmarkEmojiPNG(b *testing.B) {
+	filename := os.Getenv("PAPERWORKS_EMOJI_FONT")
+	if filename == "" {
+		filename = "/System/Library/Fonts/Apple Color Emoji.ttc"
+	}
+	if _, err := os.Stat(filename); err != nil {
+		b.Skip("emoji font not installed:", err)
+	}
+	for _, c := range []struct{ name, expression string }{
+		{"plain", `x^2+\frac{a}{b}`},
+		{"one", `\unicode{x1F600}`},
+		{"four", `\unicode{x1F600}\unicode{x1F601}\unicode{x1F602}\unicode{x1F603}`},
+	} {
+		b.Run(c.name, func(b *testing.B) {
+			b.ReportAllocs()
+			for b.Loop() {
+				if _, err := PNG(context.Background(), c.expression, Defaults()); err != nil {
+					b.Fatal(err)
+				}
+			}
+		})
+	}
+}
+
+func TestEmojiResolverCancellation(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	resolve, closeResolver := newSystemEmojiResolver(ctx)
+	defer closeResolver()
+	cancel()
+	if _, err := resolve('😀'); err != context.Canceled {
+		t.Fatalf("got %v, want cancellation", err)
+	}
+}
+
+func TestEmojiRejectsSubstitutedFontProfile(t *testing.T) {
+	t.Setenv("PAPERWORKS_EMOJI_FONT", "../../testdata/reference-mirror/Vera.ttf")
+	resolve, closeResolver := newSystemEmojiResolver(context.Background())
+	defer closeResolver()
+	if _, err := resolve('😀'); err == nil || !strings.Contains(err.Error(), "unsupported bitmap font profile") {
+		t.Fatalf("expected PostScript profile rejection, got %v", err)
 	}
 }
