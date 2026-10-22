@@ -1,0 +1,27 @@
+=== RUN   TestTraceExtentIndexMemory
+    trace_extent_memory_test.go:45: rows=0 retained bytes/index=738 (10 live indexes; includes tracer and cache)
+    trace_extent_memory_test.go:45: rows=1000 retained bytes/index=58749 (10 live indexes; includes tracer and cache)
+    trace_extent_memory_test.go:45: rows=10000 retained bytes/index=441013 (10 live indexes; includes tracer and cache)
+--- PASS: TestTraceExtentIndexMemory (4.07s)
+=== RUN   TestTraceExtentIndexMemory
+    trace_extent_memory_test.go:45: rows=0 retained bytes/index=748 (10 live indexes; includes tracer and cache)
+    trace_extent_memory_test.go:45: rows=1000 retained bytes/index=58759 (10 live indexes; includes tracer and cache)
+    trace_extent_memory_test.go:45: rows=10000 retained bytes/index=441060 (10 live indexes; includes tracer and cache)
+--- PASS: TestTraceExtentIndexMemory (4.12s)
+=== RUN   TestTraceExtentIndexMemory
+    trace_extent_memory_test.go:45: rows=0 retained bytes/index=736 (10 live indexes; includes tracer and cache)
+    trace_extent_memory_test.go:45: rows=1000 retained bytes/index=58749 (10 live indexes; includes tracer and cache)
+    trace_extent_memory_test.go:45: rows=10000 retained bytes/index=441032 (10 live indexes; includes tracer and cache)
+--- PASS: TestTraceExtentIndexMemory (4.06s)
+=== RUN   TestTraceExtentIndexMemory
+    trace_extent_memory_test.go:45: rows=0 retained bytes/index=736 (10 live indexes; includes tracer and cache)
+    trace_extent_memory_test.go:45: rows=1000 retained bytes/index=58749 (10 live indexes; includes tracer and cache)
+    trace_extent_memory_test.go:45: rows=10000 retained bytes/index=441005 (10 live indexes; includes tracer and cache)
+--- PASS: TestTraceExtentIndexMemory (4.25s)
+=== RUN   TestTraceExtentIndexMemory
+    trace_extent_memory_test.go:45: rows=0 retained bytes/index=736 (10 live indexes; includes tracer and cache)
+    trace_extent_memory_test.go:45: rows=1000 retained bytes/index=58749 (10 live indexes; includes tracer and cache)
+    trace_extent_memory_test.go:45: rows=10000 retained bytes/index=441015 (10 live indexes; includes tracer and cache)
+--- PASS: TestTraceExtentIndexMemory (4.36s)
+PASS
+ok  	github.com/openvibely/openvibely-paperworks/internal/office	21.109s

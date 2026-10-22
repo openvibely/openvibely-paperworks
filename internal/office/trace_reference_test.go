@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/beevik/etree"
 	"github.com/xuri/excelize/v2"
 )
 
@@ -261,11 +262,12 @@ type extentCancelContext struct {
 	context.Context
 	checks int
 	cancel context.CancelFunc
+	after  int
 }
 
 func (c *extentCancelContext) Err() error {
 	c.checks++
-	if c.checks == 10 {
+	if c.checks == c.after || (c.after == 0 && c.checks == 10) {
 		c.cancel()
 	}
 	return c.Context.Err()
@@ -329,11 +331,121 @@ func TestTraceReferenceWholeRangeBoundsAndCycles(t *testing.T) {
 	if len(row.Nodes) != 1 {
 		t.Fatal(row)
 	}
-	for _, formula := range []string{"SUM(XFE:XFE)", "SUM(1048577:1048577)", "SUM(C:A)"} {
+	for _, formula := range []string{"SUM(XFE:XFE)", "SUM(1048577:1048577)", "SUM(C:A)", "SUM(3:1)", "SUM(0:0)", "SUM(A0:A1)"} {
 		source = makeSource(formula, "")
 		report := referenceTraceSavedRun(t, source, "Inputs", "D1", 200, 20)
 		if report.Complete {
 			t.Fatal(formula, report)
 		}
+	}
+}
+
+func TestTraceExtentIndexMatchesSavedCells(t *testing.T) {
+	cells := map[string]*etree.Element{}
+	for coord, content := range map[string]string{
+		"A1": "<v/>", "A4": "<f/>", "C2": "<is/>", "D8": "<v>1</v>",
+		"B20": "", "XFD1048576": "<v/>", "XFE1": "<v/>", "A1048577": "<v/>",
+		"A0": "<v/>", "A01": "<v/>", "bad": "<f/>", "$E$9": "<v/>",
+		"a7": "<v/>", "F5": `<v xmlns="urn:foreign"/>`,
+	} {
+		d := etree.NewDocument()
+		if err := d.ReadFromString(`<c xmlns="` + NSS + `" s="1">` + content + `</c>`); err != nil {
+			t.Fatal(err)
+		}
+		cells[coord] = d.Root()
+	}
+	wb := &Workbook{Sheets: map[string]*Sheet{"Inputs": {Cells: cells}, "Empty": {Cells: map[string]*etree.Element{}}}}
+	tr := &tracer{ctx: context.Background(), wb: wb}
+	for _, sheet := range []string{"Inputs", "Empty"} {
+		for _, columns := range []bool{true, false} {
+			for _, bounds := range [][2]int{{1, 1}, {1, 3}, {2, 4}, {2, 2}, {4, 1}, {0, 0}, {5, 9}, {1, 1048576}, {16384, 16384}, {1048576, 1048576}} {
+				key := traceExtentKey{sheet, columns, bounds[0], bounds[1]}
+				want, _ := legacyTraceExtent(tr, key)
+				got, ok := tr.savedExtent(key)
+				if !ok || got != want {
+					t.Fatalf("%+v: got %v want %v", key, got, want)
+				}
+			}
+		}
+	}
+	index := tr.extents["Inputs"]
+	if len(index.columns) != 5 || len(index.rows) != 7 {
+		t.Fatalf("style-only or invalid cells indexed: %+v", index)
+	}
+	// An unrelated workbook must not reuse the first workbook's index.
+	other := &tracer{ctx: context.Background(), wb: &Workbook{Sheets: map[string]*Sheet{"Inputs": {Cells: map[string]*etree.Element{}}}}}
+	if got, ok := other.savedExtent(traceExtentKey{"Inputs", true, 1, 1}); !ok || got != [2]int{} {
+		t.Fatal(got, ok)
+	}
+}
+
+type extentCountContext struct {
+	context.Context
+	checks int
+}
+
+func (c *extentCountContext) Err() error { c.checks++; return c.Context.Err() }
+
+func TestTraceExtentEnumeration(t *testing.T) {
+	p := extentBenchmarkPackage(t, 1000, 100)
+	wb, err := OpenWorkbook(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ctx := &extentCountContext{Context: context.Background()}
+	tr := &tracer{ctx: ctx, wb: wb}
+	query := func() {
+		for col := 1; col <= 100; col++ {
+			if _, ok := tr.savedExtent(traceExtentKey{"Inputs", true, col, col}); !ok {
+				t.Fatal("query failed")
+			}
+		}
+	}
+	query()
+	buildAndQuery := ctx.checks
+	ctx.checks = 0
+	query()
+	// Every enumerated cell checks cancellation. Subtract the identical cached
+	// query workload and the one check before publishing the completed index.
+	visits := buildAndQuery - ctx.checks - 1
+	if visits != 100000 {
+		t.Fatalf("enumerated %d cells, want 100000", visits)
+	}
+	ctx.checks = 0
+	for col := 1; col <= 100; col++ {
+		legacyTraceExtent(tr, traceExtentKey{"Inputs", true, col, col})
+	}
+	if ctx.checks != 10000000 {
+		t.Fatal(ctx.checks)
+	}
+	t.Logf("cell visits: legacy=%d indexed=%d", ctx.checks, visits)
+}
+
+func TestTraceExtentCancellationAtPublishAndQuery(t *testing.T) {
+	p := extentBenchmarkPackage(t, 1, 1)
+	wb, err := OpenWorkbook(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	key := traceExtentKey{"Inputs", true, 1, 100}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	checked := &extentCancelContext{Context: ctx, cancel: cancel, after: 102}
+	tr := &tracer{ctx: checked, wb: wb}
+	if _, ok := tr.savedExtent(key); ok || len(tr.extents) != 0 {
+		t.Fatal("published cancelled index")
+	}
+	tr.ctx = context.Background()
+	if _, ok := tr.savedExtent(key); !ok {
+		t.Fatal("retry failed")
+	}
+	queryCtx, queryCancel := context.WithCancel(context.Background())
+	defer queryCancel()
+	tr.ctx = &extentCancelContext{Context: queryCtx, cancel: queryCancel, after: 10}
+	if _, ok := tr.savedExtent(key); ok {
+		t.Fatal("index query ignored cancellation")
+	}
+	if len(tr.extents["Inputs"].columns) != 100 {
+		t.Fatal("completed index was corrupted")
 	}
 }

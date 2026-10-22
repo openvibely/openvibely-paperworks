@@ -1,0 +1,66 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/openvibely/openvibely-paperworks/internal/office
+cpu: Apple M5 Pro
+BenchmarkTraceExtent/rows=1000/K=1-18         	       1	 120465667 ns/op	81550352 B/op	 1625769 allocs/op
+BenchmarkTraceExtent/rows=1000/K=1-18         	       1	 114556875 ns/op	81544904 B/op	 1625761 allocs/op
+BenchmarkTraceExtent/rows=1000/K=1-18         	       1	 122821375 ns/op	81534600 B/op	 1625752 allocs/op
+BenchmarkTraceExtent/rows=1000/K=1-18         	       1	 142731042 ns/op	81534248 B/op	 1625749 allocs/op
+BenchmarkTraceExtent/rows=1000/K=1-18         	       1	 147400375 ns/op	81534264 B/op	 1625750 allocs/op
+BenchmarkTraceExtent/rows=1000/K=10-18        	       1	 483838250 ns/op	95994608 B/op	 3425866 allocs/op
+BenchmarkTraceExtent/rows=1000/K=10-18        	       1	 397812250 ns/op	96026072 B/op	 3425860 allocs/op
+BenchmarkTraceExtent/rows=1000/K=10-18        	       1	 367230667 ns/op	96026248 B/op	 3425862 allocs/op
+BenchmarkTraceExtent/rows=1000/K=10-18        	       1	 440830625 ns/op	95988904 B/op	 3425855 allocs/op
+BenchmarkTraceExtent/rows=1000/K=10-18        	       1	 609131833 ns/op	96100472 B/op	 3425870 allocs/op
+BenchmarkTraceExtent/rows=1000/K=100-18       	       1	4307948833 ns/op	240423088 B/op	21426730 allocs/op
+BenchmarkTraceExtent/rows=1000/K=100-18       	       1	4812930209 ns/op	240349280 B/op	21426725 allocs/op
+BenchmarkTraceExtent/rows=1000/K=100-18       	       1	4914517458 ns/op	240423296 B/op	21426731 allocs/op
+BenchmarkTraceExtent/rows=1000/K=100-18       	       1	4107898500 ns/op	240423328 B/op	21426732 allocs/op
+BenchmarkTraceExtent/rows=1000/K=100-18       	       1	4218233875 ns/op	240349248 B/op	21426726 allocs/op
+BenchmarkTraceExtent/rows=10000/K=1-18        	       1	1462913167 ns/op	858027848 B/op	16249430 allocs/op
+BenchmarkTraceExtent/rows=10000/K=1-18        	       1	1406946917 ns/op	858038536 B/op	16249442 allocs/op
+BenchmarkTraceExtent/rows=10000/K=1-18        	       1	1240902708 ns/op	857973256 B/op	16249426 allocs/op
+BenchmarkTraceExtent/rows=10000/K=1-18        	       1	1199807291 ns/op	857973192 B/op	16249425 allocs/op
+BenchmarkTraceExtent/rows=10000/K=1-18        	       1	1195465666 ns/op	857918728 B/op	16249424 allocs/op
+BenchmarkTraceExtent/rows=10000/K=10-18       	       1	4566843958 ns/op	1002174376 B/op	34249547 allocs/op
+BenchmarkTraceExtent/rows=10000/K=10-18       	       1	4130336958 ns/op	1002300936 B/op	34249554 allocs/op
+BenchmarkTraceExtent/rows=10000/K=10-18       	       1	4237927792 ns/op	1002120168 B/op	34249548 allocs/op
+BenchmarkTraceExtent/rows=10000/K=10-18       	       1	4502424250 ns/op	1002283288 B/op	34249552 allocs/op
+BenchmarkTraceExtent/rows=10000/K=10-18       	       1	4167766541 ns/op	1002119848 B/op	34249544 allocs/op
+BenchmarkTraceExtent/rows=10000/K=100-18      	       1	41593421042 ns/op	2442478112 B/op	214250419 allocs/op
+BenchmarkTraceExtent/rows=10000/K=100-18      	       1	38565915958 ns/op	2442627136 B/op	214250436 allocs/op
+BenchmarkTraceExtent/rows=10000/K=100-18      	       1	37249585000 ns/op	2442644544 B/op	214250435 allocs/op
+BenchmarkTraceExtent/rows=10000/K=100-18      	       1	48677756667 ns/op	2442639368 B/op	214250432 allocs/op
+BenchmarkTraceExtent/rows=10000/K=100-18      	       1	44759812209 ns/op	2442702320 B/op	214250453 allocs/op
+BenchmarkSavedExtent/rows=1000/K=1-18         	       1	  31473833 ns/op	 1603320 B/op	  200005 allocs/op
+BenchmarkSavedExtent/rows=1000/K=1-18         	       1	  28394584 ns/op	 1603320 B/op	  200005 allocs/op
+BenchmarkSavedExtent/rows=1000/K=1-18         	       1	  61356792 ns/op	 1603320 B/op	  200005 allocs/op
+BenchmarkSavedExtent/rows=1000/K=1-18         	       1	  41663542 ns/op	 1603320 B/op	  200005 allocs/op
+BenchmarkSavedExtent/rows=1000/K=1-18         	       1	  35771125 ns/op	 1603320 B/op	  200005 allocs/op
+BenchmarkSavedExtent/rows=1000/K=10-18        	       1	 383564542 ns/op	16007272 B/op	 2000012 allocs/op
+BenchmarkSavedExtent/rows=1000/K=10-18        	       1	 331026875 ns/op	16004384 B/op	 2000008 allocs/op
+BenchmarkSavedExtent/rows=1000/K=10-18        	       1	 372634708 ns/op	16007384 B/op	 2000013 allocs/op
+BenchmarkSavedExtent/rows=1000/K=10-18        	       1	 336904000 ns/op	16007272 B/op	 2000012 allocs/op
+BenchmarkSavedExtent/rows=1000/K=10-18        	       1	 273782625 ns/op	16007176 B/op	 2000011 allocs/op
+BenchmarkSavedExtent/rows=1000/K=100-18       	       1	2886066166 ns/op	160030912 B/op	20000036 allocs/op
+BenchmarkSavedExtent/rows=1000/K=100-18       	       1	3284997250 ns/op	160030256 B/op	20000029 allocs/op
+BenchmarkSavedExtent/rows=1000/K=100-18       	       1	3566532958 ns/op	160030096 B/op	20000027 allocs/op
+BenchmarkSavedExtent/rows=1000/K=100-18       	       1	3272097875 ns/op	160030192 B/op	20000028 allocs/op
+BenchmarkSavedExtent/rows=1000/K=100-18       	       1	3134126042 ns/op	160030544 B/op	20000032 allocs/op
+BenchmarkSavedExtent/rows=10000/K=1-18        	       1	 424553459 ns/op	16003320 B/op	 2000005 allocs/op
+BenchmarkSavedExtent/rows=10000/K=1-18        	       1	 371619542 ns/op	16003320 B/op	 2000005 allocs/op
+BenchmarkSavedExtent/rows=10000/K=1-18        	       1	 465882583 ns/op	16003320 B/op	 2000005 allocs/op
+BenchmarkSavedExtent/rows=10000/K=1-18        	       1	 482318625 ns/op	16003320 B/op	 2000005 allocs/op
+BenchmarkSavedExtent/rows=10000/K=1-18        	       1	 445240500 ns/op	16003512 B/op	 2000007 allocs/op
+BenchmarkSavedExtent/rows=10000/K=10-18       	       1	4641351208 ns/op	160007464 B/op	20000014 allocs/op
+BenchmarkSavedExtent/rows=10000/K=10-18       	       1	6963982834 ns/op	160007272 B/op	20000012 allocs/op
+BenchmarkSavedExtent/rows=10000/K=10-18       	       1	5621594541 ns/op	160007816 B/op	20000018 allocs/op
+BenchmarkSavedExtent/rows=10000/K=10-18       	       1	4532687833 ns/op	160007992 B/op	20000020 allocs/op
+BenchmarkSavedExtent/rows=10000/K=10-18       	       1	3932581042 ns/op	160007640 B/op	20000016 allocs/op
+BenchmarkSavedExtent/rows=10000/K=100-18      	       1	38964900583 ns/op	1600032064 B/op	200000049 allocs/op
+BenchmarkSavedExtent/rows=10000/K=100-18      	       1	35671110584 ns/op	1600030816 B/op	200000035 allocs/op
+BenchmarkSavedExtent/rows=10000/K=100-18      	       1	32198879041 ns/op	1600031360 B/op	200000041 allocs/op
+BenchmarkSavedExtent/rows=10000/K=100-18      	       1	43274380500 ns/op	1600032096 B/op	200000049 allocs/op
+BenchmarkSavedExtent/rows=10000/K=100-18      	       1	33987836917 ns/op	1600031536 B/op	200000043 allocs/op
+PASS
+ok  	github.com/openvibely/openvibely-paperworks/internal/office	511.440s

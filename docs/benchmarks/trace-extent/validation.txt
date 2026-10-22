@@ -1,0 +1,28 @@
+LibreOffice 25.8.7.3 30742500f2d3eb4366ac312fa33d3dcabdb3eba5
+
+v24.18.0
+go version go1.26.4 darwin/arm64
+?   	github.com/openvibely/openvibely-paperworks/cmd/paperworks	[no test files]
+# github.com/openvibely/openvibely-paperworks/internal/pptx [github.com/openvibely/openvibely-paperworks/internal/pptx.test]
+internal/pptx/deck_edit_test.go:399:16: undefined: relativePart
+internal/pptx/deck_edit_test.go:425:16: undefined: relativePart
+ok  	github.com/openvibely/openvibely-paperworks/internal/cli	40.799s
+ok  	github.com/openvibely/openvibely-paperworks/internal/convert	296.942s
+ok  	github.com/openvibely/openvibely-paperworks/internal/docx	0.561s
+?   	github.com/openvibely/openvibely-paperworks/internal/docxtemplate	[no test files]
+ok  	github.com/openvibely/openvibely-paperworks/internal/equation	3.796s
+ok  	github.com/openvibely/openvibely-paperworks/internal/lo	1.230s
+ok  	github.com/openvibely/openvibely-paperworks/internal/office	7.464s
+ok  	github.com/openvibely/openvibely-paperworks/internal/opc	0.654s
+ok  	github.com/openvibely/openvibely-paperworks/internal/pdf	18.419s
+FAIL	github.com/openvibely/openvibely-paperworks/internal/pptx [build failed]
+ok  	github.com/openvibely/openvibely-paperworks/internal/testdeps	0.457s
+ok  	github.com/openvibely/openvibely-paperworks/internal/testsupport	2.309s
+?   	github.com/openvibely/openvibely-paperworks/internal/testsupport/bzip2single	[no test files]
+ok  	github.com/openvibely/openvibely-paperworks/internal/wordedit	12.092s
+ok  	github.com/openvibely/openvibely-paperworks/internal/xlsx	2.893s
+ok  	github.com/openvibely/openvibely-paperworks/internal/zlibcompat	2.834s
+FAIL
+# github.com/openvibely/openvibely-paperworks/internal/pptx
+# [github.com/openvibely/openvibely-paperworks/internal/pptx]
+vet: internal/pptx/deck_edit_test.go:399:16: undefined: relativePart

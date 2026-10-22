@@ -321,3 +321,43 @@ func TestTraceMalformedAndExternal(t *testing.T) {
 		}
 	}
 }
+
+func TestTraceDistinctWholeColumnsKeepEveryIssue(t *testing.T) {
+	p := extentBenchmarkPackage(t, 1000, 100)
+	before := map[string][]byte{}
+	for _, part := range p.Parts {
+		before[part.Name] = append([]byte(nil), part.Data...)
+	}
+	r := traceRun(t, p, "output", "a1", 200, 20)
+	if !r.Truncated || r.Complete || len(r.Nodes) != 1 || len(r.Edges) != 0 || len(r.Cycles) != 0 || len(r.Unresolved) != 100 {
+		t.Fatalf("%+v", r)
+	}
+	for i, issue := range r.Unresolved {
+		col := ColumnName(i + 1)
+		want := TraceIssue{"'Output'!A1", "Inputs!" + col + ":" + col, "Range exceeds node budget"}
+		if issue != want {
+			t.Fatalf("issue %d: %+v want %+v", i, issue, want)
+		}
+	}
+	for _, part := range p.Parts {
+		if !bytes.Equal(part.Data, before[part.Name]) {
+			t.Fatal("mutated", part.Name)
+		}
+	}
+}
+
+func TestTraceIndexedWholeRangesMaximumBudget(t *testing.T) {
+	p, _ := traceFixture(t, func(f *excelize.File) {
+		f.SetCellValue("Inputs", "A3", 9)
+		f.SetCellValue("O'Brien", "A3", 4)
+		f.SetCellFormula("Output", "A1", `SUM('Inputs:O''Brien'!A:A,inputs!A:B,Inputs!2:3)`)
+	})
+	normal := traceRun(t, p, "Output", "A1", 200, 20)
+	maximum := traceRun(t, p, "output", "a1", 10000, 100)
+	if !normal.Complete || !reflect.DeepEqual(normal, maximum) {
+		t.Fatalf("normal=%+v maximum=%+v", normal, maximum)
+	}
+	for _, label := range []string{"'Inputs'!A2", "'Inputs'!B2", "'O''Brien'!A3"} {
+		hasTraceNode(t, normal, label)
+	}
+}

@@ -1,0 +1,33 @@
+File: office-before.test
+Type: cpu
+Time: 2026-10-21 22:54:57 EDT
+Duration: 11.71s, Total samples = 11.56s (98.69%)
+Showing nodes accounting for 9.88s, 85.47% of 11.56s total
+Dropped 61 nodes (cum <= 0.06s)
+Showing top 25 nodes out of 104
+      flat  flat%   sum%        cum   cum%
+     2.39s 20.67% 20.67%      5.17s 44.72%  regexp.(*Regexp).doOnePass
+     2.01s 17.39% 38.06%      2.09s 18.08%  github.com/beevik/etree.(*Element).findDefaultNamespaceURI
+     0.91s  7.87% 45.93%      0.93s  8.04%  regexp/syntax.(*Inst).MatchRunePos
+     0.83s  7.18% 53.11%      0.83s  7.18%  runtime.madvise
+     0.34s  2.94% 56.06%      0.42s  3.63%  sync.(*Pool).pin
+     0.32s  2.77% 58.82%      0.34s  2.94%  regexp.newLazyFlag (inline)
+     0.28s  2.42% 61.25%      3.92s 33.91%  github.com/openvibely/openvibely-paperworks/internal/office.Child
+     0.27s  2.34% 63.58%      0.35s  3.03%  regexp.(*inputString).step
+     0.26s  2.25% 65.83%      0.85s  7.35%  regexp.onePassNext
+     0.22s  1.90% 67.73%      0.79s  6.83%  runtime.mallocgc
+     0.21s  1.82% 69.55%      0.21s  1.82%  regexp.lazyFlag.match
+     0.21s  1.82% 71.37%      0.21s  1.82%  runtime.asyncPreempt
+     0.17s  1.47% 72.84%      1.12s  9.69%  runtime.growslice
+     0.17s  1.47% 74.31%      0.17s  1.47%  runtime.memequal
+     0.14s  1.21% 75.52%     10.02s 86.68%  github.com/openvibely/openvibely-paperworks/internal/office.(*tracer).savedExtent
+     0.13s  1.12% 76.64%      0.56s  4.84%  github.com/openvibely/openvibely-paperworks/internal/office.SplitCell
+     0.13s  1.12% 77.77%      0.14s  1.21%  internal/runtime/maps.(*Iter).Next
+     0.13s  1.12% 78.89%      0.54s  4.67%  runtime.mallocgcSmallScanNoHeader
+     0.12s  1.04% 79.93%      0.12s  1.04%  internal/bytealg.CountString
+     0.11s  0.95% 80.88%      1.27s 10.99%  github.com/beevik/etree.(*Element).ChildElements.(*Element).ChildElementsSeq.func1 (inline)
+     0.11s  0.95% 81.83%      0.11s  0.95%  runtime.pthread_cond_signal
+     0.11s  0.95% 82.79%      0.11s  0.95%  runtime.pthread_cond_wait
+     0.11s  0.95% 83.74%      0.11s  0.95%  runtime.pthread_kill
+     0.10s  0.87% 84.60%      0.10s  0.87%  runtime.usleep
+     0.10s  0.87% 85.47%      0.11s  0.95%  strings.ToUpper

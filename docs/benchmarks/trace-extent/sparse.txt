@@ -1,0 +1,11 @@
+goos: darwin
+goarch: arm64
+pkg: github.com/openvibely/openvibely-paperworks/internal/office
+cpu: Apple M5 Pro
+BenchmarkSavedExtentSparse-18    	  266286	       431.0 ns/op	     784 B/op	       7 allocs/op
+BenchmarkSavedExtentSparse-18    	  285130	       428.5 ns/op	     784 B/op	       7 allocs/op
+BenchmarkSavedExtentSparse-18    	  284643	       429.7 ns/op	     784 B/op	       7 allocs/op
+BenchmarkSavedExtentSparse-18    	  280348	       430.3 ns/op	     784 B/op	       7 allocs/op
+BenchmarkSavedExtentSparse-18    	  275829	       433.7 ns/op	     784 B/op	       7 allocs/op
+PASS
+ok  	github.com/openvibely/openvibely-paperworks/internal/office	0.854s

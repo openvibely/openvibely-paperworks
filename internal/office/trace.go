@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/beevik/etree"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 	"github.com/xuri/efp"
 )
@@ -47,7 +48,7 @@ type tracer struct {
 	cycles             map[string]bool
 	work               int
 	shared             map[string]map[string]traceSharedGroup
-	extents            map[traceExtentKey][2]int
+	extents            map[string]*traceExtentIndex
 }
 
 var traceCell = regexp.MustCompile(`(?i)^\$?([A-Z]{1,3})\$?([1-9][0-9]*)$`)
@@ -495,52 +496,97 @@ func (t *tracer) reference(ref, sh, owner string, names []string) []traceRef {
 	return out
 }
 
-// A per-trace cache avoids rescanning a worksheet for repeated whole ranges.
-// It is never reused across workbooks or after an edit.
+// Each worksheet is indexed lazily once per trace, never across workbooks or
+// edits. Sparse axis maps use space proportional to populated rows and columns,
+// including for worksheets with cells near Excel's maximum coordinates.
 type traceExtentKey struct {
 	sheet       string
 	columns     bool
 	first, last int
 }
 
+type traceExtentIndex struct {
+	columns, rows map[int][2]int
+}
+
+func mergeTraceExtent(a, b [2]int) [2]int {
+	if b[0] != 0 && (a[0] == 0 || b[0] < a[0]) {
+		a[0] = b[0]
+	}
+	if b[1] > a[1] {
+		a[1] = b[1]
+	}
+	return a
+}
+
+// Match Child's namespace semantics without allocating child-element slices
+// for each of the three populated-cell predicates.
+func tracePopulated(c *etree.Element) bool {
+	if c == nil {
+		return false
+	}
+	for _, token := range c.Child {
+		if e, ok := token.(*etree.Element); ok &&
+			(e.Tag == "f" || e.Tag == "v" || e.Tag == "is") && Is(e, NSS, e.Tag) {
+			return true
+		}
+	}
+	return false
+}
+
 func (t *tracer) savedExtent(key traceExtentKey) ([2]int, bool) {
 	if t.ctx.Err() != nil {
 		return [2]int{}, false
 	}
-	if v, ok := t.extents[key]; ok {
-		return v, true
-	}
-	extent := [2]int{}
-	for coord, c := range t.wb.Sheets[key.sheet].Cells {
+	index := t.extents[key.sheet]
+	if index == nil {
+		index = &traceExtentIndex{columns: map[int][2]int{}, rows: map[int][2]int{}}
+		for coord, c := range t.wb.Sheets[key.sheet].Cells {
+			if t.ctx.Err() != nil {
+				return [2]int{}, false
+			}
+			if !tracePopulated(c) {
+				continue
+			}
+			col, row, ok := traceCoord(coord)
+			if !ok {
+				continue
+			}
+			index.columns[col] = mergeTraceExtent(index.columns[col], [2]int{row, row})
+			index.rows[row] = mergeTraceExtent(index.rows[row], [2]int{col, col})
+		}
+		// Cancellation must not publish a partial index, even at the scan boundary.
 		if t.ctx.Err() != nil {
 			return [2]int{}, false
 		}
-		if Child(c, NSS, "f") == nil && Child(c, NSS, "v") == nil && Child(c, NSS, "is") == nil {
-			continue
+		if t.extents == nil {
+			t.extents = map[string]*traceExtentIndex{}
 		}
-		col, row, ok := traceCoord(coord)
-		if !ok {
-			continue
-		}
-		axis, value := row, col
-		if key.columns {
-			axis, value = col, row
-		}
-		if axis < key.first || axis > key.last {
-			continue
-		}
-		if extent[0] == 0 || value < extent[0] {
-			extent[0] = value
-		}
-		if value > extent[1] {
-			extent[1] = value
-		}
+		t.extents[key.sheet] = index
 	}
-	if t.extents == nil {
-		t.extents = map[traceExtentKey][2]int{}
+	axis := index.rows
+	if key.columns {
+		axis = index.columns
 	}
-	if len(t.extents) < 4096 {
-		t.extents[key] = extent
+	extent := [2]int{}
+	// Probe narrow intervals directly; for wide or invalid intervals, visit
+	// only populated axes rather than a potentially million-row interval.
+	if key.first >= 1 && key.last >= key.first && key.last <= 1048576 && key.last-key.first < len(axis) {
+		for position := key.first; position <= key.last; position++ {
+			if t.ctx.Err() != nil {
+				return [2]int{}, false
+			}
+			extent = mergeTraceExtent(extent, axis[position])
+		}
+		return extent, true
+	}
+	for position, bounds := range axis {
+		if t.ctx.Err() != nil {
+			return [2]int{}, false
+		}
+		if position >= key.first && position <= key.last {
+			extent = mergeTraceExtent(extent, bounds)
+		}
 	}
 	return extent, true
 }
