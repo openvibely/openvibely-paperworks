@@ -4,9 +4,39 @@ import (
 	"archive/zip"
 	"bytes"
 	"encoding/xml"
+	"errors"
 	"io"
+	"os"
+	"path/filepath"
 	"testing"
 )
+
+type closeErrorFile struct {
+	*os.File
+	closeErr error
+}
+
+func (f closeErrorFile) Close() error {
+	if err := f.File.Close(); err != nil {
+		return err
+	}
+	return f.closeErr
+}
+
+func TestWriteNewRemovesOutputWhenCloseFails(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "partial-output")
+	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
+	if err != nil {
+		t.Fatal(err)
+	}
+	closeErr := errors.New("simulated close failure")
+	if err := writeNewContents(path, closeErrorFile{File: file, closeErr: closeErr}, []byte("partial output")); !errors.Is(err, closeErr) {
+		t.Fatalf("writeNewContents error = %v, want %v", err, closeErr)
+	}
+	if _, err := os.Stat(path); !os.IsNotExist(err) {
+		t.Fatalf("output remains after close failure: %v", err)
+	}
+}
 
 func TestSetXMLWithUTF8BOMHasOneDeclaration(t *testing.T) {
 	for _, declaration := range []string{"", `<?xml version="1.0" encoding="utf-8"?>`} {
