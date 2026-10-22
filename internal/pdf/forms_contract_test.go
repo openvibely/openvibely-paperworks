@@ -120,7 +120,6 @@ func referenceFormPixels(t *testing.T, path, kind string) {
 		SourceSHA256 string `json:"source_sha256"`
 		Cases        map[string][]struct {
 			Width, Height int
-			Hash          string `json:"rgb_sha256"`
 		}
 	}
 	b, e := os.ReadFile("../../testdata/reference-mirror/form-oracles.json")
@@ -151,6 +150,17 @@ func referenceFormPixels(t *testing.T, path, kind string) {
 		t.Fatal(e)
 	}
 	defer inst.FPDF_CloseDocument(&requests.FPDF_CloseDocument{Document: doc.Document})
+	// Render the fixed, previously verified PDF with the same host fonts as
+	// the result. Unembedded standard fonts vary across operating systems.
+	golden, e := os.ReadFile("testdata/form-appearances/" + kind + ".pdf")
+	if e != nil {
+		t.Fatal(e)
+	}
+	ref, e := inst.OpenDocument(&requests.OpenDocument{File: &golden})
+	if e != nil {
+		t.Fatal(e)
+	}
+	defer inst.FPDF_CloseDocument(&requests.FPDF_CloseDocument{Document: ref.Document})
 	count, e := inst.FPDF_GetPageCount(&requests.FPDF_GetPageCount{Document: doc.Document})
 	if e != nil {
 		t.Fatal(e)
@@ -171,15 +181,13 @@ func referenceFormPixels(t *testing.T, path, kind string) {
 		if e != nil {
 			t.Fatal(e)
 		}
-		rgb := make([]byte, 0, want.Width*want.Height*3)
-		for y := 0; y < want.Height; y++ {
-			for x := 0; x < want.Width; x++ {
-				c := im.RGBAAt(x, y)
-				rgb = append(rgb, c.R, c.G, c.B)
-			}
+		refPage := requests.Page{ByIndex: &requests.PageByIndex{Document: ref.Document, Index: i}}
+		wantImage, e := referenceRenderLCD(inst, ref.Document, refPage, want.Width, want.Height)
+		if e != nil {
+			t.Fatal(e)
 		}
-		if got := fmt.Sprintf("%x", sha256.Sum256(rgb)); got != want.Hash {
-			t.Errorf("%s page %d pixels differ: got %s want %s", kind, i+1, got, want.Hash)
+		if !sameImage(im, wantImage) {
+			t.Errorf("%s page %d pixels differ from verified appearance", kind, i+1)
 		}
 	}
 }
