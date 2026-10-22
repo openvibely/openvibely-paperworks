@@ -185,6 +185,8 @@ func TestMergeBookmarkInstructionForms(t *testing.T) {
 		{` SET Other Summary `, "", true},
 		{` SET Other `, "", true},
 		{` SET "" "Summary" `, "", true},
+		{` ASK "" "Summary" `, "", true},
+		{` ASK \d "Summary" `, "", true},
 	} {
 		t.Run(tc.in, func(t *testing.T) {
 			got, err := rewriteMergedInstruction(tc.in, map[string]string{"Summary": "NewName"})
@@ -327,6 +329,12 @@ func TestMergeReservesDestinationStoryBookmarks(t *testing.T) {
 
 func TestMergePreservesUnrelatedFieldInstructions(t *testing.T) {
 	for _, instr := range []string{
+		` FILLIN "Summary" `,
+		` fillin "Enter text" \d "Summary" \o `,
+		` FILLIN "Summary prompt" \d "Summary default" \* MERGEFORMAT `,
+		` ASK Other "Summary" `,
+		` ask "Other" "Enter text" \d "Summary" \o `,
+		` ASK Other "Summary prompt" \d "Summary default" \* MERGEFORMAT `,
 		` QUOTE "Summary" `,
 		` quote "Summary and other literal text" \* MERGEFORMAT `,
 		` SET Other "Summary" `,
@@ -377,6 +385,9 @@ func TestMergePreservesUnrelatedFieldInstructions(t *testing.T) {
 func TestMergeRejectsActualUnsupportedBookmarkOperands(t *testing.T) {
 	dst := mk(t, "destination", mergeBookmarkBody("Summary", "original", ""), nil)
 	for _, instr := range []string{
+		` ASK Summary "Enter text" `,
+		` ask "Summary" "Other prompt" \d "Other default" \o `,
+		` ASK Summary "Summary prompt" \d "Summary default" `,
 		` SET Summary "Other" `,
 		` set "Summary" "Summary" `,
 		` SET Summary 25 `,
@@ -401,5 +412,24 @@ func TestMergeRejectsActualUnsupportedBookmarkOperands(t *testing.T) {
 				wantErr(t, dst, map[string]any{"operation": "merge", "files": []any{src}}, "unsupported bookmark reference")
 			})
 		}
+	}
+}
+
+func TestMergePromptFieldsDoNotHideNestedReferences(t *testing.T) {
+	dst := mk(t, "destination", mergeBookmarkBody("Summary", "original", ""), nil)
+	for _, instr := range []string{` FILLIN "Summary" \d "Summary" `, ` ASK Other "Summary" \d "Summary" `} {
+		t.Run(instr, func(t *testing.T) {
+			// Nested result fields must still be checked even when the surrounding
+			// prompt and default contain only literal text.
+			nestedResult := `<w:fldSimple w:instr="` + strings.ReplaceAll(instr, `"`, `&quot;`) + `"><w:fldSimple w:instr="TOC \b Summary"/></w:fldSimple>`
+			// Dynamic instructions remain unsupported rather than silently letting
+			// the nested bookmark reference resolve to the destination.
+			separator := `<w:r><w:fldChar w:fldCharType="separate"/></w:r>`
+			nestedInstruction := strings.Replace(complexField(instr, "cached"), separator, complexField(" REF Summary ", "cached")+separator, 1)
+			for _, field := range []string{nestedResult, nestedInstruction} {
+				src := mk(t, "source", mergeBookmarkBody("Summary", "appendix", field), nil)
+				wantErr(t, dst, map[string]any{"operation": "merge", "files": []any{src}}, "unsupported.*(bookmark|nested)")
+			}
+		})
 	}
 }

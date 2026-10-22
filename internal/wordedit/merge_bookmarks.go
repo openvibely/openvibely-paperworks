@@ -218,18 +218,18 @@ func rewriteMergedInstruction(instr string, names map[string]string) (string, er
 				target = i + 1
 			}
 		}
-	case "SET":
-		// SET's first operand is the bookmark being assigned; its second is
-		// literal data, not a reference to a similarly named bookmark. Do not
-		// allow an assignment to a renamed source bookmark to overwrite the
+	case "SET", "ASK":
+		// SET and ASK assign to their first operand, a bookmark. SET's value
+		// and ASK's prompt/default are literals, not bookmark references. Do
+		// not let assignments to renamed source bookmarks overwrite the
 		// destination. Nested instructions remain guarded by the field walker.
 		if len(spans) < 3 || token(1) == "" || strings.HasPrefix(token(1), `\`) {
-			return "", fmt.Errorf("unsupported SET bookmark operand in merged body")
+			return "", fmt.Errorf("unsupported %s bookmark operand in merged body", kind)
 		}
 		if mergedInstructionMentions(token(1), names) {
-			return "", fmt.Errorf("unsupported bookmark reference in SET field in merged body")
+			return "", fmt.Errorf("unsupported bookmark reference in %s field in merged body", kind)
 		}
-		if instr[spans[2][0]] != '"' {
+		if kind == "SET" && instr[spans[2][0]] != '"' {
 			// Word permits unquoted numeric values, including percentages.
 			// Other expressions are not assumed to be harmless literal text.
 			if _, err := strconv.ParseFloat(strings.TrimSuffix(token(2), "%"), 64); err != nil {
@@ -237,10 +237,10 @@ func rewriteMergedInstruction(instr string, names map[string]string) (string, er
 			}
 		}
 		return instr, nil
-	case "QUOTE":
-		// QUOTE inserts literal text; matching a renamed bookmark inside that
-		// text does not make it a reference. Nested field instructions are
-		// still inspected or rejected by remapMergedBookmarks' field walker.
+	case "QUOTE", "FILLIN":
+		// QUOTE's text and FILLIN's prompt/default are literals. Matching a
+		// renamed bookmark in them does not make them references. Nested field
+		// instructions are still inspected or rejected by the field walker.
 		return instr, nil
 	case "DOCPROPERTY", "DOCVARIABLE", "MERGEFIELD", "STYLEREF",
 		"DATE", "TIME", "CREATEDATE", "SAVEDATE", "PRINTDATE",
