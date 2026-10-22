@@ -140,12 +140,22 @@ func ExtractLayout(ctx context.Context, data []byte, opt LayoutOptions) ([]PageL
 				for i := range r.Table {
 					r.Table[i] = make([]string, len(opt.Columns)-1)
 				}
+				last := map[[2]int]Character{}
 				for _, c := range r.Characters {
 					x, y := (c.Left+c.Right)/2, (c.Bottom+c.Top)/2
 					col := sort.SearchFloat64s(opt.Columns, x) - 1
 					row := sort.SearchFloat64s(opt.Rows, y) - 1
 					if col >= 0 && col < len(opt.Columns)-1 && row >= 0 && row < len(opt.Rows)-1 {
-						r.Table[len(r.Table)-1-row][col] += c.Text
+						key := [2]int{len(r.Table) - 1 - row, col}
+						cell := &r.Table[key[0]][key[1]]
+						// Whitespace boxes are often degenerate, so only glyphs define lines.
+						if strings.TrimSpace(c.Text) != "" {
+							if prev, ok := last[key]; ok && differentLine(prev, c) {
+								*cell = strings.TrimRightFunc(*cell, unicode.IsSpace) + " "
+							}
+							last[key] = c
+						}
+						*cell += c.Text
 					}
 				}
 				for i := range r.Table {
@@ -162,4 +172,12 @@ func ExtractLayout(ctx context.Context, data []byte, opt LayoutOptions) ([]PageL
 		out = append(out, result)
 	}
 	return out, nil
+}
+
+// differentLine reports whether next sits on a later text line than prev:
+// their vertical overlap is under half the smaller glyph height.
+func differentLine(prev, next Character) bool {
+	overlap := min(prev.Top, next.Top) - max(prev.Bottom, next.Bottom)
+	h := min(prev.Top-prev.Bottom, next.Top-next.Bottom)
+	return overlap < h/2
 }

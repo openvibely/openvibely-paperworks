@@ -208,7 +208,9 @@ paperworks pdf-object-edit input.pdf --spec edits.json --output edited.pdf
 Layout extraction returns characters with boxes in PDF points from **bottom-left**.
 Select one-based pages, bounds [left,bottom,right,top], max_chars. Explicit ascending
 columns/rows boundaries extract table cells top-to-bottom; no OCR or automatic
-arbitrary table detection is claimed.
+arbitrary table detection is claimed. Text wrapped onto several lines inside one
+cell is joined in reading order with a single space between lines (trailing
+whitespace at a wrap is collapsed); the `characters` output is unchanged.
 
 Objects are indexed top-level page objects: 1 text, 2 path, 3 image, 4 shading,
 5 form. Inspect and render before selecting. For example:

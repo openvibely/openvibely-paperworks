@@ -113,3 +113,41 @@ func TestCanvasFontsAndGraphicsRender(t *testing.T) {
 		t.Fatalf("rendered %d pages", count)
 	}
 }
+
+func TestLayoutTableJoinsWrappedLines(t *testing.T) {
+	ctx := context.Background()
+	text := func(x, y float64, s string) CanvasElement {
+		return CanvasElement{Type: "text", X: x, Y: y, Text: s, FontSize: 10}
+	}
+	out := filepath.Join(t.TempDir(), "wrapped.pdf")
+	canvas := Canvas{Pages: []CanvasPage{{Width: 400, Height: 200, Elements: []CanvasElement{
+		text(10, 100, "Net sales"), text(10, 115, "2024"),
+		text(110, 100, "Gross"), text(210, 100, "Margin"),
+		text(310, 40, "alpha"), text(310, 55, "beta"), text(310, 70, "gamma"),
+		text(10, 150, "Trailing "), text(10, 165, "space"),
+	}}}}
+	if err := Create(ctx, CreateSpec{Canvas: &canvas}, ".", out); err != nil {
+		t.Fatal(err)
+	}
+	data, err := os.ReadFile(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	layout, err := ExtractLayout(ctx, data, LayoutOptions{Columns: []float64{0, 100, 200, 300, 400}, Rows: []float64{0, 80, 120, 200}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := layout[0].Table
+	want := [][]string{
+		{"", "", "", "alpha beta gamma"},
+		{"Net sales 2024", "Gross", "Margin", ""},
+		{"Trailing space", "", "", ""},
+	}
+	for i := range want {
+		for j := range want[i] {
+			if got[i][j] != want[i][j] {
+				t.Errorf("cell %d,%d = %q, want %q", i, j, got[i][j], want[i][j])
+			}
+		}
+	}
+}
