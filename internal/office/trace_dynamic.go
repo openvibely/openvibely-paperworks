@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/openvibely/openvibely-paperworks/internal/r1c1"
 	"github.com/xuri/efp"
 )
 
@@ -156,19 +157,12 @@ func r1c1Address(address, owner string) (string, error) {
 		if m == nil {
 			return "", fmt.Errorf("invalid R1C1 address")
 		}
-		coord := func(v string, base int) int {
-			if v == "" {
-				return base
-			}
-			if strings.HasPrefix(v, "[") {
-				n, _ := strconv.Atoi(strings.Trim(v, "[]"))
-				return base + n
-			}
-			n, _ := strconv.Atoi(v)
-			return n
+		r, _, err := r1c1.ResolveComponent(m[1], row, r1c1.MaxRows)
+		if err != nil {
+			return "", fmt.Errorf("R1C1 address exceeds worksheet bounds")
 		}
-		r, c := coord(m[1], row), coord(m[2], col)
-		if r < 1 || r > 1048576 || c < 1 || c > 16384 {
+		c, _, err := r1c1.ResolveComponent(m[2], col, r1c1.MaxColumns)
+		if err != nil {
 			return "", fmt.Errorf("R1C1 address exceeds worksheet bounds")
 		}
 		parts[i] = ColumnName(c) + strconv.Itoa(r)

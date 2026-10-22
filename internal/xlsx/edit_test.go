@@ -126,9 +126,26 @@ func TestRangeCopyAndFillTranslateFormulas(t *testing.T) {
 	}
 }
 func TestR1C1FormulaTranslation(t *testing.T) {
-	v, err := r1c1Formula(`SUM(R[-1]C:R[-1]C[2])+R1C1+LEN("R1C1")`, "B3")
-	if err != nil || v != `SUM(B2:D2)+$A$1+LEN("R1C1")` {
+	v, err := r1c1Formula(`SUM(R[-1]C:R[-1]C[2])+R1C1`, "B3")
+	if err != nil || v != `SUM(B2:D2)+$A$1` {
 		t.Fatal(v, err)
+	}
+	quoted, err := r1c1Formula(`SUM(R[-1]C:R[-1]C[2])+R1C1+LEN("R1C1")`, "B3")
+	if err != nil || quoted != `SUM(B2:D2)+$A$1+LEN("R1C1")` {
+		t.Fatal(quoted, err)
+	}
+}
+
+func TestR1C1FormulaRejectsOutOfBoundsRelativeReferences(t *testing.T) {
+	for _, tc := range []struct{ formula, cell string }{
+		{"R[-3]C", "B3"},
+		{"RC[-2]", "B3"},
+		{"R[1048575]C", "A2"},
+		{"RC[16384]", "A1"},
+	} {
+		if got, err := r1c1Formula(tc.formula, tc.cell); err == nil {
+			t.Errorf("accepted %q at %s as %q", tc.formula, tc.cell, got)
+		}
 	}
 }
 func TestFormulaCopyPreservesQuotedAndStructuredReferences(t *testing.T) {
