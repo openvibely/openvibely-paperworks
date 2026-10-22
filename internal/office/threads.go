@@ -209,10 +209,7 @@ func editThread(p *opc.Package, spec CommentSpec, action string, sheets map[stri
 			return errors.New("thread does not exist")
 		}
 		st.part = uniquePart(p, "xl/threadedComments", "threadedComment")
-		rel, err := relPath(st.owner, st.part)
-		if err != nil {
-			return err
-		}
+		rel := opc.Relative(st.owner, st.part)
 		if _, err := p.AddRel(st.owner, relTR+"threadedComment", rel, false); err != nil {
 			return err
 		}
@@ -289,10 +286,7 @@ func editThread(p *opc.Package, spec CommentSpec, action string, sheets map[stri
 					return err
 				}
 				if !hadPeople {
-					rel, err := relPath("xl/workbook.xml", pp)
-					if err != nil {
-						return err
-					}
+					rel := opc.Relative("xl/workbook.xml", pp)
 					if _, err := p.AddRel("xl/workbook.xml", relTR+"person", rel, false); err != nil {
 						return err
 					}

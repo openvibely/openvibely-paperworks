@@ -336,6 +336,18 @@ func (p *Package) Rels(part string) ([]Relationship, error) {
 	return out, nil
 }
 
+// Relative returns a relative relationship target from source to target.
+// It preserves the supplied target without encoding or normalization.
+func Relative(source, target string) string {
+	fromDir := strings.Split(path.Dir(source), "/")
+	toParts := strings.Split(target, "/")
+	i := 0
+	for i < len(fromDir) && i < len(toParts)-1 && fromDir[i] == toParts[i] {
+		i++
+	}
+	return strings.Repeat("../", len(fromDir)-i) + strings.Join(toParts[i:], "/")
+}
+
 // Resolve maps a relationship target to an absolute part name.
 func Resolve(source, target string) string {
 	target = strings.SplitN(target, "#", 2)[0]

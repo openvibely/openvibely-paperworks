@@ -165,10 +165,7 @@ func TestDuplicateSlidePreservesNavigationTargets(t *testing.T) {
 	}
 	props := office.All(d.Root(), ans, "rPr")[0]
 	for i, target := range slides {
-		relative, err := relativePart(slides[0], target)
-		if err != nil {
-			t.Fatal(err)
-		}
+		relative := opc.Relative(slides[0], target)
 		rid, err := p.AddRel(slides[0], rns+"/slide", relative, false)
 		if err != nil {
 			t.Fatal(err)

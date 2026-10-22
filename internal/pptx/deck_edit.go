@@ -83,7 +83,7 @@ func DeckEditFile(ctx context.Context, input, output, base string, spec DeckEdit
 			if err = pkg.SetXML(relPart, rels); err != nil {
 				return err
 			}
-			target, _ := relativePart(slides[e.Slide-1], e.Part)
+			target := opc.Relative(slides[e.Slide-1], e.Part)
 			if _, err = pkg.AddRel(slides[e.Slide-1], rns+"/slideLayout", target, false); err != nil {
 				return err
 			}
@@ -260,7 +260,7 @@ func DeckEditFile(ctx context.Context, input, output, base string, spec DeckEdit
 					}
 					target := r.Target
 					if r.TargetMode != "External" {
-						target, _ = relativePart(slides[e.Slide-1], opc.Resolve(imported, r.Target))
+						target = opc.Relative(slides[e.Slide-1], opc.Resolve(imported, r.Target))
 					}
 					id, err := pkg.AddRel(slides[e.Slide-1], r.Type, target, r.TargetMode == "External")
 					if err != nil {
@@ -335,7 +335,7 @@ func DeckEditFile(ctx context.Context, input, output, base string, spec DeckEdit
 			if pos < 1 || pos > len(ids)+1 {
 				return fmt.Errorf("position must be 1..%d", len(ids)+1)
 			}
-			target, _ := relativePart(main, imported)
+			target := opc.Relative(main, imported)
 			rid, err := pkg.AddRel(main, rns+"/slide", target, false)
 			if err != nil {
 				return err
@@ -375,7 +375,7 @@ func DeckEditFile(ctx context.Context, input, output, base string, spec DeckEdit
 				if pkg.ContentType(n) != "application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml" || known[n] {
 					continue
 				}
-				target, _ := relativePart(main, n)
+				target := opc.Relative(main, n)
 				id, err := pkg.AddRel(main, rns+"/slideMaster", target, false)
 				if err != nil {
 					return err
@@ -461,7 +461,7 @@ func importPartGraph(ctx context.Context, dest, src *opc.Package, name string, r
 					}
 				}
 			}
-			to, _ = relativePart(target, n)
+			to = opc.Relative(target, n)
 		}
 		// Keep IDs referenced by the copied XML; AddRel generates different IDs.
 		relPart := opc.RelsName(target)

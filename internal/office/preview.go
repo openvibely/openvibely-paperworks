@@ -747,10 +747,7 @@ func ensureDrawing(set *editSet, part string, root *etree.Element) (*etree.Eleme
 			break
 		}
 	}
-	rel, err := relPath(part, dp)
-	if err != nil {
-		return nil, err
-	}
+	rel := opc.Relative(part, dp)
 	id, err := p.AddRel(part, opc.NSOffR+"/drawing", rel, false)
 	if err != nil {
 		return nil, err
@@ -773,17 +770,6 @@ func ensureDrawing(set *editSet, part string, root *etree.Element) (*etree.Eleme
 	ws.CreateAttr("xmlns:a", NSA)
 	set.docs[dp] = doc
 	return ws, nil
-}
-
-func relPath(from, to string) (string, error) {
-	fromDir := strings.Split(path.Dir(from), "/")
-	toParts := strings.Split(to, "/")
-	i := 0
-	for i < len(fromDir) && i < len(toParts)-1 && fromDir[i] == toParts[i] {
-		i++
-	}
-	out := strings.Repeat("../", len(fromDir)-i) + strings.Join(toParts[i:], "/")
-	return out, nil
 }
 
 // Reference round uses ties-to-even for the sparkline point and line-width writers.
