@@ -1,11 +1,12 @@
 package pptx
 
 import (
+	"errors"
 	"fmt"
-	"github.com/beevik/etree"
-	"os"
-	"path/filepath"
 	"strings"
+
+	"github.com/beevik/etree"
+	"github.com/openvibely/openvibely-paperworks/internal/xmlresource"
 )
 
 // StyleResources supply reusable PresentationML styles; slide content remains authored.
@@ -21,19 +22,13 @@ type StyleResources struct {
 }
 
 func readStyleResource(base, name, namespace, tag string) ([]byte, error) {
-	if !filepath.IsAbs(name) {
-		name = filepath.Join(base, name)
-	}
-	raw, err := os.ReadFile(name)
+	raw, d, err := xmlresource.Read(base, name, namespace, tag)
 	if err != nil {
+		var rootErr *xmlresource.RootError
+		if errors.As(err, &rootErr) {
+			return nil, fmt.Errorf("style resource must have {%s}%s root", namespace, tag)
+		}
 		return nil, err
-	}
-	d := etree.NewDocument()
-	if err = d.ReadFromBytes(raw); err != nil {
-		return nil, err
-	}
-	if d.Root() == nil || d.Root().Tag != tag || d.Root().NamespaceURI() != namespace {
-		return nil, fmt.Errorf("style resource must have {%s}%s root", namespace, tag)
 	}
 	// A resource cannot introduce undeclared relationships. The sole
 	// supported master link is the generated layout relationship rId1.
