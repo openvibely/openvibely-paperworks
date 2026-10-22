@@ -4,16 +4,45 @@ import (
 	"bytes"
 	"context"
 	"crypto/sha256"
+	"errors"
 	"fmt"
 	"image"
 	"image/color"
 	"image/jpeg"
+	"io"
 	"os"
 	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
 )
+
+type failAfterBytesWriter struct {
+	io.Writer
+	remaining int
+	err       error
+}
+
+func (w *failAfterBytesWriter) Write(p []byte) (int, error) {
+	if w.remaining == 0 {
+		return 0, w.err
+	}
+	if len(p) > w.remaining {
+		limit := w.remaining
+		n, err := w.Writer.Write(p[:limit])
+		w.remaining -= n
+		if err != nil {
+			return n, err
+		}
+		if n != limit {
+			return n, io.ErrShortWrite
+		}
+		return n, w.err
+	}
+	n, err := w.Writer.Write(p)
+	w.remaining -= n
+	return n, err
+}
 
 func splitTextFixture(pageCount int) []byte {
 	objs := []string{
@@ -326,7 +355,7 @@ func TestSplitErrorsCancellationAndPartialResults(t *testing.T) {
 		}
 	})
 
-	t.Run("write failure after earlier output", func(t *testing.T) {
+	t.Run("output creation failure after earlier output", func(t *testing.T) {
 		src := writeTemp(t, "input.pdf", splitTextFixture(2))
 		outDir := t.TempDir()
 		second := filepath.Join(outDir, "input-002.pdf")
@@ -335,10 +364,34 @@ func TestSplitErrorsCancellationAndPartialResults(t *testing.T) {
 		}
 		files, err := Split(context.Background(), src, outDir, [][]int{{1}, {2}})
 		if err == nil || len(files) != 1 {
-			t.Fatalf("files=%v err=%v, want first result and second write failure", files, err)
+			t.Fatalf("files=%v err=%v, want first result and second output creation failure", files, err)
 		}
 		if _, statErr := os.Stat(files[0]); statErr != nil {
 			t.Fatalf("earlier output missing: %v", statErr)
+		}
+	})
+
+	t.Run("write failure after earlier output", func(t *testing.T) {
+		src := writeTemp(t, "input.pdf", splitTextFixture(2))
+		outDir := t.TempDir()
+		second := filepath.Join(outDir, "input-002.pdf")
+		injectedErr := errors.New("injected output write failure")
+		files, err := splitWithOutputWriter(context.Background(), src, outDir, [][]int{{1}, {2}}, nil, func(path string, write func(io.Writer) error) error {
+			if path != second {
+				return writeNewWith(path, write)
+			}
+			return writeNewWith(path, func(w io.Writer) error {
+				return write(&failAfterBytesWriter{Writer: w, remaining: 1, err: injectedErr})
+			})
+		})
+		if !errors.Is(err, injectedErr) || len(files) != 1 {
+			t.Fatalf("files=%v err=%v, want first result and injected write failure", files, err)
+		}
+		if _, statErr := os.Stat(files[0]); statErr != nil {
+			t.Fatalf("earlier output missing: %v", statErr)
+		}
+		if _, statErr := os.Stat(second); !os.IsNotExist(statErr) {
+			t.Fatalf("partial second output remains after write failure: stat err=%v", statErr)
 		}
 	})
 
