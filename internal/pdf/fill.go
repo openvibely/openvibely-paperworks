@@ -388,14 +388,15 @@ func applyValues(ctx context.Context, c *model.Context, fields map[string]*field
 				}
 			}
 		case "Ch":
-			opts := choiceOptions(x, f.D)
+			exports, opts := choiceOptions(x, f.D)
 			s, err := types.EscapedUTF16String(v)
 			if err != nil {
 				return err
 			}
 			ind := types.Array{}
-			if i := slices.Index(opts, v); i >= 0 {
+			if i := slices.Index(exports, v); i >= 0 {
 				ind = append(ind, types.Integer(i))
+				v = opts[i]
 			}
 			f.D["V"] = types.StringLiteral(*s)
 			// Choices store V without I, matching the reference. Keep indices
@@ -412,7 +413,7 @@ func applyValues(ctx context.Context, c *model.Context, fields map[string]*field
 							return err
 						}
 						array = append(array, types.StringLiteral(*escaped))
-						if i := slices.Index(opts, item); i >= 0 {
+						if i := slices.Index(exports, item); i >= 0 {
 							ind = append(ind, types.Integer(i))
 						}
 					}
@@ -446,19 +447,25 @@ func applyValues(ctx context.Context, c *model.Context, fields map[string]*field
 	return pdffont.UpdateUserfonts(ctx, x, fonts)
 }
 
-func choiceOptions(x *model.XRefTable, d types.Dict) []string {
+// choiceOptions preserves the export values used by /V alongside the labels
+// painted in appearances. A plain string option uses the same value for both.
+func choiceOptions(x *model.XRefTable, d types.Dict) (exports, labels []string) {
 	a, _ := entryArray(x, entry(x, d, "Opt"))
-	var out []string
 	for _, o := range a {
 		o, _ = deref(x, o)
+		export, label := o, o
 		if pair, ok := o.(types.Array); ok && len(pair) == 2 {
-			o, _ = deref(x, pair[1])
+			export, _ = deref(x, pair[0])
+			label, _ = deref(x, pair[1])
 		}
-		if s, ok := textOf(o); ok {
-			out = append(out, s)
+		e, exportOK := textOf(export)
+		l, labelOK := textOf(label)
+		if exportOK && labelOK {
+			exports = append(exports, e)
+			labels = append(labels, l)
 		}
 	}
-	return out
+	return exports, labels
 }
 
 // appearanceTransform maps the transformed /BBox of a form XObject onto the

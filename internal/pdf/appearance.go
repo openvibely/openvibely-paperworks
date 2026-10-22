@@ -165,7 +165,8 @@ func alignSingleLineAppearance(x *model.XRefTable, w types.Dict, f *field, value
 				return nil
 			}
 		}
-		value = strings.Join(choiceOptions(x, f.D), "\n")
+		_, labels := choiceOptions(x, f.D)
+		value = strings.Join(labels, "\n")
 	}
 	comb := f.FT == "Tx" && f.Ff&(1<<24) != 0
 	multiline := f.FT == "Tx" && f.Ff&(1<<12) != 0
