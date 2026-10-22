@@ -90,11 +90,14 @@ func Convert(ctx context.Context, path, output string, o Options) (map[string]an
 		}
 		if need {
 			if e == ".xlsx" {
-				calc, err := Convert(ctx, source, filepath.Join(temp, "calculated"), Options{Recalculate: true})
-				if err != nil {
-					return nil, err
+				formulas, _ := report["formulas"].([]office.Formula)
+				if len(formulas) > 0 {
+					calc, err := Convert(ctx, source, filepath.Join(temp, "calculated"), Options{Recalculate: true})
+					if err != nil {
+						return nil, err
+					}
+					source = calc["output"].(string)
 				}
-				source = calc["output"].(string)
 			}
 			dir := filepath.Join(temp, "preview")
 			os.Mkdir(dir, 0o755)

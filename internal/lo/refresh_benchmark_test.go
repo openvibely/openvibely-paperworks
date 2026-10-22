@@ -16,8 +16,9 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-// TestRefreshBenchmarkSample is an opt-in acceptance benchmark. It uses a new
-// LibreOffice process and throwaway profile for every measured operation.
+// TestRefreshBenchmarkSample is an opt-in acceptance benchmark. Each operation
+// uses one throwaway LibreOffice profile when the workbook needs Office; safe
+// formula-free workbooks use the local cache refresh path.
 // Set PAPERWORKS_REFRESH_BENCHMARK_GROUP to small-cold, small-warm, large-cold,
 // or large-warm to run one 30-operation sample.
 func TestRefreshBenchmarkSample(t *testing.T) {

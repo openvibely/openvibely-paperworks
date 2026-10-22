@@ -16,7 +16,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/openvibely/openvibely-paperworks/internal/lo"
 	"github.com/openvibely/openvibely-paperworks/internal/office"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 	"github.com/openvibely/openvibely-paperworks/internal/pdf"
@@ -351,9 +350,9 @@ func TestReferenceConversionInspectsDistinctArtifact(t *testing.T) {
 	before := contents(t, src)
 	out := filepath.Join(t.TempDir(), "converted")
 	destination := filepath.Join(out, "input.xlsx")
-	// Exercise Convert -> lo.Refresh -> real isolated profile creation. Only
-	// the external office process is replaced, as Reference replaces refresh_office.
-	// The process checks the profile and paths before publishing the distinct ZIP.
+	// Exercise Convert -> lo.Refresh -> real isolated profile creation while
+	// replacing only LibreOffice. The probe writes a distinct converted ZIP to the
+	// macro's requested output and reports successful completion.
 	dir := t.TempDir()
 	exe := filepath.Join(dir, "office-probe")
 	marker := filepath.Join(dir, "calls")
@@ -362,24 +361,24 @@ set -eu
 profile=${1#-env:UserInstallation=file://}
 test -f "$profile/user/registrymodifications.xcu"
 grep -q 'MacroSecurityLevel' "$profile/user/registrymodifications.xcu"
+grep -q 'DisableMacrosExecution' "$profile/user/registrymodifications.xcu"
+grep -q '<value>true</value>' "$profile/user/registrymodifications.xcu"
+test -f "$profile/user/basic/Standard/Module1.xba"
 printf '%s\n' "$profile" >> "$PW_TEST_CALLS"
-test -f "$profile/user/basic/script.xlc"
-test -f "$profile/user/basic/Standard/script.xlb"
-grep -q 'NEVER_EXECUTE' "$profile/user/basic/Standard/Module1.xba"
-test "$PW_IN" = "$PW_TEST_INPUT"
-test "$PW_OUT" = "$PW_TEST_OUTPUT"
-test "$PW_IN" != "$PW_OUT"
-cp "$PW_TEST_ARTIFACT" "$PW_TEST_DESTINATION"
-printf ok > "$PW_STATUS"
+test "$7" = "macro:///Standard.Module1.Main"
+test "${PW_FILTER}" = "Calc MS Excel 2007 XML"
+source=${PW_IN#file://}
+test "$source" = "$PW_TEST_SOURCE"
+output=${PW_OUT#file://}
+cp "$PW_TEST_ARTIFACT" "$output"
+printf 'ok\n' > "$PW_STATUS"
 `
 	if err := os.WriteFile(exe, []byte(script), 0700); err != nil {
 		t.Fatal(err)
 	}
 	t.Setenv("DOCUMENT_SOFFICE", exe)
 	t.Setenv("PW_TEST_CALLS", marker)
-	t.Setenv("PW_TEST_INPUT", lo.FileURL(src))
-	t.Setenv("PW_TEST_OUTPUT", lo.FileURL(destination))
-	t.Setenv("PW_TEST_DESTINATION", destination)
+	t.Setenv("PW_TEST_SOURCE", src)
 	t.Setenv("PW_TEST_ARTIFACT", converted)
 	report, err := Convert(context.Background(), src, out, Options{Recalculate: true})
 	if err != nil {
