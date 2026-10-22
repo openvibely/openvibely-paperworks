@@ -66,15 +66,29 @@ func WordSections(root *etree.Element) []*etree.Element {
 		return nil
 	}
 	var sections []*etree.Element
-	for _, block := range root.ChildElements() {
-		if Is(block, NSW, "sectPr") {
-			sections = append(sections, block)
-		} else if Is(block, NSW, "p") {
-			if section := Child(Child(block, NSW, "pPr"), NSW, "sectPr"); section != nil {
-				sections = append(sections, section)
+	var visit func(*etree.Element)
+	visit = func(container *etree.Element) {
+		if container == nil {
+			return
+		}
+		for _, block := range container.ChildElements() {
+			switch {
+			case Is(block, NSW, "sectPr") && container == root:
+				sections = append(sections, block)
+			case Is(block, NSW, "p"):
+				// Read only current paragraph properties, never revision
+				// snapshots or separate stories inside drawings/text boxes.
+				if section := Child(Child(block, NSW, "pPr"), NSW, "sectPr"); section != nil {
+					sections = append(sections, section)
+				}
+			case Is(block, NSW, "sdt"):
+				visit(Child(block, NSW, "sdtContent"))
+			case Is(block, NSW, "customXml"), Is(block, NSW, "ins"), Is(block, NSW, "moveTo"):
+				visit(block)
 			}
 		}
 	}
+	visit(root)
 	return sections
 }
 
