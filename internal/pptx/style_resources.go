@@ -64,13 +64,7 @@ func readStyleResource(base, name, namespace, tag string) ([]byte, error) {
 func inheritedTextBody(e Element) string {
 	var b strings.Builder
 	b.WriteString(`<a:bodyPr/><a:lstStyle/>`)
-	ps := e.Paragraphs
-	if len(ps) == 0 {
-		for _, text := range strings.Split(e.Text, "\n") {
-			ps = append(ps, Paragraph{Text: text})
-		}
-	}
-	for _, p := range ps {
+	forEachTextParagraph(e, func(p Paragraph, runs []Run) {
 		b.WriteString(`<a:p>`)
 		if p.Bullet || p.Level != 0 || e.Align != "" {
 			fmt.Fprintf(&b, `<a:pPr lvl="%d"`, p.Level)
@@ -82,10 +76,6 @@ func inheritedTextBody(e Element) string {
 				b.WriteString(`<a:buChar char="•"/>`)
 			}
 			b.WriteString(`</a:pPr>`)
-		}
-		runs := p.Runs
-		if len(runs) == 0 {
-			runs = []Run{{Text: p.Text}}
 		}
 		for _, r := range runs {
 			b.WriteString(`<a:r><a:rPr`)
@@ -123,6 +113,6 @@ func inheritedTextBody(e Element) string {
 			b.WriteString(`<a:t>` + esc(r.Text) + `</a:t></a:r>`)
 		}
 		b.WriteString(`</a:p>`)
-	}
+	})
 	return b.String()
 }
