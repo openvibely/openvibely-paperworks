@@ -18,6 +18,7 @@ import (
 	"github.com/beevik/etree"
 	"github.com/openvibely/openvibely-paperworks/internal/docxtemplate"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
+	"github.com/openvibely/openvibely-paperworks/internal/xmlresource"
 )
 
 type Run struct {
@@ -557,21 +558,14 @@ func hfXML(tag, content string) string {
 // readXMLResource imports an explicit authoring resource without rewriting its
 // inherited style or theme properties. It does not import external relationships.
 func readXMLResource(base, name, namespace, local string) ([]byte, error) {
-	path := name
-	if !filepath.IsAbs(path) {
-		path = filepath.Join(base, path)
-	}
-	raw, err := os.ReadFile(path)
+	raw, _, err := xmlresource.Read(base, name, namespace, local)
 	if err != nil {
+		var parseErr *xmlresource.ParseError
+		var rootErr *xmlresource.RootError
+		if errors.As(err, &parseErr) || errors.As(err, &rootErr) {
+			return nil, fmt.Errorf("%s: %w", name, err)
+		}
 		return nil, err
-	}
-	doc := etree.NewDocument()
-	if err := doc.ReadFromBytes(raw); err != nil {
-		return nil, fmt.Errorf("%s: %w", name, err)
-	}
-	root := doc.Root()
-	if root == nil || root.Tag != local || root.NamespaceURI() != namespace {
-		return nil, fmt.Errorf("%s: expected {%s}%s root", name, namespace, local)
 	}
 	return raw, nil
 }

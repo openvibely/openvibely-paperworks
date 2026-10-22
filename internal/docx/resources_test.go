@@ -44,6 +44,32 @@ func TestStyleResourcesAndAutofit(t *testing.T) {
 	}
 }
 
+func TestAuthorResourcesAcceptAbsolutePaths(t *testing.T) {
+	root := t.TempDir()
+	styles := []byte(`<w:styles xmlns:w="` + NSW + `"><w:style w:type="paragraph" w:styleId="Title"/></w:styles>`)
+	theme := []byte(`<a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" name="Absolute"><a:themeElements/></a:theme>`)
+	stylesPath := filepath.Join(root, "styles.xml")
+	themePath := filepath.Join(root, "theme.xml")
+	if err := os.WriteFile(stylesPath, styles, 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(themePath, theme, 0600); err != nil {
+		t.Fatal(err)
+	}
+
+	raw, err := Build(Spec{StylesFile: stylesPath, ThemeFile: themePath}, root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	pkg, err := opc.Read(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(pkg.Get("word/styles.xml"), styles) || !bytes.Equal(pkg.Get("word/theme/theme1.xml"), theme) {
+		t.Fatal("absolute-path author resources were rewritten")
+	}
+}
+
 func TestInvalidAuthorResourceDoesNotPublish(t *testing.T) {
 	for _, tc := range []struct {
 		name, raw string

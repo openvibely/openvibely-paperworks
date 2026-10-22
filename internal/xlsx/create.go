@@ -4,14 +4,14 @@ package xlsx
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"github.com/beevik/etree"
-	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
+	"github.com/openvibely/openvibely-paperworks/internal/xmlresource"
 	"github.com/xuri/excelize/v2"
 )
 
@@ -396,20 +396,13 @@ func createWithClock(ctx context.Context, spec Spec, base, output string, clock 
 			return e
 		}
 		if spec.ThemeFile != "" {
-			name := spec.ThemeFile
-			if !filepath.IsAbs(name) {
-				name = filepath.Join(base, name)
-			}
-			raw, err := os.ReadFile(name)
+			raw, _, err := xmlresource.Read(base, spec.ThemeFile, "http://schemas.openxmlformats.org/drawingml/2006/main", "theme")
 			if err != nil {
+				var rootErr *xmlresource.RootError
+				if errors.As(err, &rootErr) {
+					return fmt.Errorf("theme_file must contain a DrawingML theme")
+				}
 				return err
-			}
-			d := etree.NewDocument()
-			if err = d.ReadFromBytes(raw); err != nil {
-				return err
-			}
-			if d.Root() == nil || d.Root().Tag != "theme" || d.Root().NamespaceURI() != "http://schemas.openxmlformats.org/drawingml/2006/main" {
-				return fmt.Errorf("theme_file must contain a DrawingML theme")
 			}
 			p.Set("xl/theme/theme1.xml", raw)
 		}

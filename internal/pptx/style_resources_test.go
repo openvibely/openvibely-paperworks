@@ -96,12 +96,67 @@ func TestInheritedPresentationAuthoring(t *testing.T) {
 		t.Fatal("unexpected legend")
 	}
 }
+func TestPresentationResourcePathsAndDefaultTextSerialization(t *testing.T) {
+	root := t.TempDir()
+	theme := []byte(`<a:theme xmlns:a="` + ans + `" name="Original bytes"><a:themeElements/></a:theme>`)
+	master := []byte(`<p:sldMaster xmlns:p="` + pns + `" xmlns:r="` + rns + `"><p:sldLayoutIdLst><p:sldLayoutId id="2147483649" r:id="rId1"/></p:sldLayoutIdLst></p:sldMaster>`)
+	defaultText := []byte(`<p:defaultTextStyle xmlns:p="` + pns + `"><p:defPPr marL="123"><p:defRPr sz="1800"/></p:defPPr></p:defaultTextStyle>`)
+	for name, data := range map[string][]byte{"theme.xml": theme, "master.xml": master, "default-text.xml": defaultText} {
+		if err := os.WriteFile(filepath.Join(root, name), data, 0600); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	out := filepath.Join(root, "resources.pptx")
+	spec := Spec{StyleResources: &StyleResources{
+		Theme:       "theme.xml",
+		Master:      "master.xml",
+		DefaultText: filepath.Join(root, "default-text.xml"),
+	}, Slides: []Slide{{}}}
+	if err := Create(context.Background(), spec, root, out); err != nil {
+		t.Fatal(err)
+	}
+	pkg, err := opc.Open(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := pkg.Get("ppt/theme/theme1.xml"); !bytes.Equal(got, theme) {
+		t.Fatal("theme resource bytes changed")
+	}
+	if got := pkg.Get("ppt/slideMasters/slideMaster1.xml"); !bytes.Equal(got, master) {
+		t.Fatal("master resource bytes changed")
+	}
+	presentation, err := pkg.XML("ppt/presentation.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	fragment := presentation.Root().SelectElement("p:defaultTextStyle")
+	if fragment == nil {
+		t.Fatal("defaultTextStyle fragment missing")
+	}
+	paragraph := fragment.SelectElement("p:defPPr")
+	if paragraph == nil || paragraph.SelectAttrValue("marL", "") != "123" {
+		t.Fatal("defaultTextStyle fragment was not serialized")
+	}
+}
+
 func TestPresentationResourceValidation(t *testing.T) {
-	for _, body := range []string{"<bad/>", "<", `<a:theme xmlns:a="` + ans + `" xmlns:r="` + rns + `"><a:blip r:embed="missing"/></a:theme>`} {
-		t.Run(body[:1]+string(rune(len(body))), func(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		body string
+	}{
+		{name: "missing"},
+		{name: "malformed", body: "<"},
+		{name: "wrong-root", body: `<a:clrScheme xmlns:a="` + ans + `"/>`},
+		{name: "wrong-namespace", body: `<theme/>`},
+		{name: "relationship", body: `<a:theme xmlns:a="` + ans + `" xmlns:r="` + rns + `"><a:blip r:embed="missing"/></a:theme>`},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
 			root := t.TempDir()
-			if err := os.WriteFile(filepath.Join(root, "style.xml"), []byte(body), 0600); err != nil {
-				t.Fatal(err)
+			if tc.body != "" {
+				if err := os.WriteFile(filepath.Join(root, "style.xml"), []byte(tc.body), 0600); err != nil {
+					t.Fatal(err)
+				}
 			}
 			out := filepath.Join(root, "bad.pptx")
 			err := Create(context.Background(), Spec{StyleResources: &StyleResources{Theme: "style.xml"}, Slides: []Slide{{}}}, root, out)
@@ -109,7 +164,7 @@ func TestPresentationResourceValidation(t *testing.T) {
 				t.Fatal("invalid resource accepted")
 			}
 			if _, err = os.Stat(out); !os.IsNotExist(err) {
-				t.Fatal("published failure")
+				t.Fatal("published failure", err)
 			}
 		})
 	}
