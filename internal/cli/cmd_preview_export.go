@@ -51,7 +51,7 @@ func init() {
 			return nil, err
 		}
 		out := a.Path("output")
-		if _, err = os.Stat(out); !os.IsNotExist(err) {
+		if _, err = os.Lstat(out); !os.IsNotExist(err) {
 			usage := UsageError{"output must be a new directory"}
 			if err == nil {
 				return nil, previewOutputExistsError{usage}
@@ -72,67 +72,94 @@ func init() {
 		if err != nil {
 			return nil, officeErr(err)
 		}
-		results := []string{}
-		thumbs := []image.Image{}
-		for i, p := range pages {
-			if err = ctx.Err(); err != nil {
-				return nil, err
-			}
+		return exportRenderedPreviews(ctx, stage, out, pages, format, cols)
+	}})
+}
+
+// exportRenderedPreviews consumes renderer output in its returned page order.
+// The caller owns staging cleanup on both success and failure.
+func exportRenderedPreviews(ctx context.Context, stage, out string, pages []string, format string, cols int) (any, error) {
+	var err error
+	if cols > 0 && len(pages) > 200 {
+		return nil, usagef("contact sheet supports at most 200 pages; select a smaller document")
+	}
+	results := []string{}
+	thumbs := []image.Image{}
+	for i, p := range pages {
+		if err = ctx.Err(); err != nil {
+			return nil, err
+		}
+		var im image.Image
+		if format != "png" || cols > 0 {
 			f, err := os.Open(p)
 			if err != nil {
 				return nil, err
 			}
-			im, err := png.Decode(f)
-			f.Close()
+			im, err = png.Decode(f)
+			closeErr := f.Close()
 			if err != nil {
 				return nil, err
 			}
-			name := fmt.Sprintf("page-%04d.%s", i+1, format)
-			if err = writePreview(filepath.Join(stage, name), im, format); err != nil {
+			if closeErr != nil {
+				return nil, closeErr
+			}
+		}
+		name := fmt.Sprintf("page-%04d.%s", i+1, format)
+		dest := filepath.Join(stage, name)
+		if format == "png" {
+			// The renderer already encoded the final pixels. Move that inode
+			// exclusively within staging, without a second encoded page set.
+			if err = os.Chmod(p, 0600); err != nil {
 				return nil, err
 			}
-			results = append(results, filepath.Join(out, name))
-			if cols > 0 {
-				if len(pages) > 200 {
-					return nil, usagef("contact sheet supports at most 200 pages; select a smaller document")
-				}
-				thumb := image.NewRGBA(image.Rect(0, 0, 320, 420))
-				draw.Draw(thumb, thumb.Bounds(), &image.Uniform{color.White}, image.Point{}, draw.Src)
-				bounds := im.Bounds()
-				w, h := 300, 400
-				if bounds.Dx()*h > bounds.Dy()*w {
-					h = bounds.Dy() * w / bounds.Dx()
-				} else {
-					w = bounds.Dx() * h / bounds.Dy()
-				}
-				r := image.Rect((320-w)/2, (420-h)/2, (320+w)/2, (420+h)/2)
-				xdraw.CatmullRom.Scale(thumb, r, im, bounds, draw.Over, nil)
-				thumbs = append(thumbs, thumb)
-			}
-		}
-		contact := ""
-		if cols > 0 && len(thumbs) > 0 {
-			rows := (len(thumbs) + cols - 1) / cols
-			sheet := image.NewRGBA(image.Rect(0, 0, cols*320, rows*420))
-			draw.Draw(sheet, sheet.Bounds(), &image.Uniform{color.White}, image.Point{}, draw.Src)
-			for i, im := range thumbs {
-				r := image.Rect(i%cols*320, i/cols*420, (i%cols+1)*320, (i/cols+1)*420)
-				draw.Draw(sheet, r, im, image.Point{}, draw.Src)
-			}
-			if err = writePreview(filepath.Join(stage, "contact-sheet.png"), sheet, "png"); err != nil {
+			if err = renamePreviewExclusive(p, dest); err != nil {
 				return nil, err
 			}
-			contact = filepath.Join(out, "contact-sheet.png")
-		}
-		if err = os.RemoveAll(filepath.Join(stage, "rendered")); err != nil {
+		} else if err = writePreview(dest, im, format); err != nil {
 			return nil, err
 		}
-		if err = os.Rename(stage, out); err != nil {
+		results = append(results, filepath.Join(out, name))
+		if cols > 0 {
+			thumb := image.NewRGBA(image.Rect(0, 0, 320, 420))
+			draw.Draw(thumb, thumb.Bounds(), &image.Uniform{color.White}, image.Point{}, draw.Src)
+			bounds := im.Bounds()
+			w, h := 300, 400
+			if bounds.Dx()*h > bounds.Dy()*w {
+				h = bounds.Dy() * w / bounds.Dx()
+			} else {
+				w = bounds.Dx() * h / bounds.Dy()
+			}
+			r := image.Rect((320-w)/2, (420-h)/2, (320+w)/2, (420+h)/2)
+			xdraw.CatmullRom.Scale(thumb, r, im, bounds, draw.Over, nil)
+			thumbs = append(thumbs, thumb)
+		}
+	}
+	contact := ""
+	if cols > 0 && len(thumbs) > 0 {
+		rows := (len(thumbs) + cols - 1) / cols
+		sheet := image.NewRGBA(image.Rect(0, 0, cols*320, rows*420))
+		draw.Draw(sheet, sheet.Bounds(), &image.Uniform{color.White}, image.Point{}, draw.Src)
+		for i, im := range thumbs {
+			r := image.Rect(i%cols*320, i/cols*420, (i%cols+1)*320, (i/cols+1)*420)
+			draw.Draw(sheet, r, im, image.Point{}, draw.Src)
+		}
+		if err = writePreview(filepath.Join(stage, "contact-sheet.png"), sheet, "png"); err != nil {
 			return nil, err
 		}
-		return map[string]any{"pages": results, "contact_sheet": contact, "visually_inspected": false}, nil
-	}})
+		contact = filepath.Join(out, "contact-sheet.png")
+	}
+	if err = os.RemoveAll(filepath.Join(stage, "rendered")); err != nil {
+		return nil, err
+	}
+	if err = ctx.Err(); err != nil {
+		return nil, err
+	}
+	if err = renamePreviewExclusive(stage, out); err != nil {
+		return nil, err
+	}
+	return map[string]any{"pages": results, "contact_sheet": contact, "visually_inspected": false}, nil
 }
+
 func writePreview(p string, im image.Image, format string) error {
 	f, err := os.OpenFile(p, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
 	if err != nil {
