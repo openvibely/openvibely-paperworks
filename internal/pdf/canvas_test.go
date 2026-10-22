@@ -125,6 +125,8 @@ func TestLayoutTableJoinsWrappedLines(t *testing.T) {
 		text(110, 100, "Gross"), text(210, 100, "Margin"),
 		text(310, 40, "alpha"), text(310, 55, "beta"), text(310, 70, "gamma"),
 		text(10, 150, "Trailing "), text(10, 165, "space"),
+		text(110, 150, "-"), text(110, 165, ".5"),
+		text(210, 150, "tight"), text(210, 156, "lead"),
 	}}}}
 	if err := Create(ctx, CreateSpec{Canvas: &canvas}, ".", out); err != nil {
 		t.Fatal(err)
@@ -141,7 +143,7 @@ func TestLayoutTableJoinsWrappedLines(t *testing.T) {
 	want := [][]string{
 		{"", "", "", "alpha beta gamma"},
 		{"Net sales 2024", "Gross", "Margin", ""},
-		{"Trailing space", "", "", ""},
+		{"Trailing space", "- .5", "tight lead", ""},
 	}
 	for i := range want {
 		for j := range want[i] {
@@ -154,13 +156,13 @@ func TestLayoutTableJoinsWrappedLines(t *testing.T) {
 
 func TestLayoutTableKeepsSingleLinePunctuation(t *testing.T) {
 	ctx := context.Background()
-	cells := []string{`it's`, `x² m°`, `say "no"`, `e-mail ~x^`, `Net sales*`, `"quoted"`, `°C ²`, `'tis ^up`, `a b, c`, `~-*`}
+	cells := []string{`it's`, `x² m°`, `say "no"`, `e-mail ~x^`, `Net sales*`, `"quoted"`, `°C ²`, `'tis ^up`, `a b, c`, `~-*`, `-.5`, `'.'`, `*.`, `~,`, `°.`, `x₂ H₂O`}
 	var elems []CanvasElement
 	for i, s := range cells {
 		elems = append(elems, CanvasElement{Type: "text", X: float64(i)*100 + 10, Y: 40, Text: s, FontSize: 10})
 	}
 	out := filepath.Join(t.TempDir(), "punct.pdf")
-	canvas := Canvas{Pages: []CanvasPage{{Width: 1000, Height: 100, Elements: elems}}}
+	canvas := Canvas{Pages: []CanvasPage{{Width: float64(len(cells)) * 100, Height: 100, Elements: elems}}}
 	if err := Create(ctx, CreateSpec{Canvas: &canvas}, ".", out); err != nil {
 		t.Fatal(err)
 	}

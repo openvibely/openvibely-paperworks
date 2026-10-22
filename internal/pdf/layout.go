@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/klippa-app/go-pdfium/requests"
+	"math"
 	"sort"
 	"strings"
 	"unicode"
@@ -99,6 +100,7 @@ func ExtractLayout(ctx context.Context, data []byte, opt LayoutOptions) ([]PageL
 		result, err := func() (PageLayout, error) {
 			defer inst.FPDFText_ClosePage(&requests.FPDFText_ClosePage{TextPage: tp.TextPage})
 			r := PageLayout{Page: page}
+			var baselines [][2]float64 // baseline Y and font size per character
 			n, err := inst.FPDFText_CountChars(&requests.FPDFText_CountChars{TextPage: tp.TextPage})
 			if err != nil {
 				return r, err
@@ -134,33 +136,47 @@ func ExtractLayout(ctx context.Context, data []byte, opt LayoutOptions) ([]PageL
 					return r, fmt.Errorf("selection exceeds max_chars; narrow pages or bounds")
 				}
 				r.Characters = append(r.Characters, Character{string(rune(u.Unicode)), b.Left, b.Bottom, b.Right, b.Top})
+				if len(opt.Columns) > 0 {
+					o, err := inst.FPDFText_GetCharOrigin(&requests.FPDFText_GetCharOrigin{TextPage: tp.TextPage, Index: i})
+					if err != nil {
+						return r, err
+					}
+					s, err := inst.FPDFText_GetFontSize(&requests.FPDFText_GetFontSize{TextPage: tp.TextPage, Index: i})
+					if err != nil {
+						return r, err
+					}
+					size := s.FontSize
+					if size <= 0 {
+						size = b.Top - b.Bottom
+					}
+					baselines = append(baselines, [2]float64{o.Y, size})
+				}
 			}
 			if len(opt.Columns) > 0 {
 				r.Table = make([][]string, len(opt.Rows)-1)
 				for i := range r.Table {
 					r.Table[i] = make([]string, len(opt.Columns)-1)
 				}
-				bands := map[[2]int][2]float64{}
-				for _, c := range r.Characters {
+				lines := map[[2]int][2]float64{}
+				for ci, c := range r.Characters {
 					x, y := (c.Left+c.Right)/2, (c.Bottom+c.Top)/2
 					col := sort.SearchFloat64s(opt.Columns, x) - 1
 					row := sort.SearchFloat64s(opt.Rows, y) - 1
 					if col >= 0 && col < len(opt.Columns)-1 && row >= 0 && row < len(opt.Rows)-1 {
 						key := [2]int{len(r.Table) - 1 - row, col}
 						cell := &r.Table[key[0]][key[1]]
-						// Whitespace boxes are often degenerate, so only glyphs define lines.
+						// Lines are told apart by baseline rather than glyph boxes, which
+						// for raised marks (- ' ° *) or periods miss most of the line.
+						// Whitespace is skipped because its metrics are often degenerate.
 						if strings.TrimSpace(c.Text) != "" {
-							band, ok := bands[key]
-							switch {
-							case !ok:
-								band = [2]float64{c.Bottom, c.Top}
-							case c.Top <= band[0] || c.Bottom >= band[1]:
-								*cell = strings.TrimRightFunc(*cell, unicode.IsSpace) + " "
-								band = [2]float64{c.Bottom, c.Top}
-							default:
-								band = [2]float64{min(band[0], c.Bottom), max(band[1], c.Top)}
+							bl := baselines[ci]
+							line, ok := lines[key]
+							if !ok || math.Abs(bl[0]-line[0]) > max(bl[1], line[1])/2 {
+								if ok {
+									*cell = strings.TrimRightFunc(*cell, unicode.IsSpace) + " "
+								}
+								lines[key] = bl
 							}
-							bands[key] = band
 						}
 						*cell += c.Text
 					}
