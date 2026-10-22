@@ -13,6 +13,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
+      - name: Record job start time
+        run: date +%s%N > "$RUNNER_TEMP/job-start-ns"
+
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
@@ -20,12 +23,50 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install Office test dependencies
+
+      - name: Record office setup start time
+        run: date +%s%N > "$RUNNER_TEMP/office-setup-start-ns"
+
+      # This cache stores downloaded .deb files only. apt-get update still
+      # refreshes package indexes on every run, and apt installs current
+      # repository candidates; stale cached versions are ignored by apt.
+      - name: Cache Office package downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/paperworks-apt/archives/*.deb
+          key: apt-office-${{ runner.os }}-${{ runner.arch }}-ubuntu-24.04-${{ hashFiles('.github/workflows/test.yml') }}-${{ github.run_id }}
+          restore-keys: |
+            apt-office-${{ runner.os }}-${{ runner.arch }}-ubuntu-24.04-${{ hashFiles('.github/workflows/test.yml') }}-
+
+      - name: Install and verify Office test dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends libreoffice-writer libreoffice-calc libreoffice-impress fonts-liberation fonts-dejavu-core fonts-noto-core
-          soffice --version
-          node --version
+          office_setup_start_ns="$(cat "$RUNNER_TEMP/office-setup-start-ns")"
+          report_office_setup_duration() {
+            setup_status=$?
+            trap - EXIT
+            office_setup_end_ns="$(date +%s%N)"
+            office_setup_ms=$(((office_setup_end_ns - office_setup_start_ns) / 1000000))
+            echo "Office dependency setup elapsed: ${office_setup_ms} ms (exit ${setup_status})"
+            echo "Office dependency setup: ${office_setup_ms} ms (exit ${setup_status})" >> "$GITHUB_STEP_SUMMARY"
+            exit "$setup_status"
+          }
+          trap report_office_setup_duration EXIT
+
+          apt_archives="$HOME/.cache/paperworks-apt/archives"
+          mkdir -p "$apt_archives/partial"
+          sudo chown _apt:root "$apt_archives/partial"
+          sudo chmod 700 "$apt_archives/partial"
+          sudo apt-get -o "Dir::Cache::archives=$apt_archives/" update
+          sudo apt-get -o "Dir::Cache::archives=$apt_archives/" -o APT::Keep-Downloaded-Packages=true install -y --no-install-recommends \
+            libreoffice-writer \
+            libreoffice-calc \
+            libreoffice-impress \
+            fonts-liberation \
+            fonts-dejavu-core \
+            fonts-noto-core
+          sudo apt-get -o "Dir::Cache::archives=$apt_archives/" autoclean
+          bash scripts/verify-office-deps.sh
+
       - uses: actions/cache@v4
         with:
           path: ~/.cache/paperworks-tests
@@ -41,3 +82,11 @@ jobs:
           name: test-results
           path: ${{ runner.temp }}/tests.jsonl
           if-no-files-found: ignore
+      - name: Report job timing
+        if: always()
+        run: |
+          job_start_ns="$(cat "$RUNNER_TEMP/job-start-ns")"
+          job_end_ns="$(date +%s%N)"
+          job_elapsed_ms=$(((job_end_ns - job_start_ns) / 1000000))
+          echo "Job elapsed through final workflow step: ${job_elapsed_ms} ms"
+          echo "Job elapsed through final workflow step: ${job_elapsed_ms} ms" >> "$GITHUB_STEP_SUMMARY"
