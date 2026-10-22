@@ -116,7 +116,10 @@ The zero-based `image` index counts standalone pictures in the selected part.
 Shapes, charts and grouped artwork are excluded.
 
 Run font sizes are points; colors are six hex digits. New paragraphs inherit
-paragraph formatting. Image replacements create private media parts. Header/footer
+paragraph formatting. In `paragraph-insert` `text`, `table-cell-text` `text` and
+`replace-text` `new`, `\n` (or `\r`; `\r\n` counts once) becomes a Word line
+break (`w:br`) and `\t` becomes a tab (`w:tab`); replaced text keeps the source
+run formatting. Image replacements create private media parts. Header/footer
 changes follow normal Word section inheritance. Column edits require unmerged
 rectangular tables. Merge/unmerge handles horizontal spans; vertical restructuring
 is rejected. Existing redline, comment, control-fill, style-pack and specialized

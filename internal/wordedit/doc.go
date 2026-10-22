@@ -413,6 +413,20 @@ func runSlice(r *etree.Element, text string, deleted bool) *etree.Element {
 	return out
 }
 
+func hasRunControl(text string) bool {
+	return strings.ContainsAny(text, "\t\n\r")
+}
+
+// addRunText keeps the historical single preserved w:t for plain text and
+// converts tabs and line breaks to w:tab/w:br otherwise.
+func addRunText(r *etree.Element, text string) {
+	if hasRunControl(text) {
+		setRunText(r, strings.ReplaceAll(text, "\r\n", "\n"))
+		return
+	}
+	r.AddChild(WT("t", text))
+}
+
 // setRunText mirrors reference DOCX library Run.text: tabs and newlines become w:tab/w:br.
 func setRunText(r *etree.Element, text string) {
 	for _, c := range r.ChildElements() {

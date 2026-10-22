@@ -87,7 +87,7 @@ func generalEdit(d *Doc, s map[string]any) error {
 			new.AddChild(pr)
 		}
 		r := W("r")
-		r.AddChild(WT("t", text))
+		addRunText(r, text)
 		new.AddChild(r)
 		if str(s, "position") == "after" {
 			p.Parent().InsertChildAt(p.Index()+1, new)
@@ -229,6 +229,31 @@ func formatParagraph(p *etree.Element, s map[string]any) error {
 	}
 	return nil
 }
+
+// splitRunReplace replaces the w:t text of a plain run with prefix, a run
+// carrying insert as w:t/w:tab/w:br, and suffix, all sharing the run's rPr.
+func splitRunReplace(t *etree.Element, prefix, insert, suffix string) {
+	r := t.Parent()
+	parent := r.Parent()
+	idx := r.Index()
+	mid := W("r")
+	setRunText(mid, strings.ReplaceAll(insert, "\r\n", "\n"))
+	if rp := child(r, "rPr"); rp != nil {
+		mid.InsertChildAt(0, rp.Copy())
+	}
+	if prefix == "" {
+		parent.RemoveChildAt(idx)
+	} else {
+		t.SetText(prefix)
+		t.CreateAttr("xml:space", "preserve")
+		idx++
+	}
+	parent.InsertChildAt(idx, mid)
+	if suffix != "" {
+		parent.InsertChildAt(idx+1, runSlice(r, suffix, false))
+	}
+}
+
 func replaceOrdinary(p *etree.Element, s map[string]any) error {
 	old := str(s, "old")
 	text, ok := s["new"].(string)
@@ -270,8 +295,12 @@ func replaceOrdinary(p *etree.Element, s map[string]any) error {
 							insert = text
 							inserted = true
 						}
-						n.SetText(t[:lo] + insert + t[hi:])
-						n.CreateAttr("xml:space", "preserve")
+						if hasRunControl(insert) {
+							splitRunReplace(n, t[:lo], insert, t[hi:])
+						} else {
+							n.SetText(t[:lo] + insert + t[hi:])
+							n.CreateAttr("xml:space", "preserve")
+						}
 					}
 					pos = next
 				}
@@ -399,7 +428,7 @@ func editTable(root *etree.Element, s map[string]any) error {
 		}
 		p := W("p")
 		run := W("r")
-		run.AddChild(WT("t", text))
+		addRunText(run, text)
 		p.AddChild(run)
 		cell.AddChild(p)
 	case "table-cell-format":
