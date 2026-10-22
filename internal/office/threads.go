@@ -198,6 +198,21 @@ func WorkbookComments(p *opc.Package, spec CommentSpec) ([]Thread, error) {
 
 var commentCellRe = regexp.MustCompile(`^\$?[A-Za-z]{1,3}\$?[1-9][0-9]*$`)
 
+func threadCellCoordinates(ref string) (string, int, int, error) {
+	if !commentCellRe.MatchString(ref) {
+		return "", 0, 0, fmt.Errorf("invalid cell reference %q", ref)
+	}
+	cell := strings.ToUpper(strings.ReplaceAll(ref, "$", ""))
+	col, row, err := SplitCell(cell)
+	if err != nil {
+		return "", 0, 0, fmt.Errorf("invalid cell reference %q", ref)
+	}
+	if row > 1048576 || col > 16384 {
+		return "", 0, 0, fmt.Errorf("cell %s exceeds Excel worksheet limits", cell)
+	}
+	return cell, col, row, nil
+}
+
 func editThread(p *opc.Package, spec CommentSpec, action string, sheets map[string]*sheetThreads, persons map[string]*etree.Element, people *etree.Document, pp string, hadPeople bool) error {
 	st := sheets[spec.Sheet]
 	if st == nil {
@@ -231,13 +246,9 @@ func editThread(p *opc.Package, spec CommentSpec, action string, sheets map[stri
 		if action != "add" {
 			cell = parent.SelectAttrValue("ref", "")
 		}
-		if !commentCellRe.MatchString(cell) {
-			return errors.New("comment requires one cell")
-		}
-		cell = strings.ToUpper(strings.ReplaceAll(cell, "$", ""))
-		col, row, _ := SplitCell(cell)
-		if row > 1048576 || col > 16384 {
-			return errors.New("cell exceeds Excel limits")
+		cell, _, _, err := threadCellCoordinates(cell)
+		if err != nil {
+			return err
 		}
 		if action == "add" {
 			for _, e := range Children(root, NSTC, "threadedComment") {

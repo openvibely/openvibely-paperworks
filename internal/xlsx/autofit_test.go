@@ -5,6 +5,7 @@ import (
 	"github.com/xuri/excelize/v2"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -68,7 +69,7 @@ func TestAutofitRejectsVerticalMergeWithoutOutput(t *testing.T) {
 		t.Fatal("accepted vertical merge")
 	}
 	if _, err = os.Stat(out); !os.IsNotExist(err) {
-		t.Fatal("published failed edit")
+		t.Fatal("published failed edit", err)
 	}
 }
 
@@ -107,6 +108,43 @@ func TestAutofitHorizontalMergeUsesCombinedWidth(t *testing.T) {
 		t.Fatal("accepted partial merged range")
 	}
 	if _, err := os.Stat(partial); !os.IsNotExist(err) {
-		t.Fatal("published failed edit")
+		t.Fatal("published failed edit", err)
+	}
+}
+
+func TestAutofitVisitsSingleCellAndAllRectangleCorners(t *testing.T) {
+	cases := []struct {
+		name, r, cell string
+	}{
+		{name: "single", r: "A1", cell: "A1"},
+		{name: "top-left", r: "B2:C3", cell: "B2"},
+		{name: "top-right", r: "B2:C3", cell: "C2"},
+		{name: "bottom-left", r: "B2:C3", cell: "B3"},
+		{name: "bottom-right", r: "B2:C3", cell: "C3"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			f := excelize.NewFile()
+			defer f.Close()
+			if err := f.SetDefaultFont("Go"); err != nil {
+				t.Fatal(err)
+			}
+			if err := f.SetCellFormula("Sheet1", tc.cell, "1+1"); err != nil {
+				t.Fatal(err)
+			}
+			err := autofitRows(f, Edit{Sheet: "Sheet1", Range: tc.r})
+			if err == nil || !strings.Contains(err.Error(), tc.cell+" needs recalculation") {
+				t.Fatalf("got %v, want recalculation error at %s", err, tc.cell)
+			}
+		})
+	}
+}
+
+func TestAutofitRejectsRangesOverItsCellLimit(t *testing.T) {
+	f := excelize.NewFile()
+	defer f.Close()
+	err := autofitRows(f, Edit{Sheet: "Sheet1", Range: "A1:J1001"})
+	if err == nil || !strings.Contains(err.Error(), "autofit range exceeds 10000 cells") {
+		t.Fatalf("got %v, want autofit range limit error", err)
 	}
 }

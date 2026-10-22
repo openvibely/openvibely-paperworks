@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/types"
 )
 
 func TestFlowFigureCaptionPaginationAndPixels(t *testing.T) {
@@ -94,6 +96,128 @@ func TestFlowFigureCaptionPaginationAndPixels(t *testing.T) {
 	}
 	if coloredPages != 1 {
 		t.Fatalf("figure appears on %d pages", coloredPages)
+	}
+}
+
+func TestFlowHeadingKeptWithFollowingFigure(t *testing.T) {
+	const (
+		margin    = 72.0
+		fontSize  = 12
+		leading   = 16.8
+		remaining = 160.0
+		figureSrc = "figure.png"
+	)
+	paper := "A4"
+	usable := types.PaperSize[paper].Height - 2*margin
+
+	cases := []struct {
+		name        string
+		height      float64
+		caption     string
+		wrappedOnly bool
+	}{
+		{name: "one-line caption", height: 140, caption: "Figure caption."},
+		{name: "wrapped caption", height: 100, caption: "A deliberately long caption that wraps across multiple short lines beside the figure.", wrappedOnly: true},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			captionLines, err := wrapFlow(context.Background(), tc.caption, "Helvetica", fontSize, 180)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if tc.wrappedOnly {
+				if len(captionLines) < 2 {
+					t.Fatalf("caption did not wrap: %q", tc.caption)
+				}
+				oneLinePairHeight := float64(fontSize+6)*1.4 + leading/2 + tc.height + leading + leading/2
+				if oneLinePairHeight > remaining {
+					t.Fatalf("test setup does not fit a one-line caption: %.1f > %.1f", oneLinePairHeight, remaining)
+				}
+			} else if len(captionLines) != 1 {
+				t.Fatalf("caption should occupy one line, got %d", len(captionLines))
+			}
+
+			flow := &FlowSpec{Margin: margin, FontSize: fontSize, Leading: leading, Blocks: []FlowBlock{
+				{Kind: "spacer", Height: usable - remaining},
+				{Kind: "heading", Text: "Keep me"},
+				{Kind: "figure", Src: figureSrc, Width: 180, Height: tc.height, Caption: tc.caption},
+			}}
+			pages, err := flowPages(context.Background(), paper, flow)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(pages) != 2 || len(pages[0].Text) != 0 || len(pages[0].Images) != 0 || len(pages[1].Images) != 1 {
+				t.Fatalf("heading and figure were not kept together: %+v", pages)
+			}
+			if len(pages[1].Text) != 1+len(captionLines) || pages[1].Text[0].Value != "Keep me" {
+				t.Fatalf("heading/caption text on next page is incomplete: %+v", pages[1].Text)
+			}
+			for i, line := range captionLines {
+				if got := pages[1].Text[i+1].Value; got != line {
+					t.Fatalf("caption line %d = %q, want %q", i+1, got, line)
+				}
+			}
+		})
+	}
+}
+
+func TestFlowHeadingFigureAlreadyFitsWithoutPageBreak(t *testing.T) {
+	const (
+		margin  = 72.0
+		font    = 12
+		leading = 16.8
+	)
+	paper := "A4"
+	usable := types.PaperSize[paper].Height - 2*margin
+	caption := "A deliberately long caption that wraps across multiple short lines beside the figure."
+	captionLines, err := wrapFlow(context.Background(), caption, "Helvetica", font, 180)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(captionLines) < 2 {
+		t.Fatalf("caption did not wrap: %q", caption)
+	}
+
+	for _, tc := range []struct {
+		name   string
+		spacer float64
+	}{
+		{name: "at page start"},
+		{name: "pair fits in remaining space", spacer: usable - 220},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			blocks := []FlowBlock{}
+			if tc.spacer > 0 {
+				blocks = append(blocks, FlowBlock{Kind: "spacer", Height: tc.spacer})
+			}
+			blocks = append(blocks,
+				FlowBlock{Kind: "heading", Text: "Keep me"},
+				FlowBlock{Kind: "figure", Src: "figure.png", Width: 180, Height: 100, Caption: caption},
+			)
+			pages, err := flowPages(context.Background(), paper, &FlowSpec{Margin: margin, FontSize: font, Leading: leading, Blocks: blocks})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(pages) != 1 || len(pages[0].Images) != 1 || len(pages[0].Text) != len(captionLines)+1 || pages[0].Text[0].Value != "Keep me" {
+				t.Fatalf("fitting heading/figure pair caused a page break: %+v", pages)
+			}
+		})
+	}
+}
+
+func TestFlowHeadingFigureTooTallDoesNotAddBlankPages(t *testing.T) {
+	const margin = 72.0
+	paper := "A4"
+	usable := types.PaperSize[paper].Height - 2*margin
+	pages, err := flowPages(context.Background(), paper, &FlowSpec{Margin: margin, Blocks: []FlowBlock{
+		{Kind: "heading", Text: "Keep me"},
+		{Kind: "figure", Src: "figure.png", Width: 180, Height: usable - 10},
+	}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(pages) != 2 || len(pages[0].Text) != 1 || pages[0].Text[0].Value != "Keep me" || len(pages[1].Images) != 1 {
+		t.Fatalf("oversized heading/figure pair created unexpected pagination: %+v", pages)
 	}
 }
 

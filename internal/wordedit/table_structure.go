@@ -2,10 +2,20 @@ package wordedit
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/beevik/etree"
 	"github.com/openvibely/openvibely-paperworks/internal/office"
-	"strconv"
 )
+
+func blankTableCell(source *etree.Element) *etree.Element {
+	cell := W("tc")
+	if pr := child(source, "tcPr"); pr != nil {
+		cell.AddChild(pr.Copy())
+	}
+	cell.AddChild(W("p"))
+	return cell
+}
 
 func tableStructure(table *etree.Element, s map[string]any) error {
 	rows := office.Children(table, nsW, "tr")
@@ -46,12 +56,7 @@ func tableStructure(table *etree.Element, s map[string]any) error {
 			}
 			remove(span)
 			for i := 1; i < n; i++ {
-				c := W("tc")
-				if pr := child(cell, "tcPr"); pr != nil {
-					c.AddChild(pr.Copy())
-				}
-				c.AddChild(W("p"))
-				rows[row].InsertChildAt(cell.Index()+i, c)
+				rows[row].InsertChildAt(cell.Index()+i, blankTableCell(cell))
 			}
 			return nil
 		}
@@ -88,12 +93,7 @@ func tableStructure(table *etree.Element, s map[string]any) error {
 		grid.InsertChildAt(cols[col].Index(), cols[col].Copy())
 		for _, r := range rows {
 			cells := office.Children(r, nsW, "tc")
-			c := W("tc")
-			if pr := child(cells[col], "tcPr"); pr != nil {
-				c.AddChild(pr.Copy())
-			}
-			c.AddChild(W("p"))
-			r.InsertChildAt(cells[col].Index(), c)
+			r.InsertChildAt(cells[col].Index(), blankTableCell(cells[col]))
 		}
 	case "table-column-delete":
 		if len(cols) <= 1 {

@@ -40,32 +40,32 @@ func autofitRows(f *excelize.File, e Edit) error {
 		return err
 	}
 	heights := map[int]float64{}
-	for row := y1; row <= y2; row++ {
-		height := defaultSize*1.2 + 3
-		for col := x1; col <= x2; col++ {
-			cell, _ := excelize.CoordinatesToCellName(col, row)
-			start, end := col, col
-			covered := false
-			for _, m := range merges {
-				mx, my, _ := excelize.CellNameToCoordinates(m.GetStartAxis())
-				ex, ey, _ := excelize.CellNameToCoordinates(m.GetEndAxis())
-				if col >= mx && col <= ex && row >= my && row <= ey {
-					if my != ey {
-						return fmt.Errorf("autofit does not resize vertically merged rows")
-					}
-					if mx < x1 || ex > x2 {
-						return fmt.Errorf("autofit range must include complete merged cells")
-					}
-					if col != mx {
-						covered = true
-					}
-					start, end = mx, ex
-					break
+	height := defaultSize*1.2 + 3
+	err = walkCoordinates(x1, y1, x2, y2, func(col, row int) error {
+		if col == x1 {
+			height = defaultSize*1.2 + 3
+		}
+		cell, _ := excelize.CoordinatesToCellName(col, row)
+		start, end := col, col
+		covered := false
+		for _, m := range merges {
+			mx, my, _ := excelize.CellNameToCoordinates(m.GetStartAxis())
+			ex, ey, _ := excelize.CellNameToCoordinates(m.GetEndAxis())
+			if col >= mx && col <= ex && row >= my && row <= ey {
+				if my != ey {
+					return fmt.Errorf("autofit does not resize vertically merged rows")
 				}
+				if mx < x1 || ex > x2 {
+					return fmt.Errorf("autofit range must include complete merged cells")
+				}
+				if col != mx {
+					covered = true
+				}
+				start, end = mx, ex
+				break
 			}
-			if covered {
-				continue
-			}
+		}
+		if !covered {
 			id, err := f.GetCellStyle(e.Sheet, cell)
 			if err != nil {
 				return err
@@ -146,10 +146,16 @@ func autofitRows(f *excelize.File, e Edit) error {
 			}
 			height = math.Max(height, h+3)
 		}
-		if height > 409.5 {
-			return fmt.Errorf("row %d needs more than Excel's 409.5-point limit", row)
+		if col == x2 {
+			if height > 409.5 {
+				return fmt.Errorf("row %d needs more than Excel's 409.5-point limit", row)
+			}
+			heights[row] = math.Ceil(height*20) / 20
 		}
-		heights[row] = math.Ceil(height*20) / 20
+		return nil
+	})
+	if err != nil {
+		return err
 	}
 	for row, h := range heights {
 		if err := f.SetRowHeight(e.Sheet, row, h); err != nil {

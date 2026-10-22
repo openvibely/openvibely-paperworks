@@ -102,10 +102,16 @@ func tableObject(shape *etree.Element, e Edit) error {
 	if e.Operation != "table-cell-format" {
 		for _, r := range rows {
 			for _, c := range office.Children(r, ans, "tc") {
-				for _, a := range []string{"rowSpan", "gridSpan", "hMerge", "vMerge"} {
-					if c.SelectAttrValue(a, "") != "" {
-						return fmt.Errorf("structure editing requires an unmerged table")
-					}
+				h, err := cellSpan(c, "rowSpan")
+				if err != nil {
+					return err
+				}
+				w, err := cellSpan(c, "gridSpan")
+				if err != nil {
+					return err
+				}
+				if h > 1 || w > 1 || mergedContinuation(c) {
+					return fmt.Errorf("structure editing requires an unmerged table")
 				}
 			}
 		}
