@@ -108,6 +108,7 @@ revision markup and annotation boundaries are not flattened into plain text.
 | `section-format` | `section`; `width/height/top/bottom/left/right/header/footer/gutter` in twips |
 | `section-insert` | `section` whose settings to copy, terminating `paragraph`, `type: nextPage/continuous/evenPage/oddPage` controlling where the following section starts; existing section starts are preserved |
 | `header-footer` | `section`, `kind: header/footer`, `type: default/first/even`; `text` or table `rows` with `widths_twips` |
+| `header-footer-link` | `section`, `kind: header/footer`, optional `type: default/first/even`, required boolean `linked` |
 | `batch` | `edits` array of general operations; nested batches are rejected |
 
 The zero-based `image` index counts standalone pictures in the selected part.
@@ -516,3 +517,28 @@ headers/footers with explicit references before replacing the selected one.
 Cells retain text, tabs and line breaks as native Word content. Subsequent
 formatting/table edits can target that part with existing `word-edit` operations.
 Reopen and verify the section relationship, cell text and rendered page furniture.
+
+### Control header and footer inheritance
+
+Newer local builds expose `header-footer-link` through `word-edit` and general
+edit batches. The pinned `v0.0.1-rc2` does not include it.
+
+```json
+{"operation":"header-footer-link","section":1,"kind":"footer","type":"default","linked":false}
+```
+
+Sections are zero-based. `linked:true` removes the selected section's reference,
+so it inherits the nearest preceding definition of that kind/type (or displays
+nothing if none exists). It leaves the detached part intact for other sections.
+`linked:false` creates an empty independent definition only when no explicit
+reference exists; it does not copy inherited text, tables, images or fields.
+An already independent definition remains unchanged. This matches the documented
+`python-docx` `is_linked_to_previous` behavior.
+
+Changing linkage does not enable first-page or even-page variants and does not
+change other kinds/types. Those layout flags remain as saved. Later sections
+that inherit the edited section can also change appearance. Inspect their
+references before editing; unlinking is not a way to preserve inherited content.
+Use `header-footer` to replace content separately. Link operations reject `text`,
+`rows` and `widths_twips`; use the main document rather than a story `part`.
+Render affected sections and verify their effective header/footer content.

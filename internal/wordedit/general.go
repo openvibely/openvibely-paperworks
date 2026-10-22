@@ -44,7 +44,10 @@ func generalEdit(d *Doc, s map[string]any) error {
 		}
 		return nil
 	}
-	if op == "section-insert" || op == "header-footer" {
+	if op == "section-insert" || op == "header-footer" || op == "header-footer-link" {
+		if op == "header-footer-link" && part != d.Main {
+			return fmt.Errorf("header-footer-link targets document sections, not a story part")
+		}
 		return sectionEdit(d, s)
 	}
 	if strings.HasPrefix(op, "image-") {

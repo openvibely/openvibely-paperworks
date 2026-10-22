@@ -15,7 +15,7 @@ func wordSchema() map[string]any {
 	for _, k := range []string{"font_size", "width_in", "height_in"} {
 		props[k] = map[string]any{"type": "number", "exclusiveMinimum": 0}
 	}
-	for _, k := range []string{"bold", "italic", "strike"} {
+	for _, k := range []string{"bold", "italic", "strike", "linked"} {
 		props[k] = map[string]any{"type": "boolean"}
 	}
 	props["rows"] = map[string]any{"type": "array", "items": map[string]any{"type": "array", "items": map[string]any{"type": "string"}}}
