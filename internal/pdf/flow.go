@@ -76,6 +76,8 @@ func flowPages(ctx context.Context, paper string, flow *FlowSpec) ([]CreatePage,
 		return nil
 	}
 	count := 0
+	preparedFigureIndex := -1
+	var preparedFigure flowFigureLayout
 	for i, b := range flow.Blocks {
 		if err := ctx.Err(); err != nil {
 			return nil, err
@@ -107,6 +109,16 @@ func flowPages(ctx context.Context, paper string, flow *FlowSpec) ([]CreatePage,
 							return nil, err
 						}
 						reserve += float64(table.headerHeight+table.rowHeight) + leading/2
+					case "figure":
+						figure, err := prepareFlowFigure(ctx, next, size, leading, width)
+						if err != nil {
+							return nil, err
+						}
+						preparedFigureIndex, preparedFigure = i+1, figure
+						combined := reserve + leading/2 + next.Height + figure.captionHeight
+						if combined <= usable {
+							reserve = combined
+						}
 					}
 				}
 				if err := room(reserve); err != nil {
@@ -127,22 +139,17 @@ func flowPages(ctx context.Context, paper string, flow *FlowSpec) ([]CreatePage,
 			}
 			y -= leading / 2
 		case "figure":
-			if b.Src == "" || !finite(b.Width) || !finite(b.Height) || b.Width <= 0 || b.Width > width || b.Height <= 0 {
-				return nil, fmt.Errorf("figure requires a local src and positive width/height within the content area")
-			}
-			var lines []string
-			if b.Caption != "" {
+			figure := preparedFigure
+			if preparedFigureIndex != i {
 				var err error
-				lines, err = wrapFlow(ctx, b.Caption, "Helvetica", size, b.Width)
+				figure, err = prepareFlowFigure(ctx, b, size, leading, width)
 				if err != nil {
-					return nil, fmt.Errorf("figure caption: %w", err)
+					return nil, err
 				}
 			}
-			captionHeight := float64(len(lines)) * leading
-			if len(lines) > 0 {
-				captionHeight += leading / 2
-			}
-			if err := room(b.Height + captionHeight); err != nil {
+			preparedFigureIndex = -1
+			lines := figure.lines
+			if err := room(b.Height + figure.captionHeight); err != nil {
 				return nil, err
 			}
 			x := margin + (width-b.Width)/2
@@ -210,6 +217,31 @@ func flowPages(ctx context.Context, paper string, flow *FlowSpec) ([]CreatePage,
 		}
 	}
 	return pages, nil
+}
+
+type flowFigureLayout struct {
+	lines         []string
+	captionHeight float64
+}
+
+func prepareFlowFigure(ctx context.Context, b FlowBlock, size int, leading, width float64) (flowFigureLayout, error) {
+	finite := func(v float64) bool { return !math.IsNaN(v) && !math.IsInf(v, 0) }
+	if b.Src == "" || !finite(b.Width) || !finite(b.Height) || b.Width <= 0 || b.Width > width || b.Height <= 0 {
+		return flowFigureLayout{}, fmt.Errorf("figure requires a local src and positive width/height within the content area")
+	}
+	var lines []string
+	if b.Caption != "" {
+		var err error
+		lines, err = wrapFlow(ctx, b.Caption, "Helvetica", size, b.Width)
+		if err != nil {
+			return flowFigureLayout{}, fmt.Errorf("figure caption: %w", err)
+		}
+	}
+	captionHeight := float64(len(lines)) * leading
+	if len(lines) > 0 {
+		captionHeight += leading / 2
+	}
+	return flowFigureLayout{lines: lines, captionHeight: captionHeight}, nil
 }
 
 func wrapFlow(ctx context.Context, text, name string, size int, width float64) ([]string, error) {
