@@ -118,7 +118,19 @@ func renameSheet(f *excelize.File, source, target string) (*excelize.File, error
 	return excelize.OpenReader(bytes.NewReader(data))
 }
 func renameFormulaSheet(formula, source, target string) string {
+	return renameFormulaSheetWithEdits(formula, source, target, nil)
+}
+
+// visit receives replacements in original formula byte offsets, allowing XML
+// callers to retain comments between fragments of a sheet qualifier.
+func renameFormulaSheetWithEdits(formula, source, target string, visit func(start, end int, replacement string)) string {
 	var out strings.Builder
+	writeReplacement := func(start, end int, replacement string) {
+		out.WriteString(replacement)
+		if visit != nil && replacement != formula[start:end] {
+			visit(start, end, replacement)
+		}
+	}
 
 	renameName := func(name string) (string, bool) {
 		if strings.Contains(name, "[") {
@@ -179,7 +191,7 @@ func renameFormulaSheet(formula, source, target string) string {
 				i++
 			}
 			if next, changed := renameName(name.String()); i < len(formula) && formula[i] == '!' && changed {
-				out.WriteString(next)
+				writeReplacement(start, i, next)
 			} else {
 				out.WriteString(formula[start:i])
 			}
@@ -209,7 +221,7 @@ func renameFormulaSheet(formula, source, target string) string {
 			}
 			token := formula[start:i]
 			if next, changed := renameName(token); i < len(formula) && formula[i] == '!' && (start == 0 || formula[start-1] != ']') && changed {
-				out.WriteString(next)
+				writeReplacement(start, i, next)
 			} else {
 				out.WriteString(token)
 			}

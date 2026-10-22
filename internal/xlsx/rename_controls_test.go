@@ -26,7 +26,7 @@ func TestRenameSheetControlLinks(t *testing.T) {
 		{"literal", "Data", "Inputs", "B", `"Data!A1"`, `"Data!A1"`},
 		{"entities", "A&B", "New & O'Data", "B", "'A&B'!$A$1", "'New & O''Data'!$A$1"},
 	} {
-		for _, form := range []string{"plain", "attributes", "cdata", "mixed"} {
+		for _, form := range []string{"plain", "attributes", "cdata", "mixed", "comments", "mixed-comments"} {
 			t.Run(tc.name+"/"+form, func(t *testing.T) {
 				dir := t.TempDir()
 				in, out := filepath.Join(dir, "in.xlsx"), filepath.Join(dir, "out.xlsx")
@@ -82,7 +82,7 @@ func TestRenameSheetControlLinks(t *testing.T) {
 						opening = "<x:" + tag + ` xmlns:x="urn:schemas-microsoft-com:office:excel" >`
 					case "cdata":
 						text = "<![CDATA[" + tc.link + "]]>"
-					case "mixed":
+					case "mixed", "comments", "mixed-comments":
 						// Split inside the sheet name to verify decoding happens
 						// before the formula reference is rewritten.
 						var suffix bytes.Buffer
@@ -90,6 +90,17 @@ func TestRenameSheetControlLinks(t *testing.T) {
 							t.Fatal(err)
 						}
 						text = "<![CDATA[" + tc.link[:1] + "]]>" + suffix.String()
+						if form == "comments" {
+							var first bytes.Buffer
+							if err := xml.EscapeText(&first, []byte(tc.link[:1])); err != nil {
+								t.Fatal(err)
+							}
+							text = "<!-- before -->" + first.String() + "<!-- inside -->" + suffix.String() + "<!-- after -->"
+						}
+						if form == "mixed-comments" {
+							opening = "<x:" + tag + ` xmlns:x="urn:schemas-microsoft-com:office:excel">`
+							text = "<!-- before --><![CDATA[" + tc.link[:1] + "]]><!-- inside -->" + suffix.String() + "<!-- after -->"
+						}
 					}
 					vml = bytes.ReplaceAll(vml, []byte("<x:"+tag+">"+escaped.String()+"</x:"+tag+">"), []byte(opening+text+"</x:"+tag+">"))
 				}
@@ -115,6 +126,13 @@ func TestRenameSheetControlLinks(t *testing.T) {
 				for _, part := range []string{vmlName, ctrlName} {
 					if tc.link == tc.want && !bytes.Equal(p.Get(part), result.Get(part)) {
 						t.Fatalf("unchanged part %s was reserialized", part)
+					}
+				}
+				if form == "comments" || form == "mixed-comments" {
+					for _, comment := range []string{"<!-- before -->", "<!-- inside -->", "<!-- after -->"} {
+						if bytes.Count(result.Get(vmlName), []byte(comment)) != bytes.Count(vml, []byte(comment)) {
+							t.Fatalf("comment lost or changed: %s", comment)
+						}
 					}
 				}
 				d, err := result.XML(ctrlName)
@@ -253,6 +271,38 @@ func TestRenameVMLAttributesAndCDATA(t *testing.T) {
 			}
 			if got := string(renameVMLControlFormulas([]byte(input), "Absent", "New Data")); got != input {
 				t.Fatal("drawing with no matching reference changed")
+			}
+		})
+	}
+}
+
+func TestRenameVMLFormulaComments(t *testing.T) {
+	for _, tc := range []struct{ name, input, want string }{
+		{"leading", `<!-- linked cell -->Data!$A$1`, `<!-- linked cell -->&#39;New Data&#39;!$A$1`},
+		{"trailing", `Data!$A$1<!-- linked cell -->`, `&#39;New Data&#39;!$A$1<!-- linked cell -->`},
+		{"split qualifier", `Da<!-- split -->ta!$A$1`, `&#39;New Data&#39;<!-- split -->!$A$1`},
+		{"entity and CDATA", `&#68;<!-- first --><![CDATA[at]]><!-- second -->a!$A$1`, `&#39;New Data&#39;<!-- first --><!-- second -->!$A$1`},
+		{"quoted qualifier", `&apos;Da<!-- split -->ta&apos;!$A$1`, `&#39;New Data&#39;<!-- split -->!$A$1`},
+		{"multiple references", `SUM(Da<!-- one -->ta!A1,Data<!-- two -->!A2)`, `SUM(&#39;New Data&#39;<!-- one -->!A1,&#39;New Data&#39;<!-- two -->!A2)`},
+		{"comment markup", `<!-- <x:FmlaLink>Data!B2</x:FmlaLink> -->Data!A1`, `<!-- <x:FmlaLink>Data!B2</x:FmlaLink> -->&#39;New Data&#39;!A1`},
+		{"unchanged chunks", `&quot;literal&quot;<!-- boundary -->&amp;Data!A1<!-- tail -->+&#49;`, `&quot;literal&quot;<!-- boundary -->&amp;&#39;New Data&#39;!A1<!-- tail -->+&#49;`},
+		{"literal", `&quot;Da<!-- split -->ta!A1&quot;`, `&quot;Da<!-- split -->ta!A1&quot;`},
+		{"external", `[1]Da<!-- split -->ta!A1`, `[1]Da<!-- split -->ta!A1`},
+		{"same sheet", `<!-- link -->$C$3`, `<!-- link -->$C$3`},
+		{"other sheet", `Other<!-- link -->!$C$3`, `Other<!-- link -->!$C$3`},
+		{"processing instruction", `Da<?note keep?>ta!A1`, `&#39;New Data&#39;<?note keep?>!A1`},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			for _, tag := range []string{"FmlaLink", "FmlaRange", "FmlaTxbx"} {
+				prefix := `<xml><v:shape broken=unquoted><x:` + tag + ` xmlns:x='urn:schemas-microsoft-com:office:excel'>`
+				suffix := `</x:` + tag + `><!-- Data!A1 --><?note <x:FmlaLink>Data!A1</x:FmlaLink>?><![CDATA[<x:FmlaLink>Data!A1</x:FmlaLink>]]></v:shape></xml>`
+				input := prefix + tc.input + suffix
+				if got := string(renameVMLControlFormulas([]byte(input), "Data", "New Data")); got != prefix+tc.want+suffix {
+					t.Fatalf("%s: got %s; want %s", tag, got, prefix+tc.want+suffix)
+				}
+				if got := string(renameVMLControlFormulas([]byte(input), "Absent", "New Data")); got != input {
+					t.Fatal("drawing without matching references changed")
+				}
 			}
 		})
 	}
