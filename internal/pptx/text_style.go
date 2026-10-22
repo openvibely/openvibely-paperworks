@@ -5,20 +5,22 @@ import (
 	"github.com/beevik/etree"
 	"github.com/openvibely/openvibely-paperworks/internal/office"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
+	"math"
 	"net/url"
 	"strconv"
 	"unicode/utf8"
 )
 
 type ParagraphStyle struct {
-	Align      string   `json:"align,omitempty"`
-	Before     *float64 `json:"before,omitempty"`
-	After      *float64 `json:"after,omitempty"`
-	Indent     *float64 `json:"indent,omitempty"`
-	MarginLeft *float64 `json:"margin_left,omitempty"`
-	Level      *int     `json:"level,omitempty"`
-	Bullet     *bool    `json:"bullet,omitempty"`
-	BulletChar string   `json:"bullet_char,omitempty"`
+	LineSpacing *float64 `json:"line_spacing,omitempty"` // Line-height multiplier; 1 is single spacing.
+	Align       string   `json:"align,omitempty"`
+	Before      *float64 `json:"before,omitempty"`
+	After       *float64 `json:"after,omitempty"`
+	Indent      *float64 `json:"indent,omitempty"`
+	MarginLeft  *float64 `json:"margin_left,omitempty"`
+	Level       *int     `json:"level,omitempty"`
+	Bullet      *bool    `json:"bullet,omitempty"`
+	BulletChar  string   `json:"bullet_char,omitempty"`
 }
 
 func styleParagraph(p *etree.Element, s *ParagraphStyle) error {
@@ -72,6 +74,18 @@ func styleParagraph(p *etree.Element, s *ParagraphStyle) error {
 			}
 		}
 		pr.AddChild(e)
+	}
+	if s.LineSpacing != nil {
+		value := *s.LineSpacing
+		if !finite(value) || value < 0.00001 || value > 1000 {
+			return fmt.Errorf("line_spacing must be a positive multiplier from 0.00001 to 1000")
+		}
+		for _, old := range office.Children(pr, ans, "lnSpc") {
+			pr.RemoveChild(old)
+		}
+		e := etree.NewElement("a:lnSpc")
+		e.CreateElement("a:spcPct").CreateAttr("val", strconv.FormatInt(int64(math.Round(value*100000)), 10))
+		insert(e)
 	}
 	for _, v := range []struct {
 		tag   string

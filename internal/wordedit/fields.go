@@ -196,16 +196,9 @@ func toc(d *Doc, spec map[string]any) error {
 		}
 		p.AddChild(r)
 	}
-	s, err := d.Settings()
-	if err != nil {
+	if err := requestFieldRefresh(d); err != nil {
 		return err
 	}
-	u := child(s, "updateFields")
-	if u == nil {
-		u = W("updateFields")
-		s.AddChild(u)
-	}
-	setW(u, "val", "true")
 	return placeContent(d, p, str(spec, "marker"))
 }
 
@@ -709,4 +702,34 @@ func truthy(v any) bool {
 		return x != 0
 	}
 	return v != nil
+}
+
+// requestFieldRefresh changes settings only; it does not calculate field results.
+func requestFieldRefresh(d *Doc) error {
+	s, err := d.Settings()
+	if err != nil {
+		return err
+	}
+	u := child(s, "updateFields")
+	if u == nil {
+		u = W("updateFields")
+		// CT_Settings places updateFields before these following settings.
+		following := map[string]bool{}
+		for _, tag := range strings.Fields("hdrShapeDefaults footnotePr endnotePr compat docVars rsids mathPr attachedSchema themeFontLang clrSchemeMapping doNotIncludeSubdocsInStats doNotAutoCompressPictures forceUpgrade captions readModeInkLockDown smartTagType schemaLibrary shapeDefaults doNotEmbedSmartTags decimalSymbol listSeparator") {
+			following[tag] = true
+		}
+		inserted := false
+		for _, c := range s.ChildElements() {
+			if following[c.Tag] {
+				s.InsertChildAt(c.Index(), u)
+				inserted = true
+				break
+			}
+		}
+		if !inserted {
+			s.AddChild(u)
+		}
+	}
+	setW(u, "val", "true")
+	return nil
 }
