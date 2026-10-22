@@ -1,14 +1,13 @@
 package xlsx
 
 import (
-	"bytes"
 	"fmt"
+	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
 
 	"github.com/openvibely/openvibely-paperworks/internal/office"
-	"github.com/openvibely/openvibely-paperworks/internal/opc"
 	"github.com/xuri/excelize/v2"
 )
 
@@ -377,44 +376,33 @@ type arrayBlock struct {
 	left, top, right, bottom int
 }
 
-// Excelize exposes no getter for formula type/ref, so array masters are read
-// from the serialized worksheet XML.
+// Scan only live worksheet cells. No ZIP/XML round trip is needed, and a later
+// copy sees array blocks written by earlier edits in the same batch.
 func arrayFormulaBlocks(f *excelize.File, sheet string) (map[string]arrayBlock, error) {
-	idx, err := f.GetSheetIndex(sheet)
+	ws, err := memorySheet(f, sheet)
 	if err != nil {
 		return nil, err
-	}
-	if idx < 0 {
-		return nil, fmt.Errorf("sheet %q missing", sheet)
-	}
-	raw, err := f.WriteToBuffer()
-	if err != nil {
-		return nil, err
-	}
-	pkg, err := opc.Read(raw.Bytes())
-	if err != nil {
-		return nil, err
-	}
-	wb, err := office.OpenWorkbook(pkg)
-	if err != nil {
-		return nil, err
-	}
-	sh := wb.Sheets[f.GetSheetName(idx)]
-	if sh == nil {
-		return nil, fmt.Errorf("sheet %q missing", sheet)
 	}
 	blocks := map[string]arrayBlock{}
-	for address, c := range sh.Cells {
-		fe := office.Child(c, office.NSS, "f")
-		if fe == nil || fe.SelectAttrValue("t", "") != excelize.STCellFormulaTypeArray {
-			continue
+	for i := 0; i < ws.rows.Len(); i++ {
+		cells := ws.rows.Index(i).Field(ws.cellsIndex)
+		for j := 0; j < cells.Len(); j++ {
+			c := cells.Index(j)
+			formula := c.Field(ws.formulaIndex)
+			if formula.IsNil() || formula.Elem().FieldByName("T").String() != excelize.STCellFormulaTypeArray {
+				continue
+			}
+			address := c.Field(ws.addressIndex).String()
+			ref := strings.ToUpper(formula.Elem().FieldByName("Ref").String())
+			if ref == "" {
+				ref = address
+			}
+			left, top, right, bottom, err := office.ParseRange(ref)
+			if err != nil {
+				return nil, fmt.Errorf("array formula %s has invalid ref %q", address, ref)
+			}
+			blocks[address] = arrayBlock{ref, left, top, right, bottom}
 		}
-		ref := strings.ToUpper(fe.SelectAttrValue("ref", address))
-		left, top, right, bottom, err := office.ParseRange(ref)
-		if err != nil {
-			return nil, fmt.Errorf("array formula %s has invalid ref %q", address, ref)
-		}
-		blocks[address] = arrayBlock{ref, left, top, right, bottom}
 	}
 	return blocks, nil
 }
@@ -423,43 +411,34 @@ type copiedCellValue struct {
 	kind, value string
 }
 
-// Reopen the corrected package so subsequent edits observe date/error types,
-// including another copy, a sheet rename, or an overwrite of these cells.
+// Excelize has no date/error setter. Correct the live cells after the regular
+// setters have handled merged anchors and cell allocation. Subsequent edits
+// observe the actual types immediately; the final save serializes them once.
 func restoreCopiedTypes(f *excelize.File, sheet string, values map[string]copiedCellValue) (*excelize.File, error) {
-	raw, err := f.WriteToBuffer()
+	ws, err := memorySheet(f, sheet)
 	if err != nil {
 		return nil, err
 	}
-	pkg, err := opc.Read(raw.Bytes())
-	if err != nil {
-		return nil, err
-	}
-	wb, err := office.OpenWorkbook(pkg)
-	if err != nil {
-		return nil, err
-	}
-	sh := wb.Sheets[sheet]
-	if sh == nil {
-		return nil, fmt.Errorf("copy destination sheet missing")
-	}
-	for address, value := range values {
-		cell := sh.Cells[address]
-		if cell == nil {
-			return nil, fmt.Errorf("copy destination %s missing", address)
+	remaining := len(values)
+	for i := 0; i < ws.rows.Len(); i++ {
+		cells := ws.rows.Index(i).Field(ws.cellsIndex)
+		for j := 0; j < cells.Len(); j++ {
+			c := cells.Index(j)
+			value, ok := values[c.Field(ws.addressIndex).String()]
+			if !ok {
+				continue
+			}
+			c.Field(ws.typeIndex).SetString(value.kind)
+			c.Field(ws.valueIndex).SetString(value.value)
+			inline := c.Field(ws.inlineIndex)
+			inline.Set(reflect.Zero(inline.Type()))
+			remaining--
+			if remaining == 0 {
+				return f, nil
+			}
 		}
-		cell.CreateAttr("t", value.kind)
-		office.RemoveAll(cell, office.NSS, "v")
-		office.RemoveAll(cell, office.NSS, "is")
-		office.NewChild(cell, office.NSS, "v", nil).SetText(value.value)
 	}
-	if err = pkg.SetXML(sh.Part, sh.Doc); err != nil {
-		return nil, err
-	}
-	data, err := pkg.Bytes()
-	if err != nil {
-		return nil, err
-	}
-	return excelize.OpenReader(bytes.NewReader(data))
+	return nil, fmt.Errorf("%d typed copy destinations missing", remaining)
 }
 
 var r1c1Ref = regexp.MustCompile(`(?i)^R(\[[+-]?[0-9]+\]|[0-9]*)C(\[[+-]?[0-9]+\]|[0-9]*)`)

@@ -18,6 +18,7 @@ func TestCopyValuesPreservesCachedResultTypes(t *testing.T) {
 	results := []struct{ formula, kind, value string }{
 		{`"00123"`, "str", "00123"}, {`""`, "str", ""},
 		{"NA()", "e", "#N/A"}, {"TRUE()", "b", "1"}, {"42", "n", "42"},
+		{"DATE(2026,1,2)", "d", "2026-01-02T03:04:05Z"},
 	}
 	for i, result := range results {
 		cell, _ := excelize.CoordinatesToCellName(1, i+1)
@@ -52,8 +53,8 @@ func TestCopyValuesPreservesCachedResultTypes(t *testing.T) {
 		t.Fatal(err)
 	}
 	if err := EditFile(context.Background(), in, out, dir, EditSpec{Edits: []Edit{
-		{Operation: "copy-values", Sheet: "Sheet1", Range: "A1:A5", Target: "B1"},
-		{Operation: "copy", Sheet: "Sheet1", Range: "B1:B5", Target: "C1"},
+		{Operation: "copy-values", Sheet: "Sheet1", Range: "A1:A6", Target: "B1"},
+		{Operation: "copy", Sheet: "Sheet1", Range: "B1:B6", Target: "C1"},
 		{Operation: "rename-sheet", Sheet: "Sheet1", Name: "Result"},
 		{Operation: "value", Sheet: "Result", Cell: "B3", Value: "recovered"},
 		{Operation: "add-sheet", Name: "Other"},
@@ -70,7 +71,7 @@ func TestCopyValuesPreservesCachedResultTypes(t *testing.T) {
 		for i, result := range results {
 			address, _ := excelize.CoordinatesToCellName(col, i+1)
 			wantValue := result.value
-			wantType := []excelize.CellType{excelize.CellTypeSharedString, excelize.CellTypeSharedString, excelize.CellTypeError, excelize.CellTypeBool, excelize.CellTypeNumber}[i]
+			wantType := []excelize.CellType{excelize.CellTypeSharedString, excelize.CellTypeSharedString, excelize.CellTypeError, excelize.CellTypeBool, excelize.CellTypeNumber, excelize.CellTypeDate}[i]
 			if address == "B3" {
 				wantValue, wantType = "recovered", excelize.CellTypeSharedString
 			}
