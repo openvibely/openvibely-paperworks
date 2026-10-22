@@ -54,7 +54,7 @@ func TestPreviewWriterReferenceGraph(t *testing.T) {
 						b.WriteByte('}')
 					case types.Dict:
 						b.WriteString("<<")
-						for _, k := range previewKeys(v) {
+						for _, k := range sortedDictKeys(v) {
 							b.WriteString("/" + k + " ")
 							walk(v[k])
 						}

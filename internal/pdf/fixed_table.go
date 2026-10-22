@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"sort"
 	"strconv"
 	"strings"
 
@@ -176,33 +175,9 @@ func applyFixedLayout(ctx context.Context, c *model.Context, pages []CreatePage)
 				fonts = fonts.Clone().(types.Dict)
 			}
 			res["Font"] = fonts
-			// Reuse only an identical built-in resource; custom encodings and
-			// width overrides must never change the table's glyph metrics.
 			want := types.Dict{"Type": types.Name("Font"), "Subtype": types.Name("Type1"), "BaseFont": types.Name("Helvetica"), "Encoding": types.Name("WinAnsiEncoding")}
-			names := make([]string, 0, len(fonts))
-			for key := range fonts {
-				names = append(names, key)
-			}
-			sort.Strings(names)
-			name := ""
-			for _, key := range names {
-				d := dictOf(c.XRefTable, fonts[key]).d
-				if len(d) != len(want) {
-					continue
-				}
-				same := true
-				for k, v := range want {
-					if n, ok := d[k].(types.Name); !ok || n != v.(types.Name) {
-						same = false
-						break
-					}
-				}
-				if same {
-					name = key
-					break
-				}
-			}
-			if name == "" {
+			name, ok := findBuiltinFont(c, fonts, "Helvetica")
+			if !ok {
 				name = "FixedTableFont"
 				if len(p.FixedParagraphs) > 0 {
 					name = "F1"
@@ -244,7 +219,7 @@ func applyFixedLayout(ctx context.Context, c *model.Context, pages []CreatePage)
 				// above. Publish the ReportLab font dictionary indirection without
 				// changing resource handling on mixed, image or interactive pages.
 				published := types.Dict{}
-				for _, key := range sortedFontKeys(fonts) {
+				for _, key := range sortedDictKeys(fonts) {
 					font := dictOf(c.XRefTable, fonts[key]).d.Clone().(types.Dict)
 					font["Name"] = types.Name(key)
 					fr, err := c.IndRefForNewObject(font)

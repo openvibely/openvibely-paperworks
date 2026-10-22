@@ -25,7 +25,7 @@ func (o previewOrder) keys(d types.Dict) []string {
 			seen[k] = true
 		}
 	}
-	for _, k := range previewKeys(d) {
+	for _, k := range sortedDictKeys(d) {
 		if !seen[k] {
 			out = append(out, k)
 		}

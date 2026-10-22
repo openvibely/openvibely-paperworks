@@ -33,7 +33,7 @@ func reportDocument(ctx context.Context, c *model.Context, pages []CreatePage) (
 	}
 	resources := dictOf(c.XRefTable, pd["Resources"]).d
 	fonts := dictOf(c.XRefTable, resources["Font"]).d
-	names := sortedFontKeys(fonts)
+	names := sortedDictKeys(fonts)
 	// Font keys are allocated as F1, F2, ... in first-use order.
 	sort.Slice(names, func(i, j int) bool {
 		a, _ := strconv.Atoi(strings.TrimPrefix(names[i], "F"))
