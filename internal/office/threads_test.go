@@ -67,7 +67,7 @@ func TestReferenceThreadLifecycleAndPreservation(t *testing.T) {
 	old, updated := referencePreviewZIP(t, source), referencePreviewZIP(t, path)
 	for _, part := range old.File {
 		n := part.Name
-		if n != "[Content_Types].xml" && n != "xl/_rels/workbook.xml.rels" && !bytes.Equal(referencePreviewZIPRead(t, old, n), referencePreviewZIPRead(t, updated, n)) {
+		if n != "xl/worksheets/sheet3.xml" && n != "[Content_Types].xml" && n != "xl/_rels/workbook.xml.rels" && !bytes.Equal(referencePreviewZIPRead(t, old, n), referencePreviewZIPRead(t, updated, n)) {
 			t.Fatal("changed part", n)
 		}
 	}

@@ -204,15 +204,8 @@ func editThread(p *opc.Package, spec CommentSpec, action string, sheets map[stri
 		return errors.New("unknown comment worksheet")
 	}
 	root := st.doc.Root()
-	if st.part == "" {
-		if action != "add" {
-			return errors.New("thread does not exist")
-		}
-		st.part = uniquePart(p, "xl/threadedComments", "threadedComment")
-		rel := opc.Relative(st.owner, st.part)
-		if _, err := p.AddRel(st.owner, relTR+"threadedComment", rel, false); err != nil {
-			return err
-		}
+	if st.part == "" && action != "add" {
+		return errors.New("thread does not exist")
 	}
 	var parent *etree.Element
 	if action != "add" {
@@ -251,6 +244,13 @@ func editThread(p *opc.Package, spec CommentSpec, action string, sheets map[stri
 				if e.SelectAttrValue("ref", "") == cell && e.SelectAttrValue("parentId", "") == "" {
 					return errors.New("cell already has a thread; reply to its ID")
 				}
+			}
+			_, notes, err := legacyComments(p, st.owner)
+			if err != nil {
+				return err
+			}
+			if legacyNoteAt(notes, cell) != nil {
+				return fmt.Errorf("cell %s already has a legacy note; cannot add a thread", cell)
 			}
 		}
 		if parent != nil && Truthy(parent.SelectAttrValue("done", "0"), false) {
@@ -303,6 +303,18 @@ func editThread(p *opc.Package, spec CommentSpec, action string, sheets map[stri
 		}
 		e.CreateElement(qual(root.Space, "text")).SetText(spec.Text)
 		insertBeforeExt(root, e)
+		if parent == nil {
+			parent = e
+		}
+		if err := syncThreadNote(p, st, parent, persons); err != nil {
+			return err
+		}
+	}
+	if st.part == "" {
+		st.part = uniquePart(p, "xl/threadedComments", "threadedComment")
+		if _, err := p.AddRel(st.owner, relTR+"threadedComment", opc.Relative(st.owner, st.part), false); err != nil {
+			return err
+		}
 	}
 	if err := p.SetXML(st.part, st.doc); err != nil {
 		return err
