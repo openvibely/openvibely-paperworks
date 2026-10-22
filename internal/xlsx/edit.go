@@ -348,15 +348,10 @@ func eachCell(r string, fn func(string) error) error {
 	}
 	x, y, _ := excelize.CellNameToCoordinates(a)
 	xx, yy, _ := excelize.CellNameToCoordinates(b)
-	for row := y; row <= yy; row++ {
-		for col := x; col <= xx; col++ {
-			c, _ := excelize.CoordinatesToCellName(col, row)
-			if err = fn(c); err != nil {
-				return err
-			}
-		}
-	}
-	return nil
+	return walkCoordinates(x, y, xx, yy, func(col, row int) error {
+		c, _ := excelize.CoordinatesToCellName(col, row)
+		return fn(c)
+	})
 }
 
 // ImportCSV keeps all fields literal (including leading '=' and leading zeros).

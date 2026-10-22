@@ -120,32 +120,34 @@ func prepareDataTables(ctx context.Context, f *excelize.File, spec Spec) error {
 					return fmt.Errorf("data table overlaps structured table %s", table.Name)
 				}
 			}
-			for row := y; row <= yy; row++ {
-				if e := ctx.Err(); e != nil {
-					return e
+			e = walkCoordinates(x, y, xx, yy, func(col, row int) error {
+				if err := ctx.Err(); err != nil {
+					return err
 				}
-				for col := x; col <= xx; col++ {
-					total++
-					if total > 100000 {
-						return fmt.Errorf("data tables exceed 100000 result cells")
-					}
-					ref, _ := excelize.CoordinatesToCellName(col, row)
-					if occupied[ref] {
-						return fmt.Errorf("overlapping data tables at %s", ref)
-					}
-					occupied[ref] = true
-					v, e := f.GetCellValue(s.Name, ref)
-					if e != nil {
-						return e
-					}
-					formula, e := f.GetCellFormula(s.Name, ref)
-					if e != nil {
-						return e
-					}
-					if v != "" || formula != "" {
-						return fmt.Errorf("data table would overwrite %s", ref)
-					}
+				total++
+				if total > 100000 {
+					return fmt.Errorf("data tables exceed 100000 result cells")
 				}
+				ref, _ := excelize.CoordinatesToCellName(col, row)
+				if occupied[ref] {
+					return fmt.Errorf("overlapping data tables at %s", ref)
+				}
+				occupied[ref] = true
+				value, err := f.GetCellValue(s.Name, ref)
+				if err != nil {
+					return err
+				}
+				formula, err := f.GetCellFormula(s.Name, ref)
+				if err != nil {
+					return err
+				}
+				if value != "" || formula != "" {
+					return fmt.Errorf("data table would overwrite %s", ref)
+				}
+				return nil
+			})
+			if e != nil {
+				return e
 			}
 			// Materialize a blank master cell; the patch replaces this placeholder and
 			// removes its value. Zero is never advertised as a calculated result.
