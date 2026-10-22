@@ -4,11 +4,15 @@
 package lo
 
 import (
+	"archive/zip"
+	"bytes"
 	"context"
 	_ "embed"
+	"encoding/xml"
 	"errors"
 	"fmt"
 	"html"
+	"io"
 	"net/url"
 	"os"
 	"os/exec"
@@ -16,6 +20,9 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/openvibely/openvibely-paperworks/internal/office"
+	"github.com/openvibely/openvibely-paperworks/internal/opc"
 )
 
 //go:embed refresh.bas
@@ -188,12 +195,12 @@ func (s *session) installMacro() error {
 <!DOCTYPE script:module PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "module.dtd">
 <script:module xmlns:script="http://openoffice.org/2000/script" script:name="Module1" script:language="StarBasic">` +
 		html.EscapeString(refreshMacro) + "</script:module>\n"
-	for path, data := range map[string]string{
-		filepath.Join(basic, "script.xlc"): libraryList,
-		filepath.Join(dir, "script.xlb"):   libraryIndex,
-		filepath.Join(dir, "Module1.xba"):  xba,
+	for _, file := range []struct{ path, data string }{
+		{filepath.Join(basic, "script.xlc"), libraryList},
+		{filepath.Join(dir, "script.xlb"), libraryIndex},
+		{filepath.Join(dir, "Module1.xba"), xba},
 	} {
-		if err := os.WriteFile(path, []byte(data), 0o600); err != nil {
+		if err := os.WriteFile(file.path, []byte(file.data), 0o600); err != nil {
 			return err
 		}
 	}
@@ -218,9 +225,165 @@ func Convert(ctx context.Context, src, outDir, target string) (string, error) {
 	return out, nil
 }
 
+const (
+	maxRefreshXMLPart = 16 << 20
+	maxRefreshPackage = 32 << 20
+)
+
+// xlsxHasRefreshWork reports whether an XLSX contains content whose calculation
+// or cached rendering can change during a LibreOffice refresh. If inspection is
+// uncertain, it returns true so the normal LibreOffice path is used.
+func xlsxHasRefreshWork(src string) bool {
+	info, err := os.Stat(src)
+	if err != nil || info.Size() > maxRefreshPackage {
+		return true
+	}
+	archive, err := zip.OpenReader(src)
+	if err != nil {
+		return true
+	}
+	defer archive.Close()
+	parts := make(map[string]*zip.File, len(archive.File))
+	for _, part := range archive.File {
+		if parts[part.Name] != nil {
+			return true
+		}
+		parts[part.Name] = part
+		name := "/" + strings.ToLower(part.Name)
+		for _, marker := range []string{"/tables/", "/pivot", "/externallinks/", "/connections", "/querytables/", "/calcchain"} {
+			if strings.Contains(name, marker) {
+				return true
+			}
+		}
+	}
+	readXML := func(name string) ([]byte, bool) {
+		part := parts[name]
+		if part == nil || part.UncompressedSize64 > maxRefreshXMLPart {
+			return nil, false
+		}
+		r, err := part.Open()
+		if err != nil {
+			return nil, false
+		}
+		data, readErr := io.ReadAll(io.LimitReader(r, maxRefreshXMLPart+1))
+		closeErr := r.Close()
+		if readErr != nil || closeErr != nil || len(data) > maxRefreshXMLPart {
+			return nil, false
+		}
+		return data, true
+	}
+	containsElement := func(data []byte, tag string) (bool, bool) {
+		decoder := xml.NewDecoder(bytes.NewReader(data))
+		for {
+			token, err := decoder.Token()
+			if err == io.EOF {
+				return false, true
+			}
+			if err != nil {
+				return false, false
+			}
+			if element, ok := token.(xml.StartElement); ok && element.Name.Local == tag {
+				return true, true
+			}
+		}
+	}
+	workbook, ok := readXML("xl/workbook.xml")
+	if !ok {
+		return true
+	}
+	if hasNames, valid := containsElement(workbook, "definedName"); !valid || hasNames {
+		return true
+	}
+	relationshipsXML, ok := readXML("xl/_rels/workbook.xml.rels")
+	if !ok {
+		return true
+	}
+	var relationships struct {
+		Items []struct {
+			Type       string `xml:"Type,attr"`
+			Target     string `xml:"Target,attr"`
+			TargetMode string `xml:"TargetMode,attr"`
+		} `xml:"Relationship"`
+	}
+	if err := xml.Unmarshal(relationshipsXML, &relationships); err != nil {
+		return true
+	}
+	sheets := 0
+	for _, rel := range relationships.Items {
+		if !strings.HasSuffix(rel.Type, "/worksheet") {
+			continue
+		}
+		if rel.TargetMode != "" || rel.Target == "" {
+			return true
+		}
+		sheetName := opc.Resolve("xl/workbook.xml", rel.Target)
+		sheet, ok := readXML(sheetName)
+		if !ok {
+			return true
+		}
+		sheets++
+		hasFormula, valid := containsElement(sheet, "f")
+		if !valid || hasFormula {
+			return true
+		}
+	}
+	return sheets == 0
+}
+
+func copyFileExclusive(src, dst string) error {
+	input, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer input.Close()
+	output, err := os.OpenFile(dst, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0o600)
+	if err != nil {
+		return fmt.Errorf("office refresh: %w", err)
+	}
+	if _, err := io.Copy(output, input); err != nil {
+		output.Close()
+		os.Remove(dst)
+		return err
+	}
+	if err := output.Close(); err != nil {
+		os.Remove(dst)
+		return err
+	}
+	return nil
+}
+
+// refreshXLSXWithoutOffice handles conservative no-formula workbooks locally.
+// Standard chart caches are rebuilt from saved cell values; unsupported or
+// ambiguous package features fall back to LibreOffice.
+func refreshXLSXWithoutOffice(src, dst string) (bool, error) {
+	if xlsxHasRefreshWork(src) {
+		return false, nil
+	}
+	pkg, err := opc.Open(src)
+	if err != nil {
+		return false, nil
+	}
+	charts, err := office.ChartParts(pkg)
+	if err != nil {
+		return false, nil
+	}
+	if len(charts) > 0 {
+		if err := office.RefreshWorkbookChartCaches(pkg); err != nil {
+			return false, nil
+		}
+		return true, pkg.SaveNew(dst)
+	}
+	return true, copyFileExclusive(src, dst)
+}
+
 // Refresh opens src, recalculates formulas, refreshes fields and indexes and
 // stores the result at dst with the filter implied by dst's extension.
 func Refresh(ctx context.Context, src, dst string, wholeSheets bool) error {
+	if strings.EqualFold(filepath.Ext(src), ".xlsx") && strings.EqualFold(filepath.Ext(dst), ".xlsx") && !wholeSheets {
+		if handled, err := refreshXLSXWithoutOffice(src, dst); handled {
+			return err
+		}
+	}
 	filter := map[string]string{".xlsx": "Calc MS Excel 2007 XML", ".docx": "Office Open XML Text", ".pptx": "Impress MS PowerPoint 2007 XML"}[strings.ToLower(filepath.Ext(dst))]
 	if filter == "" {
 		filter = "calc_pdf_Export"
