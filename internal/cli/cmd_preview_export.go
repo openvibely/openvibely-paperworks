@@ -15,6 +15,14 @@ import (
 	"path/filepath"
 )
 
+// previewOutputExistsError retains the usage diagnostic and exit code while
+// exposing the filesystem identity expected by callers.
+type previewOutputExistsError struct{ UsageError }
+
+func (e previewOutputExistsError) Unwrap() []error {
+	return []error{e.UsageError, os.ErrExist}
+}
+
 func init() {
 	register(&Command{Name: "preview-export", Summary: "Export document previews as PNG/JPEG/WebP and an optional contact sheet.", Usage: "paperworks preview-export INPUT --output NEW_DIR [--format png|jpeg|webp] [--columns 3] [--max-pixels 1600] [--sheet NAME --range A1:D20]", Run: func(ctx context.Context, a Args) (any, error) {
 		in, err := input(a, 1)
@@ -44,7 +52,16 @@ func init() {
 		}
 		out := a.Path("output")
 		if _, err = os.Stat(out); !os.IsNotExist(err) {
-			return nil, usagef("output must be a new directory")
+			usage := UsageError{"output must be a new directory"}
+			if err == nil {
+				return nil, previewOutputExistsError{usage}
+			}
+			return nil, usage
+		}
+		// Create only the parents: the final output stays unpublished until the
+		// staged preview is complete and renamed below.
+		if err = os.MkdirAll(filepath.Dir(out), 0o755); err != nil {
+			return nil, err
 		}
 		stage, err := os.MkdirTemp(filepath.Dir(out), ".paperworks-preview-")
 		if err != nil {
