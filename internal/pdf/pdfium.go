@@ -37,13 +37,7 @@ func engine(ctx context.Context) (pdfium.Pdfium, func(), error) {
 	case <-ctx.Done():
 		return nil, nil, ctx.Err()
 	}
-	poolOnce.Do(func() {
-		pool, poolErr = webassembly.Init(webassembly.Config{
-			MinIdle: 1, MaxIdle: 1, MaxTotal: 1, ReuseWorkers: true,
-			FSConfig:      systemFontFS(),
-			RuntimeConfig: wazero.NewRuntimeConfig().WithCoreFeatures(api.CoreFeaturesV2 | experimental.CoreFeaturesExceptionHandling).WithMemoryLimitPages(8192).WithCloseOnContextDone(true),
-		})
-	})
+	poolOnce.Do(func() { pool, poolErr = initPool() })
 	if poolErr != nil {
 		<-engineGate
 		return nil, nil, fmt.Errorf("start embedded PDFium: %w", poolErr)
@@ -76,6 +70,81 @@ func engine(ctx context.Context) (pdfium.Pdfium, func(), error) {
 		}
 		<-engineGate
 	}, nil
+}
+
+func runtimeConfig() wazero.RuntimeConfig {
+	return wazero.NewRuntimeConfig().WithCoreFeatures(api.CoreFeaturesV2 | experimental.CoreFeaturesExceptionHandling).WithMemoryLimitPages(8192).WithCloseOnContextDone(true)
+}
+
+func initPool() (pdfium.Pool, error) {
+	cfg := webassembly.Config{
+		MinIdle: 1, MaxIdle: 1, MaxTotal: 1, ReuseWorkers: true,
+		FSConfig: systemFontFS(),
+	}
+	if cache, dir := compilationCache(); cache != nil {
+		cached := cfg
+		cached.RuntimeConfig = runtimeConfig().WithCompilationCache(cache)
+		p, err := webassembly.Init(cached)
+		if err == nil {
+			return p, nil
+		}
+		// wazero reports corrupt entries and failed writes as compile errors and
+		// never evicts them, so drop its versioned entries for the next run.
+		_ = cache.Close(context.Background())
+		stale, _ := filepath.Glob(filepath.Join(dir, "wazero-*"))
+		for _, p := range stale {
+			_ = os.RemoveAll(p)
+		}
+	}
+	cfg.RuntimeConfig = runtimeConfig()
+	return webassembly.Init(cfg)
+}
+
+// compilationCache returns a persistent cache of compiled PDFium native code,
+// or nil when no private, writable cache directory is available.
+// PAPERWORKS_WASM_CACHE overrides the directory; "off" disables caching.
+func compilationCache() (wazero.CompilationCache, string) {
+	dir, ok := compilationCacheDir()
+	if !ok {
+		return nil, ""
+	}
+	if err := os.MkdirAll(dir, 0o700); err != nil {
+		return nil, ""
+	}
+	// The cache holds executable code, so refuse directories others can write.
+	st, err := os.Stat(dir)
+	if err != nil || !st.IsDir() || st.Mode().Perm()&0o022 != 0 {
+		return nil, ""
+	}
+	cache, err := wazero.NewCompilationCacheWithDir(dir)
+	if err != nil {
+		return nil, ""
+	}
+	return cache, dir
+}
+
+func compilationCacheDir() (string, bool) {
+	switch v := os.Getenv("PAPERWORKS_WASM_CACHE"); v {
+	case "off", "0", "false":
+		return "", false
+	case "":
+	default:
+		if !filepath.IsAbs(v) {
+			return "", false
+		}
+		return v, true
+	}
+	base := os.Getenv("XDG_CACHE_HOME")
+	if base == "" {
+		var err error
+		if base, err = os.UserCacheDir(); err != nil {
+			return "", false
+		}
+	}
+	if !filepath.IsAbs(base) {
+		return "", false
+	}
+	return filepath.Join(base, "paperworks", "wazero"), true
 }
 
 type RenderOptions struct {
