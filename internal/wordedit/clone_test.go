@@ -11,6 +11,53 @@ import (
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 )
 
+func TestCloneComponentBeforeInsertionAndValidation(t *testing.T) {
+	target := mk(t, "target", `<w:p><w:r><w:t>A</w:t></w:r></w:p><w:p><w:r><w:t>B</w:t></w:r></w:p>`, nil)
+	source := mk(t, "source", `<w:p><w:r><w:t>Clone</w:t></w:r></w:p>`, nil)
+
+	for _, tc := range []struct {
+		name    string
+		before  any
+		include bool
+		want    string
+	}{
+		{name: "before first block", before: float64(0), include: true, want: "CloneAB"},
+		{name: "omitted appends", want: "ABClone"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			spec := map[string]any{"operation": "clone-component", "path": source, "start": float64(0), "end": float64(0)}
+			if tc.include {
+				spec["before"] = tc.before
+			}
+			out := filepath.Join(t.TempDir(), "clone.docx")
+			if _, err := Edit(target, out, spec, ""); err != nil {
+				t.Fatal(err)
+			}
+			raw, err := os.ReadFile(out)
+			if err != nil {
+				t.Fatal(err)
+			}
+			d, err := Open(raw)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got := office.Text(d.Body(), nsW, "t"); got != tc.want {
+				t.Fatalf("got %q, want %q", got, tc.want)
+			}
+		})
+	}
+
+	for _, before := range []any{float64(0.5), "0", float64(-1), float64(3)} {
+		t.Run(fmt.Sprintf("reject before %#v", before), func(t *testing.T) {
+			out := filepath.Join(t.TempDir(), "clone.docx")
+			spec := map[string]any{"operation": "clone-component", "path": source, "start": float64(0), "end": float64(0), "before": before}
+			if _, err := Edit(target, out, spec, ""); err == nil {
+				t.Fatalf("accepted invalid before position %#v", before)
+			}
+		})
+	}
+}
+
 func TestCloneComponentPreservesBlocksAndBookmarkLinks(t *testing.T) {
 	source := mk(t, "component", `<w:p><w:r><w:t>Before</w:t></w:r></w:p><w:p><w:bookmarkStart w:id="0" w:name="Topic"/><w:r><w:rPr><w:b/></w:rPr><w:t>Clone me</w:t></w:r><w:bookmarkEnd w:id="0"/><w:hyperlink w:anchor="Topic"><w:r><w:t>Link</w:t></w:r></w:hyperlink></w:p><w:tbl><w:tblPr/><w:tblGrid><w:gridCol w:w="4000"/></w:tblGrid><w:tr><w:tc><w:p><w:r><w:t>Table</w:t></w:r></w:p></w:tc></w:tr></w:tbl><w:p><w:r><w:t>After</w:t></w:r></w:p>`, nil)
 	raw, _ := os.ReadFile(source)

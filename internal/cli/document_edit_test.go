@@ -41,6 +41,27 @@ func TestNewEditorCommandsAndSchemas(t *testing.T) {
 	if word["properties"] == nil {
 		t.Fatal("Word schema missing fields", word)
 	}
+	properties := word["properties"].(map[string]any)
+	before, ok := properties["before"].(map[string]any)
+	if !ok || before["type"] != "integer" || before["minimum"] != float64(0) {
+		t.Fatalf("word-edit schema has invalid before property: %#v", properties["before"])
+	}
+	required := word["required"].([]any)
+	for _, name := range required {
+		if name == "before" {
+			t.Fatal("word-edit schema made optional before property required")
+		}
+	}
+	operation := properties["operation"].(map[string]any)
+	foundClone := false
+	for _, name := range operation["enum"].([]any) {
+		if name == "clone-component" {
+			foundClone = true
+		}
+	}
+	if !foundClone {
+		t.Fatal("word-edit schema omits clone-component operation")
+	}
 	r := runCLI(t, "inspect-select", out, "--sheet", "Data", "--range", "A1:C2", "--search", "Example")
 	if len(r["matches"].([]any)) == 0 {
 		t.Fatal(r)

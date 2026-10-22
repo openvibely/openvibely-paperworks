@@ -9,7 +9,7 @@ func wordSchema() map[string]any {
 	for _, k := range []string{"operation", "part", "old", "new", "text", "position", "font", "color", "style", "alignment", "fill", "path", "description", "kind", "type"} {
 		props[k] = map[string]any{"type": "string"}
 	}
-	for _, k := range []string{"start", "end", "paragraph", "run", "table", "row", "column", "end_column", "occurrence", "image", "section", "width", "height", "top", "bottom", "left", "right", "header", "footer", "gutter", "before", "after", "line"} {
+	for _, k := range []string{"start", "end", "paragraph", "run", "table", "row", "column", "end_column", "occurrence", "image", "section", "width", "height", "top", "bottom", "left", "right", "header", "footer", "gutter", "after", "line"} {
 		props[k] = map[string]any{"type": "integer", "minimum": 0}
 	}
 	for _, k := range []string{"font_size", "width_in", "height_in"} {
@@ -18,6 +18,7 @@ func wordSchema() map[string]any {
 	for _, k := range []string{"bold", "italic", "strike", "linked"} {
 		props[k] = map[string]any{"type": "boolean"}
 	}
+	props["before"] = map[string]any{"type": "integer", "minimum": 0, "description": "Optional zero-based destination block index for clone-component; 0 inserts before the first block. Omit to append."}
 	props["rows"] = map[string]any{"type": "array", "items": map[string]any{"type": "array", "items": map[string]any{"type": "string"}}}
 	props["widths_twips"] = map[string]any{"type": "array", "items": map[string]any{"type": "integer", "minimum": 1}}
 	props["operation"] = map[string]any{"type": "string", "enum": wordedit.Operations}
