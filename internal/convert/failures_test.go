@@ -363,12 +363,9 @@ profile=${1#-env:UserInstallation=file://}
 test -f "$profile/user/registrymodifications.xcu"
 grep -q 'MacroSecurityLevel' "$profile/user/registrymodifications.xcu"
 printf '%s\n' "$profile" >> "$PW_TEST_CALLS"
-case "$*" in
-  *--terminate_after_init*)
-    mkdir -p "$profile/user/basic/Standard"
-    printf library > "$profile/user/basic/Standard/script.xlb"
-    exit 0;;
-esac
+test -f "$profile/user/basic/script.xlc"
+test -f "$profile/user/basic/Standard/script.xlb"
+grep -q 'NEVER_EXECUTE' "$profile/user/basic/Standard/Module1.xba"
 test "$PW_IN" = "$PW_TEST_INPUT"
 test "$PW_OUT" = "$PW_TEST_OUTPUT"
 test "$PW_IN" != "$PW_OUT"
@@ -389,8 +386,8 @@ printf ok > "$PW_STATUS"
 		t.Fatal(err)
 	}
 	calls := strings.Fields(string(contents(t, marker)))
-	if len(calls) != 2 || calls[0] != calls[1] {
-		t.Fatal("profile must exist at both process boundaries", calls)
+	if len(calls) != 1 {
+		t.Fatal("refresh should launch LibreOffice once", calls)
 	}
 	if _, err := os.Stat(calls[0]); !os.IsNotExist(err) {
 		t.Fatal("temporary profile retained", err)

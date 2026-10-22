@@ -111,6 +111,7 @@ const securityXCU = `<?xml version="1.0" encoding="UTF-8"?>
 <item oor:path="/org.openoffice.Office.Common/Security/Scripting"><prop oor:name="DisableMacrosExecution" oor:op="fuse"><value>true</value></prop></item>
 <item oor:path="/org.openoffice.Office.Common/Misc"><prop oor:name="UseLocking" oor:op="fuse"><value>false</value></prop></item>
 <item oor:path="/org.openoffice.Office.Common/Misc"><prop oor:name="FirstRun" oor:op="fuse"><value>false</value></prop></item>
+<item oor:path="/org.openoffice.Setup/Office"><prop oor:name="ooSetupInstCompleted" oor:op="fuse"><value>true</value></prop></item>
 </oor:items>
 `
 
@@ -163,22 +164,40 @@ func (s *session) run(ctx context.Context, extraEnv []string, args ...string) er
 	return nil
 }
 
-// installMacro initialises the profile and replaces the empty Standard.Module1
-// with the refresh macro. Application macros run regardless of document
-// macro security; documents themselves are loaded with NEVER_EXECUTE.
-func (s *session) installMacro(ctx context.Context) error {
-	if err := s.run(ctx, nil, "--terminate_after_init"); err != nil {
+// installMacro writes the Basic library files into the throwaway profile before
+// LibreOffice starts. Documents themselves are opened with NEVER_EXECUTE.
+func (s *session) installMacro() error {
+	basic := filepath.Join(s.profile, "user", "basic")
+	dir := filepath.Join(basic, "Standard")
+	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return err
 	}
-	dir := filepath.Join(s.profile, "user", "basic", "Standard")
-	if _, err := os.Stat(filepath.Join(dir, "script.xlb")); err != nil {
-		return fmt.Errorf("LibreOffice profile did not initialise its Basic library: %w", err)
-	}
+	libraryIndex := `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE library:library PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "library.dtd">
+<library:library xmlns:library="http://openoffice.org/2000/library" library:name="Standard" library:readonly="false" library:passwordprotected="false">
+ <library:element library:name="Module1"/>
+</library:library>
+`
+	libraryList := `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE library:libraries PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "libraries.dtd">
+<library:libraries xmlns:library="http://openoffice.org/2000/library" xmlns:xlink="http://www.w3.org/1999/xlink">
+ <library:library library:name="Standard" library:link="false"/>
+</library:libraries>
+`
 	xba := `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE script:module PUBLIC "-//OpenOffice.org//DTD OfficeDocument 1.0//EN" "module.dtd">
 <script:module xmlns:script="http://openoffice.org/2000/script" script:name="Module1" script:language="StarBasic">` +
 		html.EscapeString(refreshMacro) + "</script:module>\n"
-	return os.WriteFile(filepath.Join(dir, "Module1.xba"), []byte(xba), 0o600)
+	for path, data := range map[string]string{
+		filepath.Join(basic, "script.xlc"): libraryList,
+		filepath.Join(dir, "script.xlb"):   libraryIndex,
+		filepath.Join(dir, "Module1.xba"):  xba,
+	} {
+		if err := os.WriteFile(path, []byte(data), 0o600); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // Convert exports src to the given LibreOffice target extension (pdf, docx,
@@ -216,7 +235,7 @@ func Refresh(ctx context.Context, src, dst string, wholeSheets bool) error {
 		return err
 	}
 	defer s.close()
-	if err := s.installMacro(ctx); err != nil {
+	if err := s.installMacro(); err != nil {
 		return err
 	}
 	status := filepath.Join(s.tmp, "status.txt")
