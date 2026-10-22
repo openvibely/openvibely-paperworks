@@ -13,7 +13,7 @@ import (
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 )
 
-var Operations = []string{"section-insert", "header-footer", "table-column-insert", "table-column-delete", "table-merge", "table-unmerge", "image-insert", "image-replace", "image-resize", "image-delete", "batch", "replace-text", "paragraph-insert", "paragraph-delete", "paragraph-format", "run-format", "table-cell-text", "table-cell-format", "table-row-insert", "table-row-delete", "section-format", "redline", "redline-insertion", "accept", "reject", "comment", "equation", "accessibility", "google-title", "metadata", "comment-edit", "comments-remove", "bookmark", "reference", "caption", "toc", "navigation", "control", "control-fill", "protection", "merge", "note", "privacy", "materialize", "redact", "normalize", "table-geometry", "freeze-references", "watermark", "watermark-remove", "style-pack", "clone-component"}
+var Operations = []string{"section-insert", "header-footer", "header-footer-link", "table-column-insert", "table-column-delete", "table-merge", "table-unmerge", "image-insert", "image-replace", "image-resize", "image-delete", "batch", "replace-text", "paragraph-insert", "paragraph-delete", "paragraph-format", "run-format", "table-cell-text", "table-cell-format", "table-row-insert", "table-row-delete", "section-format", "redline", "redline-insertion", "accept", "reject", "comment", "equation", "accessibility", "google-title", "metadata", "comment-edit", "comments-remove", "bookmark", "reference", "caption", "toc", "navigation", "control", "control-fill", "protection", "merge", "note", "privacy", "materialize", "redact", "normalize", "table-geometry", "freeze-references", "watermark", "watermark-remove", "style-pack", "clone-component"}
 
 // Edit applies one operation from spec to source and writes a new file.
 // baseDir resolves relative paths inside the spec (merge files, templates).
@@ -41,7 +41,7 @@ func Edit(source, destination string, spec map[string]any, baseDir string) (map[
 	}
 	var redacted []string
 	switch op {
-	case "section-insert", "header-footer", "table-column-insert", "table-column-delete", "table-merge", "table-unmerge", "image-insert", "image-replace", "image-resize", "image-delete", "batch", "replace-text", "paragraph-insert", "paragraph-delete", "paragraph-format", "run-format", "table-cell-text", "table-cell-format", "table-row-insert", "table-row-delete", "section-format":
+	case "section-insert", "header-footer", "header-footer-link", "table-column-insert", "table-column-delete", "table-merge", "table-unmerge", "image-insert", "image-replace", "image-resize", "image-delete", "batch", "replace-text", "paragraph-insert", "paragraph-delete", "paragraph-format", "run-format", "table-cell-text", "table-cell-format", "table-row-insert", "table-row-delete", "section-format":
 		var resolveAssets func(map[string]any)
 		resolveAssets = func(s map[string]any) {
 			if p := str(s, "path"); p != "" {

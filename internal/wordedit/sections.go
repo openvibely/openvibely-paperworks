@@ -77,9 +77,53 @@ func sectionEdit(d *Doc, s map[string]any) error {
 	if typ != "default" && typ != "first" && typ != "even" {
 		return fmt.Errorf("type must be default, first or even")
 	}
-	content, err := headerFooterContent(s)
-	if err != nil {
-		return err
+	linkOperation := str(s, "operation") == "header-footer-link"
+	var content []*etree.Element
+	if linkOperation {
+		linked, ok := s["linked"].(bool)
+		if !ok {
+			return fmt.Errorf("linked must be a boolean")
+		}
+		for _, key := range []string{"text", "rows", "widths_twips"} {
+			if _, exists := s[key]; exists {
+				return fmt.Errorf("header-footer-link does not accept %s; use header-footer to replace content", key)
+			}
+		}
+		var refs []*etree.Element
+		for _, ref := range sec.ChildElements() {
+			if is(ref, kind+"Reference") && getW(ref, "type") == typ {
+				refs = append(refs, ref)
+			}
+		}
+		if linked {
+			// Removing the reference restores inheritance. Keep the old part and
+			// relationship: another section may still reference the same story.
+			for _, ref := range refs {
+				remove(ref)
+			}
+			if len(refs) > 0 {
+				d.Touch(d.Main)
+			}
+			return nil
+		}
+		if len(refs) > 0 {
+			return nil // Already unlinked; retain its current content.
+		}
+		// Match python-docx's is_linked_to_previous=false: create an empty
+		// definition, rather than silently copying the inherited content.
+		p := W("p")
+		style := "Header"
+		if kind == "footer" {
+			style = "Footer"
+		}
+		valProp(property(p, "pPr"), "pStyle", style)
+		content = []*etree.Element{p}
+	} else {
+		var err error
+		content, err = headerFooterContent(s)
+		if err != nil {
+			return err
+		}
 	}
 	name := ""
 	for n := 1; ; n++ {
@@ -118,10 +162,10 @@ func sectionEdit(d *Doc, s map[string]any) error {
 	ref.CreateAttr("r:id", rid)
 	ref.CreateAttr("xmlns:r", opc.NSOffR)
 	insertWordProperty(sec, ref)
-	if typ == "first" {
+	if !linkOperation && typ == "first" {
 		valProp(sec, "titlePg", "1")
 	}
-	if typ == "even" {
+	if !linkOperation && typ == "even" {
 		settings, err := d.Settings()
 		if err != nil {
 			return err
