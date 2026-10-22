@@ -15,6 +15,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/openvibely/openvibely-paperworks/internal/convert"
 )
 
 var Version = "0.1.0-dev"
@@ -318,10 +320,7 @@ func newDir(p string) error {
 	if p == "" {
 		return usagef("--output must name a new directory")
 	}
-	if _, err := os.Stat(p); err == nil {
-		return fmt.Errorf("output directory already exists: %s: %w", p, os.ErrExist)
-	}
-	return os.MkdirAll(p, 0o755)
+	return convert.NewOutputDir(p)
 }
 
 func newFile(out, in string) error {

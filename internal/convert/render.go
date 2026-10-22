@@ -88,10 +88,7 @@ func RenderFile(ctx context.Context, path, output, sheet, cellRange string, opt 
 	}
 	var pdfPath string
 	if e == ".pdf" {
-		if _, err := os.Stat(output); err == nil {
-			return nil, fmt.Errorf("output directory already exists: %s: %w", output, os.ErrExist)
-		}
-		if err := os.MkdirAll(output, 0o755); err != nil {
+		if err := NewOutputDir(output); err != nil {
 			return nil, err
 		}
 		pdfPath = path
@@ -217,10 +214,7 @@ func docxLines(path string) ([]string, error) {
 // Compare renders both files and writes per-page pixel diffs, plus a text
 // diff for DOCX pairs.
 func Compare(ctx context.Context, before, after, output string, opt pdf.RenderOptions) (map[string]any, error) {
-	if _, err := os.Stat(output); err == nil {
-		return nil, fmt.Errorf("output directory already exists: %s: %w", output, os.ErrExist)
-	}
-	if err := os.MkdirAll(output, 0o755); err != nil {
+	if err := NewOutputDir(output); err != nil {
 		return nil, err
 	}
 	left, err := RenderFile(ctx, before, filepath.Join(output, "before"), "", "", opt)

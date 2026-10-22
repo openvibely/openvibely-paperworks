@@ -59,10 +59,7 @@ func Convert(ctx context.Context, path, output string, o Options) (map[string]an
 	if externalResources(report) {
 		return nil, errors.New("External resources require review/removal on a copy before conversion")
 	}
-	if _, err := os.Stat(output); err == nil {
-		return nil, fmt.Errorf("output directory already exists: %s: %w", output, os.ErrExist)
-	}
-	if err := os.MkdirAll(output, 0o755); err != nil {
+	if err := NewOutputDir(output); err != nil {
 		return nil, err
 	}
 	target := "pdf"
