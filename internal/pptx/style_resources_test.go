@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"github.com/beevik/etree"
 	"github.com/openvibely/openvibely-paperworks/internal/office"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 	"github.com/xuri/excelize/v2"
@@ -126,6 +127,55 @@ func TestInheritedChartRejectsUnsupportedInputs(t *testing.T) {
 		}
 		if _, err = os.Stat(out); !os.IsNotExist(err) {
 			t.Fatal("published failure")
+		}
+	}
+}
+
+func TestInheritedTableCellMatchesInheritedShapeText(t *testing.T) {
+	text := "First paragraph\nSecond paragraph"
+	shape := Element{Type: "text", X: 1, Y: 1, W: 3, H: 1, Text: text, FontSize: 22, Color: "123456", Bold: true, InheritFormatting: true}
+	table := Element{Type: "table", X: 1, Y: 3, W: 3, H: 1, Rows: [][]string{{text}}, FontSize: 22, Color: "123456", Bold: true, InheritFormatting: true}
+	out := filepath.Join(t.TempDir(), "inherited-table.pptx")
+	if err := Create(context.Background(), Spec{Slides: []Slide{{Elements: []Element{shape, table}}}}, ".", out); err != nil {
+		t.Fatal(err)
+	}
+	pkg, err := opc.Open(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	slide, err := pkg.XML("ppt/slides/slide1.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	shapeBodies := office.All(slide.Root(), pns, "txBody")
+	cellBodies := office.All(slide.Root(), ans, "txBody")
+	if len(shapeBodies) != 1 || len(cellBodies) != 1 {
+		t.Fatalf("shape text bodies=%d table cell text bodies=%d", len(shapeBodies), len(cellBodies))
+	}
+	for _, body := range []*etree.Element{shapeBodies[0], cellBodies[0]} {
+		bodyPr := office.Child(body, ans, "bodyPr")
+		paragraphs := office.Children(body, ans, "p")
+		if bodyPr == nil || len(bodyPr.Attr) != 0 || len(paragraphs) != 2 || len(office.All(body, ans, "endParaRPr")) != 0 {
+			t.Fatal("inherited body acquired authored body defaults")
+		}
+		for _, paragraph := range paragraphs {
+			if office.Child(paragraph, ans, "pPr") != nil {
+				t.Fatal("unexpected paragraph defaults")
+			}
+			run := office.Child(paragraph, ans, "r")
+			rPr := office.Child(run, ans, "rPr")
+			if run == nil || rPr == nil || rPr.SelectAttrValue("sz", "") != "2200" || rPr.SelectAttrValue("b", "") != "1" || rPr.SelectAttrValue("lang", "") != "" || office.Child(rPr, ans, "latin") != nil {
+				t.Fatal("inherited run styling differs from inherited shape policy")
+			}
+			if office.Child(rPr, ans, "solidFill").SelectElement("a:srgbClr").SelectAttrValue("val", "") != "123456" {
+				t.Fatal("inherited color lost")
+			}
+		}
+	}
+	for _, body := range []*etree.Element{shapeBodies[0], cellBodies[0]} {
+		texts := office.All(body, ans, "t")
+		if len(texts) != 2 || texts[0].Text() != "First paragraph" || texts[1].Text() != "Second paragraph" {
+			t.Fatal("inherited paragraph text differs between shape and table cell")
 		}
 	}
 }
