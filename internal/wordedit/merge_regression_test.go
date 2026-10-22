@@ -242,6 +242,9 @@ func TestMergeRejectsUnsupportedBookmarkReferences(t *testing.T) {
 	dst := mk(t, "destination", mergeBookmarkBody("Summary", "original", ""), nil)
 	for _, field := range []string{
 		`<w:fldSimple w:instr="TOC \b Summary"/>`,
+		// A literal QUOTE wrapper must not hide an unsupported reference in
+		// its nested result fields.
+		`<w:fldSimple w:instr="QUOTE &quot;Summary&quot;"><w:fldSimple w:instr="TOC \b Summary"/></w:fldSimple>`,
 		`<w:r><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:instrText>REF </w:instrText></w:r><w:r><w:fldChar w:fldCharType="begin"/></w:r>`,
 	} {
 		src := mk(t, "source", mergeBookmarkBody("Summary", "appendix", field), nil)
@@ -319,6 +322,8 @@ func TestMergeReservesDestinationStoryBookmarks(t *testing.T) {
 
 func TestMergePreservesUnrelatedFieldInstructions(t *testing.T) {
 	for _, instr := range []string{
+		` QUOTE "Summary" `,
+		` quote "Summary and other literal text" \* MERGEFORMAT `,
 		` DOCPROPERTY Summary `,
 		` DOCPROPERTY "Summary" \* MERGEFORMAT `,
 		` DOCVARIABLE Summary `,
@@ -343,6 +348,13 @@ func TestMergePreservesUnrelatedFieldInstructions(t *testing.T) {
 				src := mk(t, "source", mergeBookmarkBody("Summary", "appendix", field), nil)
 				out := mustEdit(t, dst, map[string]any{"operation": "merge", "files": []any{src}})
 				root := referenceXML(t, out, "word/document.xml")
+				starts := all(root, "bookmarkStart")
+				referenceEqual(t, len(starts), 2)
+				referenceEqual(t, getW(starts[0], "name"), "Summary")
+				if getW(starts[1], "name") == "Summary" {
+					t.Fatal("imported bookmark was not renamed")
+				}
+				referenceEqual(t, office.Text(all(root, "p")[4], nsW, "t"), "cached")
 				if complex {
 					referenceEqual(t, office.Text(root, nsW, "instrText"), instr)
 				} else {

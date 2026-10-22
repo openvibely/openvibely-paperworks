@@ -218,6 +218,11 @@ func rewriteMergedInstruction(instr string, names map[string]string) (string, er
 				target = i + 1
 			}
 		}
+	case "QUOTE":
+		// QUOTE inserts literal text; matching a renamed bookmark inside that
+		// text does not make it a reference. Nested field instructions are
+		// still inspected or rejected by remapMergedBookmarks' field walker.
+		return instr, nil
 	case "DOCPROPERTY", "DOCVARIABLE", "MERGEFIELD", "STYLEREF",
 		"DATE", "TIME", "CREATEDATE", "SAVEDATE", "PRINTDATE",
 		"AUTHOR", "TITLE", "SUBJECT", "KEYWORDS", "COMMENTS",
