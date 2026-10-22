@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"strconv"
 	"strings"
 	"testing"
@@ -156,48 +157,142 @@ func TestThreadLegacyNotes(t *testing.T) {
 }
 
 func TestExcelPairedThreadReply(t *testing.T) {
-	source := "../../testdata/regression/comment-identity-source.xlsx"
+	// This static fixture is paired before WorkbookComments performs any edit.
+	source := "../../testdata/regression/comment-paired-source.xlsx"
+	original := previewRead(t, source)
 	p := previewOpen(t, source)
-	items, err := WorkbookComments(p, CommentSpec{})
-	if err != nil || len(items) == 0 {
-		t.Fatal(items, err)
+	initial, err := WorkbookComments(p, CommentSpec{})
+	if err != nil || len(initial) != 2 {
+		t.Fatal(initial, err)
 	}
-	root := items[0]
-	if root.Resolved {
-		_, err = WorkbookComments(p, CommentSpec{Action: "reopen", Sheet: root.Sheet, ThreadID: root.ID})
+	root := initial[0]
+	if root.ParentID != nil || root.Resolved {
+		t.Fatal("fixture needs an open root", root)
+	}
+	_, _, sheets, err := WorkbookSheets(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	owner := sheets[root.Sheet]
+	const commentsPart = "xl/comments/comment7.xml"
+	const vmlPart = "xl/drawings/vmlDrawing7.vml"
+	originalVML := append([]byte(nil), p.Get(vmlPart)...)
+	if len(originalVML) == 0 {
+		t.Fatal("fixture lacks pre-existing VML")
+	}
+	originalRels := append([]byte(nil), p.Get(opc.RelsName(owner))...)
+	originalSheet := append([]byte(nil), p.Get(owner)...)
+	originalNames := p.Names()
+
+	// Check the input as well as every edited and reopened package. A fixture
+	// missing a legacy note or shape must fail before the first reply can repair it.
+	assertPair := func(wantCount int, fragments ...string) {
+		t.Helper()
+		listed, err := WorkbookComments(p, CommentSpec{})
+		if err != nil || len(listed) != wantCount {
+			t.Fatal("thread count", listed, err)
+		}
+		if !reflect.DeepEqual(listed[:len(initial)], initial) {
+			t.Fatal("original threads changed")
+		}
+		part, d, err := legacyComments(p, owner)
+		if err != nil || part != commentsPart || d == nil {
+			t.Fatal("pre-existing comments part not reused", part, err)
+		}
+		notes := Children(Child(d.Root(), NSS, "commentList"), NSS, "comment")
+		authors := Children(Child(d.Root(), NSS, "authors"), NSS, "author")
+		if len(notes) != 1 || notes[0].SelectAttrValue("ref", "") != root.Cell || notes[0].SelectAttrValue("authorId", "") != "0" || len(authors) != 1 || authors[0].Text() != "tc="+root.ID {
+			t.Fatal("missing or duplicated paired note/author")
+		}
+		var text strings.Builder
+		for _, e := range All(notes[0], NSS, "t") {
+			text.WriteString(e.Text())
+		}
+		for _, fragment := range fragments {
+			if strings.Count(text.String(), fragment) != 1 {
+				t.Fatalf("fallback must contain %q exactly once: %q", fragment, text.String())
+			}
+		}
+		if !bytes.Equal(p.Get(vmlPart), originalVML) || !bytes.Equal(p.Get(opc.RelsName(owner)), originalRels) || !bytes.Equal(p.Get(owner), originalSheet) || !reflect.DeepEqual(p.Names(), originalNames) {
+			t.Fatal("reply replaced or duplicated existing parts, relationships, or VML")
+		}
+		sheet, err := p.XML(owner)
 		if err != nil {
 			t.Fatal(err)
 		}
-	}
-	for i := 0; i < 2; i++ {
-		items, err = WorkbookComments(p, CommentSpec{Action: "reply", Sheet: root.Sheet, ThreadID: root.ID, Author: "Compatibility reviewer", Text: "Paired reply"})
+		legacy := Child(sheet.Root(), NSS, "legacyDrawing")
+		if legacy == nil || AttrV(legacy, NSR, "id") != "rIdVML7" {
+			t.Fatal("fixture lacks legacyDrawing link")
+		}
+		rels, err := p.Rels(owner)
 		if err != nil {
 			t.Fatal(err)
 		}
-		assertThreadNote(t, p, root, root.Text, "Paired reply")
+		counts := map[string]int{}
+		for _, r := range rels {
+			if r.Type == NSR+"/comments" || r.Type == NSR+"/vmlDrawing" {
+				counts[r.Type]++
+				want := commentsPart
+				if r.Type == NSR+"/vmlDrawing" {
+					want = vmlPart
+					if r.ID != "rIdVML7" {
+						t.Fatal("VML relationship ID", r.ID)
+					}
+				}
+				if r.TargetMode == "External" || opc.Resolve(owner, r.Target) != want {
+					t.Fatal("incorrect pair relationship", r)
+				}
+			}
+		}
+		if counts[NSR+"/comments"] != 1 || counts[NSR+"/vmlDrawing"] != 1 {
+			t.Fatal("missing or duplicate pair relationships", counts)
+		}
+		if p.ContentType(commentsPart) != "application/vnd.openxmlformats-officedocument.spreadsheetml.comments+xml" || p.ContentType(vmlPart) != "application/vnd.openxmlformats-officedocument.vmlDrawing" {
+			t.Fatal("missing pair content types")
+		}
+		vml, err := p.XML(vmlPart)
+		if err != nil {
+			t.Fatal(err)
+		}
+		shapes := All(vml.Root(), NSV, "shape")
+		if len(shapes) != 1 {
+			t.Fatal("missing or duplicate VML shapes", len(shapes))
+		}
+		const nsExcel = "urn:schemas-microsoft-com:office:excel"
+		cd := Child(shapes[0], nsExcel, "ClientData")
+		col, row, _ := SplitCell(root.Cell)
+		if cd == nil || cd.SelectAttrValue("ObjectType", "") != "Note" || Text(cd, nsExcel, "Row") != strconv.Itoa(row-1) || Text(cd, nsExcel, "Column") != strconv.Itoa(col-1) {
+			t.Fatal("fixture note shape is not anchored at thread cell")
+		}
+	}
+	fragments := []string{root.Text, initial[1].Text}
+	assertPair(len(initial), fragments...)
+	for i, text := range []string{"First paired reply", "Second paired reply"} {
+		// Reuse the existing author so no unrelated person parts need changing.
+		_, err = WorkbookComments(p, CommentSpec{Action: "reply", Sheet: root.Sheet, ThreadID: root.ID, Author: root.Author, AuthorID: &root.AuthorID, Text: text})
+		if err != nil {
+			t.Fatal(err)
+		}
+		fragments = append(fragments, text)
+		assertPair(len(initial)+i+1, fragments...)
+		assertThreadNote(t, p, root, fragments...)
 		out := filepath.Join(t.TempDir(), "paired.xlsx")
 		if err = p.SaveNew(out); err != nil {
 			t.Fatal(err)
 		}
 		p = previewOpen(t, out)
+		assertPair(len(initial)+i+1, fragments...)
+		assertThreadNote(t, p, root, fragments...)
 	}
-	_, _, sheets, _ := WorkbookSheets(p)
-	_, d, _ := legacyComments(p, sheets[root.Sheet])
-	count := 0
-	for _, n := range Children(Child(d.Root(), NSS, "commentList"), NSS, "comment") {
-		if n.SelectAttrValue("ref", "") == root.Cell {
-			count++
-		}
-	}
-	if count != 1 {
-		t.Fatal("duplicate fallback", count)
-	}
-	items, err = WorkbookComments(p, CommentSpec{Action: "add", Sheet: root.Sheet, Cell: "Z99", Author: "Ana", Text: "New Excel thread"})
+	items, err := WorkbookComments(p, CommentSpec{Action: "add", Sheet: root.Sheet, Cell: "Z99", Author: "Ana", Text: "New Excel thread"})
 	if err != nil {
 		t.Fatal(err)
 	}
 	assertThreadNote(t, p, items[len(items)-1], "New Excel thread")
-	assertThreadNote(t, p, root, root.Text, "Paired reply")
+	assertThreadNote(t, p, root, fragments...)
+	if !bytes.Equal(original, previewRead(t, source)) {
+		t.Fatal("source fixture changed")
+	}
 }
 
 func TestThreadLegacyLibreOffice(t *testing.T) {
