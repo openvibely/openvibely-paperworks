@@ -429,7 +429,7 @@ func editTable(root *etree.Element, s map[string]any) error {
 	return nil
 }
 func editSection(root *etree.Element, s map[string]any) error {
-	sections := all(root, "sectPr")
+	sections := office.WordSections(root)
 	i, ok := intArg(s["section"])
 	if !ok || i < 0 || i >= len(sections) {
 		return fmt.Errorf("section index out of range")

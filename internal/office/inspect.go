@@ -56,6 +56,28 @@ func All(e *etree.Element, ns, local string) []*etree.Element {
 	return out
 }
 
+// WordSections returns current body section properties in document order.
+// Historical sectPr elements inside revision snapshots are not sections.
+func WordSections(root *etree.Element) []*etree.Element {
+	if Is(root, NSW, "document") {
+		root = Child(root, NSW, "body")
+	}
+	if !Is(root, NSW, "body") {
+		return nil
+	}
+	var sections []*etree.Element
+	for _, block := range root.ChildElements() {
+		if Is(block, NSW, "sectPr") {
+			sections = append(sections, block)
+		} else if Is(block, NSW, "p") {
+			if section := Child(Child(block, NSW, "pPr"), NSW, "sectPr"); section != nil {
+				sections = append(sections, section)
+			}
+		}
+	}
+	return sections
+}
+
 // Child returns the first direct child matching ns:local.
 func Child(e *etree.Element, ns, local string) *etree.Element {
 	if e == nil {
@@ -386,7 +408,7 @@ func wordReport(p *opc.Package, roots map[string]*etree.Document, report Report,
 	sections, fields, controls, notes := []any{}, []any{}, []any{}, []any{}
 	for _, name := range wordParts {
 		root := roots[name].Root()
-		for _, s := range All(root, NSW, "sectPr") {
+		for _, s := range WordSections(root) {
 			m := map[string]any{}
 			for _, c := range s.ChildElements() {
 				if c.NamespaceURI() == NSW && (c.Tag == "pgSz" || c.Tag == "pgMar" || c.Tag == "cols") {
@@ -709,7 +731,7 @@ func wordDetails(roots map[string]*etree.Document, report Report, issues *[]stri
 	}
 	inherited := map[string]string{}
 	if doc := roots["word/document.xml"]; doc != nil {
-		for i, s := range All(doc.Root(), NSW, "sectPr") {
+		for i, s := range WordSections(doc.Root()) {
 			declared := map[string]string{}
 			for _, kind := range []string{"header", "footer"} {
 				for _, ref := range Children(s, NSW, kind+"Reference") {
@@ -743,7 +765,7 @@ func wordDetails(roots map[string]*etree.Document, report Report, issues *[]stri
 	}
 	sectionDetails := []any{}
 	for _, name := range wordParts {
-		for _, s := range All(roots[name].Root(), NSW, "sectPr") {
+		for _, s := range WordSections(roots[name].Root()) {
 			props := []any{}
 			for _, e := range s.ChildElements() {
 				props = append(props, map[string]any{e.Tag: reportAttrMap(e)})

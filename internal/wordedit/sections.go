@@ -3,12 +3,13 @@ package wordedit
 import (
 	"fmt"
 	"github.com/beevik/etree"
+	"github.com/openvibely/openvibely-paperworks/internal/office"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 	"strconv"
 )
 
 func sectionEdit(d *Doc, s map[string]any) error {
-	sections := all(d.Body(), "sectPr")
+	sections := office.WordSections(d.Body())
 	i, ok := intArg(s["section"])
 	if !ok || i < 0 || i >= len(sections) {
 		return fmt.Errorf("section index out of range")
