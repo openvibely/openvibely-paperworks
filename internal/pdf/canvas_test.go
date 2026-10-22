@@ -151,3 +151,34 @@ func TestLayoutTableJoinsWrappedLines(t *testing.T) {
 		}
 	}
 }
+
+func TestLayoutTableKeepsSingleLinePunctuation(t *testing.T) {
+	ctx := context.Background()
+	cells := []string{`it's`, `x² m°`, `say "no"`, `e-mail ~x^`, `Net sales*`, `"quoted"`, `°C ²`, `'tis ^up`, `a b, c`, `~-*`}
+	var elems []CanvasElement
+	for i, s := range cells {
+		elems = append(elems, CanvasElement{Type: "text", X: float64(i)*100 + 10, Y: 40, Text: s, FontSize: 10})
+	}
+	out := filepath.Join(t.TempDir(), "punct.pdf")
+	canvas := Canvas{Pages: []CanvasPage{{Width: 1000, Height: 100, Elements: elems}}}
+	if err := Create(ctx, CreateSpec{Canvas: &canvas}, ".", out); err != nil {
+		t.Fatal(err)
+	}
+	data, err := os.ReadFile(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cols := []float64{0}
+	for i := range cells {
+		cols = append(cols, float64(i+1)*100)
+	}
+	layout, err := ExtractLayout(ctx, data, LayoutOptions{Columns: cols, Rows: []float64{0, 100}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i, want := range cells {
+		if got := layout[0].Table[0][i]; got != want {
+			t.Errorf("cell %d = %q, want %q", i, got, want)
+		}
+	}
+}
