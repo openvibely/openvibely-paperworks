@@ -396,7 +396,7 @@ func TestDeleteSlideKeepsSharedImage(t *testing.T) {
 				media = opc.Resolve(slides[0], r.Target)
 			}
 		}
-		target, _ := relativePart(slides[1], media)
+		target := opc.Relative(slides[1], media)
 		doc, _ := p.XML(opc.RelsName(slides[1]))
 		for _, r := range doc.Root().ChildElements() {
 			if r.SelectAttrValue("Type", "") == rns+"/image" {
@@ -422,7 +422,7 @@ func TestDeleteSlideDropsHyperlinksToIt(t *testing.T) {
 	dir, in := deleteSlideFixture(t, []Slide{{Elements: []Element{text}}, {}}, func(p *opc.Package) {
 		slides, _ := office.PresentationSlides(p)
 		linking = slides[0]
-		target, _ := relativePart(slides[0], slides[1])
+		target := opc.Relative(slides[0], slides[1])
 		id, err := p.AddRel(slides[0], rns+"/slide", target, false)
 		if err != nil {
 			t.Fatal(err)

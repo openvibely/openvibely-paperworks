@@ -254,13 +254,7 @@ func editObject(pkg *opc.Package, part string, shape *etree.Element, e Edit) err
 		if err != nil {
 			return err
 		}
-		name := pkg.UnusedName("ppt/media/replacement", "."+format)
-		pkg.Set(name, data)
-		if err = pkg.EnsureContentType(name, "image/"+format); err != nil {
-			return err
-		}
-		target := opc.Relative(part, name)
-		id, err := pkg.AddRel(part, rns+"/image", target, false)
+		id, err := attachImage(pkg, part, "ppt/media/replacement", format, data)
 		if err != nil {
 			return err
 		}

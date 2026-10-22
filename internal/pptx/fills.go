@@ -113,13 +113,7 @@ func styleDrawingInPackage(pkg *opc.Package, part string, shape *etree.Element, 
 				return err
 			}
 		}
-		name := pkg.UnusedName("ppt/media/fill", "."+format)
-		pkg.Set(name, data)
-		if err := pkg.EnsureContentType(name, "image/"+format); err != nil {
-			return err
-		}
-		target := opc.Relative(part, name)
-		id, err := pkg.AddRel(part, rns+"/image", target, false)
+		id, err := attachImage(pkg, part, "ppt/media/fill", format, data)
 		if err != nil {
 			return err
 		}

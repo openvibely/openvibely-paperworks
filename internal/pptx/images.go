@@ -3,6 +3,8 @@ package pptx
 import (
 	"fmt"
 	"math"
+
+	"github.com/openvibely/openvibely-paperworks/internal/opc"
 )
 
 // imagePlacement preserves the embedded source and expresses cropping entirely
@@ -61,4 +63,15 @@ func imagePlacement(e Element, width, height int) (Element, string, error) {
 		rect = fmt.Sprintf(`<a:srcRect l="%d" t="%d" r="%d" b="%d"/>`, l, t, r, b)
 	}
 	return e, rect, nil
+}
+
+// attachImage attaches validated image data to an existing package part.
+func attachImage(pkg *opc.Package, part, prefix, format string, data []byte) (string, error) {
+	name := pkg.UnusedName(prefix, "."+format)
+	pkg.Set(name, data)
+	if err := pkg.EnsureContentType(name, "image/"+format); err != nil {
+		return "", err
+	}
+	target := opc.Relative(part, name)
+	return pkg.AddRel(part, rns+"/image", target, false)
 }
