@@ -1,7 +1,9 @@
 package pptx
 
 import (
+	"bytes"
 	"context"
+	"github.com/beevik/etree"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 	"os"
 	"path/filepath"
@@ -9,6 +11,90 @@ import (
 	"strings"
 	"testing"
 )
+
+func TestContentSizedLayoutRejectsUnmeasuredSpacing(t *testing.T) {
+	dir := t.TempDir()
+	base := filepath.Join(dir, "base.pptx")
+	if err := Create(context.Background(), Spec{Font: "Go", Slides: []Slide{{Elements: []Element{{Type: "text", Text: "One paragraph", FontSize: 24, W: 4, H: 1}}}}}, dir, base); err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct {
+		name, want string
+		mutate     func(*etree.Element)
+	}{
+		{"expanded", "character spacing", func(body *etree.Element) { body.FindElement("a:p/a:r/a:rPr").CreateAttr("spc", "2000") }},
+		{"condensed", "character spacing", func(body *etree.Element) { body.FindElement("a:p/a:r/a:rPr").CreateAttr("spc", "-100") }},
+		{"default", "character spacing", func(body *etree.Element) {
+			body.FindElement("a:p/a:pPr").CreateElement("a:defRPr").CreateAttr("spc", "2000")
+		}},
+		{"before", "percentage paragraph spacing", func(body *etree.Element) {
+			body.FindElement("a:p/a:pPr").CreateElement("a:spcBef").CreateElement("a:spcPct").CreateAttr("val", "300000")
+		}},
+		{"after", "percentage paragraph spacing", func(body *etree.Element) {
+			body.FindElement("a:p/a:pPr").CreateElement("a:spcAft").CreateElement("a:spcPct").CreateAttr("val", "300000")
+		}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			p, err := opc.Open(base)
+			if err != nil {
+				t.Fatal(err)
+			}
+			d, err := p.XML("ppt/slides/slide1.xml")
+			if err != nil {
+				t.Fatal(err)
+			}
+			tc.mutate(d.FindElement("//p:sp/p:txBody"))
+			if err = p.SetXML("ppt/slides/slide1.xml", d); err != nil {
+				t.Fatal(err)
+			}
+			in := filepath.Join(t.TempDir(), "input.pptx")
+			if err = p.SaveNew(in); err != nil {
+				t.Fatal(err)
+			}
+			before, err := os.ReadFile(in)
+			if err != nil {
+				t.Fatal(err)
+			}
+			out := filepath.Join(t.TempDir(), "out.pptx")
+			edit := EditSpec{Edits: []Edit{{Operation: "layout", Slide: 1, Layout: &Layout{Width: 4, Height: 6, Root: &LayoutNode{ShapeID: "2", FitText: true}}}}}
+			if _, err = EditFile(context.Background(), in, out, edit); err == nil || !strings.Contains(err.Error(), tc.want) {
+				t.Fatalf("expected %s error, got %v", tc.want, err)
+			}
+			if _, err = os.Stat(out); !os.IsNotExist(err) {
+				t.Fatal("published failed layout")
+			}
+			after, err := os.ReadFile(in)
+			if err != nil || !bytes.Equal(before, after) {
+				t.Fatal("changed source", err)
+			}
+			// Explicit sizing remains available and preserves the formatting.
+			edit.Edits[0].Layout.Root.FitText = false
+			if _, err = EditFile(context.Background(), in, out, edit); err != nil {
+				t.Fatal(err)
+			}
+			q, err := opc.Open(out)
+			if err != nil {
+				t.Fatal(err)
+			}
+			saved, err := q.XML("ppt/slides/slide1.xml")
+			if err != nil {
+				t.Fatal(err)
+			}
+			bodyXML := func(doc *etree.Document) string {
+				body := etree.NewDocument()
+				body.SetRoot(doc.FindElement("//p:sp/p:txBody").Copy())
+				xml, err := body.WriteToString()
+				if err != nil {
+					t.Fatal(err)
+				}
+				return xml
+			}
+			if bodyXML(saved) != bodyXML(d) {
+				t.Fatal("explicit sizing changed text or formatting")
+			}
+		})
+	}
+}
 
 func TestContentSizedLayoutMovesFollowingText(t *testing.T) {
 	dir := t.TempDir()

@@ -453,8 +453,11 @@ Fonts must be resolved in the runs or paragraph defaults and available locally;
 `Go` regular/bold/italic faces are embedded for measurement. Unsupported font
 or glyph lookup fails instead of silently substituting a different face. The
 measurement accounts for wrapping, newlines, mixed run sizes, text-box insets,
-paragraph margins and before/after/proportional line spacing. Rotated/vertical
-text, unresolved fields and fixed-point line spacing need explicit sizing.
+paragraph margins, point-based before/after spacing and proportional line spacing.
+Nonzero character spacing and percentage-based before/after paragraph spacing
+are rejected; use explicit sizing without `fit_text` and verify the render.
+Rotated/vertical text, unresolved fields and fixed-point line spacing also need
+explicit sizing.
 This is glyph-based measurement, not a complex-script shaping engine. Review the
 render in the intended Office engine, whose font substitution may differ.
 Oversized text fails instead of being squeezed into its frame. Rerun layout
@@ -505,7 +508,11 @@ Use `rows` instead of `text` in `header-footer`:
 The section index is zero-based. `type` may be `default`, `first` or `even`.
 `widths_twips` supplies one positive width per column; choose widths within the
 section's usable width. The rectangular table replaces this section's selected
-header/footer with a private part, preserving other sections and body content.
+header/footer with a private part, preserving body content. Later sections that
+inherit this header/footer also display the replacement. Inspect section
+references before editing; a private part does not break inheritance. If the
+change must affect only one section, preserve the later sections' original
+headers/footers with explicit references before replacing the selected one.
 Cells retain text, tabs and line breaks as native Word content. Subsequent
 formatting/table edits can target that part with existing `word-edit` operations.
 Reopen and verify the section relationship, cell text and rendered page furniture.

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/beevik/etree"
 	"math"
+	"strconv"
 	"strings"
 )
 
@@ -13,6 +14,26 @@ func SlideTextHeight(shape *etree.Element, width float64) (float64, error) {
 	body := Child(shape, NSP, "txBody")
 	if body == nil {
 		return 0, fmt.Errorf("fit_text requires a text shape")
+	}
+	// These properties remain in the saved shape, so ignoring them would make
+	// the measured box smaller than its rendered text. Require explicit sizing
+	// until measurement supports them, including defaults in list styles.
+	for _, tag := range []string{"rPr", "defRPr", "endParaRPr"} {
+		for _, pr := range All(body, NSA, tag) {
+			if value, ok := HasAttr(pr, "spc"); ok {
+				spacing, err := strconv.Atoi(value)
+				if err != nil || spacing != 0 {
+					return 0, fmt.Errorf("fit_text cannot measure character spacing; use explicit height")
+				}
+			}
+		}
+	}
+	for _, tag := range []string{"spcBef", "spcAft"} {
+		for _, spacing := range All(body, NSA, tag) {
+			if Child(spacing, NSA, "spcPct") != nil {
+				return 0, fmt.Errorf("fit_text cannot measure percentage paragraph spacing; use explicit height")
+			}
+		}
 	}
 	bp := Child(body, NSA, "bodyPr")
 	if v := AttrOr(bp, "vert", "horz"); v != "horz" {
