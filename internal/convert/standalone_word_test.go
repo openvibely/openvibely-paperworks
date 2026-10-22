@@ -120,7 +120,8 @@ func TestReferenceStandaloneRuntimeTOCPages(t *testing.T) {
 	if len(pages) != 2 {
 		t.Fatalf("page count %d: %q", len(pages), pages)
 	}
-	for _, pattern := range []string{`First section\.+1`, `Second section\.+2`} {
+	// Text extraction may insert whitespace between dot leaders and page numbers.
+	for _, pattern := range []string{`(?m)^First section\.+[ \t]*1[ \t]*$`, `(?m)^Second section\.+[ \t]*2[ \t]*$`} {
 		if !regexp.MustCompile(pattern).MatchString(pages[0]) {
 			t.Errorf("missing %s in %q", pattern, pages[0])
 		}

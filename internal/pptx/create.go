@@ -580,26 +580,9 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 		if err != nil {
 			return err
 		}
-		if slide.Layout != nil {
-			if err := layoutObjects(b.p, name, d.Root(), slide.Layout); err != nil {
-				return err
-			}
-			changed = true
-		}
 		shapes := office.Child(office.Child(d.Root(), pns, "cSld"), pns, "spTree").ChildElements()[2:]
-		ids := map[string]bool{}
-		for _, prop := range office.All(d.Root(), pns, "cNvPr") {
-			ids[prop.SelectAttrValue("id", "")] = true
-		}
+		// Measure final paragraph formatting before sizing and positioning shapes.
 		for j, e := range slide.Elements {
-			if e.Connector != nil {
-				for _, conn := range []*Connection{e.Connector.Start, e.Connector.End} {
-					if conn != nil && !ids[conn.ShapeID] {
-						return fmt.Errorf("connector target %s not found", conn.ShapeID)
-					}
-				}
-			}
-
 			if body := office.Child(shapes[j], pns, "txBody"); body != nil {
 				paragraphs := office.Children(body, ans, "p")
 				for k, paragraph := range e.Paragraphs {
@@ -614,6 +597,26 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 					}
 				}
 			}
+		}
+		if slide.Layout != nil {
+			if err := layoutObjects(b.p, name, d.Root(), slide.Layout); err != nil {
+				return err
+			}
+			changed = true
+		}
+		ids := map[string]bool{}
+		for _, prop := range office.All(d.Root(), pns, "cNvPr") {
+			ids[prop.SelectAttrValue("id", "")] = true
+		}
+		for j, e := range slide.Elements {
+			if e.Connector != nil {
+				for _, conn := range []*Connection{e.Connector.Start, e.Connector.End} {
+					if conn != nil && !ids[conn.ShapeID] {
+						return fmt.Errorf("connector target %s not found", conn.ShapeID)
+					}
+				}
+			}
+
 			if e.DrawingStyle != nil {
 				if err := styleDrawingInPackage(b.p, name, shapes[j], e.DrawingStyle, base); err != nil {
 					return err

@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
+	"reflect"
+	"strconv"
 	"testing"
 
 	"github.com/openvibely/openvibely-paperworks/internal/office"
@@ -187,5 +189,74 @@ func TestUpdateFieldsThroughCLI(t *testing.T) {
 	}
 	if !found {
 		t.Fatal("operation not discoverable")
+	}
+}
+
+func TestCreateLayoutUsesFinalParagraphSpacing(t *testing.T) {
+	dir := t.TempDir()
+	layout := map[string]any{"x": 1, "y": 1, "width": 3, "height": 6, "root": map[string]any{
+		"mode": "column", "gap": 0.2, "children": []any{
+			map[string]any{"shape_id": "2", "fit_text": true},
+			map[string]any{"shape_id": "3", "fit_text": true},
+		},
+	}}
+	geometry := func(path string) [][2]int64 {
+		t.Helper()
+		p, err := opc.Open(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		x, err := p.XML("ppt/slides/slide1.xml")
+		if err != nil {
+			t.Fatal(err)
+		}
+		var result [][2]int64
+		for _, shape := range x.FindElements("//p:sp") {
+			transform := shape.FindElement("p:spPr/a:xfrm")
+			if transform == nil {
+				t.Fatal("missing shape geometry")
+			}
+			y, err := strconv.ParseInt(transform.FindElement("a:off").SelectAttrValue("y", ""), 10, 64)
+			if err != nil {
+				t.Fatal(err)
+			}
+			height, err := strconv.ParseInt(transform.FindElement("a:ext").SelectAttrValue("cy", ""), 10, 64)
+			if err != nil {
+				t.Fatal(err)
+			}
+			result = append(result, [2]int64{y, height})
+		}
+		return result
+	}
+	var previous [][2]int64
+	for i, spacing := range []float64{1, 2} {
+		spec := writeSpec(t, dir, "create-layout.json", map[string]any{"font": "Go", "slides": []any{map[string]any{
+			"layout": layout, "elements": []any{
+				map[string]any{"type": "text", "font_size": 24, "w": 3, "h": 1, "paragraphs": []any{map[string]any{
+					"text":   "A long title with many words that needs several lines in a narrow column.",
+					"format": map[string]any{"line_spacing": spacing, "before": 6, "after": 12},
+				}}},
+				map[string]any{"type": "text", "font_size": 12, "w": 3, "h": 1, "text": "Following paragraph"},
+			},
+		}}})
+		in := filepath.Join(dir, strconv.Itoa(i)+".pptx")
+		runCLI(t, "create-pptx", "--spec", spec, "--output", in)
+		got := geometry(in)
+		if len(got) != 2 {
+			t.Fatal("expected two text boxes", got)
+		}
+		if got[1][0] < got[0][0]+got[0][1]+182879 {
+			t.Fatal("following text overlaps or lacks gap", got)
+		}
+		edits := writeSpec(t, dir, "layout.json", map[string]any{"edits": []any{map[string]any{"operation": "layout", "slide": 1, "layout": layout}}})
+		out := filepath.Join(dir, strconv.Itoa(i)+"-reapplied.pptx")
+		runCLI(t, "slide-edit", in, "--spec", edits, "--output", out)
+		if again := geometry(out); !reflect.DeepEqual(got, again) {
+			t.Fatalf("creation used stale paragraph formatting: created %v; reapplied %v", got, again)
+		}
+		if i > 0 && (got[0][1] <= previous[0][1] || got[1][0] <= previous[1][0]) {
+			t.Fatal("expanded line spacing failed to enlarge text and move the next shape", previous, got)
+		}
+		previous = got
 	}
 }
