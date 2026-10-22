@@ -210,3 +210,138 @@ func TestFlatLayoutRejectsGroupedChildrenWithoutPublishing(t *testing.T) {
 		t.Fatal("source changed", err)
 	}
 }
+
+func TestDeleteDetachesDrawingConnections(t *testing.T) {
+	for _, target := range []string{"ppt/slides/slide1.xml", "ppt/slideMasters/slideMaster1.xml", "ppt/slideLayouts/slideLayout1.xml"} {
+		for _, tc := range []struct {
+			name             string
+			deletes, removed []string
+			group            bool
+		}{
+			{"start", []string{"2"}, []string{"2"}, false},
+			{"end", []string{"3"}, []string{"3"}, false},
+			{"both", []string{"2", "3"}, []string{"2", "3"}, false},
+			{"connector", []string{"5"}, []string{"5"}, false},
+			{"unconnected", []string{"4"}, []string{"4"}, false},
+			{"group", []string{"10"}, []string{"10", "11", "2", "3"}, true},
+			{"group-child", []string{"2"}, []string{"2"}, true},
+		} {
+			t.Run(target+"/"+tc.name, func(t *testing.T) {
+				dir := t.TempDir()
+				seed, in, out := filepath.Join(dir, "seed.pptx"), filepath.Join(dir, "in.pptx"), filepath.Join(dir, "out.pptx")
+				ctx := context.Background()
+				elements := []Element{{Type: "shape", Shape: "rect", X: 1, Y: 1, W: 2, H: 1}, {Type: "shape", Shape: "ellipse", X: 4, Y: 2, W: 2, H: 1}, {Type: "shape", Shape: "rect", X: 7, Y: 1, W: 1, H: 1}}
+				// Shared endpoints, a loop, and an unrelated connection exercise
+				// every surviving connector, including valid opposite endpoints.
+				for _, pair := range [][2]string{{"2", "3"}, {"3", "2"}, {"2", "2"}, {"3", "3"}} {
+					elements = append(elements, Element{Type: "connector", X: 2, Y: 2, W: 3, H: 1, DrawingStyle: &DrawingStyle{Outline: &Outline{Color: "123456", Width: 2, Dash: "dash"}}, Connector: &Connector{Kind: "elbow", Start: &Connection{ShapeID: pair[0], Site: 1}, End: &Connection{ShapeID: pair[1], Site: 2}}})
+				}
+				if err := Create(ctx, Spec{Slides: []Slide{{Elements: elements}, {Elements: elements}}}, dir, seed); err != nil {
+					t.Fatal(err)
+				}
+				p, err := opc.Open(seed)
+				if err != nil {
+					t.Fatal(err)
+				}
+				d, err := p.XML("ppt/slides/slide1.xml")
+				if err != nil {
+					t.Fatal(err)
+				}
+				if tc.group {
+					tree := d.FindElement("//p:spTree")
+					outer := tree.CreateElement("p:grpSp")
+					for i, id := range []string{"10", "11"} {
+						g := outer
+						if i == 1 {
+							g = outer.CreateElement("p:grpSp")
+						}
+						nv := g.CreateElement("p:nvGrpSpPr")
+						nv.CreateElement("p:cNvPr").CreateAttr("id", id)
+						nv.CreateElement("p:cNvGrpSpPr")
+						nv.CreateElement("p:nvPr")
+						g.CreateElement("p:grpSpPr")
+						shape := tree.FindElement("p:sp")
+						tree.RemoveChild(shape)
+						g.AddChild(shape)
+					}
+					// Also attach directly to the outer group from outside it.
+					d.FindElement("//a:stCxn").CreateAttr("id", "10")
+				}
+				if target != "ppt/slides/slide1.xml" {
+					dest, err := p.XML(target)
+					if err != nil {
+						t.Fatal(err)
+					}
+					old := dest.FindElement("//p:spTree")
+					parent := old.Parent()
+					parent.RemoveChild(old)
+					parent.AddChild(d.FindElement("//p:spTree").Copy())
+					d = dest
+				}
+				if err := p.SetXML(target, d); err != nil {
+					t.Fatal(err)
+				}
+				if err := p.SaveNew(in); err != nil {
+					t.Fatal(err)
+				}
+				expected, err := p.XML(target)
+				if err != nil {
+					t.Fatal(err)
+				}
+				for _, id := range tc.deletes {
+					for _, pr := range office.All(expected.Root(), pns, "cNvPr") {
+						if pr.SelectAttrValue("id", "") == id {
+							shape := pr.Parent().Parent()
+							shape.Parent().RemoveChild(shape)
+							break
+						}
+					}
+				}
+				for _, tag := range []string{"stCxn", "endCxn"} {
+					for _, ep := range office.All(expected.Root(), ans, tag) {
+						for _, id := range tc.removed {
+							if ep.SelectAttrValue("id", "") == id {
+								ep.Parent().RemoveChild(ep)
+								break
+							}
+						}
+					}
+				}
+				var edits []Edit
+				for _, id := range tc.deletes {
+					e := Edit{Operation: "delete", Slide: 1, ShapeID: id}
+					if target != "ppt/slides/slide1.xml" {
+						e.Part = target
+					}
+					edits = append(edits, e)
+				}
+				if _, err := EditFile(ctx, in, out, EditSpec{Edits: edits}); err != nil {
+					t.Fatal(err)
+				}
+				result, err := opc.Open(out)
+				if err != nil {
+					t.Fatal(err)
+				}
+				actual, err := result.XML(target)
+				if err != nil {
+					t.Fatal(err)
+				}
+				want, _ := expected.WriteToString()
+				got, _ := actual.WriteToString()
+				if got != want {
+					t.Fatalf("drawing changed beyond deleted shapes and attachments:\ngot %s\nwant %s", got, want)
+				}
+				for _, name := range p.Names() {
+					if name == target {
+						continue
+					}
+					before := p.Get(name)
+					after := result.Get(name)
+					if string(before) != string(after) {
+						t.Errorf("unrelated part changed: %s", name)
+					}
+				}
+			})
+		}
+	}
+}

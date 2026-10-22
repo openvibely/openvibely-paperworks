@@ -20,9 +20,34 @@ func drawingChild(parent *etree.Element, local string) *etree.Element {
 	}
 	return e
 }
+
+// detachDeletedShapeConnections preserves connector geometry while removing
+// attachments to the shape and, for groups, all of its descendants. IDs are
+// scoped to the drawing; replacements deliberately do not use this path.
+func detachDeletedShapeConnections(shape *etree.Element) {
+	ids := map[string]bool{}
+	for _, pr := range office.All(shape, pns, "cNvPr") {
+		if id := pr.SelectAttrValue("id", ""); id != "" {
+			ids[id] = true
+		}
+	}
+	drawing := shape
+	for drawing.Parent() != nil && drawing.Parent().Tag != "" {
+		drawing = drawing.Parent()
+	}
+	for _, tag := range []string{"stCxn", "endCxn"} {
+		for _, endpoint := range office.All(drawing, ans, tag) {
+			if ids[endpoint.SelectAttrValue("id", "")] {
+				endpoint.Parent().RemoveChild(endpoint)
+			}
+		}
+	}
+}
+
 func editObject(pkg *opc.Package, part string, shape *etree.Element, e Edit) error {
 	switch e.Operation {
 	case "delete":
+		detachDeletedShapeConnections(shape)
 		shape.Parent().RemoveChild(shape)
 	case "front", "back":
 		parent := shape.Parent()

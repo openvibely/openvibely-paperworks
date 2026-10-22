@@ -47,6 +47,11 @@ func TestNativePathsStylesAndAttachedConnectors(t *testing.T) {
 			}
 		}
 	}
+	for _, tag := range []string{"stCxn", "endCxn"} {
+		if got := len(office.All(d.Root(), ans, tag)); got != 2 {
+			t.Fatalf("replacement detached %s attachments: got %d, want 2", tag, got)
+		}
+	}
 	if !ids["3"] {
 		t.Fatal("replacement changed stable shape ID")
 	}
