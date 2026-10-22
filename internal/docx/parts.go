@@ -2,6 +2,7 @@ package docx
 
 import (
 	"fmt"
+	"strings"
 )
 
 const xmlHead = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>` + "\n"
@@ -10,6 +11,18 @@ const numberingXML = `<w:numbering xmlns:w="` + NSW + `">` +
 	`<w:abstractNum w:abstractNumId="0"><w:multiLevelType w:val="hybridMultilevel"/><w:lvl w:ilvl="0"><w:start w:val="1"/><w:numFmt w:val="decimal"/><w:lvlText w:val="%1."/><w:lvlJc w:val="left"/><w:pPr><w:ind w:left="720" w:hanging="360"/></w:pPr></w:lvl></w:abstractNum>` +
 	`<w:abstractNum w:abstractNumId="1"><w:multiLevelType w:val="hybridMultilevel"/><w:lvl w:ilvl="0"><w:start w:val="1"/><w:numFmt w:val="bullet"/><w:lvlText w:val="•"/><w:lvlJc w:val="left"/><w:pPr><w:ind w:left="720" w:hanging="360"/></w:pPr></w:lvl></w:abstractNum>` +
 	`<w:num w:numId="1"><w:abstractNumId w:val="0"/></w:num><w:num w:numId="2"><w:abstractNumId w:val="1"/></w:num></w:numbering>`
+
+func numberingXMLForOrderedLists(orderedListCount int) string {
+	if orderedListCount <= 1 {
+		return numberingXML
+	}
+
+	var extra strings.Builder
+	for listIndex := 2; listIndex <= orderedListCount; listIndex++ {
+		fmt.Fprintf(&extra, `<w:num w:numId="%d"><w:abstractNumId w:val="0"/></w:num>`, listIndex+1)
+	}
+	return strings.TrimSuffix(numberingXML, `</w:numbering>`) + extra.String() + `</w:numbering>`
+}
 
 func stylesXML(font string, size float64) string {
 	f := esc(font)

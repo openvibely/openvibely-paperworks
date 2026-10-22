@@ -102,15 +102,16 @@ func esc(s string) string {
 }
 
 type builder struct {
-	spec     Spec
-	pkg      *opc.Package
-	body     strings.Builder
-	docRels  []string
-	relN     int
-	imgN     int
-	numbered bool
-	bulleted bool
-	base     string
+	spec             Spec
+	pkg              *opc.Package
+	body             strings.Builder
+	docRels          []string
+	relN             int
+	imgN             int
+	numbered         bool
+	bulleted         bool
+	orderedListCount int
+	base             string
 }
 
 func (b *builder) rel(typ, target string, external bool) string {
@@ -229,7 +230,12 @@ func (b *builder) block(blk Block) error {
 	case "list":
 		num := 2
 		if blk.Ordered {
-			num, b.numbered = 1, true
+			num = 1
+			if b.orderedListCount > 0 {
+				num = b.orderedListCount + 2
+			}
+			b.orderedListCount++
+			b.numbered = true
 		} else {
 			b.bulleted = true
 		}
@@ -419,7 +425,7 @@ func build(spec Spec, baseDir string, clock func() time.Time) ([]byte, error) {
 	}
 	// Keep template numbering unless authored lists require our explicit definitions.
 	if b.numbered || b.bulleted {
-		pkg.Set("word/numbering.xml", []byte(xmlHead+numberingXML))
+		pkg.Set("word/numbering.xml", []byte(xmlHead+numberingXMLForOrderedLists(b.orderedListCount)))
 	}
 	// Retain the template's namespace context and section provenance. Replace
 	// authored blocks and section properties, not the document shell.
