@@ -227,8 +227,8 @@ func init() {
 	register(&Command{
 		Name:     "fill",
 		Summary:  "Fill PDF AcroForm fields into a new PDF (optionally flattened).",
-		Usage:    "paperworks fill INPUT.pdf --values values.json --output NEW.pdf [--flatten]\n  values.json: {\"Field name\": \"value\", \"Checkbox\": \"/Yes\", \"Multi-select list\": [\"Alpha\", \"Beta\"]}",
-		BoolOpts: []string{"flatten"},
+		Usage:    "paperworks fill INPUT.pdf --values values.json --output NEW.pdf [--flatten] [--strict-choices]\n  --strict-choices: Reject unmatched choice export values before writing (editable combos allow custom text).\n  Default: preserve unmatched values and return structured warnings. Empty strings/arrays clear selections.\n  values.json: {\"Field name\": \"value\", \"Checkbox\": \"/Yes\", \"Multi-select list\": [\"Alpha\", \"Beta\"]}",
+		BoolOpts: []string{"flatten", "strict-choices"},
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, err := input(a, 1)
 			if err != nil {
@@ -251,7 +251,7 @@ func init() {
 			if err := newFile(out, in[0]); err != nil {
 				return nil, err
 			}
-			return pdf.FillValues(ctx, in[0], out, values, a.Bools["flatten"])
+			return pdf.FillValues(ctx, in[0], out, values, a.Bools["flatten"], pdf.FillOptions{StrictChoices: a.Bools["strict-choices"]})
 		},
 	})
 	register(&Command{

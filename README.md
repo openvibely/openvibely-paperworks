@@ -16,6 +16,18 @@ use embedded PDFium WebAssembly. Equation rendering runs natively in Go.
 Use command help for supported options. Creation and editing require new output
 paths. JSON results go to stdout; diagnostics go to stderr.
 
+PDF form filling accepts arbitrary choice values by default. Use
+`paperworks fill INPUT.pdf --values values.json --output NEW.pdf --strict-choices`
+to reject values outside a list or non-editable combo's options before writing.
+For export/display option pairs, supply the export value; inherited options are
+supported. Editable combos allow custom text. An empty string clears a selection;
+an empty array clears a multi-select list (an empty item inside an array is still
+validated against the options). Permissive fills report unmatched values in the
+JSON `warnings` array, with `code: "unmatched_choice"`, `field`, `value`, and
+`allowed_choices`. With `--flatten`, validation also covers existing choice values
+whose appearances are regenerated. Rejected fills create no output and leave the
+input unchanged.
+
 ```sh
 go test ./...
 bash scripts/build.sh

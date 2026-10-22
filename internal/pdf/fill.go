@@ -19,11 +19,29 @@ import (
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 )
 
+// FillOptions controls optional validation. The default preserves arbitrary choice values.
+type FillOptions struct {
+	StrictChoices bool
+}
+
+// ChoiceWarning identifies a value absent from a choice field's export values.
+type ChoiceWarning struct {
+	Code           string   `json:"code"`
+	Field          string   `json:"field"`
+	Value          string   `json:"value"`
+	AllowedChoices []string `json:"allowed_choices"`
+}
+
+func (w ChoiceWarning) Error() string {
+	return fmt.Sprintf("invalid choice for %s: %q (allowed: %q)", w.Field, w.Value, w.AllowedChoices)
+}
+
 type FillResult struct {
-	Output            string   `json:"output"`
-	FieldsFilled      []string `json:"fields_filled"`
-	Flattened         bool     `json:"flattened"`
-	VisuallyInspected bool     `json:"visually_inspected"`
+	Warnings          []ChoiceWarning `json:"warnings,omitempty"`
+	Output            string          `json:"output"`
+	FieldsFilled      []string        `json:"fields_filled"`
+	Flattened         bool            `json:"flattened"`
+	VisuallyInspected bool            `json:"visually_inspected"`
 }
 
 func sameFile(a, b string) bool {
@@ -39,12 +57,12 @@ func sameFile(a, b string) bool {
 
 // Fill sets field values by fully qualified name, validates the saved form
 // and optionally flattens every widget into page content.
-func Fill(ctx context.Context, path, dest string, values map[string]string, flatten bool) (*FillResult, error) {
-	return fill(ctx, path, dest, values, nil, flatten)
+func Fill(ctx context.Context, path, dest string, values map[string]string, flatten bool, options ...FillOptions) (*FillResult, error) {
+	return fill(ctx, path, dest, values, nil, flatten, options...)
 }
 
 // FillValues accepts strings and arrays of strings for multi-selection list boxes.
-func FillValues(ctx context.Context, path, dest string, values map[string]any, flatten bool) (*FillResult, error) {
+func FillValues(ctx context.Context, path, dest string, values map[string]any, flatten bool, options ...FillOptions) (*FillResult, error) {
 	scalar := map[string]string{}
 	arrays := map[string][]string{}
 	for name, value := range values {
@@ -69,10 +87,10 @@ func FillValues(ctx context.Context, path, dest string, values map[string]any, f
 			return nil, fmt.Errorf("value for %s must be a string or string array", name)
 		}
 	}
-	return fill(ctx, path, dest, scalar, arrays, flatten)
+	return fill(ctx, path, dest, scalar, arrays, flatten, options...)
 }
 
-func fill(ctx context.Context, path, dest string, values map[string]string, arrays map[string][]string, flatten bool) (*FillResult, error) {
+func fill(ctx context.Context, path, dest string, values map[string]string, arrays map[string][]string, flatten bool, options ...FillOptions) (*FillResult, error) {
 	if arrays == nil {
 		arrays = map[string][]string{}
 	}
@@ -219,6 +237,10 @@ func fill(ctx context.Context, path, dest string, values map[string]string, arra
 	for k, v := range values {
 		filled[k] = v
 	}
+	warnings := validateChoiceValues(x, fields, filled, arrays)
+	if len(options) > 0 && options[0].StrictChoices && len(warnings) > 0 {
+		return nil, warnings[0]
+	}
 	if err := applyValues(ctx, c, fields, filled, arrays); err != nil {
 		return nil, err
 	}
@@ -279,7 +301,7 @@ func fill(ctx context.Context, path, dest string, values map[string]string, arra
 		names = append(names, k)
 	}
 	sort.Strings(names)
-	return &FillResult{Output: dest, FieldsFilled: names, Flattened: flatten}, nil
+	return &FillResult{Output: dest, FieldsFilled: names, Flattened: flatten, Warnings: warnings}, nil
 }
 
 func fillFonts(ctx context.Context, x *model.XRefTable) error {
