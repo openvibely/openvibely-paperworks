@@ -112,6 +112,16 @@ func Read(raw []byte) (*Package, error) {
 
 func (p *Package) Has(name string) bool { _, ok := p.index[name]; return ok }
 
+// UnusedName returns prefix+n+suffix for the lowest n >= 1 not present in the package.
+func (p *Package) UnusedName(prefix, suffix string) string {
+	for i := 1; ; i++ {
+		n := fmt.Sprintf("%s%d%s", prefix, i, suffix)
+		if !p.Has(n) {
+			return n
+		}
+	}
+}
+
 func (p *Package) Get(name string) []byte {
 	if part := p.index[name]; part != nil {
 		return part.Data

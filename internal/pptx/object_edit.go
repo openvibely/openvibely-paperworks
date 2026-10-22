@@ -255,7 +255,7 @@ func editObject(pkg *opc.Package, part string, shape *etree.Element, e Edit) err
 		if err != nil {
 			return err
 		}
-		name := unusedPart(pkg, "ppt/media/replacement", "."+format)
+		name := pkg.UnusedName("ppt/media/replacement", "."+format)
 		pkg.Set(name, data)
 		if err = pkg.EnsureContentType(name, "image/"+format); err != nil {
 			return err
@@ -301,14 +301,6 @@ func editObject(pkg *opc.Package, part string, shape *etree.Element, e Edit) err
 	}
 	return nil
 }
-func unusedPart(p *opc.Package, prefix, suffix string) string {
-	for i := 1; ; i++ {
-		n := fmt.Sprintf("%s%d%s", prefix, i, suffix)
-		if !p.Has(n) {
-			return n
-		}
-	}
-}
 func relativePart(source, target string) (string, error) {
 	a := strings.Split(path.Dir(source), "/")
 	b := strings.Split(target, "/")
@@ -319,7 +311,7 @@ func relativePart(source, target string) (string, error) {
 	return strings.Repeat("../", len(a)) + strings.Join(b, "/"), nil
 }
 func addNotes(p *opc.Package, slide, text string) (string, error) {
-	name := unusedPart(p, "ppt/notesSlides/notesSlide", ".xml")
+	name := p.UnusedName("ppt/notesSlides/notesSlide", ".xml")
 	d, err := opc.ParseXML([]byte(`<p:notes` + ns + `><p:cSld><p:spTree>` + group + noteShape(text, "Arial") + `</p:spTree></p:cSld>` + override + `</p:notes>`))
 	if err != nil {
 		return "", err

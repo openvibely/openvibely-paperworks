@@ -434,7 +434,7 @@ func importPartGraph(ctx context.Context, dest, src *opc.Package, name string, r
 	}
 	ext := path.Ext(name)
 	prefix := path.Join(path.Dir(name), "imported-")
-	target := unusedPart(dest, prefix, ext)
+	target := dest.UnusedName(prefix, ext)
 	memo[name] = target
 	dest.Set(target, src.Get(name))
 	if err := dest.EnsureContentType(target, typ); err != nil {

@@ -5,7 +5,6 @@ import (
 	"github.com/beevik/etree"
 	"github.com/openvibely/openvibely-paperworks/internal/office"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
-	"strconv"
 )
 
 func sectionEdit(d *Doc, s map[string]any) error {
@@ -125,13 +124,7 @@ func sectionEdit(d *Doc, s map[string]any) error {
 			return err
 		}
 	}
-	name := ""
-	for n := 1; ; n++ {
-		name = "word/" + kind + "Edit" + strconv.Itoa(n) + ".xml"
-		if !d.Pkg.Has(name) {
-			break
-		}
-	}
+	name := d.Pkg.UnusedName("word/"+kind+"Edit", ".xml")
 	tag := "hdr"
 	if kind == "footer" {
 		tag = "ftr"

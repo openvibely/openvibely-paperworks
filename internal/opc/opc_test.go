@@ -68,3 +68,23 @@ func TestStoredMemberRewritePreservesBytes(t *testing.T) {
 		}
 	}
 }
+
+func TestUnusedName(t *testing.T) {
+	p := &Package{index: map[string]*Part{}}
+	if got := p.UnusedName("ppt/media/fill", ".png"); got != "ppt/media/fill1.png" {
+		t.Fatalf("empty package: %s", got)
+	}
+	p.Set("ppt/media/fill1.png", nil)
+	p.Set("ppt/media/fill2.png", nil)
+	p.Set("ppt/media/fill4.png", nil)
+	if got := p.UnusedName("ppt/media/fill", ".png"); got != "ppt/media/fill3.png" {
+		t.Fatalf("gap: %s", got)
+	}
+	p.Set("ppt/media/fill3.png", nil)
+	if got := p.UnusedName("ppt/media/fill", ".png"); got != "ppt/media/fill5.png" {
+		t.Fatalf("skip existing: %s", got)
+	}
+	if got := p.UnusedName("ppt/media/fill", ".jpeg"); got != "ppt/media/fill1.jpeg" {
+		t.Fatalf("suffix distinguishes names: %s", got)
+	}
+}

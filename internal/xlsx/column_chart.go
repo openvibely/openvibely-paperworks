@@ -68,15 +68,6 @@ func inheritedColumnXML(c ColumnChart) ([]byte, error) {
 	return []byte(b.String()), nil
 }
 func patchColumnCharts(p *opc.Package, spec Spec) error {
-	// Allocate against all existing parts (including ordinary charts on other sheets).
-	next := func(folder, stem string) string {
-		for n := 1; ; n++ {
-			name := fmt.Sprintf("xl/%s/%s%d.xml", folder, stem, n)
-			if !p.Has(name) {
-				return name
-			}
-		}
-	}
 	for i, s := range spec.Sheets {
 		if len(s.ColumnCharts) == 0 {
 			continue
@@ -89,7 +80,7 @@ func patchColumnCharts(p *opc.Package, spec Spec) error {
 		if e != nil {
 			return e
 		}
-		drawing := next("drawings", "drawing")
+		drawing := p.UnusedName("xl/drawings/drawing", ".xml")
 		rels := etree.NewDocument()
 		rr := rels.CreateElement("Relationships")
 		rr.CreateAttr("xmlns", opc.NSRel)
@@ -108,7 +99,7 @@ func patchColumnCharts(p *opc.Package, spec Spec) error {
 			if e != nil {
 				return e
 			}
-			chart := next("charts", "chart")
+			chart := p.UnusedName("xl/charts/chart", ".xml")
 			p.Set(chart, raw)
 			if e = p.EnsureContentType(chart, "application/vnd.openxmlformats-officedocument.drawingml.chart+xml"); e != nil {
 				return e

@@ -62,13 +62,7 @@ func imageEdit(d *Doc, part string, root *etree.Element, s map[string]any) error
 		if len(data) > 32<<20 {
 			return fmt.Errorf("image exceeds 32 MiB")
 		}
-		name := ""
-		for i := 1; ; i++ {
-			name = fmt.Sprintf("word/media/edit%d.%s", i, format)
-			if !d.Pkg.Has(name) {
-				break
-			}
-		}
+		name := d.Pkg.UnusedName("word/media/edit", "."+format)
 		d.Pkg.Set(name, data)
 		if err = d.Pkg.EnsureContentType(name, "image/"+format); err != nil {
 			return err

@@ -113,7 +113,7 @@ func styleDrawingInPackage(pkg *opc.Package, part string, shape *etree.Element, 
 				return err
 			}
 		}
-		name := unusedPart(pkg, "ppt/media/fill", "."+format)
+		name := pkg.UnusedName("ppt/media/fill", "."+format)
 		pkg.Set(name, data)
 		if err := pkg.EnsureContentType(name, "image/"+format); err != nil {
 			return err

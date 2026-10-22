@@ -57,12 +57,7 @@ func newRoot(tag, ns string) *etree.Document {
 }
 
 func uniquePart(p *opc.Package, folder, stem string) string {
-	for i := 1; ; i++ {
-		n := fmt.Sprintf("%s/%s%d.xml", folder, stem, i)
-		if !p.Has(n) {
-			return n
-		}
-	}
+	return p.UnusedName(folder+"/"+stem, ".xml")
 }
 
 func singleRel(p *opc.Package, owner, kind string) (string, error) {
