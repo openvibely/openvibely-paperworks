@@ -339,12 +339,7 @@ func ExtendedCharts(p *opc.Package, s ExtendedChartSpec) ([]*ChartExReport, erro
 				return nil, fmt.Errorf("categories must match values")
 			}
 			lvl := child(dim, "lvl")
-			lvl.CreateAttr("ptCount", strconv.Itoa(len(labels)))
-			for i, v := range labels {
-				pt := child(lvl, "pt")
-				pt.CreateAttr("idx", strconv.Itoa(i))
-				pt.SetText(v)
-			}
+			writeChartExPoints(lvl, labels, func() *etree.Element { return child(lvl, "pt") })
 		}
 	}
 	dim := child(data, "numDim")
@@ -354,12 +349,11 @@ func ExtendedCharts(p *opc.Package, s ExtendedChartSpec) ([]*ChartExReport, erro
 	}
 	dim.CreateAttr("type", typ)
 	lvl := child(dim, "lvl")
-	lvl.CreateAttr("ptCount", strconv.Itoa(len(s.Values)))
+	texts := make([]string, len(s.Values))
 	for i, v := range s.Values {
-		pt := child(lvl, "pt")
-		pt.CreateAttr("idx", strconv.Itoa(i))
-		pt.SetText(strconv.FormatFloat(v, 'g', -1, 64))
+		texts[i] = strconv.FormatFloat(v, 'g', -1, 64)
 	}
+	writeChartExPoints(lvl, texts, func() *etree.Element { return child(lvl, "pt") })
 	if kind == "histogram" {
 		bins := All(d.Root(), NSCX, "binning")
 		if len(bins) != 1 {

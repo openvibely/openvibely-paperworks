@@ -105,6 +105,17 @@ func pyRepr(f float64) string {
 	return s
 }
 
+// writeChartExPoints writes ordered, preformatted texts into a new level.
+// newPoint appends a point using the caller's namespace convention.
+func writeChartExPoints(lvl *etree.Element, texts []string, newPoint func() *etree.Element) {
+	lvl.CreateAttr("ptCount", strconv.Itoa(len(texts)))
+	for i, text := range texts {
+		pt := newPoint()
+		pt.CreateAttr("idx", strconv.Itoa(i))
+		pt.SetText(text)
+	}
+}
+
 // ExtendedChartCache compares (or with refresh rebuilds) ChartEx dimension
 // caches against a calculated workbook; it returns the number of references.
 func ExtendedChartCache(root *etree.Element, wb *Workbook, refresh bool) (int, error) {
@@ -193,17 +204,18 @@ func ExtendedChartCache(root *etree.Element, wb *Workbook, refresh bool) (int, e
 							lvl.CreateAttr(a.FullKey(), a.Value)
 						}
 					}
-					lvl.CreateAttr("ptCount", strconv.Itoa(n))
-					for i := 0; i < n; i++ {
-						pt := lvl.CreateElement("pt")
-						pt.Space = dim.Space
-						pt.CreateAttr("idx", strconv.Itoa(i))
-						if numeric {
-							pt.SetText(pyRepr(nums[i]))
-						} else {
-							pt.SetText(strs[i])
+					texts := strs
+					if numeric {
+						texts = make([]string, len(nums))
+						for i, v := range nums {
+							texts[i] = pyRepr(v)
 						}
 					}
+					writeChartExPoints(lvl, texts, func() *etree.Element {
+						pt := lvl.CreateElement("pt")
+						pt.Space = dim.Space
+						return pt
+					})
 					if ext := Child(dim, NSCX, "extLst"); ext != nil {
 						dim.InsertChildAt(ext.Index(), lvl)
 					} else {
