@@ -1,12 +1,18 @@
 package pptx
 
 import (
+	"bytes"
 	"context"
-	"github.com/openvibely/openvibely-paperworks/internal/office"
-	"github.com/openvibely/openvibely-paperworks/internal/opc"
+	"image"
+	"image/png"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/beevik/etree"
+	"github.com/openvibely/openvibely-paperworks/internal/office"
+	"github.com/openvibely/openvibely-paperworks/internal/opc"
 )
 
 func TestDeckEditingPreservesNativeSlides(t *testing.T) {
@@ -241,5 +247,263 @@ func TestDuplicateSlidePreservesNavigationTargets(t *testing.T) {
 	}
 	if string(got.Get(slides[0])) != string(p.Get(slides[0])) {
 		t.Fatal("original slide changed")
+	}
+}
+
+func deleteSlideFixture(t *testing.T, slides []Slide, prepare func(*opc.Package)) (string, string) {
+	t.Helper()
+	dir := t.TempDir()
+	im := image.NewRGBA(image.Rect(0, 0, 4, 4))
+	var buf bytes.Buffer
+	if err := png.Encode(&buf, im); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "pic.png"), buf.Bytes(), 0600); err != nil {
+		t.Fatal(err)
+	}
+	in := filepath.Join(dir, "in.pptx")
+	if err := Create(context.Background(), Spec{Slides: slides}, dir, in); err != nil {
+		t.Fatal(err)
+	}
+	if prepare != nil {
+		p, err := opc.Open(in)
+		if err != nil {
+			t.Fatal(err)
+		}
+		prepare(p)
+		if err = os.Remove(in); err != nil {
+			t.Fatal(err)
+		}
+		if err = p.SaveNew(in); err != nil {
+			t.Fatal(err)
+		}
+	}
+	return dir, in
+}
+
+func assertPackageClean(t *testing.T, p *opc.Package) {
+	t.Helper()
+	types, err := p.XML("[Content_Types].xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, o := range types.Root().SelectElements("Override") {
+		if name := strings.TrimPrefix(o.SelectAttrValue("PartName", ""), "/"); !p.Has(name) {
+			t.Fatal("override for missing part", name)
+		}
+	}
+	for _, name := range p.Names() {
+		if filepath.Ext(name) != ".rels" {
+			continue
+		}
+		source := opc.SourceOf(name)
+		if source != "" && !p.Has(source) {
+			t.Fatal("rels for missing part", name)
+		}
+		rels, err := p.Rels(source)
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, r := range rels {
+			if r.TargetMode != "External" && !p.Has(opc.Resolve(source, r.Target)) {
+				t.Fatal("dangling", name, r)
+			}
+		}
+	}
+	main, _ := presentationPart(p)
+	d, _ := p.XML(main)
+	rels, _ := p.Rels(main)
+	slideRels := 0
+	for _, r := range rels {
+		if r.Type == rns+"/slide" {
+			slideRels++
+		}
+	}
+	if n := len(office.All(d.Root(), pns, "sldId")); slideRels != n {
+		t.Fatal("presentation slide relationships", slideRels, "slides", n)
+	}
+}
+
+func deleteSlide(t *testing.T, dir, in string, slide int) *opc.Package {
+	t.Helper()
+	out := filepath.Join(dir, "out.pptx")
+	if err := DeckEditFile(context.Background(), in, out, dir, DeckEditSpec{Edits: []DeckEdit{{Operation: "delete-slide", Slide: slide}}}); err != nil {
+		t.Fatal(err)
+	}
+	p, err := opc.Open(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertPackageClean(t, p)
+	return p
+}
+
+func TestDeleteSlideRemovesNotes(t *testing.T) {
+	dir, in := deleteSlideFixture(t, []Slide{{Notes: "keep me"}, {Notes: "SECRET-NOTE layoffs list"}}, nil)
+	p := deleteSlide(t, dir, in, 2)
+	for _, name := range p.Names() {
+		if bytes.Contains(p.Get(name), []byte("SECRET-NOTE")) {
+			t.Fatal("deleted notes remain in", name)
+		}
+	}
+	for _, part := range []string{"ppt/slides/slide2.xml", "ppt/notesSlides/notesSlide2.xml"} {
+		if p.Has(part) || p.Has(opc.RelsName(part)) {
+			t.Fatal("deleted slide part remains", part)
+		}
+	}
+	if !bytes.Contains(p.Get("ppt/notesSlides/notesSlide1.xml"), []byte("keep me")) {
+		t.Fatal("remaining notes lost")
+	}
+}
+
+func TestDeleteSlideRemovesExclusiveMediaAndCharts(t *testing.T) {
+	chart := &Chart{Type: "column", Categories: []string{"A", "B"}, Series: []Series{{Name: "S", Values: []float64{1, 2}}}}
+	dir, in := deleteSlideFixture(t, []Slide{{}, {Elements: []Element{
+		{Type: "image", Path: "pic.png", X: 1, Y: 1, W: 1, H: 1},
+		{Type: "chart", X: 3, Y: 1, W: 3, H: 2, Chart: chart},
+	}}}, nil)
+	before, _ := opc.Open(in)
+	var owned []string
+	for _, n := range before.Names() {
+		if strings.HasPrefix(n, "ppt/media/") || strings.HasPrefix(n, "ppt/charts/") || strings.HasPrefix(n, "ppt/embeddings/") {
+			owned = append(owned, n)
+		}
+	}
+	if len(owned) < 3 {
+		t.Fatal("fixture lacks media, chart and workbook", owned)
+	}
+	p := deleteSlide(t, dir, in, 2)
+	for _, n := range owned {
+		if p.Has(n) {
+			t.Fatal("exclusive part retained", n)
+		}
+	}
+	for _, n := range []string{"ppt/slideMasters/slideMaster1.xml", "ppt/theme/theme1.xml", "ppt/notesMasters/notesMaster1.xml"} {
+		if before.Has(n) && !p.Has(n) {
+			t.Fatal("shared part removed", n)
+		}
+	}
+}
+
+func TestDeleteSlideKeepsSharedImage(t *testing.T) {
+	pic := Element{Type: "image", Path: "pic.png", X: 1, Y: 1, W: 1, H: 1}
+	var media string
+	dir, in := deleteSlideFixture(t, []Slide{{Elements: []Element{pic}}, {Elements: []Element{pic}}}, func(p *opc.Package) {
+		slides, _ := office.PresentationSlides(p)
+		first, _ := p.Rels(slides[0])
+		for _, r := range first {
+			if r.Type == rns+"/image" {
+				media = opc.Resolve(slides[0], r.Target)
+			}
+		}
+		target, _ := relativePart(slides[1], media)
+		doc, _ := p.XML(opc.RelsName(slides[1]))
+		for _, r := range doc.Root().ChildElements() {
+			if r.SelectAttrValue("Type", "") == rns+"/image" {
+				r.CreateAttr("Target", target)
+			}
+		}
+		if err := p.SetXML(opc.RelsName(slides[1]), doc); err != nil {
+			t.Fatal(err)
+		}
+	})
+	if media == "" {
+		t.Fatal("no image")
+	}
+	p := deleteSlide(t, dir, in, 1)
+	if !p.Has(media) {
+		t.Fatal("shared image removed", media)
+	}
+}
+
+func TestDeleteSlideDropsHyperlinksToIt(t *testing.T) {
+	text := Element{Type: "text", Text: "Jump", X: 1, Y: 1, W: 3, H: 1}
+	var linking string
+	dir, in := deleteSlideFixture(t, []Slide{{Elements: []Element{text}}, {}}, func(p *opc.Package) {
+		slides, _ := office.PresentationSlides(p)
+		linking = slides[0]
+		target, _ := relativePart(slides[0], slides[1])
+		id, err := p.AddRel(slides[0], rns+"/slide", target, false)
+		if err != nil {
+			t.Fatal(err)
+		}
+		d, _ := p.XML(slides[0])
+		pr := office.All(d.Root(), pns, "cNvPr")[1]
+		link := pr.CreateElement("a:hlinkClick")
+		link.CreateAttr("r:id", id)
+		link.CreateAttr("action", "ppaction://hlinksldjump")
+		if err = p.SetXML(slides[0], d); err != nil {
+			t.Fatal(err)
+		}
+	})
+	p := deleteSlide(t, dir, in, 2)
+	rels, _ := p.Rels(linking)
+	for _, r := range rels {
+		if r.Type == rns+"/slide" {
+			t.Fatal("dangling slide link", r)
+		}
+	}
+	d, _ := p.XML(linking)
+	if len(office.All(d.Root(), ans, "hlinkClick")) != 0 {
+		t.Fatal("hyperlink to deleted slide remains")
+	}
+	if !strings.Contains(office.Text(d.Root(), ans, "t"), "Jump") {
+		t.Fatal("linking shape lost")
+	}
+}
+func TestDeleteSlideKeepsDetachedLayoutDependencies(t *testing.T) {
+	const layout = "ppt/slideLayouts/private.xml"
+	const media = "ppt/media/layout-image.png"
+	dir, in := deleteSlideFixture(t, []Slide{{}, {}}, func(p *opc.Package) {
+		p.Set(layout, []byte(`<p:sldLayout xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cSld><p:spTree/></p:cSld></p:sldLayout>`))
+		if err := p.EnsureContentType(layout, "application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml"); err != nil {
+			t.Fatal(err)
+		}
+		var imageData bytes.Buffer
+		if err := png.Encode(&imageData, image.NewRGBA(image.Rect(0, 0, 4, 4))); err != nil {
+			t.Fatal(err)
+		}
+		p.Set(media, imageData.Bytes())
+		if err := p.EnsureContentType(media, "image/png"); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := p.AddRel(layout, rns+"/image", "../media/layout-image.png", false); err != nil {
+			t.Fatal(err)
+		}
+		slides, err := office.PresentationSlides(p)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := removeRels(p, slides[1], func(r *etree.Element) bool { return r.SelectAttrValue("Type", "") == rns+"/slideLayout" }); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := p.AddRel(slides[1], rns+"/slideLayout", "../slideLayouts/private.xml", false); err != nil {
+			t.Fatal(err)
+		}
+	})
+	p := deleteSlide(t, dir, in, 2)
+	if !p.Has(layout) || !p.Has(media) {
+		t.Fatal("retained layout or its image removed")
+	}
+}
+
+func TestDeleteSlideRemovesExclusiveComments(t *testing.T) {
+	const comments = "ppt/comments/comment1.xml"
+	dir, in := deleteSlideFixture(t, []Slide{{}, {}}, func(p *opc.Package) {
+		p.Set(comments, []byte(`<p:cmLst xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"><p:cm authorId="0" idx="1"><p:pos x="0" y="0"/><p:text>PRIVATE-COMMENT</p:text></p:cm></p:cmLst>`))
+		if err := p.EnsureContentType(comments, "application/vnd.openxmlformats-officedocument.presentationml.comments+xml"); err != nil {
+			t.Fatal(err)
+		}
+		slides, err := office.PresentationSlides(p)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := p.AddRel(slides[1], rns+"/comments", "../comments/comment1.xml", false); err != nil {
+			t.Fatal(err)
+		}
+	})
+	p := deleteSlide(t, dir, in, 2)
+	if p.Has(comments) {
+		t.Fatal("deleted slide comments remain")
 	}
 }

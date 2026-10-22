@@ -179,7 +179,15 @@ objects. Notes apply to slides only; missing notes parts are now created.
 
 Positions are evaluated after preceding edits; omitted insertion positions append.
 Imported dependencies are copied and relationships remapped, retaining editable
-objects. Deleted parts may remain orphaned in the ZIP: this is not sanitization.
+objects. `delete-slide` removes the slide's presentation relationship, custom
+show and section entries, and slide-jump hyperlinks (with their relationships)
+on other slides that target it. After all edits, parts the edits made
+unreachable from the package root (the slide, its notes, and media, charts,
+embedded workbooks or comments used only by it) are removed with their `.rels`
+files and content-type overrides. Parts still referenced elsewhere, plus
+masters, layouts, themes, and notes/handout masters and their dependencies, are
+kept. Orphans already in the input and their dependencies are left alone.
+`docProps/app.xml` counts are not maintained by deck editing and are not updated.
 Replacing a theme affects all objects using it. Charts also support radar/stock
 and full Excelize `options`. Replacing a chart object requires its complete spec;
 it does not infer omitted settings from the old chart.
