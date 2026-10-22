@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/openvibely/openvibely-paperworks/internal/office"
+	"github.com/openvibely/openvibely-paperworks/internal/r1c1"
 	"github.com/xuri/excelize/v2"
 )
 
@@ -451,24 +452,14 @@ func r1c1ReferenceEnd(s string, end int) bool {
 }
 
 func r1c1Coordinate(v string, current, limit int) (int, string, error) {
-	n, prefix := current, ""
-	if v != "" {
-		if strings.HasPrefix(v, "[") {
-			delta, err := strconv.Atoi(v[1 : len(v)-1])
-			if err != nil || delta < 1-current || delta > limit-current {
-				return 0, "", fmt.Errorf("R1C1 coordinate out of bounds")
-			}
-			n += delta
-		} else {
-			var err error
-			n, err = strconv.Atoi(v)
-			if err != nil || n < 1 || n > limit {
-				return 0, "", fmt.Errorf("R1C1 coordinate out of bounds")
-			}
-			prefix = "$"
-		}
+	n, absolute, err := r1c1.ResolveComponent(v, current, limit)
+	if err != nil {
+		return 0, "", err
 	}
-	return n, prefix, nil
+	if absolute {
+		return n, "$", nil
+	}
+	return n, "", nil
 }
 
 // Single-axis R1C1 references denote entire rows/columns, not A1 cells.
@@ -480,9 +471,9 @@ func r1c1WholeAxis(s string, start, x, y int) (string, int, error) {
 	}
 	axis := strings.ToUpper(m[1])
 	coordinate := func(v string) (string, error) {
-		current, limit := y, 1048576
+		current, limit := y, r1c1.MaxRows
 		if axis == "C" {
-			current, limit = x, 16384
+			current, limit = x, r1c1.MaxColumns
 		}
 		n, prefix, err := r1c1Coordinate(v, current, limit)
 		if err != nil {
@@ -583,11 +574,11 @@ func r1c1Formula(s, cell string) (string, error) {
 		if m != nil && (i == 0 || !nameByte(s[i-1])) {
 			end := i + len(m[0])
 			if r1c1ReferenceEnd(s, end) {
-				row, rabs, err := r1c1Coordinate(m[1], y, 1048576)
+				row, rabs, err := r1c1Coordinate(m[1], y, r1c1.MaxRows)
 				if err != nil {
 					return "", err
 				}
-				col, cabs, err := r1c1Coordinate(m[2], x, 16384)
+				col, cabs, err := r1c1Coordinate(m[2], x, r1c1.MaxColumns)
 				if err != nil {
 					return "", err
 				}
