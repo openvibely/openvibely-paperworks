@@ -241,6 +241,10 @@ func splitRunReplace(t *etree.Element, prefix, insert, suffix string) {
 	if rp := child(r, "rPr"); rp != nil {
 		mid.InsertChildAt(0, rp.Copy())
 	}
+	var tail *etree.Element
+	if suffix != "" {
+		tail = runSlice(r, suffix, false)
+	}
 	if prefix == "" {
 		parent.RemoveChildAt(idx)
 	} else {
@@ -249,8 +253,8 @@ func splitRunReplace(t *etree.Element, prefix, insert, suffix string) {
 		idx++
 	}
 	parent.InsertChildAt(idx, mid)
-	if suffix != "" {
-		parent.InsertChildAt(idx+1, runSlice(r, suffix, false))
+	if tail != nil {
+		parent.InsertChildAt(idx+1, tail)
 	}
 }
 

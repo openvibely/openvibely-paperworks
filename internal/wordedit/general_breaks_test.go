@@ -91,6 +91,11 @@ func TestGeneralEditConvertsLineBreaksAndTabs(t *testing.T) {
 			func(t *testing.T, ps []*etree.Element, _ *etree.Element) {
 				referenceEqual(t, runShape(ps[0]), []string{"b,t:X,br,t:Y"})
 			}},
+		{"replace-text at run start with suffix", `<w:p>` + bold("Intro post") + `</w:p>`,
+			map[string]any{"operation": "replace-text", "paragraph": 0.0, "old": "Intro", "new": "X\nY"},
+			func(t *testing.T, ps []*etree.Element, _ *etree.Element) {
+				referenceEqual(t, runShape(ps[0]), []string{"b,t:X,br,t:Y", "b,t: post"})
+			}},
 		{"replace-text spanning runs", `<w:p>` + bold("Hello In") + run("tro end") + `</w:p>`,
 			map[string]any{"operation": "replace-text", "paragraph": 0.0, "old": "Intro", "new": "X\tY"},
 			func(t *testing.T, ps []*etree.Element, _ *etree.Element) {
@@ -106,14 +111,16 @@ func TestGeneralEditConvertsLineBreaksAndTabs(t *testing.T) {
 }
 
 func TestGeneralEditBreaksInHeaderPart(t *testing.T) {
-	src := mk(t, "hdr-breaks", `<w:p>`+run("Body")+`</w:p>`, withHeader(`<w:p>`+bold("Intro")+`</w:p>`))
+	src := mk(t, "hdr-breaks", `<w:p>`+run("Body")+`</w:p>`, withHeader(`<w:p>`+bold("Intro")+`</w:p><w:p>`+bold("Intro post")+`</w:p>`))
 	out := mustEdit(t, src, map[string]any{"operation": "batch", "edits": []any{
 		map[string]any{"operation": "paragraph-insert", "part": "word/header1.xml", "paragraph": 0.0, "position": "after", "text": "A\nB"},
 		map[string]any{"operation": "replace-text", "part": "word/header1.xml", "paragraph": 0.0, "old": "Intro", "new": "X\nY"},
+		map[string]any{"operation": "replace-text", "part": "word/header1.xml", "paragraph": 2.0, "old": "Intro", "new": "X\tY"},
 	}})
 	ps := storyParas(t, out, "word/header1.xml")
 	referenceEqual(t, runShape(ps[0]), []string{"b,t:X,br,t:Y"})
 	referenceEqual(t, runShape(ps[1]), []string{"t:A,br,t:B"})
+	referenceEqual(t, runShape(ps[2]), []string{"b,t:X,tab,t:Y", "b,t: post"})
 }
 
 func TestGeneralEditReproBatch(t *testing.T) {
