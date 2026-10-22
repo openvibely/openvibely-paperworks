@@ -94,6 +94,157 @@ func TestTableStructureUpdatesFrameAndPreservesCells(t *testing.T) {
 	}
 }
 
+func TestTableStructureAcceptsExplicitUnmergedDefaults(t *testing.T) {
+	operations := []string{"table-row-insert", "table-row-delete", "table-column-insert", "table-column-delete"}
+	defaults := []struct {
+		name  string
+		attrs map[string]string
+	}{
+		{"rowSpan-one", map[string]string{"rowSpan": "1"}},
+		{"gridSpan-one", map[string]string{"gridSpan": "1"}},
+		{"hMerge-zero", map[string]string{"hMerge": "0"}},
+		{"hMerge-false", map[string]string{"hMerge": "false"}},
+		{"vMerge-zero", map[string]string{"vMerge": "0"}},
+		{"vMerge-false", map[string]string{"vMerge": "false"}},
+		{"combined", map[string]string{"rowSpan": "1", "gridSpan": "1", "hMerge": "0", "vMerge": "false"}},
+	}
+	for _, operation := range operations {
+		t.Run(operation, func(t *testing.T) {
+			dir := t.TempDir()
+			seed := filepath.Join(dir, "seed.pptx")
+			ctx := context.Background()
+			if err := Create(ctx, Spec{Slides: []Slide{{Elements: []Element{{Type: "table", X: 1, Y: 1, W: 4, H: 2, Rows: [][]string{{"A", "B"}, {"C", "D"}}}}}}}, dir, seed); err != nil {
+				t.Fatal(err)
+			}
+			baseline := filepath.Join(dir, "baseline.pptx")
+			if _, err := EditFile(ctx, seed, baseline, EditSpec{Edits: []Edit{tableStructureEdit(operation)}}); err != nil {
+				t.Fatal("attribute-free edit:", err)
+			}
+			want := normalizedTableSlide(t, baseline)
+			for _, test := range defaults {
+				t.Run(test.name, func(t *testing.T) {
+					in := filepath.Join(dir, test.name+"-in.pptx")
+					out := filepath.Join(dir, test.name+"-out.pptx")
+					writeTableFixtureWithCellAttributes(t, seed, in, test.attrs)
+					if _, err := EditFile(ctx, in, out, EditSpec{Edits: []Edit{tableStructureEdit(operation)}}); err != nil {
+						t.Fatal("explicit defaults should allow edit:", err)
+					}
+					if got := normalizedTableSlide(t, out); got != want {
+						t.Fatalf("edit differs from equivalent table without attributes\ngot: %s\nwant: %s", got, want)
+					}
+				})
+			}
+		})
+	}
+}
+
+func TestTableStructureRejectsMergesAndMalformedSpansWithoutPublishing(t *testing.T) {
+	operations := []string{"table-row-insert", "table-row-delete", "table-column-insert", "table-column-delete"}
+	invalid := []struct {
+		name    string
+		attr    string
+		value   string
+		wantErr string
+	}{
+		{name: "rowSpan-two", attr: "rowSpan", value: "2", wantErr: "structure editing requires an unmerged table"},
+		{name: "gridSpan-two", attr: "gridSpan", value: "2", wantErr: "structure editing requires an unmerged table"},
+		{name: "hMerge-one", attr: "hMerge", value: "1", wantErr: "structure editing requires an unmerged table"},
+		{name: "hMerge-true", attr: "hMerge", value: "true", wantErr: "structure editing requires an unmerged table"},
+		{name: "vMerge-one", attr: "vMerge", value: "1", wantErr: "structure editing requires an unmerged table"},
+		{name: "vMerge-true", attr: "vMerge", value: "true", wantErr: "structure editing requires an unmerged table"},
+		{name: "malformed-rowSpan", attr: "rowSpan", value: "invalid", wantErr: "invalid table rowSpan"},
+		{name: "malformed-gridSpan", attr: "gridSpan", value: "invalid", wantErr: "invalid table gridSpan"},
+	}
+	for _, operation := range operations {
+		t.Run(operation, func(t *testing.T) {
+			for _, test := range invalid {
+				t.Run(test.name, func(t *testing.T) {
+					dir := t.TempDir()
+					seed, in, out := filepath.Join(dir, "seed.pptx"), filepath.Join(dir, "in.pptx"), filepath.Join(dir, "out.pptx")
+					ctx := context.Background()
+					if err := Create(ctx, Spec{Slides: []Slide{{Elements: []Element{{Type: "table", X: 1, Y: 1, W: 4, H: 2, Rows: [][]string{{"A", "B"}, {"C", "D"}}}}}}}, dir, seed); err != nil {
+						t.Fatal(err)
+					}
+					writeTableFixtureWithCellAttributes(t, seed, in, map[string]string{test.attr: test.value})
+					before, err := os.ReadFile(in)
+					if err != nil {
+						t.Fatal(err)
+					}
+					_, err = EditFile(ctx, in, out, EditSpec{Edits: []Edit{tableStructureEdit(operation)}})
+					if err == nil || !strings.Contains(err.Error(), test.wantErr) {
+						t.Fatalf("expected error containing %q, got %v", test.wantErr, err)
+					}
+					if _, statErr := os.Stat(out); !os.IsNotExist(statErr) {
+						t.Fatal("rejected edit published output", statErr)
+					}
+					after, readErr := os.ReadFile(in)
+					if readErr != nil || string(before) != string(after) {
+						t.Fatal("rejected edit changed source", readErr)
+					}
+				})
+			}
+		})
+	}
+}
+
+func tableStructureEdit(operation string) Edit {
+	e := Edit{Operation: operation, Slide: 1, ShapeID: "2"}
+	switch operation {
+	case "table-row-insert", "table-row-delete":
+		e.Row = 1
+	case "table-column-insert", "table-column-delete":
+		e.Column = 1
+	}
+	return e
+}
+
+func writeTableFixtureWithCellAttributes(t *testing.T, seed, path string, attrs map[string]string) {
+	t.Helper()
+	p, err := opc.Open(seed)
+	if err != nil {
+		t.Fatal(err)
+	}
+	d, err := p.XML("ppt/slides/slide1.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	cells := office.All(d.Root(), ans, "tc")
+	if len(cells) != 4 {
+		t.Fatalf("fixture has %d cells, want 4", len(cells))
+	}
+	for key, value := range attrs {
+		cells[0].CreateAttr(key, value)
+	}
+	if err := p.SetXML("ppt/slides/slide1.xml", d); err != nil {
+		t.Fatal(err)
+	}
+	if err := p.SaveNew(path); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func normalizedTableSlide(t *testing.T, path string) string {
+	t.Helper()
+	p, err := opc.Open(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	d, err := p.XML("ppt/slides/slide1.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, cell := range office.All(d.Root(), ans, "tc") {
+		for _, attr := range []string{"rowSpan", "gridSpan", "hMerge", "vMerge"} {
+			cell.RemoveAttr(attr)
+		}
+	}
+	got, err := d.WriteToString()
+	if err != nil {
+		t.Fatal(err)
+	}
+	return got
+}
+
 func TestUniformObjectLayout(t *testing.T) {
 	dir := t.TempDir()
 	in, out := filepath.Join(dir, "in.pptx"), filepath.Join(dir, "out.pptx")
