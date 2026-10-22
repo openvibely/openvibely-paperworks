@@ -225,6 +225,24 @@ func copyRange(f *excelize.File, e Edit) (*excelize.File, error) {
 			}
 		}
 	}
+	// copy-formats only rewrites styles, so it cannot split an array block.
+	if e.Operation != "copy-formats" {
+		targetArrays := arrays
+		sourceIdx, _ := f.GetSheetIndex(e.Sheet)
+		if !copiesFormulas || sourceIdx != idx {
+			if targetArrays, err = arrayFormulaBlocks(f, targetSheet); err != nil {
+				return nil, err
+			}
+		}
+		right, bottom := tx+xx-x, ty+yy-y
+		for master, block := range targetArrays {
+			overlaps := block.left <= right && block.right >= tx && block.top <= bottom && block.bottom >= ty
+			inside := block.left >= tx && block.right <= right && block.top >= ty && block.bottom <= bottom
+			if overlaps && !inside {
+				return nil, fmt.Errorf("cannot change part of array formula %s!%s (%s); the destination must cover the whole array range", targetSheet, master, block.ref)
+			}
+		}
+	}
 	var snapshot []cell
 	for row := y; row <= yy; row++ {
 		for col := x; col <= xx; col++ {

@@ -137,3 +137,78 @@ func TestCopyNormalFormulaStaysPlain(t *testing.T) {
 		t.Fatalf("D2 formula = %#v", fe)
 	}
 }
+
+func TestCopyRejectsPartialDestinationArray(t *testing.T) {
+	cases := []struct {
+		name, operation, source, sheet, target string
+		formulas                               map[string][2]string
+	}{
+		{"same-sheet overlap with source array", "copy", "C1:C3", "", "C2", map[string][2]string{"C1": {"A1:A3*B1:B3", "C1:C3"}}},
+		{"existing array at destination", "copy", "C1:C3", "", "E2", map[string][2]string{"C1": {"A1:A3*B1:B3", "C1:C3"}, "E1": {"A1:A3*2", "E1:E3"}}},
+		{"existing array under plain copy", "copy-formulas", "A1", "", "E2", map[string][2]string{"E1": {"A1:A3*2", "E1:E3"}}},
+		{"existing array under values copy", "copy-values", "A1:A2", "", "E2", map[string][2]string{"E1": {"A1:A3*2", "E1:E3"}}},
+		{"existing array on other sheet", "copy", "C1:C3", "Other", "E2", map[string][2]string{"C1": {"A1:A3*B1:B3", "C1:C3"}}},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			dir := t.TempDir()
+			in := arrayWorkbook(t, dir, tc.formulas)
+			out := filepath.Join(dir, "out.xlsx")
+			edits := []Edit{}
+			if tc.sheet != "" {
+				edits = append(edits,
+					Edit{Operation: "add-sheet", Name: tc.sheet},
+					Edit{Operation: "copy", Sheet: "Sheet1", Range: "C1:C3", Name: tc.sheet, Target: "E1"})
+			}
+			edits = append(edits, Edit{Operation: tc.operation, Sheet: "Sheet1", Range: tc.source, Name: tc.sheet, Target: tc.target})
+			err := EditFile(context.Background(), in, out, dir, EditSpec{Edits: edits})
+			if err == nil || !strings.Contains(err.Error(), "cannot change part of array formula") {
+				t.Fatalf("err = %v", err)
+			}
+		})
+	}
+}
+
+func TestCopyReplacesWhollyCoveredDestinationArray(t *testing.T) {
+	for _, operation := range []string{"copy", "copy-values"} {
+		t.Run(operation, func(t *testing.T) {
+			dir := t.TempDir()
+			in := arrayWorkbook(t, dir, map[string][2]string{"C1": {"A1:A3*B1:B3", "C1:C3"}, "E1": {"A1:A3*2", "E1:E3"}})
+			out := filepath.Join(dir, "out.xlsx")
+			if err := EditFile(context.Background(), in, out, dir, EditSpec{Edits: []Edit{{Operation: operation, Sheet: "Sheet1", Range: "B1:C3", Target: "D1"}}}); err != nil {
+				t.Fatal(err)
+			}
+			cells := sheetCells(t, out)
+			masters := 0
+			for address := range cells {
+				if fe := formulaOf(cells, address); fe != nil && fe.SelectAttrValue("t", "") == "array" {
+					masters++
+					if address != "C1" && !(operation == "copy" && address == "E1" && fe.SelectAttrValue("ref", "") == "E1:E3" && fe.Text() == "C1:C3*D1:D3") {
+						t.Fatalf("unexpected array %s ref=%q %q", address, fe.SelectAttrValue("ref", ""), fe.Text())
+					}
+				}
+			}
+			if want := map[string]int{"copy": 2, "copy-values": 1}[operation]; masters != want {
+				t.Fatalf("array masters = %d, want %d", masters, want)
+			}
+			for _, address := range []string{"D1", "D2", "D3"} {
+				if formulaOf(cells, address) != nil {
+					t.Fatalf("%s retained a formula", address)
+				}
+			}
+		})
+	}
+}
+
+func TestCopyArrayBlockOntoItself(t *testing.T) {
+	dir := t.TempDir()
+	in := arrayWorkbook(t, dir, map[string][2]string{"C1": {"A1:A3*B1:B3", "C1:C3"}})
+	out := filepath.Join(dir, "out.xlsx")
+	if err := EditFile(context.Background(), in, out, dir, EditSpec{Edits: []Edit{{Operation: "copy", Sheet: "Sheet1", Range: "C1:C3", Target: "C1"}}}); err != nil {
+		t.Fatal(err)
+	}
+	fe := formulaOf(sheetCells(t, out), "C1")
+	if fe == nil || fe.SelectAttrValue("t", "") != "array" || fe.SelectAttrValue("ref", "") != "C1:C3" || fe.Text() != "A1:A3*B1:B3" {
+		t.Fatalf("C1 formula = %#v", fe)
+	}
+}
