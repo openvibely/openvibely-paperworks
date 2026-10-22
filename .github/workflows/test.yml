@@ -32,13 +32,8 @@ jobs:
           key: test-deps-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('scripts/test-local.sh') }}
       - name: Set up cached test dependencies
         run: make deps
-      - name: Test
-        run: |
-          set -o pipefail
-          go test -json -count=1 -timeout=20m ./... | tee "$RUNNER_TEMP/tests.jsonl"
-      - name: Vet
-        if: always()
-        run: go vet ./...
+      - name: Test and vet
+        run: PAPERWORKS_TEST_JSON="$RUNNER_TEMP/tests.jsonl" bash scripts/test.sh
       - name: Retain test results
         if: always()
         uses: actions/upload-artifact@v4

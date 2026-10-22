@@ -12,6 +12,10 @@ check_equation_graph() {
 check_equation_graph
 # Run vet even if an acceptance assertion fails, and retain a failing exit code.
 result=0
-go test -count=1 -timeout=20m ./... || result=1
+if [ -n "${PAPERWORKS_TEST_JSON:-}" ]; then
+  go test -json -count=1 -timeout=20m ./... | tee "$PAPERWORKS_TEST_JSON" || result=1
+else
+  go test -count=1 -timeout=20m ./... || result=1
+fi
 go vet ./... || result=1
 exit "$result"
