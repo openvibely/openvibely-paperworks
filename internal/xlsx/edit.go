@@ -191,6 +191,8 @@ func applyEdit(f *excelize.File, base string, e Edit) error {
 			return err
 		}
 		return f.SetCellStyle(e.Sheet, a, b, id)
+	case "autofit-rows":
+		return autofitRows(f, e)
 	case "autofit-columns":
 		return f.AutoFitColWidth(e.Sheet, e.Range)
 	case "column-width":

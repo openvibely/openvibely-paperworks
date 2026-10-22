@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	register(&Command{Name: "workbook-edit", Summary: "Apply ordered edits to an existing workbook; write a new file. Recalculate before using formula results.", Usage: "paperworks workbook-edit INPUT.xlsx --spec EDITS.json --output NEW.xlsx", Run: func(ctx context.Context, a Args) (any, error) {
+	register(&Command{Name: "workbook-edit", Summary: "Apply ordered edits to an existing workbook; write a new file. Recalculate before using formula results.", Usage: "paperworks workbook-edit INPUT.xlsx --spec EDITS.json --output NEW.xlsx\n  sizing operations: autofit-columns, autofit-rows (cell range), column-width, row-height", Run: func(ctx context.Context, a Args) (any, error) {
 		if len(a.Pos) != 1 {
 			return nil, usagef("one input workbook required")
 		}

@@ -10,6 +10,10 @@ import (
 	"time"
 
 	"golang.org/x/image/font"
+	"golang.org/x/image/font/gofont/gobold"
+	"golang.org/x/image/font/gofont/gobolditalic"
+	"golang.org/x/image/font/gofont/goitalic"
+	"golang.org/x/image/font/gofont/goregular"
 	"golang.org/x/image/font/sfnt"
 	"golang.org/x/image/math/fixed"
 )
@@ -88,6 +92,19 @@ func FindFont(family string, bold, italic bool) *sfnt.Font {
 	faceMu.Lock()
 	defer faceMu.Unlock()
 	if f, ok := faceCache[k]; ok {
+		return f
+	}
+	if strings.EqualFold(family, "Go") {
+		data := goregular.TTF
+		if bold && italic {
+			data = gobolditalic.TTF
+		} else if bold {
+			data = gobold.TTF
+		} else if italic {
+			data = goitalic.TTF
+		}
+		f, _ := sfnt.Parse(data)
+		faceCache[k] = f
 		return f
 	}
 	var candidates []string

@@ -11,15 +11,18 @@ import (
 // fill the available space; row/column children share it according to Weight.
 // Fixed dimensions, gaps, and padding are measured in inches.
 type LayoutNode struct {
-	ShapeID  string        `json:"shape_id,omitempty"`
-	Mode     string        `json:"mode,omitempty"`
-	Children []*LayoutNode `json:"children,omitempty"`
-	Width    *float64      `json:"width,omitempty"`
-	Height   *float64      `json:"height,omitempty"`
-	Weight   float64       `json:"weight,omitempty"`
-	Gap      float64       `json:"gap,omitempty"`
-	Padding  float64       `json:"padding,omitempty"`
-	Columns  int           `json:"columns,omitempty"`
+	FitText    bool          `json:"fit_text,omitempty"`
+	ColumnSpan int           `json:"column_span,omitempty"`
+	RowSpan    int           `json:"row_span,omitempty"`
+	ShapeID    string        `json:"shape_id,omitempty"`
+	Mode       string        `json:"mode,omitempty"`
+	Children   []*LayoutNode `json:"children,omitempty"`
+	Width      *float64      `json:"width,omitempty"`
+	Height     *float64      `json:"height,omitempty"`
+	Weight     float64       `json:"weight,omitempty"`
+	Gap        float64       `json:"gap,omitempty"`
+	Padding    float64       `json:"padding,omitempty"`
+	Columns    int           `json:"columns,omitempty"`
 }
 
 type layoutPlacement struct {
@@ -28,6 +31,9 @@ type layoutPlacement struct {
 }
 
 func layoutTree(pkg *opc.Package, part string, root *etree.Element, l *Layout) error {
+	if l.Root.ColumnSpan != 0 || l.Root.RowSpan != 0 {
+		return fmt.Errorf("spans require a grid parent")
+	}
 	if len(l.ShapeIDs) > 0 || l.Mode != "" || l.Gap != 0 || l.Columns != 0 {
 		return fmt.Errorf("root cannot be combined with flat layout fields")
 	}
@@ -59,6 +65,12 @@ func layoutTree(pkg *opc.Package, part string, root *etree.Element, l *Layout) e
 				return fmt.Errorf("fixed dimensions must be positive")
 			}
 		}
+		if n.ColumnSpan < 0 || n.RowSpan < 0 {
+			return fmt.Errorf("spans must be positive")
+		}
+		if n.FitText && (n.ShapeID == "" || n.Height != nil) {
+			return fmt.Errorf("fit_text requires a shape without fixed height")
+		}
 		if n.Width != nil {
 			if *n.Width > w+1e-9 {
 				return fmt.Errorf("fixed width exceeds available space")
@@ -87,6 +99,16 @@ func layoutTree(pkg *opc.Package, part string, root *etree.Element, l *Layout) e
 			if shape.Parent() == nil || shape.Parent().Tag != "spTree" {
 				return fmt.Errorf("layout requires top-level slide shapes")
 			}
+			if n.FitText {
+				measured, err := office.SlideTextHeight(shape, w)
+				if err != nil {
+					return fmt.Errorf("shape %s: %w", n.ShapeID, err)
+				}
+				if measured > h+1e-9 {
+					return fmt.Errorf("shape %s text exceeds layout height", n.ShapeID)
+				}
+				h = measured
+			}
 			seen[n.ShapeID] = true
 			placements = append(placements, layoutPlacement{shape, x, y, w, h})
 			return nil
@@ -102,14 +124,15 @@ func layoutTree(pkg *opc.Package, part string, root *etree.Element, l *Layout) e
 			return fmt.Errorf("padding exceeds layout dimensions")
 		}
 		if n.Mode == "grid" {
-			if n.Columns < 1 || n.Columns > len(n.Children) {
-				return fmt.Errorf("grid columns out of range")
+			cells, rows, err := gridCells(n)
+			if err != nil {
+				return err
 			}
-			rows := (len(n.Children) + n.Columns - 1) / n.Columns
 			cw := (w - float64(n.Columns-1)*n.Gap) / float64(n.Columns)
 			ch := (h - float64(rows-1)*n.Gap) / float64(rows)
 			for i, c := range n.Children {
-				if err := visit(c, x+float64(i%n.Columns)*(cw+n.Gap), y+float64(i/n.Columns)*(ch+n.Gap), cw, ch, depth+1); err != nil {
+				g := cells[i]
+				if err := visit(c, x+float64(g.col)*(cw+n.Gap), y+float64(g.row)*(ch+n.Gap), float64(g.cols)*cw+float64(g.cols-1)*n.Gap, float64(g.rows)*ch+float64(g.rows-1)*n.Gap, depth+1); err != nil {
 					return err
 				}
 			}
@@ -127,13 +150,36 @@ func layoutTree(pkg *opc.Package, part string, root *etree.Element, l *Layout) e
 		}
 		available -= float64(len(n.Children)-1) * n.Gap
 		totalWeight := 0.0
+		measuredHeights := map[*LayoutNode]float64{}
 		for _, c := range n.Children {
 			if c == nil {
 				return fmt.Errorf("null layout child")
 			}
+			if c.ColumnSpan != 0 || c.RowSpan != 0 {
+				return fmt.Errorf("spans require a grid parent")
+			}
 			fixed := c.Width
 			if n.Mode == "column" {
 				fixed = c.Height
+				if c.FitText {
+					if c.Height != nil || c.ShapeID == "" {
+						return fmt.Errorf("fit_text requires a shape without fixed height")
+					}
+					shape := shapes[c.ShapeID]
+					if shape == nil {
+						return fmt.Errorf("missing shape %s", c.ShapeID)
+					}
+					width := w
+					if c.Width != nil {
+						width = *c.Width
+					}
+					v, err := office.SlideTextHeight(shape, width)
+					if err != nil {
+						return err
+					}
+					measuredHeights[c] = v
+					fixed = &v
+				}
 			}
 			if fixed != nil {
 				if !finite(*fixed) || *fixed <= 0 {
@@ -158,6 +204,9 @@ func layoutTree(pkg *opc.Package, part string, root *etree.Element, l *Layout) e
 			fixed := c.Width
 			if n.Mode == "column" {
 				fixed = c.Height
+				if v, ok := measuredHeights[c]; ok {
+					fixed = &v
+				}
 			}
 			size := 0.0
 			if fixed != nil {
@@ -195,4 +244,64 @@ func layoutTree(pkg *opc.Package, part string, root *etree.Element, l *Layout) e
 		}
 	}
 	return nil
+}
+
+// gridCells packs spans in row-major order without overlaps. Bounds cap work
+// before allocating an occupancy grid for untrusted JSON.
+type gridCell struct{ row, col, rows, cols int }
+
+func gridCells(n *LayoutNode) ([]gridCell, int, error) {
+	if n.Columns < 1 || n.Columns > 10000 || len(n.Children) > 10000 {
+		return nil, 0, fmt.Errorf("grid columns/children out of range")
+	}
+	occupied := map[int]bool{}
+	out := make([]gridCell, 0, len(n.Children))
+	rows, cursor := 0, 0
+	for _, c := range n.Children {
+		if c == nil {
+			return nil, 0, fmt.Errorf("null grid child")
+		}
+		rs, cs := c.RowSpan, c.ColumnSpan
+		if rs == 0 {
+			rs = 1
+		}
+		if cs == 0 {
+			cs = 1
+		}
+		if rs < 1 || cs < 1 || cs > n.Columns || rs > 10000 || rs*cs > 10000 {
+			return nil, 0, fmt.Errorf("invalid grid span")
+		}
+		placed := false
+		for pos := cursor; pos < 10000; pos++ {
+			r, col := pos/n.Columns, pos%n.Columns
+			if col+cs > n.Columns || (r+rs)*n.Columns > 10000 {
+				continue
+			}
+			free := true
+			for y := r; y < r+rs; y++ {
+				for x := col; x < col+cs; x++ {
+					if occupied[y*n.Columns+x] {
+						free = false
+					}
+				}
+			}
+			if !free {
+				continue
+			}
+			for y := r; y < r+rs; y++ {
+				for x := col; x < col+cs; x++ {
+					occupied[y*n.Columns+x] = true
+				}
+			}
+			out = append(out, gridCell{r, col, rs, cs})
+			rows = max(rows, r+rs)
+			cursor = pos + cs
+			placed = true
+			break
+		}
+		if !placed {
+			return nil, 0, fmt.Errorf("grid exceeds 10000 cells")
+		}
+	}
+	return out, rows, nil
 }

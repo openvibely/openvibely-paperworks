@@ -38,6 +38,7 @@ All operations except add-sheet and defined-name operations require `sheet`.
 | `clear-values`, `clear-formats`, `clear-all` | `range`; values includes formulas; all means cell contents/styles, not comments/drawings |
 | `style` | `range`, Excelize `style` |
 | `column-width`, `autofit-columns` | column `range` such as `A:C`; width needs `size` |
+| `autofit-rows` | cell `range` such as `A1:D20`; fit saved formatted text after setting widths and wrapping |
 | `row-height` | one-based `index`, `size` in points |
 | `panes`, `view` | Excelize `panes` or `view`; clearing panes uses `{"Freeze":false,"Split":false}` |
 | `add-sheet`, `rename-sheet` | `name`; add does not need `sheet` |
@@ -106,7 +107,7 @@ revision markup and annotation boundaries are not flattened into plain text.
 | `image-resize/delete` | `image`; resize needs `width_in` and/or `height_in` |
 | `section-format` | `section`; `width/height/top/bottom/left/right/header/footer/gutter` in twips |
 | `section-insert` | `section` whose settings to copy, terminating `paragraph`, `type: nextPage/continuous/evenPage/oddPage` controlling where the following section starts; existing section starts are preserved |
-| `header-footer` | `section`, `kind: header/footer`, `type: default/first/even`, `text` |
+| `header-footer` | `section`, `kind: header/footer`, `type: default/first/even`; `text` or table `rows` with `widths_twips` |
 | `batch` | `edits` array of general operations; nested batches are rejected |
 
 The zero-based `image` index counts standalone pictures in the selected part.
@@ -428,6 +429,83 @@ Containers support `row`, `column` and `grid` (with `columns`), plus `gap` and
 inches. Optional positive `width`/`height` fix a node's size; otherwise it fills
 available space. Row/column siblings divide remaining space by `weight` (default
 1). Grid cells are equal-sized. Fixed cross-axis sizes align at the top/left.
-This positions/resizes existing native shapes; it does not measure text, wrap
-children, or maintain a reactive layout after later edits. Nested grouped shapes
+This positions/resizes existing native shapes. The optional `fit_text` control
+below measures text height; layout does not automatically rerun after later edits. Nested grouped shapes
 must be edited in their own coordinate system and are rejected here.
+
+
+### Content-sized slide text and grid spans
+
+On a layout leaf, `fit_text:true` calculates height at its allocated width using
+font glyph advances and line metrics. In a column, the next item starts after
+that measured height and the gap. Omit `height` on fitted leaves. For example:
+
+```json
+{"edits":[{"operation":"layout","slide":1,"layout":{
+ "x":0.5,"y":0.5,"width":4,"height":6,
+ "root":{"mode":"column","gap":0.2,"children":[
+  {"shape_id":"2","fit_text":true},{"shape_id":"3","fit_text":true}
+ ]}
+}}]}
+```
+
+Fonts must be resolved in the runs or paragraph defaults and available locally;
+`Go` regular/bold/italic faces are embedded for measurement. Unsupported font
+or glyph lookup fails instead of silently substituting a different face. The
+measurement accounts for wrapping, newlines, mixed run sizes, text-box insets,
+paragraph margins and before/after/proportional line spacing. Rotated/vertical
+text, unresolved fields and fixed-point line spacing need explicit sizing.
+This is glyph-based measurement, not a complex-script shaping engine. Review the
+render in the intended Office engine, whose font substitution may differ.
+Oversized text fails instead of being squeezed into its frame. Rerun layout
+explicitly after changing text or widths.
+
+Grid children accept positive `column_span` and `row_span` (default 1). They
+occupy consecutive free cells in row-major order. A spanning heading followed
+by two ordinary leaves can be written as:
+
+```json
+{"mode":"grid","columns":2,"children":[
+ {"shape_id":"2","column_span":2},
+ {"shape_id":"3"},{"shape_id":"4"}
+]}
+```
+
+Rows expand to fit the packed items, then divide the frame equally; column spans
+include internal gaps. Spans apply only to grid children. There is a 10,000-cell
+limit; no overlapping cells are produced.
+
+### Fit spreadsheet row heights
+
+```json
+{"edits":[{"operation":"autofit-rows","sheet":"Data","range":"A1:D20"}]}
+```
+
+Run through `workbook-edit`. Set final column widths and wrapping first; measure
+only the requested range (up to 10,000 cells). It uses formatted saved values,
+font metrics and rich-text runs, and changes the affected row heights. Include
+all columns whose content should determine those heights. Recalculate formula
+results beforehand; a formula without a saved value fails. Formatting changes
+can alter the displayed value, so fit after formatting too.
+
+Complete horizontal merges are supported. Vertical merges, rotated text,
+shrink-to-fit and unavailable fonts fail; results beyond Excel's 409.5-point row
+height limit also fail. Rows outside the requested range remain unchanged.
+Inspect the final worksheet in the target engine.
+
+### Create a Word header/footer table
+
+Use `rows` instead of `text` in `header-footer`:
+
+```json
+{"operation":"header-footer","section":0,"kind":"footer","type":"default",
+ "rows":[["Left","Middle","Right"]],"widths_twips":[2000,2000,2000]}
+```
+
+The section index is zero-based. `type` may be `default`, `first` or `even`.
+`widths_twips` supplies one positive width per column; choose widths within the
+section's usable width. The rectangular table replaces this section's selected
+header/footer with a private part, preserving other sections and body content.
+Cells retain text, tabs and line breaks as native Word content. Subsequent
+formatting/table edits can target that part with existing `word-edit` operations.
+Reopen and verify the section relationship, cell text and rendered page furniture.

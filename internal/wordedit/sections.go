@@ -77,9 +77,9 @@ func sectionEdit(d *Doc, s map[string]any) error {
 	if typ != "default" && typ != "first" && typ != "even" {
 		return fmt.Errorf("type must be default, first or even")
 	}
-	text, ok := s["text"].(string)
-	if !ok {
-		return fmt.Errorf("text required")
+	content, err := headerFooterContent(s)
+	if err != nil {
+		return err
 	}
 	name := ""
 	for n := 1; ; n++ {
@@ -93,11 +93,9 @@ func sectionEdit(d *Doc, s map[string]any) error {
 		tag = "ftr"
 	}
 	doc := newRoot(tag)
-	p := W("p")
-	r := W("r")
-	r.AddChild(WT("t", text))
-	p.AddChild(r)
-	doc.Root().AddChild(p)
+	for _, el := range content {
+		doc.Root().AddChild(el)
+	}
 	if err := d.Pkg.SetXML(name, doc); err != nil {
 		return err
 	}
