@@ -13,9 +13,6 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - name: Record job start time
-        run: date +%s%N > "$RUNNER_TEMP/job-start-ns"
-
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
@@ -82,11 +79,46 @@ jobs:
           name: test-results
           path: ${{ runner.temp }}/tests.jsonl
           if-no-files-found: ignore
-      - name: Report job timing
-        if: always()
+
+  report-test-job-duration:
+    if: always()
+    needs: [test]
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: read
+    steps:
+      - name: Report completed test job duration
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
         run: |
-          job_start_ns="$(cat "$RUNNER_TEMP/job-start-ns")"
-          job_end_ns="$(date +%s%N)"
-          job_elapsed_ms=$(((job_end_ns - job_start_ns) / 1000000))
-          echo "Job elapsed through final workflow step: ${job_elapsed_ms} ms"
-          echo "Job elapsed through final workflow step: ${job_elapsed_ms} ms" >> "$GITHUB_STEP_SUMMARY"
+          response="$(curl --fail-with-body --silent --show-error \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H 'Accept: application/vnd.github+json' \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs?per_page=100")"
+          python3 -c '
+          import datetime
+          import json
+          import os
+          import sys
+
+          jobs = json.load(sys.stdin)["jobs"]
+          matches = [job for job in jobs if job["name"] == "test"]
+          if len(matches) != 1:
+              raise SystemExit(f"expected one completed test job, found {len(matches)}")
+          job = matches[0]
+          if not job["started_at"] or not job["completed_at"]:
+              raise SystemExit("test job has no completed timing timestamps")
+          start = datetime.datetime.fromisoformat(job["started_at"].replace("Z", "+00:00"))
+          end = datetime.datetime.fromisoformat(job["completed_at"].replace("Z", "+00:00"))
+          elapsed_ms = int((end - start).total_seconds() * 1000)
+          if elapsed_ms < 0:
+              raise SystemExit("test job completed before it started")
+          report = f"Test job duration: {elapsed_ms} ms ({elapsed_ms / 1000:.3f} s)\n"
+          print(report, end="")
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
+              summary.write("## Test job duration\n\n")
+              summary.write(f"{elapsed_ms} ms ({elapsed_ms / 1000:.3f} s)\n")
+          ' <<< "$response"
