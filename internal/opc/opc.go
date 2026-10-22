@@ -514,12 +514,24 @@ func WriteNew(file string, data []byte) error {
 		}
 		return err
 	}
-	if _, err := f.Write(data); err != nil {
-		f.Close()
-		os.Remove(file)
+	return writeNewContents(file, f, data)
+}
+
+func writeNewContents(file string, f io.WriteCloser, data []byte) error {
+	n, writeErr := f.Write(data)
+	if writeErr == nil && n != len(data) {
+		writeErr = io.ErrShortWrite
+	}
+	if writeErr != nil {
+		_ = f.Close()
+		_ = os.Remove(file)
+		return writeErr
+	}
+	if err := f.Close(); err != nil {
+		_ = os.Remove(file)
 		return err
 	}
-	return f.Close()
+	return nil
 }
 
 // SaveNew serializes the package and writes it to a new file.
