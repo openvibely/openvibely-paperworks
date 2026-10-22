@@ -188,6 +188,10 @@ func Split(ctx context.Context, src, outDir string, ranges [][]int) ([]string, e
 }
 
 func split(ctx context.Context, src, outDir string, ranges [][]int, afterOutput func()) ([]string, error) {
+	return splitWithOutputWriter(ctx, src, outDir, ranges, afterOutput, writeNewWith)
+}
+
+func splitWithOutputWriter(ctx context.Context, src, outDir string, ranges [][]int, afterOutput func(), writeOutput func(string, func(io.Writer) error) error) ([]string, error) {
 	data, err := os.ReadFile(src)
 	if err != nil {
 		return nil, err
@@ -250,7 +254,7 @@ func split(ctx context.Context, src, outDir string, ranges [][]int, afterOutput 
 		}
 
 		name := filepath.Join(outDir, fmt.Sprintf("%s-%03d.pdf", stem, i+1))
-		if err := writeNewWith(name, func(w io.Writer) error {
+		if err := writeOutput(name, func(w io.Writer) error {
 			if err := api.Write(ctx, output, w, conf); err != nil {
 				return fmt.Errorf("select pages: collect: write output: %w", err)
 			}
