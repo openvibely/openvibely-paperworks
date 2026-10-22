@@ -565,9 +565,6 @@ func sparklinePreview(set *editSet) error {
 							z := 0.0
 							val = &z
 						}
-						if val == nil && attr("displayEmptyCellsAs") == "span" {
-							continue
-						}
 						data = append(data, val)
 					}
 				}
@@ -653,9 +650,21 @@ func sparklinePreview(set *editSet) error {
 				}
 				var segments [][][2]float64
 				var current [][2]float64
+				firstValueIndex, lastValueIndex := -1, -1
+				for i, vp := range e.data {
+					if vp != nil {
+						if firstValueIndex == -1 {
+							firstValueIndex = i
+						}
+						lastValueIndex = i
+					}
+				}
 				hi, lo := maxOf(numeric), minOf(numeric)
 				for i, vp := range e.data {
 					if vp == nil {
+						if attr("displayEmptyCellsAs") == "span" {
+							continue
+						}
 						if len(current) > 1 {
 							segments = append(segments, current)
 						}
@@ -673,7 +682,7 @@ func sparklinePreview(set *editSet) error {
 						flag string
 						cond bool
 						key  string
-					}{{"negative", v < 0, "colorNegative"}, {"first", i == 0, "colorFirst"}, {"last", i == len(e.data)-1, "colorLast"}, {"high", v == hi, "colorHigh"}, {"low", v == lo, "colorLow"}} {
+					}{{"negative", v < 0, "colorNegative"}, {"first", i == firstValueIndex, "colorFirst"}, {"last", i == lastValueIndex, "colorLast"}, {"high", v == hi, "colorHigh"}, {"low", v == lo, "colorLow"}} {
 						if f.cond && attr(f.flag) == "1" {
 							marker = f.key
 						}
