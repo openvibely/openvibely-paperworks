@@ -258,3 +258,98 @@ func TestR1C1PreservesSheetQualifiers(t *testing.T) {
 		})
 	}
 }
+
+func TestCSVImportStripsLeadingBOM(t *testing.T) {
+	const bom = "\xEF\xBB\xBF"
+	cases := []struct {
+		name, data string
+		delim      rune
+		a1, b1     string
+	}{
+		{"unquoted", bom + "Name,Qty\r\nWidget,5\r\n", ',', "Name", "Qty"},
+		{"quoted delimiter", bom + "\"Name, full\",Qty\r\nWidget,5\r\n", ',', "Name, full", "Qty"},
+		{"quoted", bom + "\"Name\",\"Qty\"\r\n", ',', "Name", "Qty"},
+		{"tab", bom + "Name\tQty\n", '\t', "Name", "Qty"},
+		{"custom", bom + "Name;Qty\n", ';', "Name", "Qty"},
+		{"custom quoted", bom + "\"Name; full\";Qty\n", ';', "Name; full", "Qty"},
+		{"literal zero", bom + "001,=1+2\n", ',', "001", "=1+2"},
+		{"literal formula", bom + "=1+2,Qty\n", ',', "=1+2", "Qty"},
+		{"double bom", bom + bom + "Name,Qty\n", ',', "\ufeffName", "Qty"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			dir := t.TempDir()
+			in := filepath.Join(dir, "in.csv")
+			out := filepath.Join(dir, "out.xlsx")
+			os.WriteFile(in, []byte(tc.data), 0600)
+			if err := ImportCSV(context.Background(), in, out, "Data", tc.delim); err != nil {
+				t.Fatal(err)
+			}
+			f, err := excelize.OpenFile(out)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer f.Close()
+			if v, _ := f.GetCellValue("Data", "A1"); v != tc.a1 {
+				t.Fatalf("A1 = %q", v)
+			}
+			if v, _ := f.GetCellValue("Data", "B1"); v != tc.b1 {
+				t.Fatalf("B1 = %q", v)
+			}
+			for _, c := range []string{"A1", "B1"} {
+				if v, _ := f.GetCellFormula("Data", c); v != "" {
+					t.Fatalf("%s formula %q", c, v)
+				}
+			}
+		})
+	}
+}
+
+func TestCSVImportBOMOnlyMatchesEmpty(t *testing.T) {
+	dump := func(data string) [][]string {
+		dir := t.TempDir()
+		in := filepath.Join(dir, "in.csv")
+		out := filepath.Join(dir, "out.xlsx")
+		os.WriteFile(in, []byte(data), 0600)
+		if err := ImportCSV(context.Background(), in, out, "Data", ','); err != nil {
+			t.Fatal(err)
+		}
+		f, err := excelize.OpenFile(out)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer f.Close()
+		rows, err := f.GetRows("Data")
+		if err != nil {
+			t.Fatal(err)
+		}
+		return rows
+	}
+	want := len(dump(""))
+	for _, data := range []string{"\xEF\xBB\xBF", "\xEF\xBB\xBF\n", "\xEF\xBB\xBF\r\n"} {
+		if got := dump(data); len(got) != want {
+			t.Fatalf("%q: rows %q", data, got)
+		}
+	}
+}
+
+func TestCSVImportPreservesInnerBOM(t *testing.T) {
+	dir := t.TempDir()
+	in := filepath.Join(dir, "in.csv")
+	out := filepath.Join(dir, "out.xlsx")
+	os.WriteFile(in, []byte("Name,Qty\nWidget,\xEF\xBB\xBF5\n"), 0600)
+	if err := ImportCSV(context.Background(), in, out, "Data", ','); err != nil {
+		t.Fatal(err)
+	}
+	f, err := excelize.OpenFile(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	if v, _ := f.GetCellValue("Data", "B2"); v != "\ufeff5" {
+		t.Fatalf("B2 = %q", v)
+	}
+	if v, _ := f.GetCellValue("Data", "A1"); v != "Name" {
+		t.Fatalf("A1 = %q", v)
+	}
+}

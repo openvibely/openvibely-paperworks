@@ -1,6 +1,8 @@
 package xlsx
 
 import (
+	"bufio"
+	"bytes"
 	"context"
 	"encoding/csv"
 	"fmt"
@@ -364,7 +366,11 @@ func ImportCSV(ctx context.Context, input, output, sheet string, delimiter rune)
 		return err
 	}
 	defer in.Close()
-	r := csv.NewReader(in)
+	br := bufio.NewReader(in)
+	if bom, _ := br.Peek(3); bytes.Equal(bom, []byte{0xEF, 0xBB, 0xBF}) {
+		br.Discard(3)
+	}
+	r := csv.NewReader(br)
 	r.Comma = delimiter
 	r.FieldsPerRecord = -1
 	f := excelize.NewFile()
