@@ -57,7 +57,8 @@ func TestEditsAllocateNumberedPartNames(t *testing.T) {
 
 	deck := filepath.Join(dir, "deck.pptx")
 	extra := Element{Type: "shape", Shape: "ellipse", X: 1, Y: 3, W: 1, H: 1}
-	if err := DeckEditFile(ctx, out, deck, dir, DeckEditSpec{Edits: []DeckEdit{{Operation: "add-element", Slide: 2, Element: &extra}, {Operation: "add-element", Slide: 2, Element: &extra}}}); err != nil {
+	added := Slide{Elements: []Element{extra}}
+	if err := DeckEditFile(ctx, out, deck, dir, DeckEditSpec{Edits: []DeckEdit{{Operation: "add-slide", Content: &added}, {Operation: "add-slide", Content: &added}}}); err != nil {
 		t.Fatal(err)
 	}
 	d, err := opc.Open(deck)

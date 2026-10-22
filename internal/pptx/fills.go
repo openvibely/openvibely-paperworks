@@ -118,10 +118,7 @@ func styleDrawingInPackage(pkg *opc.Package, part string, shape *etree.Element, 
 		if err := pkg.EnsureContentType(name, "image/"+format); err != nil {
 			return err
 		}
-		target, err := relativePart(part, name)
-		if err != nil {
-			return err
-		}
+		target := opc.Relative(part, name)
 		id, err := pkg.AddRel(part, rns+"/image", target, false)
 		if err != nil {
 			return err

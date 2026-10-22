@@ -80,13 +80,22 @@ func (p FixedParagraph) paint(ctx context.Context, b *bytes.Buffer, name string)
 	return nil
 }
 
-// fixedFont reuses only an unmodified built-in WinAnsi resource.
-func fixedFont(c *model.Context, fonts types.Dict, base string) string {
-	for _, key := range sortedFontKeys(fonts) {
+// findBuiltinFont returns the first font key (in sorted order) whose resource
+// is an unmodified built-in WinAnsi Type1 font; custom encodings and width
+// overrides must never change fixed-layout glyph metrics.
+func findBuiltinFont(c *model.Context, fonts types.Dict, base string) (string, bool) {
+	for _, key := range sortedDictKeys(fonts) {
 		d := dictOf(c.XRefTable, fonts[key]).d
 		if len(d) == 4 && d["Type"] == types.Name("Font") && d["Subtype"] == types.Name("Type1") && d["BaseFont"] == types.Name(base) && d["Encoding"] == types.Name("WinAnsiEncoding") {
-			return key
+			return key, true
 		}
+	}
+	return "", false
+}
+
+func fixedFont(c *model.Context, fonts types.Dict, base string) string {
+	if key, ok := findBuiltinFont(c, fonts, base); ok {
+		return key
 	}
 	name := "F1"
 	for i := 2; fonts[name] != nil; i++ {
@@ -96,7 +105,7 @@ func fixedFont(c *model.Context, fonts types.Dict, base string) string {
 	return name
 }
 
-func sortedFontKeys(d types.Dict) []string {
+func sortedDictKeys(d types.Dict) []string {
 	keys := make([]string, 0, len(d))
 	for k := range d {
 		keys = append(keys, k)

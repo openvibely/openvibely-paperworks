@@ -192,10 +192,7 @@ func ExtendedCharts(p *opc.Package, s ExtendedChartSpec) ([]*ChartExReport, erro
 		legend.CreateAttr("pos", "b")
 		legend.CreateAttr("overlay", "0")
 		owner := slides[s.Slide-1]
-		target, e := relPath(owner, part)
-		if e != nil {
-			return nil, e
-		}
+		target := opc.Relative(owner, part)
 		rid, e := p.AddRel(owner, "http://schemas.microsoft.com/office/2014/relationships/chartEx", target, false)
 		if e != nil {
 			return nil, e

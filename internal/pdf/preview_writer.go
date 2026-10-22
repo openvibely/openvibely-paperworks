@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"sort"
 	"strconv"
 	"strings"
 
@@ -213,14 +212,6 @@ func SelectPreviewPages(ctx context.Context, data []byte, pages []int) ([]byte, 
 	}
 	fmt.Fprintf(&b, "trailer\n<<\n/Size %d\n/Root 3 0 R\n/Info 1 0 R\n>>\nstartxref\n%d\n%%%%EOF\n", len(objects)+1, x)
 	return b.Bytes(), nil
-}
-func previewKeys(d types.Dict) []string {
-	keys := make([]string, 0, len(d))
-	for k := range d {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	return keys
 }
 func writePreviewObject(b *bytes.Buffer, o types.Object) error {
 	return writeOrderedPreviewObject(b, o, nil)

@@ -38,6 +38,7 @@ func PNG(ctx context.Context, expression string, o Options) ([]byte, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
+	expression = strings.TrimPrefix(expression, "\ufeff")
 	if !utf8.ValidString(expression) || strings.TrimSpace(expression) == "" || len(utf16.Encode([]rune(expression))) > 20000 {
 		return nil, fmt.Errorf("provide a nonempty UTF-8 TeX expression of at most 20000 UTF-16 units")
 	}

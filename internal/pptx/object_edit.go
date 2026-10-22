@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"image"
 	"os"
-	"path"
 	"strconv"
 	"strings"
 
@@ -260,10 +259,7 @@ func editObject(pkg *opc.Package, part string, shape *etree.Element, e Edit) err
 		if err = pkg.EnsureContentType(name, "image/"+format); err != nil {
 			return err
 		}
-		target, err := relativePart(part, name)
-		if err != nil {
-			return err
-		}
+		target := opc.Relative(part, name)
 		id, err := pkg.AddRel(part, rns+"/image", target, false)
 		if err != nil {
 			return err
@@ -301,15 +297,6 @@ func editObject(pkg *opc.Package, part string, shape *etree.Element, e Edit) err
 	}
 	return nil
 }
-func relativePart(source, target string) (string, error) {
-	a := strings.Split(path.Dir(source), "/")
-	b := strings.Split(target, "/")
-	for len(a) > 0 && len(b) > 0 && a[0] == b[0] {
-		a = a[1:]
-		b = b[1:]
-	}
-	return strings.Repeat("../", len(a)) + strings.Join(b, "/"), nil
-}
 func addNotes(p *opc.Package, slide, text string) (string, error) {
 	name := p.UnusedName("ppt/notesSlides/notesSlide", ".xml")
 	d, err := opc.ParseXML([]byte(`<p:notes` + ns + `><p:cSld><p:spTree>` + group + noteShape(text, "Arial") + `</p:spTree></p:cSld>` + override + `</p:notes>`))
@@ -322,18 +309,18 @@ func addNotes(p *opc.Package, slide, text string) (string, error) {
 	if err = p.EnsureContentType(name, "application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml"); err != nil {
 		return "", err
 	}
-	target, _ := relativePart(slide, name)
+	target := opc.Relative(slide, name)
 	if _, err = p.AddRel(slide, rns+"/notesSlide", target, false); err != nil {
 		return "", err
 	}
-	target, _ = relativePart(name, slide)
+	target = opc.Relative(name, slide)
 	if _, err = p.AddRel(name, rns+"/slide", target, false); err != nil {
 		return "", err
 	}
 	// Reuse the deck's existing notes master, if present. Notes slides may omit it.
 	for _, n := range p.Names() {
 		if p.ContentType(n) == "application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml" {
-			target, _ = relativePart(name, n)
+			target = opc.Relative(name, n)
 			_, err = p.AddRel(name, rns+"/notesMaster", target, false)
 			break
 		}

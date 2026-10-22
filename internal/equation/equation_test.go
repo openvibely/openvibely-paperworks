@@ -238,3 +238,26 @@ func TestOriginal37Baseline(t *testing.T) {
 		})
 	}
 }
+
+func TestLeadingByteOrderMarkIgnored(t *testing.T) {
+	for _, inline := range []bool{false, true} {
+		o := Defaults()
+		o.Inline = inline
+		want, e := PNG(context.Background(), `\frac{a}{b}`, o)
+		if e != nil {
+			t.Fatal(e)
+		}
+		got, e := PNG(context.Background(), "\ufeff\\frac{a}{b}", o)
+		if e != nil {
+			t.Fatal(e)
+		}
+		if !bytes.Equal(got, want) {
+			t.Fatalf("inline=%v: BOM changed output", inline)
+		}
+	}
+	for _, s := range []string{"\ufeff", "\ufeff\n", "\ufeff \r\n"} {
+		if _, e := PNG(context.Background(), s, Defaults()); e == nil || !strings.Contains(e.Error(), "nonempty UTF-8 TeX expression") {
+			t.Fatalf("%q: %v", s, e)
+		}
+	}
+}

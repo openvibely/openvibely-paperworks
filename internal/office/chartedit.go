@@ -294,7 +294,7 @@ func MaterializeLiteralCharts(p *opc.Package) ([]string, error) {
 			return nil, err
 		}
 		p.Set(target, buf.Bytes())
-		rel, _ := relPath(name, target)
+		rel := opc.Relative(name, target)
 		id, err := literalWorkbookRelationship(p, name, rel)
 		if err != nil {
 			return nil, err

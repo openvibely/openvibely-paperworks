@@ -255,10 +255,7 @@ func SlideComments(p *opc.Package, s SlideCommentSpec) ([]SlideComment, error) {
 		if cp == "" {
 			cp = uniquePart(p, "ppt/comments", "modernComment")
 			d = newRoot("cmLst", nsModern)
-			target, err := relPath(owner, cp)
-			if err != nil {
-				return nil, err
-			}
+			target := opc.Relative(owner, cp)
 			if _, e = p.AddRel(owner, relModern+"comments", target, false); e != nil {
 				return nil, e
 			}

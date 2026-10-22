@@ -219,22 +219,12 @@ func copyPartTree(d, src *Doc, part string, copied map[string]string) (string, e
 		if err != nil {
 			return "", err
 		}
-		rel, _ := relPathFrom(target, sub)
+		rel := opc.Relative(target, sub)
 		if err := addRelWithID(d.Pkg, target, r.ID, r.Type, rel); err != nil {
 			return "", err
 		}
 	}
 	return target, nil
-}
-
-func relPathFrom(from, to string) (string, error) {
-	fd := strings.Split(path.Dir(from), "/")
-	td := strings.Split(to, "/")
-	i := 0
-	for i < len(fd) && i < len(td)-1 && fd[i] == td[i] {
-		i++
-	}
-	return strings.Repeat("../", len(fd)-i) + strings.Join(td[i:], "/"), nil
 }
 
 func addRelWithID(p *opc.Package, owner, id, typ, target string) error {

@@ -42,6 +42,14 @@ func DeckEditFile(ctx context.Context, input, output, base string, spec DeckEdit
 	if err != nil {
 		return err
 	}
+	original := map[string]bool{}
+	for _, n := range pkg.Names() {
+		original[n] = true
+	}
+	reachableBefore, err := reachableParts(pkg)
+	if err != nil {
+		return err
+	}
 	d, err := pkg.XML(main)
 	if err != nil {
 		return err
@@ -83,7 +91,7 @@ func DeckEditFile(ctx context.Context, input, output, base string, spec DeckEdit
 			if err = pkg.SetXML(relPart, rels); err != nil {
 				return err
 			}
-			target, _ := relativePart(slides[e.Slide-1], e.Part)
+			target := opc.Relative(slides[e.Slide-1], e.Part)
 			if _, err = pkg.AddRel(slides[e.Slide-1], rns+"/slideLayout", target, false); err != nil {
 				return err
 			}
@@ -134,6 +142,9 @@ func DeckEditFile(ctx context.Context, input, output, base string, spec DeckEdit
 				}
 			}
 			list.RemoveChild(removed)
+			if err = unlinkSlide(pkg, main, rid, slides[e.Slide-1]); err != nil {
+				return err
+			}
 		case "move-slide":
 			if e.Position < 1 || e.Position > len(ids) {
 				return fmt.Errorf("position out of range")
@@ -260,7 +271,7 @@ func DeckEditFile(ctx context.Context, input, output, base string, spec DeckEdit
 					}
 					target := r.Target
 					if r.TargetMode != "External" {
-						target, _ = relativePart(slides[e.Slide-1], opc.Resolve(imported, r.Target))
+						target = opc.Relative(slides[e.Slide-1], opc.Resolve(imported, r.Target))
 					}
 					id, err := pkg.AddRel(slides[e.Slide-1], r.Type, target, r.TargetMode == "External")
 					if err != nil {
@@ -335,7 +346,7 @@ func DeckEditFile(ctx context.Context, input, output, base string, spec DeckEdit
 			if pos < 1 || pos > len(ids)+1 {
 				return fmt.Errorf("position must be 1..%d", len(ids)+1)
 			}
-			target, _ := relativePart(main, imported)
+			target := opc.Relative(main, imported)
 			rid, err := pkg.AddRel(main, rns+"/slide", target, false)
 			if err != nil {
 				return err
@@ -375,7 +386,7 @@ func DeckEditFile(ctx context.Context, input, output, base string, spec DeckEdit
 				if pkg.ContentType(n) != "application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml" || known[n] {
 					continue
 				}
-				target, _ := relativePart(main, n)
+				target := opc.Relative(main, n)
 				id, err := pkg.AddRel(main, rns+"/slideMaster", target, false)
 				if err != nil {
 					return err
@@ -392,7 +403,168 @@ func DeckEditFile(ctx context.Context, input, output, base string, spec DeckEdit
 	if err = pkg.SetXML(main, d); err != nil {
 		return err
 	}
+	if err = removeOrphans(pkg, original, reachableBefore); err != nil {
+		return err
+	}
 	return pkg.SaveNew(output)
+}
+
+// unlinkSlide drops the presentation relationship rid and every slide-jump
+// relationship (with the elements using it) that targets slide from other parts.
+func unlinkSlide(pkg *opc.Package, main, rid, slide string) error {
+	if err := removeRels(pkg, main, func(r *etree.Element) bool { return r.SelectAttrValue("Id", "") == rid }); err != nil {
+		return err
+	}
+	for _, name := range pkg.SortedNames() {
+		if path.Ext(name) != ".rels" || name == "_rels/.rels" {
+			continue
+		}
+		source := opc.SourceOf(name)
+		if source == slide || source == main || !pkg.Has(source) {
+			continue
+		}
+		rels, err := pkg.Rels(source)
+		if err != nil {
+			return err
+		}
+		dead := map[string]bool{}
+		for _, r := range rels {
+			if r.Type == rns+"/slide" && r.TargetMode != "External" && opc.Resolve(source, r.Target) == slide {
+				dead[r.ID] = true
+			}
+		}
+		if len(dead) == 0 {
+			continue
+		}
+		doc, err := pkg.XML(source)
+		if err != nil {
+			return err
+		}
+		var users []*etree.Element
+		office.Iter(doc.Root(), func(el *etree.Element) bool {
+			for _, a := range el.Attr {
+				if a.NamespaceURI() == rns && dead[a.Value] {
+					users = append(users, el)
+					return false
+				}
+			}
+			return true
+		})
+		for _, el := range users {
+			el.Parent().RemoveChild(el)
+		}
+		if err = pkg.SetXML(source, doc); err != nil {
+			return err
+		}
+		if err = removeRels(pkg, source, func(r *etree.Element) bool { return dead[r.SelectAttrValue("Id", "")] }); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func removeRels(pkg *opc.Package, part string, match func(*etree.Element) bool) error {
+	name := opc.RelsName(part)
+	if !pkg.Has(name) {
+		return nil
+	}
+	doc, err := pkg.XML(name)
+	if err != nil {
+		return err
+	}
+	for _, r := range doc.Root().ChildElements() {
+		if match(r) {
+			doc.Root().RemoveChild(r)
+		}
+	}
+	return pkg.SetXML(name, doc)
+}
+
+func reachableParts(pkg *opc.Package) (map[string]bool, error) {
+	return reachablePartsFrom(pkg, []string{""})
+}
+
+func reachablePartsFrom(pkg *opc.Package, queue []string) (map[string]bool, error) {
+	seen := map[string]bool{}
+	for _, part := range queue {
+		seen[part] = true
+	}
+	for len(queue) > 0 {
+		part := queue[0]
+		queue = queue[1:]
+		rels, err := pkg.Rels(part)
+		if err != nil {
+			return nil, err
+		}
+		for _, r := range rels {
+			if r.TargetMode == "External" {
+				continue
+			}
+			target := opc.Resolve(part, r.Target)
+			if !seen[target] && pkg.Has(target) {
+				seen[target] = true
+				queue = append(queue, target)
+			}
+		}
+	}
+	return seen, nil
+}
+
+var sharedPartTypes = []string{"slideMaster", "slideLayout", "theme+xml", "notesMaster", "handoutMaster"}
+
+// removeOrphans deletes parts the edits made unreachable from the package
+// root (previously reachable or newly added), with their .rels and content
+// type overrides. Orphans already present in the input are left alone.
+func removeOrphans(pkg *opc.Package, original, before map[string]bool) error {
+	// Retained input parts are additional roots: keeping a layout or an
+	// existing orphan without its dependencies would leave dangling links.
+	roots := []string{""}
+	for _, name := range pkg.SortedNames() {
+		if !original[name] || path.Ext(name) == ".rels" || name == "[Content_Types].xml" {
+			continue
+		}
+		keep := !before[name]
+		for _, typ := range sharedPartTypes {
+			keep = keep || strings.Contains(pkg.ContentType(name), typ)
+		}
+		if keep {
+			roots = append(roots, name)
+		}
+	}
+	after, err := reachablePartsFrom(pkg, roots)
+	if err != nil {
+		return err
+	}
+	removed := map[string]bool{}
+	for _, name := range pkg.SortedNames() {
+		if after[name] || name == "[Content_Types].xml" || path.Ext(name) == ".rels" || (original[name] && !before[name]) {
+			continue
+		}
+		typ := pkg.ContentType(name)
+		shared := false
+		for _, s := range sharedPartTypes {
+			shared = shared || strings.Contains(typ, s)
+		}
+		if shared && original[name] {
+			continue
+		}
+		removed["/"+name] = true
+		pkg.Remove(name)
+		pkg.Remove(opc.RelsName(name))
+	}
+	if len(removed) == 0 {
+		return nil
+	}
+	types, err := pkg.XML("[Content_Types].xml")
+	if err != nil {
+		return err
+	}
+	for _, o := range types.Root().SelectElements("Override") {
+		if removed[o.SelectAttrValue("PartName", "")] {
+			types.Root().RemoveChild(o)
+		}
+	}
+	return pkg.SetXML("[Content_Types].xml", types)
 }
 func presentationPart(p *opc.Package) (string, error) {
 	rels, err := p.Rels("")
@@ -461,7 +633,7 @@ func importPartGraph(ctx context.Context, dest, src *opc.Package, name string, r
 					}
 				}
 			}
-			to, _ = relativePart(target, n)
+			to = opc.Relative(target, n)
 		}
 		// Keep IDs referenced by the copied XML; AddRel generates different IDs.
 		relPart := opc.RelsName(target)

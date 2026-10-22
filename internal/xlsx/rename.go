@@ -28,6 +28,9 @@ func renameSheet(f *excelize.File, source, target string) (*excelize.File, error
 	if other >= 0 && other != idx {
 		return nil, fmt.Errorf("target sheet already exists")
 	}
+	// SetSheetName also rewrites defined names, but mistakes cell addresses
+	// such as Q1 for sheet names. Keep the original formulas for our rewrite.
+	definedNames := f.GetDefinedName()
 	if err = f.SetSheetName(source, target); err != nil {
 		return nil, err
 	}
@@ -48,6 +51,20 @@ func renameSheet(f *excelize.File, source, target string) (*excelize.File, error
 			return nil, err
 		}
 		changed := false
+		if name == "xl/workbook.xml" {
+			// GetDefinedName and SetSheetName retain workbook order. Restore
+			// only text so localSheetId and all other attributes stay intact.
+			names := office.All(d.Root(), office.NSS, "definedName")
+			if len(names) != len(definedNames) {
+				return nil, fmt.Errorf("defined name count changed during sheet rename")
+			}
+			for i, e := range names {
+				if e.Text() != definedNames[i].RefersTo {
+					e.SetText(definedNames[i].RefersTo)
+					changed = true
+				}
+			}
+		}
 		office.Iter(d.Root(), func(e *etree.Element) bool {
 			switch e.Tag {
 			case "f", "formula", "formula1", "formula2", "definedName", "calculatedColumnFormula", "totalsRowFormula":
