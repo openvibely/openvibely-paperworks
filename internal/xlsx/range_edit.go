@@ -208,6 +208,22 @@ func copyRange(f *excelize.File, e Edit) (*excelize.File, error) {
 		kind                           excelize.CellType
 		style                          int
 		rich                           []excelize.RichTextRun
+		arrayRef                       string
+		arrayMember                    bool
+	}
+	copiesFormulas := e.Operation == "copy" || e.Operation == "copy-formulas"
+	var arrays map[string]arrayBlock
+	if copiesFormulas {
+		if arrays, err = arrayFormulaBlocks(f, e.Sheet); err != nil {
+			return nil, err
+		}
+		for master, block := range arrays {
+			overlaps := block.left <= xx && block.right >= x && block.top <= yy && block.bottom >= y
+			inside := block.left >= x && block.right <= xx && block.top >= y && block.bottom <= yy
+			if overlaps && !inside {
+				return nil, fmt.Errorf("cannot copy part of array formula %s (%s); copy the whole array range", master, block.ref)
+			}
+		}
 	}
 	var snapshot []cell
 	for row := y; row <= yy; row++ {
@@ -220,6 +236,29 @@ func copyRange(f *excelize.File, e Edit) (*excelize.File, error) {
 			formula, err := f.GetCellFormula(e.Sheet, source)
 			if err != nil {
 				return nil, err
+			}
+			arrayRef, arrayMember := "", false
+			if copiesFormulas {
+				for master, block := range arrays {
+					if col < block.left || col > block.right || row < block.top || row > block.bottom {
+						continue
+					}
+					if master != source {
+						arrayMember = true
+						break
+					}
+					dx, dy := tx-x, ty-y
+					start, err1 := excelize.CoordinatesToCellName(block.left+dx, block.top+dy)
+					end, err2 := excelize.CoordinatesToCellName(block.right+dx, block.bottom+dy)
+					if err1 != nil || err2 != nil {
+						return nil, fmt.Errorf("array formula %s (%s) shifted to %s exceeds worksheet bounds", master, block.ref, dest)
+					}
+					arrayRef = start
+					if end != start {
+						arrayRef += ":" + end
+					}
+					break
+				}
 			}
 			if formula != "" && e.Operation != "copy-values" && e.Operation != "copy-formats" {
 				formula, err = TranslateFormula(formula, tx-x, ty-y)
@@ -247,7 +286,7 @@ func copyRange(f *excelize.File, e Edit) (*excelize.File, error) {
 					break
 				}
 			}
-			snapshot = append(snapshot, cell{dest, anchor, formula, v, kind, style, rich})
+			snapshot = append(snapshot, cell{dest, anchor, formula, v, kind, style, rich, arrayRef, arrayMember})
 		}
 	}
 	typedValues := map[string]copiedCellValue{}
@@ -259,7 +298,13 @@ func copyRange(f *excelize.File, e Edit) (*excelize.File, error) {
 			if err = f.SetCellFormula(targetSheet, c.target, ""); err != nil {
 				return nil, err
 			}
-			if c.formula != "" && e.Operation != "copy-values" {
+			if c.arrayRef != "" {
+				arrayType := excelize.STCellFormulaTypeArray
+				err = f.SetCellFormula(targetSheet, c.target, c.formula, excelize.FormulaOpts{Type: &arrayType, Ref: &c.arrayRef})
+			} else if c.arrayMember {
+				// Array members carry only cached results; the master owns the formula.
+				err = f.SetCellValue(targetSheet, c.target, nil)
+			} else if c.formula != "" && e.Operation != "copy-values" {
 				err = f.SetCellFormula(targetSheet, c.target, c.formula)
 			} else if len(c.rich) > 0 {
 				err = f.SetCellRichText(targetSheet, c.target, c.rich)
@@ -307,6 +352,53 @@ func copyRange(f *excelize.File, e Edit) (*excelize.File, error) {
 		return f, nil
 	}
 	return restoreCopiedTypes(f, targetSheet, typedValues)
+}
+
+type arrayBlock struct {
+	ref                      string
+	left, top, right, bottom int
+}
+
+// Excelize exposes no getter for formula type/ref, so array masters are read
+// from the serialized worksheet XML.
+func arrayFormulaBlocks(f *excelize.File, sheet string) (map[string]arrayBlock, error) {
+	idx, err := f.GetSheetIndex(sheet)
+	if err != nil {
+		return nil, err
+	}
+	if idx < 0 {
+		return nil, fmt.Errorf("sheet %q missing", sheet)
+	}
+	raw, err := f.WriteToBuffer()
+	if err != nil {
+		return nil, err
+	}
+	pkg, err := opc.Read(raw.Bytes())
+	if err != nil {
+		return nil, err
+	}
+	wb, err := office.OpenWorkbook(pkg)
+	if err != nil {
+		return nil, err
+	}
+	sh := wb.Sheets[f.GetSheetName(idx)]
+	if sh == nil {
+		return nil, fmt.Errorf("sheet %q missing", sheet)
+	}
+	blocks := map[string]arrayBlock{}
+	for address, c := range sh.Cells {
+		fe := office.Child(c, office.NSS, "f")
+		if fe == nil || fe.SelectAttrValue("t", "") != excelize.STCellFormulaTypeArray {
+			continue
+		}
+		ref := strings.ToUpper(fe.SelectAttrValue("ref", address))
+		left, top, right, bottom, err := office.ParseRange(ref)
+		if err != nil {
+			return nil, fmt.Errorf("array formula %s has invalid ref %q", address, ref)
+		}
+		blocks[address] = arrayBlock{ref, left, top, right, bottom}
+	}
+	return blocks, nil
 }
 
 type copiedCellValue struct {
