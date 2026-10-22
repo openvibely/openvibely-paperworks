@@ -3,12 +3,16 @@ package office
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/beevik/etree"
+	"math"
 	"os"
 	"path/filepath"
 	"reflect"
 	"strconv"
 	"testing"
+
+	"github.com/beevik/etree"
+	"github.com/openvibely/openvibely-paperworks/internal/opc"
+	"github.com/xuri/excelize/v2"
 )
 
 func referenceSparkSave(t *testing.T, source, raw string) string {
@@ -99,6 +103,108 @@ func TestReferenceSparklinePreviewGapScaleDeletion(t *testing.T) {
 	if _, e := os.Stat(unused); !os.IsNotExist(e) {
 		t.Fatal("unexpected preview output", e)
 	}
+}
+
+func TestSparklinePreviewEmptyCellModesPreserveSourcePositions(t *testing.T) {
+	for _, mode := range []string{"span", "gap", "zero"} {
+		t.Run(mode, func(t *testing.T) {
+			source := sparklineEmptyCellModeBook(t, mode)
+			out := filepath.Join(t.TempDir(), "preview.xlsx")
+			if changed, err := OfficePreviewCopy(source, out); err != nil || !changed {
+				t.Fatalf("OfficePreviewCopy changed=%v err=%v", changed, err)
+			}
+
+			const xdr = "http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing"
+			drawing := previewXML(t, previewOpen(t, out), "xl/drawings/preview1.xml")
+			shapes := All(drawing, xdr, "sp")
+			wantIndexes := map[string][][]int{
+				"span": {{0, 2, 3}, {2, 5}, {0, 3, 4}},
+				"gap":  {{2, 3}, {3, 4}},
+				"zero": {{0, 1, 2, 3}, {0, 1, 2, 3, 4, 5}, {0, 1, 2, 3, 4}},
+			}[mode]
+			sourceCounts := map[string][]int{"span": {4, 6, 5}, "gap": {4, 5}, "zero": {4, 6, 5}}[mode]
+			if len(shapes) != len(wantIndexes) {
+				t.Fatalf("line shapes=%d want %d", len(shapes), len(wantIndexes))
+			}
+			for i, shape := range shapes {
+				points := All(shape, NSA, "pt")
+				if len(points) != len(wantIndexes[i]) {
+					t.Fatalf("shape %d points=%d want %d", i, len(points), len(wantIndexes[i]))
+				}
+				anchor := shape.Parent()
+				ext := Child(anchor, xdr, "ext")
+				width, err := strconv.ParseFloat(ext.SelectAttrValue("cx", ""), 64)
+				if err != nil {
+					t.Fatal(err)
+				}
+				height, err := strconv.ParseFloat(ext.SelectAttrValue("cy", ""), 64)
+				if err != nil {
+					t.Fatal(err)
+				}
+				sourceCount := sourceCounts[i]
+				var gotX []int
+				for _, point := range points {
+					x, err := strconv.Atoi(point.SelectAttrValue("x", ""))
+					if err != nil {
+						t.Fatal(err)
+					}
+					gotX = append(gotX, x)
+				}
+				wantX := make([]int, len(wantIndexes[i]))
+				pad := math.Min(28575, math.Min(width/4, height/4))
+				for j, index := range wantIndexes[i] {
+					wantX[j] = int(math.RoundToEven(pad + float64(index)/float64(sourceCount-1)*(width-2*pad)))
+				}
+				if !reflect.DeepEqual(gotX, wantX) {
+					t.Fatalf("shape %d x coordinates=%v want source positions %v (%v)", i, gotX, wantX, wantIndexes[i])
+				}
+				if mode == "zero" && i == 0 {
+					firstY, err := strconv.Atoi(points[0].SelectAttrValue("y", ""))
+					if err != nil {
+						t.Fatal(err)
+					}
+					blankY, err := strconv.Atoi(points[1].SelectAttrValue("y", ""))
+					if err != nil {
+						t.Fatal(err)
+					}
+					if blankY <= firstY {
+						t.Fatalf("zero-mode blank y=%d should plot below value 10 at y=%d", blankY, firstY)
+					}
+				}
+			}
+		})
+	}
+}
+
+func sparklineEmptyCellModeBook(t *testing.T, mode string) string {
+	t.Helper()
+	f := excelize.NewFile()
+	defer f.Close()
+	for cell, value := range map[string]int{"A1": 10, "C1": 20, "D1": 30, "C2": 10, "F2": 20, "A3": 10, "D3": 20, "E3": 30} {
+		if err := f.SetCellValue("Sheet1", cell, value); err != nil {
+			t.Fatal(err)
+		}
+	}
+	buffer, err := f.WriteToBuffer()
+	if err != nil {
+		t.Fatal(err)
+	}
+	p, err := opc.Read(buffer.Bytes())
+	if err != nil {
+		t.Fatal(err)
+	}
+	var spec SparklineSpec
+	if err := json.Unmarshal([]byte(`{"sheet":"Sheet1","sparklines":[{"cell":"H1","range":"Sheet1!A1:D1"},{"cell":"H2","range":"Sheet1!A2:F2"},{"cell":"H3","range":"Sheet1!A3:E3"}],"options":{"displayEmptyCellsAs":"`+mode+`"}}`), &spec); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := EditSparklines(p, spec); err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(t.TempDir(), "source.xlsx")
+	if err := p.SaveNew(path); err != nil {
+		t.Fatal(err)
+	}
+	return path
 }
 
 func TestSparklineRowPixelRounding(t *testing.T) {
