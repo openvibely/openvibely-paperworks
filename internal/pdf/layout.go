@@ -100,7 +100,7 @@ func ExtractLayout(ctx context.Context, data []byte, opt LayoutOptions) ([]PageL
 		result, err := func() (PageLayout, error) {
 			defer inst.FPDFText_ClosePage(&requests.FPDFText_ClosePage{TextPage: tp.TextPage})
 			r := PageLayout{Page: page}
-			var baselines [][2]float64 // baseline Y and font size per character
+			var glyphs []glyphLine
 			n, err := inst.FPDFText_CountChars(&requests.FPDFText_CountChars{TextPage: tp.TextPage})
 			if err != nil {
 				return r, err
@@ -145,11 +145,22 @@ func ExtractLayout(ctx context.Context, data []byte, opt LayoutOptions) ([]PageL
 					if err != nil {
 						return r, err
 					}
-					size := s.FontSize
-					if size <= 0 {
-						size = b.Top - b.Bottom
+					m, err := inst.FPDFText_GetMatrix(&requests.FPDFText_GetMatrix{TextPage: tp.TextPage, Index: i})
+					if err != nil {
+						return r, err
 					}
-					baselines = append(baselines, [2]float64{o.Y, size})
+					// The reported font size excludes the text matrix, so scale it by
+					// the matrix's vertical axis and fall back to the glyph box.
+					g := glyphLine{x: o.X, y: o.Y, dx: 1}
+					a, bb, cc, d := float64(m.Matrix.A), float64(m.Matrix.B), float64(m.Matrix.C), float64(m.Matrix.D)
+					if l := math.Hypot(a, bb); l > 0 {
+						g.dx, g.dy = a/l, bb/l
+					}
+					g.size = s.FontSize * math.Hypot(cc, d)
+					if !(g.size > 0) || !finite(g.size) {
+						g.size = max(b.Top-b.Bottom, b.Right-b.Left)
+					}
+					glyphs = append(glyphs, g)
 				}
 			}
 			if len(opt.Columns) > 0 {
@@ -157,7 +168,7 @@ func ExtractLayout(ctx context.Context, data []byte, opt LayoutOptions) ([]PageL
 				for i := range r.Table {
 					r.Table[i] = make([]string, len(opt.Columns)-1)
 				}
-				lines := map[[2]int][2]float64{}
+				lines := map[[2]int]glyphLine{}
 				for ci, c := range r.Characters {
 					x, y := (c.Left+c.Right)/2, (c.Bottom+c.Top)/2
 					col := sort.SearchFloat64s(opt.Columns, x) - 1
@@ -169,13 +180,13 @@ func ExtractLayout(ctx context.Context, data []byte, opt LayoutOptions) ([]PageL
 						// for raised marks (- ' ° *) or periods miss most of the line.
 						// Whitespace is skipped because its metrics are often degenerate.
 						if strings.TrimSpace(c.Text) != "" {
-							bl := baselines[ci]
+							g := glyphs[ci]
 							line, ok := lines[key]
-							if !ok || math.Abs(bl[0]-line[0]) > max(bl[1], line[1])/2 {
+							if !ok || line.offset(g) > max(g.size, line.size)/2 {
 								if ok {
 									*cell = strings.TrimRightFunc(*cell, unicode.IsSpace) + " "
 								}
-								lines[key] = bl
+								lines[key] = g
 							}
 						}
 						*cell += c.Text
@@ -195,4 +206,14 @@ func ExtractLayout(ctx context.Context, data []byte, opt LayoutOptions) ([]PageL
 		out = append(out, result)
 	}
 	return out, nil
+}
+
+// glyphLine is a glyph's baseline origin, unit writing direction and
+// effective font size in page space.
+type glyphLine struct{ x, y, dx, dy, size float64 }
+
+// offset is the distance from g's origin to l's baseline, measured
+// perpendicular to l's writing direction so rotated text works too.
+func (l glyphLine) offset(g glyphLine) float64 {
+	return math.Abs((g.y-l.y)*l.dx - (g.x-l.x)*l.dy)
 }

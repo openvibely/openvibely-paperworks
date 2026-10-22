@@ -184,3 +184,35 @@ func TestLayoutTableKeepsSingleLinePunctuation(t *testing.T) {
 		}
 	}
 }
+
+func TestLayoutTableRotatedAndMatrixScaledText(t *testing.T) {
+	ctx := context.Background()
+	content := strings.Join([]string{
+		"BT /F1 10 Tf 0 1 -1 0 50 20 Tm (Total) Tj ET",
+		"BT /F1 10 Tf 0 1 -1 0 140 20 Tm (Net) Tj ET",
+		"BT /F1 10 Tf 0 1 -1 0 152 20 Tm (sales) Tj ET",
+		"BT /F1 1 Tf 10 0 0 10 210 150 Tm (-.5 x) Tj 0.3 Ts (2) Tj 0 Ts (*) Tj ET",
+		"BT /F1 1 Tf 10 0 0 10 210 100 Tm (Net) Tj ET",
+		"BT /F1 1 Tf 10 0 0 10 210 85 Tm (2024) Tj ET",
+	}, " ")
+	data := rawPDF([]string{
+		"<< /Type /Catalog /Pages 2 0 R >>",
+		"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+		"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 200] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>",
+		"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+		stream("", content),
+	})
+	layout, err := ExtractLayout(ctx, data, LayoutOptions{Columns: []float64{0, 100, 200, 300}, Rows: []float64{0, 120, 200}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := layout[0].Table
+	want := [][]string{{"", "", "-.5 x2*"}, {"Total", "Net sales", "Net 2024"}}
+	for i := range want {
+		for j := range want[i] {
+			if got[i][j] != want[i][j] {
+				t.Errorf("cell %d,%d = %q, want %q", i, j, got[i][j], want[i][j])
+			}
+		}
+	}
+}
