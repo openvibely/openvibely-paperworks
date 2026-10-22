@@ -47,6 +47,10 @@ func legacyNoteAt(d *etree.Document, cell string) *etree.Element {
 // syncThreadNote maintains the compatibility note used by readers without
 // threaded-comment support. tc= identifies the pair to Excel and SheetJS.
 func syncThreadNote(p *opc.Package, st *sheetThreads, root *etree.Element, persons map[string]*etree.Element) error {
+	cell, _, _, err := threadCellCoordinates(root.SelectAttrValue("ref", ""))
+	if err != nil {
+		return err
+	}
 	part, d, err := legacyComments(p, st.owner)
 	if err != nil {
 		return err
@@ -60,7 +64,7 @@ func syncThreadNote(p *opc.Package, st *sheetThreads, root *etree.Element, perso
 	}
 	authors := EnsureChild(d.Root(), NSS, "authors", []string{"authors", "commentList", "extLst"})
 	list := EnsureChild(d.Root(), NSS, "commentList", []string{"authors", "commentList", "extLst"})
-	id, cell := root.SelectAttrValue("id", ""), root.SelectAttrValue("ref", "")
+	id := root.SelectAttrValue("id", "")
 	note := legacyNoteAt(d, cell)
 	author := "tc=" + id
 	aid := -1
@@ -107,6 +111,10 @@ func syncThreadNote(p *opc.Package, st *sheetThreads, root *etree.Element, perso
 }
 
 func ensureThreadNoteShape(p *opc.Package, owner, cell string) error {
+	cell, col, row, err := threadCellCoordinates(cell)
+	if err != nil {
+		return err
+	}
 	sheet, err := p.XML(owner)
 	if err != nil {
 		return err
@@ -152,7 +160,6 @@ func ensureThreadNoteShape(p *opc.Package, owner, cell string) error {
 		}
 	}
 	const nsExcel = "urn:schemas-microsoft-com:office:excel"
-	col, row, _ := SplitCell(cell)
 	used := map[string]bool{}
 	for _, e := range All(d.Root(), NSV, "shape") {
 		used[e.SelectAttrValue("id", "")] = true
