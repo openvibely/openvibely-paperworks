@@ -54,6 +54,12 @@ All operations except add-sheet and defined-name operations require `sheet`.
 | `add-picture`, `replace-picture`, `delete-picture` | anchor `cell`; add/replace need `picture: {"path":"asset.png","options":{...}}` |
 | `note`, `delete-note` | add needs Excelize `note`; delete needs `cell` |
 
+`rename-sheet` updates sheet references in formulas, defined names, internal
+hyperlinks, pivot sources, and form-control cell links, input ranges, and text-box
+formulas (legacy VML and modern control properties). Unqualified control links,
+references to other sheets or external workbooks, and formula string literals
+are retained. VML drawings with no matching references are preserved byte-for-byte.
+
 A1 copies translate relative references and retain absolute references and string
 literals. Names outside the cell grid, such as `A1048577` and `XFE1`, remain names
 when copying or filling formulas. Overlapping copies use a snapshot. `copy-formulas` also copies source

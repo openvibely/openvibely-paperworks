@@ -43,6 +43,13 @@ func renameSheet(f *excelize.File, source, target string) (*excelize.File, error
 		return nil, err
 	}
 	for _, name := range p.Names() {
+		if strings.HasPrefix(name, "xl/") && strings.HasSuffix(name, ".vml") {
+			old := p.Get(name)
+			if next := renameVMLControlFormulas(old, source, target); !bytes.Equal(old, next) {
+				p.Set(name, next)
+			}
+			continue
+		}
 		if !strings.HasSuffix(name, ".xml") || !strings.HasPrefix(name, "xl/") {
 			continue
 		}
@@ -72,6 +79,11 @@ func renameSheet(f *excelize.File, source, target string) (*excelize.File, error
 				next := renameFormulaSheet(old, source, target)
 				if next != old {
 					e.SetText(next)
+					changed = true
+				}
+			}
+			if strings.HasPrefix(name, "xl/ctrlProps/") && e.Tag == "formControlPr" {
+				if renameControlAttributes(e, source, target) {
 					changed = true
 				}
 			}
