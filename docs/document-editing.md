@@ -278,7 +278,8 @@ existing shape effects. Existing images accept `image-mask` with `mask` set to
 `rect`, `roundRect`, or `ellipse`.
 
 `paragraph-format` accepts `paragraph_style` with `align`, point-valued
-`before`, `after`, `indent`, `margin_left`, `level` (0..8), `bullet` and
+`before`, `after`, `indent`, `margin_left`, `line_spacing` (a positive line-height
+multiplier, e.g. `1.2`; range 0.00001–1000), `level` (0..8), `bullet` and
 single-character `bullet_char`. The same object is available as `format` on
 new paragraph definitions. `run-format` additionally accepts `underline` and
 `hyperlink` (http/https/mailto URL, or empty string to remove).
@@ -545,3 +546,13 @@ references before editing; unlinking is not a way to preserve inherited content.
 Use `header-footer` to replace content separately. Link operations reject `text`,
 `rows` and `widths_twips`; use the main document rather than a story `part`.
 Render affected sections and verify their effective header/footer content.
+
+### Request Word field refresh on open
+
+`paperworks word-edit input.docx --spec refresh-on-open.json --output deferred.docx`
+with `{"operation":"update-fields"}` sets `w:updateFields=true`. It does not
+calculate fields or alter their saved results. Verify the results in Word after
+opening and updating fields; application settings or locked fields may prevent refresh.
+Only the settings part changes when it exists. If missing, the command also
+registers that part in content types and document relationships. For strict
+preservation, authorize those exact parts and disclose that refresh is deferred.
