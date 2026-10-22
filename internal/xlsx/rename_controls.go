@@ -8,10 +8,12 @@ import (
 	"github.com/beevik/etree"
 )
 
-// Match only text-only formula elements. Skip comments and CDATA so examples
-// embedded in those regions are never treated as control links. VML elsewhere
-// in the part can be malformed XML (for example, legacy unquoted attributes).
-var vmlControlFormula = regexp.MustCompile(`(?s)<!--.*?-->|<!\[CDATA\[.*?\]\]>|<((?:[\pL_][\pL\pN_.-]*:)?Fmla(?:Link|Range|Txbx))\s*>([^<]*)</((?:[\pL_][\pL\pN_.-]*:)?Fmla(?:Link|Range|Txbx))\s*>`)
+// Match formula elements without parsing the surrounding legacy VML, which may
+// contain malformed XML. Opening tags may carry attributes (including local
+// namespace declarations), and formula text may mix entity escapes and CDATA.
+// Standalone comments and CDATA are consumed first so embedded example elements
+// are not rewritten. Only the matched element's content is replaced.
+var vmlControlFormula = regexp.MustCompile(`(?s)<!--.*?-->|<!\[CDATA\[.*?\]\]>|<((?:[\pL_][\pL\pN_.-]*:)?Fmla(?:Link|Range|Txbx))(?:\s+(?:[^"'<>]|"[^"]*"|'[^']*')*)?>((?:[^<]|<!\[CDATA\[.*?\]\]>)*)</((?:[\pL_][\pL\pN_.-]*:)?Fmla(?:Link|Range|Txbx))\s*>`)
 
 func renameVMLControlFormulas(data []byte, source, target string) []byte {
 	return vmlControlFormula.ReplaceAllFunc(data, func(element []byte) []byte {
