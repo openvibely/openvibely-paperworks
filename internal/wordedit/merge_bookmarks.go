@@ -15,8 +15,16 @@ import (
 // names, so a generated name cannot steal a later source bookmark's name.
 func remapMergedBookmarks(d *Doc, body *etree.Element) error {
 	used := map[string]bool{}
-	for _, b := range all(d.MainRoot(), "bookmarkStart") {
-		used[getW(b, "name")] = true
+	// Match materialize's bookmark namespace, including retained headers,
+	// footers, notes and other Word parts, not only the destination body.
+	for _, part := range d.WordParts() {
+		root, err := d.Root(part)
+		if err != nil {
+			return err
+		}
+		for _, b := range all(root, "bookmarkStart") {
+			used[getW(b, "name")] = true
+		}
 	}
 	names := map[string]string{}
 	starts := all(body, "bookmarkStart")
@@ -163,6 +171,20 @@ func remapMergedBookmarks(d *Doc, body *etree.Element) error {
 // rejected by the field walker instead of guessing their eventual value.
 var mergeFieldToken = regexp.MustCompile(`"[^"]*"|[^\s"]+`)
 
+// IF expressions may name bookmarks, but its true/false result strings do not.
+// Recognize single-token or quoted operands with optional operator whitespace;
+// more complicated expressions remain explicitly unsupported on collisions.
+var mergeIfCondition = regexp.MustCompile(`(?i)^\s*IF\s+("[^"]*"|[^"\s<>=]+)\s*(<>|<=|>=|=|<|>)\s*("[^"]*"|[^"\s]+)(?:\s|$)`)
+
+func mergedInstructionMentions(text string, names map[string]string) bool {
+	for name := range names {
+		if regexp.MustCompile(`(?i)(^|[^A-Za-z0-9_])` + regexp.QuoteMeta(name) + `($|[^A-Za-z0-9_])`).MatchString(text) {
+			return true
+		}
+	}
+	return false
+}
+
 func rewriteMergedInstruction(instr string, names map[string]string) (string, error) {
 	if strings.Count(instr, `"`)%2 != 0 {
 		return "", fmt.Errorf("unsupported unterminated quoted field operand in merged body")
@@ -196,14 +218,53 @@ func rewriteMergedInstruction(instr string, names map[string]string) (string, er
 				target = i + 1
 			}
 		}
-	default:
-		// Other field grammars (e.g. TOC \\b, IF, or implicit bookmark
-		// references) need their own parser. Never leave a colliding operand
-		// pointing at the destination bookmark silently.
-		for name := range names {
-			if regexp.MustCompile(`(?i)(^|[^A-Za-z0-9_])` + regexp.QuoteMeta(name) + `($|[^A-Za-z0-9_])`).MatchString(instr) {
-				return "", fmt.Errorf("unsupported bookmark reference in %s field in merged body", kind)
+	case "DOCPROPERTY", "DOCVARIABLE", "MERGEFIELD", "STYLEREF",
+		"DATE", "TIME", "CREATEDATE", "SAVEDATE", "PRINTDATE",
+		"AUTHOR", "TITLE", "SUBJECT", "KEYWORDS", "COMMENTS",
+		"FILENAME", "FILESIZE", "TEMPLATE", "LASTSAVEDBY",
+		"USERNAME", "USERINITIALS", "USERADDRESS", "AUTOTEXT", "AUTOTEXTLIST":
+		// These operands are property, variable, style or entry names, and
+		// literal/format strings. They are not local bookmark references.
+		return instr, nil
+	case "IF":
+		condition := mergeIfCondition.FindStringSubmatch(instr)
+		if condition == nil {
+			return "", fmt.Errorf("unsupported IF condition in merged body")
+		}
+		for _, expr := range []string{condition[1], condition[3]} {
+			if !strings.HasPrefix(expr, `"`) && mergedInstructionMentions(expr, names) {
+				return "", fmt.Errorf("unsupported bookmark reference in IF condition in merged body")
 			}
+		}
+		return instr, nil
+	case "SEQ":
+		// The first argument is a sequence identifier; the optional second
+		// positional argument names a bookmark containing that sequence.
+		if len(spans) > 2 && !strings.HasPrefix(token(2), `\`) && mergedInstructionMentions(token(2), names) {
+			return "", fmt.Errorf("unsupported bookmark reference in SEQ field in merged body")
+		}
+		return instr, nil
+	case "TOC", "TOA", "INDEX":
+		// Only the range switch names a bookmark. Other arguments may be
+		// style names, sequence identifiers, or literal formatting strings.
+		for i := 1; i < len(spans); i++ {
+			if instr[spans[i][0]] != '"' && strings.EqualFold(token(i), `\b`) {
+				if i+1 == len(spans) || strings.HasPrefix(token(i+1), `\`) {
+					return "", fmt.Errorf("unsupported %s bookmark operand in merged body", kind)
+				}
+				if mergedInstructionMentions(token(i+1), names) {
+					return "", fmt.Errorf("unsupported bookmark reference in %s field in merged body", kind)
+				}
+			}
+		}
+		return instr, nil
+	default:
+		// Unknown grammars, formula fields and implicit bookmark references
+		// remain conservative: an ambiguous colliding name must not silently
+		// become a reference to the destination. Known grammars above inspect
+		// semantic operands rather than scanning unrelated names/literals.
+		if mergedInstructionMentions(instr, names) {
+			return "", fmt.Errorf("unsupported bookmark reference in %s field in merged body", kind)
 		}
 	}
 	if target < 0 {

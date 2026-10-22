@@ -259,3 +259,118 @@ func TestMergeBookmarkPageReferenceAcrossParagraphs(t *testing.T) {
 	referenceEqual(t, getW(all(root, "fldSimple")[0], "instr"), want)
 	referenceEqual(t, office.Text(root, nsW, "instrText"), want)
 }
+
+func TestMergeReservesDestinationStoryBookmarks(t *testing.T) {
+	for _, story := range []struct{ part, tag string }{
+		{"word/header1.xml", "hdr"},
+		{"word/footer1.xml", "ftr"},
+	} {
+		t.Run(story.tag, func(t *testing.T) {
+			field := simpleField(` REF Summary \h `, "stale")
+			content := mergeBookmarkBody("Summary", "Original summary", field) + `<w:p><w:bookmarkStart w:id="1" w:name="PaperworksMerge1"/><w:r><w:t>reserved</w:t></w:r><w:bookmarkEnd w:id="1"/></w:p>`
+			dst := mk(t, "destination", `<w:p>`+field+`</w:p>`, map[string]string{
+				story.part: `<w:` + story.tag + ` ` + wNS + `>` + content + `</w:` + story.tag + `>`,
+			})
+			dst = referenceRewrite(t, dst, func(p *opc.Package) {
+				kind := "header"
+				if story.tag == "ftr" {
+					kind = "footer"
+				}
+				if err := p.EnsureContentType(story.part, ctBase+kind+"+xml"); err != nil {
+					t.Fatal(err)
+				}
+				id, err := p.AddRel("word/document.xml", relBase+kind, strings.TrimPrefix(story.part, "word/"), false)
+				if err != nil {
+					t.Fatal(err)
+				}
+				referenceSetXML(t, p, "word/document.xml", func(root *etree.Element) {
+					ref := all(root, "sectPr")[0].CreateElement("w:" + kind + "Reference")
+					setW(ref, "type", "default")
+					ref.CreateAttr("r:id", id)
+				})
+			})
+			src := mk(t, "source", mergeBookmarkBody("Summary", "Appendix summary", field), nil)
+			out := mustEdit(t, dst, map[string]any{"operation": "merge", "files": []any{src, src}})
+			root := referenceXML(t, out, "word/document.xml")
+			starts := all(root, "bookmarkStart")
+			referenceEqual(t, len(starts), 2)
+			seen := map[string]bool{"Summary": true, "PaperworksMerge1": true}
+			for _, start := range starts {
+				name := getW(start, "name")
+				if seen[name] {
+					t.Fatal("unreserved name", name)
+				}
+				seen[name] = true
+			}
+			original := referenceXML(t, out, story.part)
+			referenceEqual(t, getW(all(original, "bookmarkStart")[0], "name"), "Summary")
+			referenceEqual(t, getW(all(original, "fldSimple")[0], "instr"), ` REF Summary \h `)
+			out = mustEdit(t, out, map[string]any{"operation": "materialize", "only": []any{"REF"}})
+			root = referenceXML(t, out, "word/document.xml")
+			fields := all(root, "fldSimple")
+			referenceEqual(t, office.Text(fields[0], nsW, "t"), "Original summary")
+			referenceEqual(t, office.Text(fields[1], nsW, "t"), "Appendix summary")
+			referenceEqual(t, office.Text(fields[2], nsW, "t"), "Appendix summary")
+			original = referenceXML(t, out, story.part)
+			referenceEqual(t, office.Text(all(original, "fldSimple")[0], nsW, "t"), "Original summary")
+		})
+	}
+}
+
+func TestMergePreservesUnrelatedFieldInstructions(t *testing.T) {
+	for _, instr := range []string{
+		` DOCPROPERTY Summary `,
+		` DOCPROPERTY "Summary" \* MERGEFORMAT `,
+		` DOCVARIABLE Summary `,
+		` MERGEFIELD Summary \b "Summary" `,
+		` IF 1 = 1 "Summary" "Other" `,
+		` IF 1=1 "Summary" "Other" `,
+		` IF 1 = 2 "Other" "Summary" `,
+		` IF "Summary" = "Summary" "Yes" "No" `,
+		` IF 1 = 1 Summary Other `,
+		` SEQ Summary \* ARABIC `,
+		` STYLEREF Summary `,
+		` TOC \t "Summary,1" `,
+	} {
+		for _, complex := range []bool{false, true} {
+			t.Run(instr+strconv.FormatBool(complex), func(t *testing.T) {
+				dst := mk(t, "destination", mergeBookmarkBody("Summary", "original", ""), nil)
+				encoded := strings.ReplaceAll(instr, `"`, `&quot;`)
+				field := simpleField(encoded, "cached")
+				if complex {
+					field = `<w:r><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:instrText xml:space="preserve">` + encoded[:4] + `</w:instrText></w:r><w:r><w:instrText xml:space="preserve">` + encoded[4:] + `</w:instrText></w:r><w:r><w:fldChar w:fldCharType="separate"/></w:r><w:r><w:t>cached</w:t></w:r><w:r><w:fldChar w:fldCharType="end"/></w:r>`
+				}
+				src := mk(t, "source", mergeBookmarkBody("Summary", "appendix", field), nil)
+				out := mustEdit(t, dst, map[string]any{"operation": "merge", "files": []any{src}})
+				root := referenceXML(t, out, "word/document.xml")
+				if complex {
+					referenceEqual(t, office.Text(root, nsW, "instrText"), instr)
+				} else {
+					referenceEqual(t, getW(all(root, "fldSimple")[0], "instr"), instr)
+				}
+			})
+		}
+	}
+}
+
+func TestMergeRejectsActualUnsupportedBookmarkOperands(t *testing.T) {
+	dst := mk(t, "destination", mergeBookmarkBody("Summary", "original", ""), nil)
+	for _, instr := range []string{
+		` TOC \b "Summary" `,
+		` TOA \b Summary `,
+		` INDEX \b "Summary" `,
+		` SEQ Figure Summary `,
+		` SEQ Figure "Summary" `,
+		` IF Summary = 1 "Yes" "No" `,
+		` IF Summary>=1 "Yes" "No" `,
+		` IF 1 = Summary "Yes" "No" `,
+		` =Summary + 1 `,
+		` Summary `,
+	} {
+		t.Run(instr, func(t *testing.T) {
+			field := simpleField(strings.ReplaceAll(instr, `"`, `&quot;`), "cached")
+			src := mk(t, "source", mergeBookmarkBody("Summary", "appendix", field), nil)
+			wantErr(t, dst, map[string]any{"operation": "merge", "files": []any{src}}, "unsupported bookmark reference")
+		})
+	}
+}
