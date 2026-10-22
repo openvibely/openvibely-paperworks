@@ -180,9 +180,10 @@ func copyPartTree(d, src *Doc, part string, copied map[string]string) (string, e
 		return "", fmt.Errorf("missing related part %s", part)
 	}
 	// Composer shares identical embedded images across appended documents.
-	if strings.HasPrefix(src.Pkg.ContentType(part), "image/") {
+	ct := src.Pkg.ContentType(part)
+	if strings.HasPrefix(ct, "image/") {
 		for _, candidate := range d.Pkg.Parts {
-			if d.Pkg.ContentType(candidate.Name) == src.Pkg.ContentType(part) && bytes.Equal(candidate.Data, data) {
+			if d.Pkg.ContentType(candidate.Name) == ct && bytes.Equal(candidate.Data, data) {
 				copied[part] = candidate.Name
 				return candidate.Name, nil
 			}
@@ -198,7 +199,6 @@ func copyPartTree(d, src *Doc, part string, copied map[string]string) (string, e
 	copied[part] = target
 	d.Pkg.Set(target, data)
 	d.addedPart = true
-	ct := src.Pkg.ContentType(part)
 	if ct != "" {
 		if err := mergeContentType(d.Pkg, target, ct); err != nil {
 			return "", err

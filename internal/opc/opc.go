@@ -41,8 +41,9 @@ type Part struct {
 }
 
 type Package struct {
-	Parts []*Part
-	index map[string]*Part
+	Parts   []*Part
+	index   map[string]*Part
+	ctCache *contentTypes
 }
 
 func Open(file string) (*Package, error) {
@@ -117,6 +118,9 @@ func (p *Package) Names() []string {
 
 // Set replaces or appends a part.
 func (p *Package) Set(name string, data []byte) {
+	if name == contentTypesName {
+		p.ctCache = nil
+	}
 	if part := p.index[name]; part != nil {
 		part.Data = data
 		return
@@ -127,6 +131,9 @@ func (p *Package) Set(name string, data []byte) {
 }
 
 func (p *Package) Remove(name string) {
+	if name == contentTypesName {
+		p.ctCache = nil
+	}
 	if p.index[name] == nil {
 		return
 	}
@@ -342,23 +349,71 @@ func (p *Package) EnsureContentType(partName, contentType string) error {
 	return p.SetXML("[Content_Types].xml", doc)
 }
 
-func (p *Package) ContentType(name string) string {
-	doc, err := p.XML("[Content_Types].xml")
+const contentTypesName = "[Content_Types].xml"
+
+// contentTypes is a parsed view of [Content_Types].xml, keyed on the part
+// and data slice it was built from so replacing Part.Data invalidates it.
+// In-place byte edits of the existing slice are not detected; use Set.
+type contentTypes struct {
+	part      *Part
+	data      *byte
+	size      int
+	valid     bool
+	overrides map[string]string
+	defaults  map[string]string
+}
+
+func foldExt(ext string) string { return strings.ToLower(strings.ToUpper(ext)) }
+
+func (p *Package) contentTypes() *contentTypes {
+	part := p.index[contentTypesName]
+	var data *byte
+	size := 0
+	if part != nil {
+		size = len(part.Data)
+		if cap(part.Data) > 0 {
+			data = &part.Data[:1][0]
+		}
+	}
+	if c := p.ctCache; c != nil && c.part == part && c.data == data && c.size == size {
+		return c
+	}
+	c := &contentTypes{part: part, data: data, size: size}
+	p.ctCache = c
+	if part == nil || part.Data == nil {
+		return c
+	}
+	doc, err := ParseXML(part.Data)
 	if err != nil {
+		return c
+	}
+	c.valid = true
+	c.overrides = map[string]string{}
+	c.defaults = map[string]string{}
+	for _, e := range doc.Root().SelectElements("Override") {
+		k := strings.TrimPrefix(e.SelectAttrValue("PartName", ""), "/")
+		if _, ok := c.overrides[k]; !ok {
+			c.overrides[k] = e.SelectAttrValue("ContentType", "")
+		}
+	}
+	for _, e := range doc.Root().SelectElements("Default") {
+		k := foldExt(e.SelectAttrValue("Extension", ""))
+		if _, ok := c.defaults[k]; !ok {
+			c.defaults[k] = e.SelectAttrValue("ContentType", "")
+		}
+	}
+	return c
+}
+
+func (p *Package) ContentType(name string) string {
+	c := p.contentTypes()
+	if !c.valid {
 		return ""
 	}
-	for _, e := range doc.Root().SelectElements("Override") {
-		if strings.TrimPrefix(e.SelectAttrValue("PartName", ""), "/") == name {
-			return e.SelectAttrValue("ContentType", "")
-		}
+	if ct, ok := c.overrides[name]; ok {
+		return ct
 	}
-	ext := strings.TrimPrefix(path.Ext(name), ".")
-	for _, e := range doc.Root().SelectElements("Default") {
-		if strings.EqualFold(e.SelectAttrValue("Extension", ""), ext) {
-			return e.SelectAttrValue("ContentType", "")
-		}
-	}
-	return ""
+	return c.defaults[foldExt(strings.TrimPrefix(path.Ext(name), "."))]
 }
 
 func (p *Package) SortedNames() []string {

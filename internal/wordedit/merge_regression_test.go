@@ -3,6 +3,7 @@ package wordedit
 import (
 	"github.com/beevik/etree"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/openvibely/openvibely-paperworks/internal/office"
@@ -65,8 +66,30 @@ func TestMergeRestartsAppendedListsAndRegistersImages(t *testing.T) {
 				}
 			}
 			referenceEqual(t, png, 1)
+			if copies == 2 {
+				once := mustEdit(t, base(t), map[string]any{"operation": "merge", "files": []any{appendix}})
+				referenceEqual(t, countImages(t, out), countImages(t, once))
+				if countImages(t, once) == 0 {
+					t.Fatal("merge fixture has no images to deduplicate")
+				}
+			}
 		})
 	}
+}
+
+func countImages(t *testing.T, file string) int {
+	t.Helper()
+	p, err := opc.Open(file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	n := 0
+	for _, name := range p.Names() {
+		if strings.HasPrefix(p.ContentType(name), "image/") {
+			n++
+		}
+	}
+	return n
 }
 
 func TestMergeRemapsExplicitNumberingDefinition(t *testing.T) {
