@@ -182,6 +182,9 @@ func TestMergeBookmarkInstructionForms(t *testing.T) {
 		{` REF \h Summary `, "", true},
 		{` HYPERLINK \o "tooltip" \l Summary `, "", true},
 		{` REF "Summary `, "", true},
+		{` SET Other Summary `, "", true},
+		{` SET Other `, "", true},
+		{` SET "" "Summary" `, "", true},
 	} {
 		t.Run(tc.in, func(t *testing.T) {
 			got, err := rewriteMergedInstruction(tc.in, map[string]string{"Summary": "NewName"})
@@ -245,6 +248,8 @@ func TestMergeRejectsUnsupportedBookmarkReferences(t *testing.T) {
 		// A literal QUOTE wrapper must not hide an unsupported reference in
 		// its nested result fields.
 		`<w:fldSimple w:instr="QUOTE &quot;Summary&quot;"><w:fldSimple w:instr="TOC \b Summary"/></w:fldSimple>`,
+		`<w:fldSimple w:instr="SET Other &quot;Summary&quot;"><w:fldSimple w:instr="TOC \b Summary"/></w:fldSimple>`,
+		strings.Replace(complexField(" SET Other ", "cached"), `<w:r><w:fldChar w:fldCharType="separate"/></w:r>`, complexField(" REF Summary ", "cached")+`<w:r><w:fldChar w:fldCharType="separate"/></w:r>`, 1),
 		`<w:r><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:instrText>REF </w:instrText></w:r><w:r><w:fldChar w:fldCharType="begin"/></w:r>`,
 	} {
 		src := mk(t, "source", mergeBookmarkBody("Summary", "appendix", field), nil)
@@ -324,6 +329,10 @@ func TestMergePreservesUnrelatedFieldInstructions(t *testing.T) {
 	for _, instr := range []string{
 		` QUOTE "Summary" `,
 		` quote "Summary and other literal text" \* MERGEFORMAT `,
+		` SET Other "Summary" `,
+		` set "Other" "Summary and other literal text" \* MERGEFORMAT `,
+		` SET Other 25 `,
+		` SET Other 10% `,
 		` DOCPROPERTY Summary `,
 		` DOCPROPERTY "Summary" \* MERGEFORMAT `,
 		` DOCVARIABLE Summary `,
@@ -368,6 +377,9 @@ func TestMergePreservesUnrelatedFieldInstructions(t *testing.T) {
 func TestMergeRejectsActualUnsupportedBookmarkOperands(t *testing.T) {
 	dst := mk(t, "destination", mergeBookmarkBody("Summary", "original", ""), nil)
 	for _, instr := range []string{
+		` SET Summary "Other" `,
+		` set "Summary" "Summary" `,
+		` SET Summary 25 `,
 		` TOC \b "Summary" `,
 		` TOA \b Summary `,
 		` INDEX \b "Summary" `,
@@ -379,10 +391,15 @@ func TestMergeRejectsActualUnsupportedBookmarkOperands(t *testing.T) {
 		` =Summary + 1 `,
 		` Summary `,
 	} {
-		t.Run(instr, func(t *testing.T) {
-			field := simpleField(strings.ReplaceAll(instr, `"`, `&quot;`), "cached")
-			src := mk(t, "source", mergeBookmarkBody("Summary", "appendix", field), nil)
-			wantErr(t, dst, map[string]any{"operation": "merge", "files": []any{src}}, "unsupported bookmark reference")
-		})
+		for _, complex := range []bool{false, true} {
+			t.Run(instr+strconv.FormatBool(complex), func(t *testing.T) {
+				field := simpleField(strings.ReplaceAll(instr, `"`, `&quot;`), "cached")
+				if complex {
+					field = complexField(instr, "cached")
+				}
+				src := mk(t, "source", mergeBookmarkBody("Summary", "appendix", field), nil)
+				wantErr(t, dst, map[string]any{"operation": "merge", "files": []any{src}}, "unsupported bookmark reference")
+			})
+		}
 	}
 }

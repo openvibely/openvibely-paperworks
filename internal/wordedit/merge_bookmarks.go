@@ -218,6 +218,25 @@ func rewriteMergedInstruction(instr string, names map[string]string) (string, er
 				target = i + 1
 			}
 		}
+	case "SET":
+		// SET's first operand is the bookmark being assigned; its second is
+		// literal data, not a reference to a similarly named bookmark. Do not
+		// allow an assignment to a renamed source bookmark to overwrite the
+		// destination. Nested instructions remain guarded by the field walker.
+		if len(spans) < 3 || token(1) == "" || strings.HasPrefix(token(1), `\`) {
+			return "", fmt.Errorf("unsupported SET bookmark operand in merged body")
+		}
+		if mergedInstructionMentions(token(1), names) {
+			return "", fmt.Errorf("unsupported bookmark reference in SET field in merged body")
+		}
+		if instr[spans[2][0]] != '"' {
+			// Word permits unquoted numeric values, including percentages.
+			// Other expressions are not assumed to be harmless literal text.
+			if _, err := strconv.ParseFloat(strings.TrimSuffix(token(2), "%"), 64); err != nil {
+				return "", fmt.Errorf("unsupported SET value in merged body")
+			}
+		}
+		return instr, nil
 	case "QUOTE":
 		// QUOTE inserts literal text; matching a renamed bookmark inside that
 		// text does not make it a reference. Nested field instructions are
