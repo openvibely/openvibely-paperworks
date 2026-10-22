@@ -41,6 +41,12 @@ func merge(d *Doc, files []string) error {
 var importableRel = map[string]bool{"image": true, "hyperlink": true, "chart": true, "oleObject": true, "package": true, "diagramData": true, "diagramLayout": true, "diagramQuickStyle": true, "diagramColors": true, "diagramDrawing": true}
 
 func appendDoc(d, src *Doc) error {
+	// Keep source namespaces in scope while preparing all blocks together.
+	importRoot := src.MainRoot().Copy()
+	importBody := child(importRoot, "body")
+	if err := remapMergedBookmarks(d, importBody); err != nil {
+		return err
+	}
 	rels, err := src.Pkg.Rels(src.Main)
 	if err != nil {
 		return err
@@ -119,7 +125,7 @@ func appendDoc(d, src *Doc) error {
 	})
 	restarted := map[string]bool{}
 	bmMax := numericIDs([]*etree.Element{d.MainRoot()}, nsW, "id")
-	for _, blk := range src.Body().ChildElements() {
+	for _, blk := range importBody.ChildElements() {
 		if is(blk, "sectPr") {
 			continue
 		}

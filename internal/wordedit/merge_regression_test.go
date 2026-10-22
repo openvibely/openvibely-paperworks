@@ -118,3 +118,144 @@ func TestMergeRemapsExplicitNumberingDefinition(t *testing.T) {
 	}
 	referenceEqual(t, abs, "9")
 }
+
+func mergeBookmarkBody(name, text, field string) string {
+	return `<w:p><w:bookmarkStart w:id="0" w:name="` + name + `"/><w:r><w:t>` + text + `</w:t></w:r><w:bookmarkEnd w:id="0"/></w:p><w:p>` + field + `</w:p><w:p><w:hyperlink w:anchor="` + name + `"><w:r><w:t>jump</w:t></w:r></w:hyperlink></w:p>`
+}
+
+func TestMergeBookmarkReferences(t *testing.T) {
+	simple := `<w:fldSimple w:instr=" REF Summary \h "><w:r><w:t>stale</w:t></w:r></w:fldSimple>`
+	complex := `<w:r><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:instrText xml:space="preserve"> RE</w:instrText></w:r><w:r><w:instrText>F Sum</w:instrText></w:r><w:r><w:instrText xml:space="preserve">mary \h </w:instrText></w:r><w:r><w:fldChar w:fldCharType="separate"/></w:r><w:r><w:t>stale</w:t></w:r><w:r><w:fldChar w:fldCharType="end"/></w:r>`
+	for _, field := range []string{simple, complex} {
+		t.Run(strconv.Itoa(len(field)), func(t *testing.T) {
+			dst := mk(t, "destination", mergeBookmarkBody("Summary", "Original summary", field), nil)
+			// Reserve a name that allocation would otherwise choose, even though its
+			// bookmark occurs after the conflicting bookmark in the source.
+			src := mk(t, "source", mergeBookmarkBody("Summary", "Appendix summary", field)+`<w:p><w:bookmarkStart w:id="1" w:name="PaperworksMerge1"/><w:r><w:t>suffix</w:t></w:r><w:bookmarkEnd w:id="1"/></w:p>`, nil)
+			out := mustEdit(t, dst, map[string]any{"operation": "merge", "files": []any{src, src}})
+			root := referenceXML(t, out, "word/document.xml")
+			starts := all(root, "bookmarkStart")
+			ends := all(root, "bookmarkEnd")
+			referenceEqual(t, len(starts), 5)
+			referenceEqual(t, len(ends), 5)
+			names, ids := map[string]bool{}, map[string]bool{}
+			for i, b := range starts {
+				name, id := getW(b, "name"), getW(b, "id")
+				if names[name] || ids[id] {
+					t.Fatal("duplicate bookmark name or ID", name, id)
+				}
+				if err := bookmarkName(name); err != nil {
+					t.Fatal(err)
+				}
+				names[name], ids[id] = true, true
+				referenceEqual(t, getW(ends[i], "id"), id)
+			}
+			referenceEqual(t, getW(starts[0], "name"), "Summary")
+			referenceEqual(t, getW(starts[2], "name"), "PaperworksMerge1")
+			links := all(root, "hyperlink")
+			for i, index := range []int{0, 1, 3} {
+				referenceEqual(t, getW(links[i], "anchor"), getW(starts[index], "name"))
+			}
+			materialized := mustEdit(t, out, map[string]any{"operation": "materialize", "only": []any{"REF"}})
+			saved := referenceXML(t, materialized, "word/document.xml")
+			paragraphs := all(saved, "p")
+			referenceEqual(t, office.Text(paragraphs[1], nsW, "t"), "Original summary")
+			referenceEqual(t, office.Text(paragraphs[4], nsW, "t"), "Appendix summary")
+			referenceEqual(t, office.Text(paragraphs[8], nsW, "t"), "Appendix summary")
+		})
+	}
+}
+
+func TestMergeBookmarkInstructionForms(t *testing.T) {
+	for _, tc := range []struct {
+		in, want string
+		reject   bool
+	}{
+		{` REF Summary \h `, ` REF NewName \h `, false},
+		{` pageref "Summary" \h \p `, ` pageref "NewName" \h \p `, false},
+		{` NOTEREF Summary \f `, ` NOTEREF NewName \f `, false},
+		{` HYPERLINK \l "Summary" \o "Summary tooltip" `, ` HYPERLINK \l "NewName" \o "Summary tooltip" `, false},
+		{` HYPERLINK "https://example.com" \l "Summary" `, ` HYPERLINK "https://example.com" \l "Summary" `, false},
+		{` REF Unique \h `, ` REF Unique \h `, false},
+		{` TOC \b Summary `, "", true},
+		{` =Summary + 1 `, "", true},
+		{` REF \h Summary `, "", true},
+		{` HYPERLINK \o "tooltip" \l Summary `, "", true},
+		{` REF "Summary `, "", true},
+	} {
+		t.Run(tc.in, func(t *testing.T) {
+			got, err := rewriteMergedInstruction(tc.in, map[string]string{"Summary": "NewName"})
+			if tc.reject {
+				if err == nil {
+					t.Fatal("expected explicit rejection")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			referenceEqual(t, got, tc.want)
+		})
+	}
+}
+
+func TestMergeBookmarkNoConflictAndExternalLink(t *testing.T) {
+	dst := mk(t, "destination", mergeBookmarkBody("Original", "Original summary", `<w:fldSimple w:instr="REF Original"><w:r><w:t>stale</w:t></w:r></w:fldSimple>`), nil)
+	src := mk(t, "source", mergeBookmarkBody("Summary", "Appendix summary", `<w:fldSimple w:instr="REF Summary"><w:r><w:t>stale</w:t></w:r></w:fldSimple>`)+`<w:p><w:hyperlink r:id="external" w:anchor="Summary"><w:r><w:t>external</w:t></w:r></w:hyperlink></w:p>`, nil)
+	src = referenceRewrite(t, src, func(p *opc.Package) {
+		if err := addRelWithMode(p, "word/document.xml", "external", nsR+"/hyperlink", "https://example.com", "External"); err != nil {
+			t.Fatal(err)
+		}
+	})
+	// The second append exercises the external anchor during a name collision.
+	out := mustEdit(t, dst, map[string]any{"operation": "merge", "files": []any{src, src}})
+	root := referenceXML(t, out, "word/document.xml")
+	starts := all(root, "bookmarkStart")
+	referenceEqual(t, getW(starts[1], "name"), "Summary")
+	links := all(root, "hyperlink")
+	referenceEqual(t, getW(links[2], "anchor"), "Summary")
+	referenceEqual(t, getW(links[4], "anchor"), "Summary")
+	pkg, err := opc.Open(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rels, err := pkg.Rels("word/document.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, link := range []*etree.Element{links[2], links[4]} {
+		found := false
+		for _, rel := range rels {
+			if rel.ID == office.AttrV(link, nsR, "id") {
+				referenceEqual(t, rel.Target, "https://example.com")
+				referenceEqual(t, rel.TargetMode, "External")
+				found = true
+			}
+		}
+		if !found {
+			t.Fatal("lost external relationship")
+		}
+	}
+}
+
+func TestMergeRejectsUnsupportedBookmarkReferences(t *testing.T) {
+	dst := mk(t, "destination", mergeBookmarkBody("Summary", "original", ""), nil)
+	for _, field := range []string{
+		`<w:fldSimple w:instr="TOC \b Summary"/>`,
+		`<w:r><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:instrText>REF </w:instrText></w:r><w:r><w:fldChar w:fldCharType="begin"/></w:r>`,
+	} {
+		src := mk(t, "source", mergeBookmarkBody("Summary", "appendix", field), nil)
+		wantErr(t, dst, map[string]any{"operation": "merge", "files": []any{src}}, "unsupported.*(bookmark|nested)")
+	}
+}
+
+func TestMergeBookmarkPageReferenceAcrossParagraphs(t *testing.T) {
+	dst := mk(t, "destination", mergeBookmarkBody("Summary", "original", ""), nil)
+	src := mk(t, "source", mergeBookmarkBody("Summary", "appendix", `<w:fldSimple w:instr=" PAGEREF &quot;Summary&quot; \h \p "><w:r><w:t>1</w:t></w:r></w:fldSimple>`)+`<w:p><w:r><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:instrText xml:space="preserve"> PAGE</w:instrText></w:r></w:p><w:p><w:r><w:instrText>REF &quot;Sum</w:instrText></w:r><w:r><w:instrText xml:space="preserve">mary&quot; \h \p </w:instrText></w:r><w:r><w:fldChar w:fldCharType="separate"/></w:r><w:r><w:t>1</w:t></w:r><w:r><w:fldChar w:fldCharType="end"/></w:r></w:p>`, nil)
+	out := mustEdit(t, dst, map[string]any{"operation": "merge", "files": []any{src}})
+	root := referenceXML(t, out, "word/document.xml")
+	name := getW(all(root, "bookmarkStart")[1], "name")
+	want := ` PAGEREF "` + name + `" \h \p `
+	referenceEqual(t, getW(all(root, "fldSimple")[0], "instr"), want)
+	referenceEqual(t, office.Text(root, nsW, "instrText"), want)
+}
