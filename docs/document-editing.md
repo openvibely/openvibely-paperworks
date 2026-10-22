@@ -255,9 +255,12 @@ Inspection selects JSON pointers or returns matching leaf values with their path
 and an explicit truncation flag. XLSX sheet/range selection returns values and
 formulas for at most 10,000 cells; saved results may be stale.
 
-Preview export supports PNG/JPEG/lossless WebP plus optional PNG contact sheets. Sheet/range and
-resolution options are forwarded to the existing renderer. `visually_inspected`
-is false until the model actually views the images. Office previews still use
+Preview export supports PNG/JPEG/lossless WebP plus optional PNG contact sheets. Each contact-sheet
+page uses a 320×420 white cell with a 24-pixel dark filename band. Its thumbnail is
+scaled proportionally into a centered 300×376 area below the band; cells are placed
+in renderer order, left to right and then top to bottom. Sheet/range and resolution
+options are forwarded to the existing renderer. `visually_inspected` is false until
+the model actually views the images. Office previews still use
 the existing runtime/LibreOffice requirements and are not claimed pixel-identical
 to Microsoft Office or Codex.
 

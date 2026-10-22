@@ -122,6 +122,63 @@ func TestReferenceThreadLifecycleAndPreservation(t *testing.T) {
 		t.Fatal("source hash changed")
 	}
 }
+func TestReferenceThreadCellBounds(t *testing.T) {
+	_, source := referenceTraceFixture(t, nil)
+	for _, cell := range []string{"A999999999999999999999999", "A1048577", "XFE1"} {
+		t.Run(cell, func(t *testing.T) {
+			p := previewOpen(t, source)
+			before, err := p.Bytes()
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, err = WorkbookComments(p, CommentSpec{Action: "add", Sheet: "Output", Cell: cell, Author: "Alex", Text: "Text"})
+			if err == nil || (!strings.Contains(err.Error(), "invalid cell") && !strings.Contains(err.Error(), "worksheet limits")) {
+				t.Fatalf("expected invalid cell or worksheet limits error, got %v", err)
+			}
+			after, err := p.Bytes()
+			if err != nil || !bytes.Equal(before, after) {
+				t.Fatal("rejected cell changed the package", err)
+			}
+		})
+	}
+
+	p := previewOpen(t, source)
+	items, err := WorkbookComments(p, CommentSpec{Action: "add", Sheet: "Output", Cell: "XFD1048576", Author: "Alex", Text: "Boundary"})
+	if err != nil || len(items) != 1 || items[0].Cell != "XFD1048576" {
+		t.Fatal(items, err)
+	}
+	assertThreadNote(t, p, items[0], "Boundary")
+}
+
+func TestSyncThreadNoteRejectsInvalidCellWithoutMutation(t *testing.T) {
+	_, source := referenceTraceFixture(t, nil)
+	for _, cell := range []string{"A0", "A999999999999999999999999", "A1048577", "XFE1"} {
+		t.Run(cell, func(t *testing.T) {
+			p := previewOpen(t, source)
+			_, _, byName, err := WorkbookSheets(p)
+			if err != nil {
+				t.Fatal(err)
+			}
+			st := &sheetThreads{owner: byName["Output"], doc: newRoot("ThreadedComments", NSTC)}
+			root := st.doc.Root().CreateElement("threadedComment")
+			root.CreateAttr("id", "{TEST}")
+			root.CreateAttr("ref", cell)
+			before, err := p.Bytes()
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = syncThreadNote(p, st, root, nil)
+			if err == nil || (!strings.Contains(err.Error(), "invalid cell") && !strings.Contains(err.Error(), "worksheet limits")) {
+				t.Fatalf("expected invalid cell or worksheet limits error, got %v", err)
+			}
+			after, err := p.Bytes()
+			if err != nil || !bytes.Equal(before, after) {
+				t.Fatal("rejected note changed the package", err)
+			}
+		})
+	}
+}
+
 func TestReferenceThreadValidation(t *testing.T) {
 	_, source := referenceTraceFixture(t, nil)
 	for _, kind := range []string{"author", "XFE1", "A0", "text"} {

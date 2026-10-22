@@ -3,9 +3,6 @@ package cli
 import (
 	"context"
 	"fmt"
-	"github.com/HugoSmits86/nativewebp"
-	"github.com/openvibely/openvibely-paperworks/internal/convert"
-	xdraw "golang.org/x/image/draw"
 	"image"
 	"image/color"
 	"image/draw"
@@ -13,6 +10,13 @@ import (
 	"image/png"
 	"os"
 	"path/filepath"
+
+	"github.com/HugoSmits86/nativewebp"
+	"github.com/openvibely/openvibely-paperworks/internal/convert"
+	xdraw "golang.org/x/image/draw"
+	"golang.org/x/image/font"
+	"golang.org/x/image/font/basicfont"
+	"golang.org/x/image/math/fixed"
 )
 
 // previewOutputExistsError retains the usage diagnostic and exit code while
@@ -22,6 +26,17 @@ type previewOutputExistsError struct{ UsageError }
 func (e previewOutputExistsError) Unwrap() []error {
 	return []error{e.UsageError, os.ErrExist}
 }
+
+const (
+	previewCellWidth        = 320
+	previewCellHeight       = 420
+	previewLabelBandHeight  = 24
+	previewThumbnailTopGap  = 10
+	previewThumbnailWidth   = 300
+	previewThumbnailHeight  = 376
+	previewLabelLeftPadding = 8
+	previewLabelBaseline    = 18
+)
 
 func init() {
 	register(&Command{Name: "preview-export", Summary: "Export document previews as PNG/JPEG/WebP and an optional contact sheet.", Usage: "paperworks preview-export INPUT --output NEW_DIR [--format png|jpeg|webp] [--columns 3] [--max-pixels 1600] [--sheet NAME --range A1:D20]", Run: func(ctx context.Context, a Args) (any, error) {
@@ -120,27 +135,30 @@ func exportRenderedPreviews(ctx context.Context, stage, out string, pages []stri
 		}
 		results = append(results, filepath.Join(out, name))
 		if cols > 0 {
-			thumb := image.NewRGBA(image.Rect(0, 0, 320, 420))
+			thumb := image.NewRGBA(image.Rect(0, 0, previewCellWidth, previewCellHeight))
 			draw.Draw(thumb, thumb.Bounds(), &image.Uniform{color.White}, image.Point{}, draw.Src)
 			bounds := im.Bounds()
-			w, h := 300, 400
+			w, h := previewThumbnailWidth, previewThumbnailHeight
 			if bounds.Dx()*h > bounds.Dy()*w {
 				h = bounds.Dy() * w / bounds.Dx()
 			} else {
 				w = bounds.Dx() * h / bounds.Dy()
 			}
-			r := image.Rect((320-w)/2, (420-h)/2, (320+w)/2, (420+h)/2)
+			x := (previewCellWidth - w) / 2
+			y := previewLabelBandHeight + previewThumbnailTopGap + (previewThumbnailHeight-h)/2
+			r := image.Rect(x, y, x+w, y+h)
 			xdraw.CatmullRom.Scale(thumb, r, im, bounds, draw.Over, nil)
+			drawPreviewPageLabel(thumb, name)
 			thumbs = append(thumbs, thumb)
 		}
 	}
 	contact := ""
 	if cols > 0 && len(thumbs) > 0 {
 		rows := (len(thumbs) + cols - 1) / cols
-		sheet := image.NewRGBA(image.Rect(0, 0, cols*320, rows*420))
+		sheet := image.NewRGBA(image.Rect(0, 0, cols*previewCellWidth, rows*previewCellHeight))
 		draw.Draw(sheet, sheet.Bounds(), &image.Uniform{color.White}, image.Point{}, draw.Src)
 		for i, im := range thumbs {
-			r := image.Rect(i%cols*320, i/cols*420, (i%cols+1)*320, (i/cols+1)*420)
+			r := image.Rect(i%cols*previewCellWidth, i/cols*previewCellHeight, (i%cols+1)*previewCellWidth, (i/cols+1)*previewCellHeight)
 			draw.Draw(sheet, r, im, image.Point{}, draw.Src)
 		}
 		if err = writePreview(filepath.Join(stage, "contact-sheet.png"), sheet, "png"); err != nil {
@@ -158,6 +176,18 @@ func exportRenderedPreviews(ctx context.Context, stage, out string, pages []stri
 		return nil, err
 	}
 	return map[string]any{"pages": results, "contact_sheet": contact, "visually_inspected": false}, nil
+}
+
+func drawPreviewPageLabel(cell *image.RGBA, label string) {
+	band := image.Rect(0, 0, previewCellWidth, previewLabelBandHeight)
+	draw.Draw(cell, band, &image.Uniform{color.RGBA{R: 32, G: 40, B: 50, A: 255}}, image.Point{}, draw.Src)
+	drawer := font.Drawer{
+		Dst:  cell,
+		Src:  image.NewUniform(color.White),
+		Face: basicfont.Face7x13,
+		Dot:  fixed.P(previewLabelLeftPadding, previewLabelBaseline),
+	}
+	drawer.DrawString(label)
 }
 
 func writePreview(p string, im image.Image, format string) error {

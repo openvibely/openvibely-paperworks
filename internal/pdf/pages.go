@@ -12,6 +12,8 @@ import (
 	"strings"
 
 	"github.com/pdfcpu/pdfcpu/pkg/api"
+	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu"
+	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/model"
 	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/types"
 )
 
@@ -138,25 +140,132 @@ func Rotate(ctx context.Context, src, dest string, degrees int, pages []int) err
 	return writeNew(dest, out.Bytes())
 }
 
+func writeNewWith(path string, write func(io.Writer) error) error {
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o644)
+	if err != nil {
+		return err
+	}
+	if err := write(f); err != nil {
+		f.Close()
+		os.Remove(path)
+		return err
+	}
+	return f.Close()
+}
+
 // Split writes one PDF per page range into a new directory. Each element of
 // ranges is a list of pages for one output file.
+func splitSourceContext(ctx context.Context, data []byte, template *model.Context, conf *model.Configuration) (*model.Context, error) {
+	source, err := api.ReadContext(ctx, bytes.NewReader(data), conf.Clone())
+	if err != nil {
+		return nil, err
+	}
+	source.PageCount = template.PageCount
+	if template.Form != nil {
+		source.Form = template.Form.Clone().(types.Dict)
+	}
+	if err := pdfcpu.CacheFormFonts(source); err != nil {
+		return nil, fmt.Errorf("cache form fonts: %w", err)
+	}
+
+	destinations := &model.Node{D: types.NewDict()}
+	if err := template.Names["Dests"].Process(ctx, template.XRefTable, func(_ *model.XRefTable, key string, value *types.Object) error {
+		if value == nil || *value == nil {
+			destinations.AppendToNames(key, nil)
+			return nil
+		}
+		destinations.AppendToNames(key, (*value).Clone())
+		return nil
+	}); err != nil {
+		return nil, fmt.Errorf("clone named destinations: %w", err)
+	}
+	source.Names = map[string]*model.Node{"Dests": destinations}
+	return source, nil
+}
+
 func Split(ctx context.Context, src, outDir string, ranges [][]int) ([]string, error) {
+	return split(ctx, src, outDir, ranges, nil)
+}
+
+func split(ctx context.Context, src, outDir string, ranges [][]int, afterOutput func()) ([]string, error) {
+	return splitWithOutputWriter(ctx, src, outDir, ranges, afterOutput, writeNewWith)
+}
+
+func splitWithOutputWriter(ctx context.Context, src, outDir string, ranges [][]int, afterOutput func(), writeOutput func(string, func(io.Writer) error) error) ([]string, error) {
 	data, err := os.ReadFile(src)
 	if err != nil {
 		return nil, err
 	}
+	if len(ranges) == 0 {
+		return nil, nil
+	}
+	// SelectPages rejects an empty selection before parsing the PDF. Preserve
+	// that error ordering for the first output group.
+	if len(ranges[0]) == 0 {
+		return nil, errors.New("select pages: no pages selected")
+	}
+
+	conf := config()
+	conf.Cmd = model.COLLECT
+	prepared, err := api.ReadValidateAndOptimize(ctx, bytes.NewReader(data), conf, nil)
+	if err != nil {
+		return nil, fmt.Errorf("select pages: collect: %w", err)
+	}
+	data = nil
+
+	// ExtractPages mutates pdfcpu's cached Dests name tree while migrating
+	// named destinations. Other source state is read-only during extraction, so
+	// only PDFs with that cache need an isolated context for each output.
+	isolateSource := len(ranges) > 1 && prepared.Names["Dests"] != nil
+	var preparedData []byte
+	var preparedTemplate *model.Context
+	pageCount := prepared.PageCount
+	if isolateSource {
+		preparedTemplate = prepared
+		var source bytes.Buffer
+		if err := api.WriteContext(ctx, prepared, &source); err != nil {
+			return nil, fmt.Errorf("select pages: prepare source for extraction: %w", err)
+		}
+		preparedData = source.Bytes()
+		prepared = nil
+	}
+
 	stem := strings.TrimSuffix(filepath.Base(src), filepath.Ext(src))
 	var files []string
 	for i, pages := range ranges {
-		out, err := SelectPages(ctx, data, pages)
-		if err != nil {
-			return files, err
+		if len(pages) == 0 {
+			return files, errors.New("select pages: no pages selected")
 		}
+		selected, err := api.PagesForPageCollection(pageCount, pageSpec(pages))
+		if err != nil {
+			return files, fmt.Errorf("select pages: collect: parse page selection: %w", err)
+		}
+
+		source := prepared
+		if isolateSource {
+			source, err = splitSourceContext(ctx, preparedData, preparedTemplate, conf)
+			if err != nil {
+				return files, fmt.Errorf("select pages: read prepared source: %w", err)
+			}
+		}
+		output, err := pdfcpu.ExtractPages(ctx, source, selected, false)
+		if err != nil {
+			return files, fmt.Errorf("select pages: collect: extract pages: %w", err)
+		}
+
 		name := filepath.Join(outDir, fmt.Sprintf("%s-%03d.pdf", stem, i+1))
-		if err := writeNew(name, out); err != nil {
+		if err := writeOutput(name, func(w io.Writer) error {
+			if err := api.Write(ctx, output, w, conf); err != nil {
+				return fmt.Errorf("select pages: collect: write output: %w", err)
+			}
+			return nil
+		}); err != nil {
 			return files, err
 		}
 		files = append(files, name)
+		if afterOutput != nil {
+			afterOutput()
+		}
 	}
 	return files, nil
 }

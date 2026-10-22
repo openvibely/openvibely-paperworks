@@ -243,68 +243,70 @@ func copyRange(f *excelize.File, e Edit) (*excelize.File, error) {
 		}
 	}
 	var snapshot []cell
-	for row := y; row <= yy; row++ {
-		for col := x; col <= xx; col++ {
-			source, _ := excelize.CoordinatesToCellName(col, row)
-			dest, err := excelize.CoordinatesToCellName(tx+col-x, ty+row-y)
-			if err != nil {
-				return nil, err
-			}
-			formula, err := f.GetCellFormula(e.Sheet, source)
-			if err != nil {
-				return nil, err
-			}
-			arrayRef, arrayMember := "", false
-			if copiesFormulas {
-				for master, block := range arrays {
-					if col < block.left || col > block.right || row < block.top || row > block.bottom {
-						continue
-					}
-					if master != source {
-						arrayMember = true
-						break
-					}
-					dx, dy := tx-x, ty-y
-					start, err1 := excelize.CoordinatesToCellName(block.left+dx, block.top+dy)
-					end, err2 := excelize.CoordinatesToCellName(block.right+dx, block.bottom+dy)
-					if err1 != nil || err2 != nil {
-						return nil, fmt.Errorf("array formula %s (%s) shifted to %s exceeds worksheet bounds", master, block.ref, dest)
-					}
-					arrayRef = start
-					if end != start {
-						arrayRef += ":" + end
-					}
-					break
-				}
-			}
-			if formula != "" && e.Operation != "copy-values" && e.Operation != "copy-formats" {
-				formula, err = TranslateFormula(formula, tx-x, ty-y)
-				if err != nil {
-					return nil, err
-				}
-			}
-			v, err := f.GetCellValue(e.Sheet, source, excelize.Options{RawCellValue: true})
-			if err != nil {
-				return nil, err
-			}
-			kind, err := f.GetCellType(e.Sheet, source)
-			if err != nil {
-				return nil, err
-			}
-			style, err := f.GetCellStyle(e.Sheet, source)
-			if err != nil {
-				return nil, err
-			}
-			rich, _ := f.GetCellRichText(e.Sheet, source)
-			anchor := dest
-			for _, merge := range mergedTargets {
-				if dx, dy := tx+col-x, ty+row-y; dx >= merge.left && dx <= merge.right && dy >= merge.top && dy <= merge.bottom {
-					anchor = merge.anchor
-					break
-				}
-			}
-			snapshot = append(snapshot, cell{dest, anchor, formula, v, kind, style, rich, arrayRef, arrayMember})
+	err = walkCoordinates(x, y, xx, yy, func(col, row int) error {
+		source, _ := excelize.CoordinatesToCellName(col, row)
+		dest, err := excelize.CoordinatesToCellName(tx+col-x, ty+row-y)
+		if err != nil {
+			return err
 		}
+		formula, err := f.GetCellFormula(e.Sheet, source)
+		if err != nil {
+			return err
+		}
+		arrayRef, arrayMember := "", false
+		if copiesFormulas {
+			for master, block := range arrays {
+				if col < block.left || col > block.right || row < block.top || row > block.bottom {
+					continue
+				}
+				if master != source {
+					arrayMember = true
+					break
+				}
+				dx, dy := tx-x, ty-y
+				start, err1 := excelize.CoordinatesToCellName(block.left+dx, block.top+dy)
+				end, err2 := excelize.CoordinatesToCellName(block.right+dx, block.bottom+dy)
+				if err1 != nil || err2 != nil {
+					return fmt.Errorf("array formula %s (%s) shifted to %s exceeds worksheet bounds", master, block.ref, dest)
+				}
+				arrayRef = start
+				if end != start {
+					arrayRef += ":" + end
+				}
+				break
+			}
+		}
+		if formula != "" && e.Operation != "copy-values" && e.Operation != "copy-formats" {
+			formula, err = TranslateFormula(formula, tx-x, ty-y)
+			if err != nil {
+				return err
+			}
+		}
+		v, err := f.GetCellValue(e.Sheet, source, excelize.Options{RawCellValue: true})
+		if err != nil {
+			return err
+		}
+		kind, err := f.GetCellType(e.Sheet, source)
+		if err != nil {
+			return err
+		}
+		style, err := f.GetCellStyle(e.Sheet, source)
+		if err != nil {
+			return err
+		}
+		rich, _ := f.GetCellRichText(e.Sheet, source)
+		anchor := dest
+		for _, merge := range mergedTargets {
+			if dx, dy := tx+col-x, ty+row-y; dx >= merge.left && dx <= merge.right && dy >= merge.top && dy <= merge.bottom {
+				anchor = merge.anchor
+				break
+			}
+		}
+		snapshot = append(snapshot, cell{dest, anchor, formula, v, kind, style, rich, arrayRef, arrayMember})
+		return nil
+	})
+	if err != nil {
+		return nil, err
 	}
 	typedValues := map[string]copiedCellValue{}
 	for _, c := range snapshot {

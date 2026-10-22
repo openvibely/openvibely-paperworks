@@ -158,15 +158,28 @@ func textBody(e Element, font string) string {
 	return authoredTextBody(e, font, false)
 }
 
+// forEachTextParagraph applies the shared legacy text and paragraph-run
+// fallbacks while leaving each text body's formatting policy to its caller.
+func forEachTextParagraph(e Element, visit func(Paragraph, []Run)) {
+	paragraphs := e.Paragraphs
+	if len(paragraphs) == 0 {
+		paragraphs = make([]Paragraph, 0, strings.Count(e.Text, "\n")+1)
+		for _, line := range strings.Split(e.Text, "\n") {
+			paragraphs = append(paragraphs, Paragraph{Text: line})
+		}
+	}
+	for _, paragraph := range paragraphs {
+		runs := paragraph.Runs
+		if len(runs) == 0 {
+			runs = []Run{{Text: paragraph.Text}}
+		}
+		visit(paragraph, runs)
+	}
+}
+
 func authoredTextBody(e Element, font string, inheritBold bool) string {
 	if e.InheritFormatting {
 		return inheritedTextBody(e)
-	}
-	paras := e.Paragraphs
-	if len(paras) == 0 {
-		for _, line := range strings.Split(e.Text, "\n") {
-			paras = append(paras, Paragraph{Text: line})
-		}
 	}
 	sz := e.FontSize
 	if sz == 0 {
@@ -182,16 +195,12 @@ func authoredTextBody(e Element, font string, inheritBold bool) string {
 	}
 	var b strings.Builder
 	b.WriteString(`<a:bodyPr wrap="square" lIns="91440" rIns="91440" tIns="45720" bIns="45720"/><a:lstStyle/>`)
-	for _, p := range paras {
+	forEachTextParagraph(e, func(p Paragraph, runs []Run) {
 		b.WriteString(`<a:p>`)
 		if p.Bullet {
 			fmt.Fprintf(&b, `<a:pPr algn="%s" lvl="%d" marL="%d" indent="-228600"><a:buChar char="•"/></a:pPr>`, align, p.Level, 342900+int64(p.Level)*228600)
 		} else {
 			fmt.Fprintf(&b, `<a:pPr algn="%s"><a:buNone/></a:pPr>`, align)
-		}
-		runs := p.Runs
-		if len(runs) == 0 {
-			runs = []Run{{Text: p.Text}}
 		}
 		for _, r := range runs {
 			bold, italic := 0, 0
@@ -237,7 +246,7 @@ func authoredTextBody(e Element, font string, inheritBold bool) string {
 			fmt.Fprintf(&b, `<a:r><a:rPr lang="en-US" sz="%d"%s%s><a:solidFill><a:srgbClr val="%s"/></a:solidFill><a:latin typeface="%s"/></a:rPr><a:t>%s</a:t></a:r>`, int(size*100), boldAttr, decoration, ink, esc(font), esc(r.Text))
 		}
 		fmt.Fprintf(&b, `<a:endParaRPr lang="en-US" sz="%d"/></a:p>`, int(sz*100))
-	}
+	})
 	return b.String()
 }
 
