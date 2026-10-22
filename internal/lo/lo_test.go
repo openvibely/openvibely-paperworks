@@ -17,6 +17,21 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
+func refreshCommandPath(t *testing.T, cmd *exec.Cmd, key string) string {
+	t.Helper()
+	value := ""
+	for _, entry := range cmd.Env {
+		if strings.HasPrefix(entry, key+"=") {
+			value = strings.TrimPrefix(entry, key+"=")
+		}
+	}
+	u, err := url.Parse(value)
+	if err != nil || u.Scheme != "file" {
+		t.Fatalf("invalid %s file URL %q: %v", key, value, err)
+	}
+	return filepath.FromSlash(u.Path)
+}
+
 func TestPlainXLSXRefreshCopiesWithoutLibreOffice(t *testing.T) {
 	dir := t.TempDir()
 	src := filepath.Join(dir, "plain.xlsx")
@@ -214,7 +229,7 @@ func TestRefreshUsesSingleIsolatedSecureProcess(t *testing.T) {
 			if err := os.WriteFile(src, original, 0600); err != nil {
 				t.Fatal(err)
 			}
-			var profile string
+			var profile, staged string
 			calls := 0
 			runner := commandRunner(func(cmd *exec.Cmd) ([]byte, error) {
 				calls++
@@ -271,8 +286,13 @@ func TestRefreshUsesSingleIsolatedSecureProcess(t *testing.T) {
 					if err != nil || !bytes.Contains(macro, []byte("calculateAll")) || !bytes.Contains(macro, []byte("MacroExecutionMode")) || !bytes.Contains(macro, []byte("NEVER_EXECUTE")) {
 						t.Fatal("secure refresh macro unavailable", err)
 					}
-					if env["PW_IN"] != FileURL(src) || env["PW_OUT"] != FileURL(dst) || env["PW_FILTER"] != tc.filter {
+					if env["PW_IN"] != FileURL(src) || env["PW_FILTER"] != tc.filter {
 						t.Fatal("refresh environment mismatch", env)
+					}
+					staged = refreshCommandPath(t, cmd, "PW_OUT")
+					stageRoot := filepath.Join(filepath.Dir(profile), "output") + string(os.PathSeparator)
+					if filepath.Base(staged) != filepath.Base(dst) || !strings.HasPrefix(staged, stageRoot) {
+						t.Fatal("refresh output was not isolated in the temporary stage", staged)
 					}
 					wantWhole := ""
 					if tc.wholeSheets {
@@ -281,7 +301,7 @@ func TestRefreshUsesSingleIsolatedSecureProcess(t *testing.T) {
 					if env["PW_WHOLE_SHEETS"] != wantWhole {
 						t.Fatal("whole-sheet flag mismatch", env["PW_WHOLE_SHEETS"])
 					}
-					if err := os.WriteFile(dst, []byte("successful refreshed output"), 0600); err != nil {
+					if err := os.WriteFile(staged, []byte("successful refreshed output"), 0600); err != nil {
 						t.Fatal(err)
 					}
 					return nil, os.WriteFile(env["PW_STATUS"], []byte("ok"), 0600)
@@ -298,6 +318,9 @@ func TestRefreshUsesSingleIsolatedSecureProcess(t *testing.T) {
 			}
 			if _, err := os.Stat(profile); !os.IsNotExist(err) {
 				t.Fatal("temporary profile not removed", err)
+			}
+			if _, err := os.Stat(staged); !os.IsNotExist(err) {
+				t.Fatal("temporary staged output not removed", err)
 			}
 			if !reflect.DeepEqual(os.Environ(), originalEnv) {
 				t.Fatal("process environment changed")
@@ -328,20 +351,15 @@ func TestFailedOfficeProcessCannotPublishSuccess(t *testing.T) {
 		t.Fatal(err)
 	}
 	calls := 0
+	var staged string
 	runner := commandRunner(func(cmd *exec.Cmd) ([]byte, error) {
 		calls++
 		if cmd.Args[len(cmd.Args)-1] != "macro:///Standard.Module1.Main" {
 			t.Fatal("unexpected process invocation", cmd.Args)
 		}
-		for _, v := range cmd.Env {
-			if strings.HasPrefix(v, "PW_STATUS=") {
-				if e := os.WriteFile(strings.TrimPrefix(v, "PW_STATUS="), []byte("ok"), 0600); e != nil {
-					t.Fatal(e)
-				}
-			}
-		}
-		if e := os.WriteFile(dst, []byte("partial"), 0600); e != nil {
-			t.Fatal(e)
+		staged = refreshCommandPath(t, cmd, "PW_OUT")
+		if err := os.WriteFile(staged, []byte("partial"), 0600); err != nil {
+			t.Fatal(err)
 		}
 		return []byte("failed after output creation"), errors.New("process failed")
 	})
@@ -354,6 +372,121 @@ func TestFailedOfficeProcessCannotPublishSuccess(t *testing.T) {
 	}
 	if _, err = os.Stat(dst); !os.IsNotExist(err) {
 		t.Fatal("failed output published", err)
+	}
+	if _, err = os.Stat(staged); !os.IsNotExist(err) {
+		t.Fatal("partial staged output retained", err)
+	}
+	data, err := os.ReadFile(src)
+	if err != nil || !bytes.Equal(data, original) {
+		t.Fatal("source changed", err)
+	}
+}
+
+func TestRefreshFailurePreservesExistingDestinationAndAliasedInput(t *testing.T) {
+	cases := []struct {
+		name, failure string
+		alias         bool
+	}{
+		{name: "process failure preserves existing destination", failure: "process"},
+		{name: "status failure preserves aliased input", failure: "status", alias: true},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			exe, err := os.Executable()
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Setenv("DOCUMENT_SOFFICE", exe)
+			dir := t.TempDir()
+			src := filepath.Join(dir, "input.xlsx")
+			dst := filepath.Join(dir, "output.xlsx")
+			original := []byte("source and existing output")
+			if err := os.WriteFile(src, original, 0600); err != nil {
+				t.Fatal(err)
+			}
+			if tc.alias {
+				dst = src
+			} else if err := os.WriteFile(dst, []byte("preexisting destination"), 0600); err != nil {
+				t.Fatal(err)
+			}
+			var staged string
+			runner := commandRunner(func(cmd *exec.Cmd) ([]byte, error) {
+				staged = refreshCommandPath(t, cmd, "PW_OUT")
+				if err := os.WriteFile(staged, []byte("partial staged result"), 0600); err != nil {
+					t.Fatal(err)
+				}
+				if tc.failure == "status" {
+					status := ""
+					for _, entry := range cmd.Env {
+						if strings.HasPrefix(entry, "PW_STATUS=") {
+							status = strings.TrimPrefix(entry, "PW_STATUS=")
+						}
+					}
+					if err := os.WriteFile(status, []byte("error: simulated refresh failure"), 0600); err != nil {
+						t.Fatal(err)
+					}
+					return nil, nil
+				}
+				return []byte("failed after output creation"), errors.New("process failed")
+			})
+			err = Refresh(context.WithValue(context.Background(), commandRunnerKey{}, runner), src, dst, true)
+			if err == nil {
+				t.Fatal("refresh unexpectedly succeeded")
+			}
+			if _, err := os.Stat(staged); !os.IsNotExist(err) {
+				t.Fatal("partial staged output retained", err)
+			}
+			data, err := os.ReadFile(src)
+			if err != nil || !bytes.Equal(data, original) {
+				t.Fatal("source changed after failed refresh", err)
+			}
+			if !tc.alias {
+				data, err := os.ReadFile(dst)
+				if err != nil || !bytes.Equal(data, []byte("preexisting destination")) {
+					t.Fatal("pre-existing destination changed after failed refresh", err)
+				}
+			}
+		})
+	}
+}
+
+func TestRefreshRejectsEmptyOutputWithoutPublishingIt(t *testing.T) {
+	exe, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("DOCUMENT_SOFFICE", exe)
+	dir := t.TempDir()
+	src := filepath.Join(dir, "input.xlsx")
+	dst := filepath.Join(dir, "output.xlsx")
+	original := []byte("original workbook")
+	if err := os.WriteFile(src, original, 0600); err != nil {
+		t.Fatal(err)
+	}
+	var staged string
+	runner := commandRunner(func(cmd *exec.Cmd) ([]byte, error) {
+		staged = refreshCommandPath(t, cmd, "PW_OUT")
+		if err := os.WriteFile(staged, nil, 0600); err != nil {
+			t.Fatal(err)
+		}
+		for _, entry := range cmd.Env {
+			if strings.HasPrefix(entry, "PW_STATUS=") {
+				if err := os.WriteFile(strings.TrimPrefix(entry, "PW_STATUS="), []byte("ok"), 0600); err != nil {
+					t.Fatal(err)
+				}
+			}
+		}
+		return nil, nil
+	})
+	err = Refresh(context.WithValue(context.Background(), commandRunnerKey{}, runner), src, dst, true)
+	if err == nil || !strings.Contains(err.Error(), "produced no output") {
+		t.Fatal("empty output should be rejected", err)
+	}
+	if _, err := os.Stat(dst); !os.IsNotExist(err) {
+		t.Fatal("empty output was published", err)
+	}
+	if _, err := os.Stat(staged); !os.IsNotExist(err) {
+		t.Fatal("empty staged output retained", err)
 	}
 	data, err := os.ReadFile(src)
 	if err != nil || !bytes.Equal(data, original) {
