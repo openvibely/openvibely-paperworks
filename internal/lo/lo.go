@@ -401,26 +401,28 @@ func Refresh(ctx context.Context, src, dst string, wholeSheets bool) error {
 	if err := s.installMacro(); err != nil {
 		return err
 	}
+	stageDir := filepath.Join(s.tmp, "output")
+	if err := os.MkdirAll(stageDir, 0o700); err != nil {
+		return err
+	}
+	staged := filepath.Join(stageDir, filepath.Base(dst))
 	status := filepath.Join(s.tmp, "status.txt")
-	env := []string{"PW_IN=" + FileURL(src), "PW_OUT=" + FileURL(dst), "PW_FILTER=" + filter, "PW_STATUS=" + status}
+	env := []string{"PW_IN=" + FileURL(src), "PW_OUT=" + FileURL(staged), "PW_FILTER=" + filter, "PW_STATUS=" + status}
 	if wholeSheets {
 		env = append(env, "PW_WHOLE_SHEETS=1")
 	}
-	runErr := s.run(ctx, env, "macro:///Standard.Module1.Main")
-	if runErr != nil {
-		os.Remove(dst)
-		return runErr
+	if err := s.run(ctx, env, "macro:///Standard.Module1.Main"); err != nil {
+		return err
 	}
 	msg, _ := os.ReadFile(status)
 	if st := strings.TrimSpace(string(msg)); st != "ok" {
-		os.Remove(dst)
 		if st == "" {
 			return errors.New("office refresh did not complete")
 		}
 		return fmt.Errorf("office refresh: %s", strings.TrimPrefix(st, "error: "))
 	}
-	if st, err := os.Stat(dst); err != nil || st.Size() == 0 {
+	if st, err := os.Stat(staged); err != nil || st.Size() == 0 {
 		return errors.New("office refresh produced no output")
 	}
-	return nil
+	return copyFileExclusive(staged, dst)
 }
