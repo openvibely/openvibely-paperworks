@@ -2,12 +2,17 @@ package pdf
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"image"
 	"image/draw"
+	"io/fs"
 	"math"
 	"os"
 	"path/filepath"
+	"runtime"
+	"runtime/debug"
+	"strings"
 	"sync"
 
 	pdfium "github.com/klippa-app/go-pdfium"
@@ -81,7 +86,7 @@ func initPool() (pdfium.Pool, error) {
 		MinIdle: 1, MaxIdle: 1, MaxTotal: 1, ReuseWorkers: true,
 		FSConfig: systemFontFS(),
 	}
-	if cache, dir := compilationCache(); cache != nil {
+	if cache, versionDir := compilationCache(); cache != nil {
 		cached := cfg
 		cached.RuntimeConfig = runtimeConfig().WithCompilationCache(cache)
 		p, err := webassembly.Init(cached)
@@ -89,19 +94,17 @@ func initPool() (pdfium.Pool, error) {
 			return p, nil
 		}
 		// wazero reports corrupt entries and failed writes as compile errors and
-		// never evicts them, so drop its versioned entries for the next run.
+		// never evicts them, so drop this version's entries for the next run.
 		_ = cache.Close(context.Background())
-		stale, _ := filepath.Glob(filepath.Join(dir, "wazero-*"))
-		for _, p := range stale {
-			_ = os.RemoveAll(p)
-		}
+		_ = os.RemoveAll(versionDir)
 	}
 	cfg.RuntimeConfig = runtimeConfig()
 	return webassembly.Init(cfg)
 }
 
-// compilationCache returns a persistent cache of compiled PDFium native code,
-// or nil when no private, writable cache directory is available.
+// compilationCache returns a persistent cache of compiled PDFium native code
+// and the wazero version directory holding its entries, or nil when no
+// private, writable cache directory is available.
 // PAPERWORKS_WASM_CACHE overrides the directory; "off" disables caching.
 func compilationCache() (wazero.CompilationCache, string) {
 	dir, ok := compilationCacheDir()
@@ -111,16 +114,87 @@ func compilationCache() (wazero.CompilationCache, string) {
 	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return nil, ""
 	}
-	// The cache holds executable code, so refuse directories others can write.
-	st, err := os.Stat(dir)
-	if err != nil || !st.IsDir() || st.Mode().Perm()&0o022 != 0 {
+	// The cache holds executable code, so every directory that could swap or
+	// plant entries must be controlled by this user (or root).
+	resolved, err := filepath.EvalSymlinks(dir)
+	if err != nil || !trustedCachePath(resolved) {
 		return nil, ""
 	}
-	cache, err := wazero.NewCompilationCacheWithDir(dir)
+	versionDir := filepath.Join(resolved, wazeroCacheSubdir())
+	if err := os.Mkdir(versionDir, 0o700); err != nil && !errors.Is(err, fs.ErrExist) {
+		return nil, ""
+	}
+	if !privateDir(versionDir) || !writableDir(versionDir) {
+		return nil, ""
+	}
+	cache, err := wazero.NewCompilationCacheWithDir(resolved)
 	if err != nil {
 		return nil, ""
 	}
-	return cache, dir
+	return cache, versionDir
+}
+
+// wazeroCacheSubdir mirrors the version-specific directory name chosen by
+// wazero.NewCompilationCacheWithDir.
+func wazeroCacheSubdir() string {
+	version := ""
+	if info, ok := debug.ReadBuildInfo(); ok {
+		for _, dep := range info.Deps {
+			if strings.Contains(dep.Path, "github.com/tetratelabs/wazero") {
+				version = dep.Version
+			}
+		}
+		if version == "" || version == "(devel)" {
+			version = info.Main.Version
+		}
+	}
+	if version == "" || version == "(devel)" {
+		version = "dev"
+	}
+	return "wazero-" + version + "-" + runtime.GOARCH + "-" + runtime.GOOS
+}
+
+// trustedCachePath reports whether dir is private to this user and no
+// ancestor lets another user replace it.
+func trustedCachePath(dir string) bool {
+	if !privateDir(dir) {
+		return false
+	}
+	for p := filepath.Dir(dir); ; p = filepath.Dir(p) {
+		st, err := os.Stat(p)
+		if err != nil || !st.IsDir() {
+			return false
+		}
+		owner, ok := fileOwner(st)
+		if !ok || (owner != cacheUID() && owner != 0) {
+			return false
+		}
+		if st.Mode().Perm()&0o022 != 0 && st.Mode()&fs.ModeSticky == 0 {
+			return false
+		}
+		if parent := filepath.Dir(p); parent == p {
+			return true
+		}
+	}
+}
+
+func privateDir(dir string) bool {
+	st, err := os.Lstat(dir)
+	if err != nil || !st.IsDir() || st.Mode().Perm()&0o022 != 0 {
+		return false
+	}
+	owner, ok := fileOwner(st)
+	return ok && owner == cacheUID()
+}
+
+func writableDir(dir string) bool {
+	f, err := os.CreateTemp(dir, ".probe-*")
+	if err != nil {
+		return false
+	}
+	name := f.Name()
+	_ = f.Close()
+	return os.Remove(name) == nil
 }
 
 func compilationCacheDir() (string, bool) {

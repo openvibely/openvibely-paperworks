@@ -105,12 +105,100 @@ func TestInitPoolRecoversFromCorruptCache(t *testing.T) {
 	if entries == 0 {
 		t.Fatal("expected cache entries after first init")
 	}
-	checkPool(t)
-	if stale, _ := filepath.Glob(filepath.Join(dir, "wazero-*")); len(stale) != 0 {
-		t.Fatalf("corrupt entries were not evicted: %v", stale)
+	unrelated := filepath.Join(dir, "wazero-unrelated")
+	if err := os.Mkdir(unrelated, 0o700); err != nil {
+		t.Fatal(err)
 	}
 	checkPool(t)
-	if fresh, _ := filepath.Glob(filepath.Join(dir, "wazero-*", "*")); len(fresh) == 0 {
+	versionDir := filepath.Join(dir, wazeroCacheSubdir())
+	if _, err := os.Stat(versionDir); !os.IsNotExist(err) {
+		t.Fatalf("corrupt entries were not evicted: %v", err)
+	}
+	if _, err := os.Stat(unrelated); err != nil {
+		t.Fatalf("cleanup removed an unrelated directory: %v", err)
+	}
+	checkPool(t)
+	if fresh, _ := filepath.Glob(filepath.Join(versionDir, "*")); len(fresh) == 0 {
 		t.Fatal("cache was not repopulated")
 	}
+}
+
+func TestCompilationCacheVersionDirMatchesWazero(t *testing.T) {
+	dir := t.TempDir()
+	t.Setenv("PAPERWORKS_WASM_CACHE", dir)
+	c, versionDir := compilationCache()
+	if c == nil {
+		t.Fatal("expected a cache")
+	}
+	_ = c.Close(context.Background())
+	entries, err := filepath.Glob(filepath.Join(dir, "wazero-*"))
+	if err != nil || len(entries) != 1 || filepath.Base(entries[0]) != filepath.Base(versionDir) {
+		t.Fatalf("wazero dirs %v, expected only %s", entries, versionDir)
+	}
+}
+
+func TestCompilationCacheRejectsForeignOwner(t *testing.T) {
+	if _, ok := fileOwner(mustStat(t, t.TempDir())); !ok {
+		t.Skip("ownership is not available on this platform")
+	}
+	dir := filepath.Join(t.TempDir(), "cache")
+	t.Setenv("PAPERWORKS_WASM_CACHE", dir)
+	if c, _ := compilationCache(); c == nil {
+		t.Fatal("expected a cache owned by the current user")
+	} else {
+		_ = c.Close(context.Background())
+	}
+	uid := cacheUID
+	cacheUID = func() int { return uid() + 1 }
+	t.Cleanup(func() { cacheUID = uid })
+	if c, _ := compilationCache(); c != nil {
+		t.Fatal("expected no cache in a directory owned by another user")
+	}
+}
+
+func TestCompilationCacheRejectsUnsafeParent(t *testing.T) {
+	if _, ok := fileOwner(mustStat(t, t.TempDir())); !ok {
+		t.Skip("ownership is not available on this platform")
+	}
+	shared := t.TempDir()
+	if err := os.Chmod(shared, 0o777); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PAPERWORKS_WASM_CACHE", filepath.Join(shared, "cache"))
+	if c, _ := compilationCache(); c != nil {
+		t.Fatal("expected no cache below a world-writable non-sticky directory")
+	}
+	if err := os.Chmod(shared, 0o777|os.ModeSticky); err != nil {
+		t.Fatal(err)
+	}
+	c, _ := compilationCache()
+	if c == nil {
+		t.Fatal("expected a cache below a sticky shared directory")
+	}
+	_ = c.Close(context.Background())
+}
+
+func TestCompilationCacheRejectsReadOnlyVersionDir(t *testing.T) {
+	if os.Getuid() == 0 {
+		t.Skip("root bypasses permissions")
+	}
+	dir := t.TempDir()
+	versionDir := filepath.Join(dir, wazeroCacheSubdir())
+	if err := os.Mkdir(versionDir, 0o500); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = os.Chmod(versionDir, 0o700) })
+	t.Setenv("PAPERWORKS_WASM_CACHE", dir)
+	if c, _ := compilationCache(); c != nil {
+		t.Fatal("expected no cache when entries cannot be written")
+	}
+}
+
+func mustStat(t *testing.T, p string) os.FileInfo {
+	t.Helper()
+	st, err := os.Stat(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return st
 }
