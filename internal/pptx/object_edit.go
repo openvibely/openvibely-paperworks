@@ -270,6 +270,11 @@ func editObject(pkg *opc.Package, part string, shape *etree.Element, e Edit) err
 				return err
 			}
 		}
+		if e.TextPaint != nil {
+			if err := paintTextProperties(pr, e.TextPaint); err != nil {
+				return err
+			}
+		}
 	case "image-mask":
 		if !office.Is(shape, pns, "pic") {
 			return fmt.Errorf("image-mask requires a picture")

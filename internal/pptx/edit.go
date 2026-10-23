@@ -16,6 +16,7 @@ type EditSpec struct {
 	Edits []Edit `json:"edits"`
 }
 type Edit struct {
+	TextPaint      *TextPaint      `json:"text_paint,omitempty"`
 	AutoLayout     *AutoLayout     `json:"auto_layout,omitempty"`
 	SVG            string          `json:"svg,omitempty"`
 	BackgroundFill *DrawingStyle   `json:"background_fill,omitempty"`
@@ -208,6 +209,10 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 		}
 		shape := matches[0].Parent().Parent()
 		switch op.Operation {
+		case "text-paint":
+			if err := paintTextBody(shape, op.TextPaint); err != nil {
+				return nil, err
+			}
 		case "text-box":
 			if err := styleTextBox(shape, op.TextBox); err != nil {
 				return nil, err
