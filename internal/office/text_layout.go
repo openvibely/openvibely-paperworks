@@ -57,7 +57,12 @@ func TextHeight(runs []TextRun, width float64, wrap bool) (float64, error) {
 			if err != nil || idx == 0 {
 				return 0, fmt.Errorf("font %s lacks glyph %U", r.Font, ch)
 			}
-			glyphs = append(glyphs, glyph{Advance(f, string(ch), r.Size), h, ch})
+			advance, err := f.GlyphAdvance(&b, idx, fixed.Int26_6(r.Size*64), font.HintingNone)
+			if err != nil {
+				// Advance historically ignores per-glyph advance errors.
+				advance = 0
+			}
+			glyphs = append(glyphs, glyph{float64(advance) / 64, h, ch})
 		}
 		if r.Text == "" && len(glyphs) == 0 {
 			glyphs = append(glyphs, glyph{height: h})
