@@ -17,54 +17,55 @@ type EditSpec struct {
 	Edits       []Edit                    `json:"edits"`
 }
 type Edit struct {
-	ShapeGeometry  *ShapeGeometry  `json:"shape_geometry,omitempty"`
-	CornerRadius   *float64        `json:"corner_radius_points,omitempty"`
-	Style          string          `json:"style,omitempty"`
-	Scope          string          `json:"scope,omitempty"`
-	ChartFormat    *ChartFormat    `json:"chart_format,omitempty"`
-	TableFormat    *TableFormat    `json:"table_format,omitempty"`
-	TextPaint      *TextPaint      `json:"text_paint,omitempty"`
-	AutoLayout     *AutoLayout     `json:"auto_layout,omitempty"`
-	SVG            string          `json:"svg,omitempty"`
-	BackgroundFill *DrawingStyle   `json:"background_fill,omitempty"`
-	TextBox        *TextBoxStyle   `json:"text_box,omitempty"`
-	Hidden         *bool           `json:"hidden,omitempty"`
-	EndRow         int             `json:"end_row,omitempty"`
-	EndColumn      int             `json:"end_column,omitempty"`
-	Paragraphs     []Paragraph     `json:"paragraphs,omitempty"`
-	ParagraphStyle *ParagraphStyle `json:"paragraph_style,omitempty"`
-	Hyperlink      *string         `json:"hyperlink,omitempty"`
-	Underline      *bool           `json:"underline,omitempty"`
-	Mask           string          `json:"mask,omitempty"`
-	DrawingStyle   *DrawingStyle   `json:"drawing_style,omitempty"`
-	Part           string          `json:"part,omitempty"`
-	Layout         *Layout         `json:"layout,omitempty"`
-	Slide          int             `json:"slide"`
-	ShapeID        string          `json:"shape_id"`
-	Operation      string          `json:"operation"`
-	Paragraph      int             `json:"paragraph"`
-	Run            int             `json:"run"`
-	Match          string          `json:"match"`
-	Occurrence     int             `json:"occurrence"`
-	Row            int             `json:"row"`
-	Column         int             `json:"column"`
-	Text           string          `json:"text"`
-	X              *float64        `json:"x,omitempty"`
-	Y              *float64        `json:"y,omitempty"`
-	W              *float64        `json:"w,omitempty"`
-	H              *float64        `json:"h,omitempty"`
-	Rotation       *float64        `json:"rotation,omitempty"`
-	FlipH          *bool           `json:"flip_h,omitempty"`
-	FlipV          *bool           `json:"flip_v,omitempty"`
-	Font           string          `json:"font,omitempty"`
-	FontSize       *float64        `json:"font_size,omitempty"`
-	Bold           *bool           `json:"bold,omitempty"`
-	Italic         *bool           `json:"italic,omitempty"`
-	Color          string          `json:"color,omitempty"`
-	Fill           string          `json:"fill,omitempty"`
-	Align          string          `json:"align,omitempty"`
-	Path           string          `json:"path,omitempty"`
-	Crop           *Crop           `json:"crop,omitempty"`
+	LockAspectRatio *bool           `json:"lock_aspect_ratio,omitempty"`
+	ShapeGeometry   *ShapeGeometry  `json:"shape_geometry,omitempty"`
+	CornerRadius    *float64        `json:"corner_radius_points,omitempty"`
+	Style           string          `json:"style,omitempty"`
+	Scope           string          `json:"scope,omitempty"`
+	ChartFormat     *ChartFormat    `json:"chart_format,omitempty"`
+	TableFormat     *TableFormat    `json:"table_format,omitempty"`
+	TextPaint       *TextPaint      `json:"text_paint,omitempty"`
+	AutoLayout      *AutoLayout     `json:"auto_layout,omitempty"`
+	SVG             string          `json:"svg,omitempty"`
+	BackgroundFill  *DrawingStyle   `json:"background_fill,omitempty"`
+	TextBox         *TextBoxStyle   `json:"text_box,omitempty"`
+	Hidden          *bool           `json:"hidden,omitempty"`
+	EndRow          int             `json:"end_row,omitempty"`
+	EndColumn       int             `json:"end_column,omitempty"`
+	Paragraphs      []Paragraph     `json:"paragraphs,omitempty"`
+	ParagraphStyle  *ParagraphStyle `json:"paragraph_style,omitempty"`
+	Hyperlink       *string         `json:"hyperlink,omitempty"`
+	Underline       *bool           `json:"underline,omitempty"`
+	Mask            string          `json:"mask,omitempty"`
+	DrawingStyle    *DrawingStyle   `json:"drawing_style,omitempty"`
+	Part            string          `json:"part,omitempty"`
+	Layout          *Layout         `json:"layout,omitempty"`
+	Slide           int             `json:"slide"`
+	ShapeID         string          `json:"shape_id"`
+	Operation       string          `json:"operation"`
+	Paragraph       int             `json:"paragraph"`
+	Run             int             `json:"run"`
+	Match           string          `json:"match"`
+	Occurrence      int             `json:"occurrence"`
+	Row             int             `json:"row"`
+	Column          int             `json:"column"`
+	Text            string          `json:"text"`
+	X               *float64        `json:"x,omitempty"`
+	Y               *float64        `json:"y,omitempty"`
+	W               *float64        `json:"w,omitempty"`
+	H               *float64        `json:"h,omitempty"`
+	Rotation        *float64        `json:"rotation,omitempty"`
+	FlipH           *bool           `json:"flip_h,omitempty"`
+	FlipV           *bool           `json:"flip_v,omitempty"`
+	Font            string          `json:"font,omitempty"`
+	FontSize        *float64        `json:"font_size,omitempty"`
+	Bold            *bool           `json:"bold,omitempty"`
+	Italic          *bool           `json:"italic,omitempty"`
+	Color           string          `json:"color,omitempty"`
+	Fill            string          `json:"fill,omitempty"`
+	Align           string          `json:"align,omitempty"`
+	Path            string          `json:"path,omitempty"`
+	Crop            *Crop           `json:"crop,omitempty"`
 }
 
 func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]string, error) {
@@ -225,6 +226,10 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 		}
 		shape := matches[0].Parent().Parent()
 		switch op.Operation {
+		case "image-lock":
+			if err := setPictureLock(shape, op.LockAspectRatio); err != nil {
+				return nil, err
+			}
 		case "shape-geometry":
 			if err := setShapeGeometry(shape, op.ShapeGeometry); err != nil {
 				return nil, err

@@ -95,6 +95,7 @@ type ImageAnchor struct {
 	Y float64 `json:"y"`
 }
 type Element struct {
+	LockAspectRatio   *bool          `json:"lock_aspect_ratio,omitempty"`
 	ShapeGeometry     *ShapeGeometry `json:"shape_geometry,omitempty"`
 	Style             string         `json:"style,omitempty"`
 	TableFormat       *TableFormat   `json:"table_format,omitempty"`
@@ -612,6 +613,12 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 						changed = true
 					}
 				}
+			}
+			if e.LockAspectRatio != nil {
+				if err := setPictureLock(shapes[j], e.LockAspectRatio); err != nil {
+					return err
+				}
+				changed = true
 			}
 			if e.ShapeGeometry != nil {
 				if err := setShapeGeometry(shapes[j], e.ShapeGeometry); err != nil {
