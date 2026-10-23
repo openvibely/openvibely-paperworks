@@ -16,6 +16,7 @@ type EditSpec struct {
 	Edits []Edit `json:"edits"`
 }
 type Edit struct {
+	ChartFormat    *ChartFormat    `json:"chart_format,omitempty"`
 	TableFormat    *TableFormat    `json:"table_format,omitempty"`
 	TextPaint      *TextPaint      `json:"text_paint,omitempty"`
 	AutoLayout     *AutoLayout     `json:"auto_layout,omitempty"`
@@ -167,7 +168,13 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 			}
 			continue
 		}
-		d, e := load(part)
+		var d *etree.Document
+		var e error
+		if op.Operation == "chart-format" && dirty[part] == nil {
+			d, e = p.XML(part)
+		} else {
+			d, e = load(part)
+		}
 		if e != nil {
 			return nil, e
 		}
@@ -210,6 +217,10 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 		}
 		shape := matches[0].Parent().Parent()
 		switch op.Operation {
+		case "chart-format":
+			if err := formatNativeChart(p, part, shape, op.ChartFormat); err != nil {
+				return nil, err
+			}
 		case "table-format":
 			if err := formatTable(shape, op.TableFormat); err != nil {
 				return nil, err

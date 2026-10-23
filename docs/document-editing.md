@@ -674,3 +674,27 @@ inspected `chart_part` and `values`; omitted categories retain existing labels.
 Funnel values must be nonnegative with at least one positive value. Waterfall
 values are signed increments. Binning and hierarchy paths do not apply.
 Linked workbook charts still use `chart-inputs`.
+
+### Targeted standard-chart formatting
+
+`slide-edit` operation `chart-format` selects an existing chart with `slide` and
+`shape_id`. It changes only supplied settings and preserves chart data, formula
+references, embedded workbooks, and placement. `chart_format` accepts:
+
+- `axes`: select an existing axis by its native `id` (`c:axId`). Set `visible`,
+  `title` (empty removes it), `minimum`, `maximum`, `major_unit`, or `number_format`.
+  Numeric bounds apply to value/date axes.
+- `legend`: `visible`, `position` (`b`, `t`, `l`, `r`, `tr`), and `overlay`.
+- `series`: select by zero-based document-order `index`. Set `fill`, `outline`
+  (the same paint objects used for text), or `labels` with `show_value`,
+  `show_category`, `show_series`, `show_percent`, `position`, `number_format`.
+  Percent labels apply to pie/doughnut families. Surface/stock labels are rejected.
+
+```json
+{"edits":[{"operation":"chart-format","slide":1,"shape_id":"2","chart_format":{"legend":{"position":"b"},"series":[{"index":0,"fill":{"fill":"336699"},"labels":{"show_value":true}}]}}]}
+```
+
+Read axis IDs from the chart XML identified by inspection; do not guess them.
+This operation edits the chart part itself, so references sharing that part see
+the same formatting. It does not style ChartEx charts or reconstruct image-only
+charts. Per-point label overrides remain intact.
