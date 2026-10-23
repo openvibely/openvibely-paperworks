@@ -5,6 +5,7 @@ import (
 	"github.com/beevik/etree"
 	"github.com/openvibely/openvibely-paperworks/internal/office"
 	"math"
+	"regexp"
 	"strconv"
 )
 
@@ -16,7 +17,11 @@ type TableStyleOptions struct {
 	BandedRows    *bool `json:"banded_rows,omitempty"`
 	BandedColumns *bool `json:"banded_columns,omitempty"`
 }
+
+var tableStyleGUID = regexp.MustCompile(`^\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\}$`)
+
 type TableFormat struct {
+	StyleID      string             `json:"style_id,omitempty"`
 	StyleOptions *TableStyleOptions `json:"style_options,omitempty"`
 
 	// Sizes are points. Omit an array to retain that axis.
@@ -43,6 +48,31 @@ func formatTable(shape *etree.Element, s *TableFormat) error {
 		return fmt.Errorf("one table required")
 	}
 	table := tables[0]
+	if s.StyleID != "" {
+		if !tableStyleGUID.MatchString(s.StyleID) {
+			return fmt.Errorf("table style_id must be a braced GUID")
+		}
+		pr := office.Child(table, ans, "tblPr")
+		if pr == nil {
+			pr = etree.NewElement("a:tblPr")
+			pr.CreateAttr("xmlns:a", ans)
+			table.InsertChildAt(0, pr)
+		}
+		id := office.Child(pr, ans, "tableStyleId")
+		if inline := office.Child(pr, ans, "tableStyle"); inline != nil {
+			pr.RemoveChild(inline)
+		}
+		if id == nil {
+			id = etree.NewElement("a:tableStyleId")
+			id.CreateAttr("xmlns:a", ans)
+			if ext := office.Child(pr, ans, "extLst"); ext != nil {
+				pr.InsertChildAt(ext.Index(), id)
+			} else {
+				pr.AddChild(id)
+			}
+		}
+		id.SetText(s.StyleID)
+	}
 	if s.StyleOptions != nil {
 		pr := office.Child(table, ans, "tblPr")
 		if pr == nil {

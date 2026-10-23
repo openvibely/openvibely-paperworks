@@ -983,3 +983,11 @@ in supporting viewers, not automatic resizing by subsequent CLI edits.
 existing settings. Existing style IDs and direct cell formatting remain unchanged.
 Flags select regions of the current native table style; direct formatting can
 mask their appearance. They do not insert rows or calculate totals.
+
+### Select a native PowerPoint table style (after RC4)
+
+`table_format.style_id` selects a built-in or already supplied style using its
+braced GUID, for creation and `table-format` edits. It replaces an inline style
+when present. It preserves region flags, cells and direct formatting. It does
+not import a custom style definition; supply one through creation style resources
+or use a style already defined in the deck. Verify appearance in the target viewer.
