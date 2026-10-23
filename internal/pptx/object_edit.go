@@ -3,7 +3,6 @@ package pptx
 import (
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/beevik/etree"
 	"github.com/openvibely/openvibely-paperworks/internal/office"
@@ -246,17 +245,9 @@ func editObject(pkg *opc.Package, part string, shape *etree.Element, e Edit) err
 			drawingChild(pr, "latin").CreateAttr("typeface", e.Font)
 		}
 		if e.Color != "" {
-			if _, err := color(e.Color, ""); err != nil {
+			if err := paintTextProperties(pr, &TextPaint{Fill: &DrawingStyle{Fill: e.Color}}); err != nil {
 				return err
 			}
-			for _, c := range pr.ChildElements() {
-				if strings.HasSuffix(c.Tag, "Fill") {
-					pr.RemoveChild(c)
-				}
-			}
-			f := etree.NewElement("a:solidFill")
-			f.CreateElement("a:srgbClr").CreateAttr("val", e.Color)
-			pr.InsertChildAt(0, f)
 		}
 
 		if e.Underline != nil {
