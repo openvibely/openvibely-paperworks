@@ -1,8 +1,9 @@
 package office
 
 import (
-	"github.com/beevik/etree"
 	"testing"
+
+	"github.com/beevik/etree"
 )
 
 func TestTextHeightWrapsRunsAndNewlines(t *testing.T) {
