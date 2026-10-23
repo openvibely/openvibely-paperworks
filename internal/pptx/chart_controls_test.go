@@ -246,3 +246,24 @@ func TestIndividualChartLabelInheritedNamespaces(t *testing.T) {
 		})
 	}
 }
+
+func TestChartTitleEdit(t *testing.T) {
+	in, _ := chartControlFixture(t, "line")
+	for _, title := range []string{"Revenue & costs", ""} {
+		d := editChartControl(t, in, ChartFormat{Title: &title})
+		chart := office.Child(d.Root(), cns, "chart")
+		got := office.Child(chart, cns, "title")
+		if title == "" {
+			if got != nil || office.Child(chart, cns, "autoTitleDeleted").SelectAttrValue("val", "") != "1" {
+				t.Fatal("title not removed")
+			}
+		} else {
+			if got == nil || office.All(got, ans, "t")[0].Text() != title {
+				t.Fatal("title not set")
+			}
+			if office.Child(chart, cns, "autoTitleDeleted").SelectAttrValue("val", "") != "0" {
+				t.Fatal("title hidden")
+			}
+		}
+	}
+}
