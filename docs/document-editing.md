@@ -252,8 +252,11 @@ paperworks preview-export input.pdf --output previews --format jpeg --columns 3
 ```
 
 Inspection selects JSON pointers or returns matching leaf values with their paths
-and an explicit truncation flag. XLSX sheet/range selection returns values and
-formulas for at most 10,000 cells; saved results may be stale.
+and an explicit truncation flag. A PPTX path such as `/slides/0` reads the slide
+referenced at that zero-based presentation position directly and returns its part
+name and XML; malformed unrelated package XML does not block that selection.
+XLSX sheet/range selection returns values and formulas for at most 10,000 cells;
+saved results may be stale.
 
 Preview export supports PNG/JPEG/lossless WebP plus optional PNG contact sheets. Each contact-sheet
 page uses a 320×420 white cell with a 24-pixel dark filename band. Its thumbnail is

@@ -212,6 +212,49 @@ func PackageReport(file string) (Report, error) {
 	return r, nil
 }
 
+// PresentationSlideSelection reads one slide without parsing unrelated package
+// XML parts. It returns the selected part name and its normalized XML snippet.
+func PresentationSlideSelection(file string, index int) (map[string]any, error) {
+	p, err := opc.Open(file)
+	if err != nil {
+		return nil, err
+	}
+	presentation, err := p.XML("ppt/presentation.xml")
+	if err != nil {
+		return nil, err
+	}
+	presentationRels, err := p.Rels("ppt/presentation.xml")
+	if err != nil {
+		return nil, err
+	}
+	var slideIDs []string
+	if list := Child(presentation.Root(), NSP, "sldIdLst"); list != nil {
+		for _, slide := range Children(list, NSP, "sldId") {
+			slideIDs = append(slideIDs, AttrV(slide, NSR, "id"))
+		}
+	}
+	if index < 0 || index >= len(slideIDs) {
+		return nil, fmt.Errorf("slide index out of range")
+	}
+	relationships := make(map[string]opc.Relationship, len(presentationRels))
+	for _, rel := range presentationRels {
+		relationships[rel.ID] = rel
+	}
+	rel, ok := relationships[slideIDs[index]]
+	if !ok || !strings.HasSuffix(rel.Type, "/slide") || rel.TargetMode == "External" {
+		return nil, fmt.Errorf("ppt/presentation.xml: slide %d has no valid slide relationship", index)
+	}
+	part := opc.Resolve("ppt/presentation.xml", rel.Target)
+	slide, err := p.XML(part)
+	if err != nil {
+		return nil, err
+	}
+	if !Is(slide.Root(), NSP, "sld") {
+		return nil, fmt.Errorf("%s: expected a presentation slide", part)
+	}
+	return map[string]any{"part": part, "xml": xmlString(slide.Root())}, nil
+}
+
 func PackageReportOf(p *opc.Package) (Report, error) {
 	roots, err := LoadXMLParts(p)
 	if err != nil {
