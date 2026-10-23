@@ -773,3 +773,11 @@ not the series values or workbook. Existing hidden-label settings are preserved.
 ```json
 {"operation":"chart-format","slide":1,"shape_id":"2","chart_format":{"series":[{"index":0,"label_overrides":[{"index":1,"text":"Priority","text_style":{"font_size":18,"bold":true},"position":"outEnd"}]}]}}
 ```
+
+### Axis placement (after RC4)
+
+`chart-format.axes` accepts `position` (`bottom`, `left`, `right`, `top`) and
+`tick_label_position` (`nextTo`, `high`, `low`, `none`). Select the inspected
+axis `id`; omitted settings are retained. This changes native placement flags,
+not axis-crossing values. Render to verify placement with the chart's existing
+crossing configuration.

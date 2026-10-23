@@ -157,6 +157,22 @@ func isChartFill(tag string) bool {
 	return false
 }
 func formatAxisExtras(axis *etree.Element, a ChartAxisFormat) error {
+	if a.Position != "" {
+		pos := map[string]string{"bottom": "b", "left": "l", "right": "r", "top": "t"}[a.Position]
+		if pos == "" {
+			return fmt.Errorf("axis position must be bottom, left, right or top")
+		}
+		chartEnsure(axis, "axPos", axisOrder).CreateAttr("val", pos)
+	}
+	if a.TickLabelPosition != "" {
+		switch a.TickLabelPosition {
+		case "nextTo", "high", "low", "none":
+		default:
+			return fmt.Errorf("invalid tick_label_position")
+		}
+		chartEnsure(axis, "tickLblPos", axisOrder).CreateAttr("val", a.TickLabelPosition)
+	}
+
 	if a.MinorUnit != nil {
 		if !finite(*a.MinorUnit) || *a.MinorUnit <= 0 {
 			return fmt.Errorf("minor_unit must be positive")
