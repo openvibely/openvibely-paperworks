@@ -627,3 +627,19 @@ one drawable position within its slide/group. At either end they do nothing.
 `front` and `back` still move to the ends. Example:
 `{"edits":[{"operation":"forward","slide":1,"shape_id":"2"}]}`.
 These change overlap order, not geometry or group membership.
+
+### Size-preserving automatic layout
+
+Use `auto_layout` on a created slide, or `slide-edit` with
+`{"edits":[{"operation":"auto-layout","slide":1,"auto_layout":{"shape_ids":["2","3"],"direction":"horizontal","x":1,"y":1,"width":10,"height":4,"align":"center","auto_gap":true}}]}`.
+It preserves object sizes and places them in the given order. Unlike `layout`,
+it does not resize shapes. Directions are `horizontal` and `vertical`.
+Alignment is `center`, `topLeft`, `topCenter`, `topRight`, `left`, `right`,
+`bottomLeft`, `bottomCenter` or `bottomRight`. Set a numeric `gap` or
+`auto_gap:true` to distribute free space between objects. A single object
+uses alignment. `padding_x`/`padding_y` inset both frame edges; all units are inches.
+Omit frame coordinates for the whole slide, or use `frame_shape_id` for an
+existing top-level shape's frame. The frame cannot also be a selected object.
+Objects need explicit geometry and must be top-level; inherited geometry and
+overflow fail instead of guessing or shrinking. Layout uses unrotated frames.
+Rerun after edits and inspect the render for rotated objects or overlapping content.
