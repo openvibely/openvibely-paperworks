@@ -89,18 +89,9 @@ func formatLabelOverrides(ser *etree.Element, overrides []ChartLabelOverride) er
 			rich := office.Child(tx, cns, "rich")
 			if rich != nil {
 				// Rich-text overrides carry their own run properties, which win over txPr.
-				holder := etree.NewElement("c:holder")
-				holder.CreateAttr("xmlns:c", cns)
-				copy := rich.Copy()
-				copy.Tag = "txPr"
-				copy.Space = "c"
-				holder.AddChild(copy)
-				if err := chartAppearance(holder, nil, nil, v.TextStyle, "txPr"); err != nil {
+				if err := formatChartTextBody(rich, v.TextStyle); err != nil {
 					return err
 				}
-				copy.Tag = "rich"
-				tx.RemoveChild(rich)
-				tx.AddChild(copy)
 			}
 		}
 	}

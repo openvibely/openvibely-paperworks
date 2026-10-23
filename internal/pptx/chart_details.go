@@ -69,86 +69,92 @@ func chartAppearance(parent *etree.Element, fill *DrawingStyle, outline *TextOut
 		}
 	}
 	if text != nil {
-		if text.FontSize != nil && (!finite(*text.FontSize) || *text.FontSize <= 0 || *text.FontSize > 400) {
-			return fmt.Errorf("chart font_size must be 0..400 points, exclusive of zero")
+		return formatChartTextBody(chartEnsure(parent, "txPr", order), text)
+	}
+	return nil
+}
+
+// Style the attached text body so inherited namespace bindings remain available.
+func formatChartTextBody(tx *etree.Element, text *ChartTextStyle) error {
+	if text.FontSize != nil && (!finite(*text.FontSize) || *text.FontSize <= 0 || *text.FontSize > 400) {
+		return fmt.Errorf("chart font_size must be 0..400 points, exclusive of zero")
+	}
+	if text.Color != "" && !hex.MatchString(text.Color) {
+		return fmt.Errorf("chart text color must be six hex digits")
+	}
+	tx.CreateAttr("xmlns:a", ans)
+	if office.Child(tx, ans, "bodyPr") == nil {
+		tx.InsertChildAt(0, etree.NewElement("a:bodyPr"))
+	}
+	if office.Child(tx, ans, "lstStyle") == nil {
+		tx.InsertChildAt(1, etree.NewElement("a:lstStyle"))
+	}
+	ps := office.Children(tx, ans, "p")
+	if len(ps) == 0 {
+		ps = []*etree.Element{tx.CreateElement("a:p")}
+	}
+	for _, p := range ps {
+		pp := office.Child(p, ans, "pPr")
+		if pp == nil {
+			pp = etree.NewElement("a:pPr")
+			p.InsertChildAt(0, pp)
 		}
-		if text.Color != "" && !hex.MatchString(text.Color) {
-			return fmt.Errorf("chart text color must be six hex digits")
-		}
-		tx := chartEnsure(parent, "txPr", order)
-		tx.CreateAttr("xmlns:a", ans)
-		if office.Child(tx, ans, "bodyPr") == nil {
-			tx.InsertChildAt(0, etree.NewElement("a:bodyPr"))
-		}
-		if office.Child(tx, ans, "lstStyle") == nil {
-			tx.InsertChildAt(1, etree.NewElement("a:lstStyle"))
-		}
-		ps := office.Children(tx, ans, "p")
-		if len(ps) == 0 {
-			ps = []*etree.Element{tx.CreateElement("a:p")}
-		}
-		for _, p := range ps {
-			pp := office.Child(p, ans, "pPr")
-			if pp == nil {
-				pp = etree.NewElement("a:pPr")
-				p.InsertChildAt(0, pp)
+		def := office.Child(pp, ans, "defRPr")
+		if def == nil {
+			def = etree.NewElement("a:defRPr")
+			if ext := office.Child(pp, ans, "extLst"); ext != nil {
+				pp.InsertChildAt(ext.Index(), def)
+			} else {
+				pp.AddChild(def)
 			}
-			def := office.Child(pp, ans, "defRPr")
-			if def == nil {
-				def = etree.NewElement("a:defRPr")
-				if ext := office.Child(pp, ans, "extLst"); ext != nil {
-					pp.InsertChildAt(ext.Index(), def)
-				} else {
-					pp.AddChild(def)
+		}
+		props := []*etree.Element{def}
+		props = append(props, office.All(p, ans, "rPr")...)
+		props = append(props, office.Children(p, ans, "endParaRPr")...)
+		for _, pr := range props {
+			pr.CreateAttr("xmlns:a", ans)
+			if text.FontSize != nil {
+				pr.CreateAttr("sz", strconv.Itoa(int(*text.FontSize*100)))
+			}
+			for _, b := range []struct {
+				k string
+				v *bool
+			}{{"b", text.Bold}, {"i", text.Italic}} {
+				if b.v != nil {
+					v := "0"
+					if *b.v {
+						v = "1"
+					}
+					pr.CreateAttr(b.k, v)
 				}
 			}
-			props := []*etree.Element{def}
-			props = append(props, office.All(p, ans, "rPr")...)
-			props = append(props, office.Children(p, ans, "endParaRPr")...)
-			for _, pr := range props {
-				pr.CreateAttr("xmlns:a", ans)
-				if text.FontSize != nil {
-					pr.CreateAttr("sz", strconv.Itoa(int(*text.FontSize*100)))
+			if text.Color != "" {
+				if err := paintTextProperties(pr, &TextPaint{Fill: &DrawingStyle{Fill: text.Color}}); err != nil {
+					return err
 				}
-				for _, b := range []struct {
-					k string
-					v *bool
-				}{{"b", text.Bold}, {"i", text.Italic}} {
-					if b.v != nil {
-						v := "0"
-						if *b.v {
-							v = "1"
+			}
+			if text.Font != "" {
+				latin := office.Child(pr, ans, "latin")
+				if latin == nil {
+					latin = etree.NewElement("a:latin")
+					i := len(pr.Child)
+					for _, c := range pr.ChildElements() {
+						switch c.Tag {
+						case "ea", "cs", "sym", "hlinkClick", "hlinkMouseOver", "rtl", "extLst":
+							i = c.Index()
+							goto insertFont
 						}
-						pr.CreateAttr(b.k, v)
 					}
+				insertFont:
+					pr.InsertChildAt(i, latin)
 				}
-				if text.Color != "" {
-					if err := paintTextProperties(pr, &TextPaint{Fill: &DrawingStyle{Fill: text.Color}}); err != nil {
-						return err
-					}
-				}
-				if text.Font != "" {
-					latin := office.Child(pr, ans, "latin")
-					if latin == nil {
-						latin = etree.NewElement("a:latin")
-						i := len(pr.Child)
-						for _, c := range pr.ChildElements() {
-							switch c.Tag {
-							case "ea", "cs", "sym", "hlinkClick", "hlinkMouseOver", "rtl", "extLst":
-								i = c.Index()
-								goto insertFont
-							}
-						}
-					insertFont:
-						pr.InsertChildAt(i, latin)
-					}
-					latin.CreateAttr("typeface", text.Font)
-				}
+				latin.CreateAttr("typeface", text.Font)
 			}
 		}
 	}
 	return nil
 }
+
 func isChartFill(tag string) bool {
 	switch tag {
 	case "noFill", "solidFill", "gradFill", "blipFill", "pattFill", "grpFill":
