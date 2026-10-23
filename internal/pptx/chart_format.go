@@ -17,32 +17,43 @@ type ChartFormat struct {
 	Series []ChartSeriesFormat `json:"series,omitempty"`
 }
 type ChartAxisFormat struct {
-	ID           string   `json:"id"` // c:axId from chart XML
-	Visible      *bool    `json:"visible,omitempty"`
-	Minimum      *float64 `json:"minimum,omitempty"`
-	Maximum      *float64 `json:"maximum,omitempty"`
-	MajorUnit    *float64 `json:"major_unit,omitempty"`
-	NumberFormat *string  `json:"number_format,omitempty"`
-	Title        *string  `json:"title,omitempty"`
+	ID            string          `json:"id"` // c:axId from chart XML
+	Visible       *bool           `json:"visible,omitempty"`
+	Minimum       *float64        `json:"minimum,omitempty"`
+	Maximum       *float64        `json:"maximum,omitempty"`
+	MinorUnit     *float64        `json:"minor_unit,omitempty"`
+	TextStyle     *ChartTextStyle `json:"text_style,omitempty"`
+	MajorGridline *TextOutline    `json:"major_gridline,omitempty"`
+	MinorGridline *TextOutline    `json:"minor_gridline,omitempty"`
+	MajorUnit     *float64        `json:"major_unit,omitempty"`
+	NumberFormat  *string         `json:"number_format,omitempty"`
+	Title         *string         `json:"title,omitempty"`
 }
 type ChartLegendFormat struct {
-	Visible  *bool  `json:"visible,omitempty"`
-	Position string `json:"position,omitempty"` // b,t,l,r,tr
-	Overlay  *bool  `json:"overlay,omitempty"`
+	Visible   *bool           `json:"visible,omitempty"`
+	Position  string          `json:"position,omitempty"` // b,t,l,r,tr
+	TextStyle *ChartTextStyle `json:"text_style,omitempty"`
+	Fill      *DrawingStyle   `json:"fill,omitempty"`
+	Outline   *TextOutline    `json:"outline,omitempty"`
+	Overlay   *bool           `json:"overlay,omitempty"`
 }
 type ChartSeriesFormat struct {
-	Index   int                `json:"index"` // zero-based order of c:ser in chart XML
-	Outline *TextOutline       `json:"outline,omitempty"`
-	Fill    *DrawingStyle      `json:"fill,omitempty"`
-	Labels  *ChartLabelsFormat `json:"labels,omitempty"`
+	Index      int                `json:"index"` // zero-based order of c:ser in chart XML
+	Outline    *TextOutline       `json:"outline,omitempty"`
+	Fill       *DrawingStyle      `json:"fill,omitempty"`
+	Points     []ChartPointFormat `json:"points,omitempty"`
+	Trendlines *[]ChartTrendline  `json:"trendlines,omitempty"`
+	ErrorBars  *ChartErrorBars    `json:"error_bars,omitempty"`
+	Labels     *ChartLabelsFormat `json:"labels,omitempty"`
 }
 type ChartLabelsFormat struct {
-	ShowValue    *bool   `json:"show_value,omitempty"`
-	ShowCategory *bool   `json:"show_category,omitempty"`
-	ShowSeries   *bool   `json:"show_series,omitempty"`
-	ShowPercent  *bool   `json:"show_percent,omitempty"`
-	Position     string  `json:"position,omitempty"`
-	NumberFormat *string `json:"number_format,omitempty"`
+	TextStyle    *ChartTextStyle `json:"text_style,omitempty"`
+	ShowValue    *bool           `json:"show_value,omitempty"`
+	ShowCategory *bool           `json:"show_category,omitempty"`
+	ShowSeries   *bool           `json:"show_series,omitempty"`
+	ShowPercent  *bool           `json:"show_percent,omitempty"`
+	Position     string          `json:"position,omitempty"`
+	NumberFormat *string         `json:"number_format,omitempty"`
 }
 
 // Insert schema-ordered optional children without disturbing unrelated nodes.
@@ -130,7 +141,7 @@ func formatNativeChart(p *opc.Package, owner string, shape *etree.Element, f *Ch
 		if axis == nil || a.ID == "" {
 			return fmt.Errorf("unknown axis id %q", a.ID)
 		}
-		if (a.Minimum != nil || a.Maximum != nil || a.MajorUnit != nil) && axis.Tag != "valAx" && axis.Tag != "dateAx" {
+		if (a.Minimum != nil || a.Maximum != nil || a.MajorUnit != nil || a.MinorUnit != nil) && axis.Tag != "valAx" && axis.Tag != "dateAx" {
 			return fmt.Errorf("numeric bounds require a value or date axis")
 		}
 		scaling := office.Child(axis, cns, "scaling")
@@ -179,6 +190,9 @@ func formatNativeChart(p *opc.Package, owner string, shape *etree.Element, f *Ch
 			}
 			chartEnsure(axis, "majorUnit", axisOrder).CreateAttr("val", strconv.FormatFloat(*a.MajorUnit, 'g', -1, 64))
 		}
+		if err := formatAxisExtras(axis, a); err != nil {
+			return err
+		}
 		if a.Visible != nil {
 			chartBool(axis, "delete", !*a.Visible, axisOrder)
 		}
@@ -210,7 +224,7 @@ func formatNativeChart(p *opc.Package, owner string, shape *etree.Element, f *Ch
 	}
 	if l := f.Legend; l != nil {
 		if l.Visible != nil && !*l.Visible {
-			if l.Position != "" || l.Overlay != nil {
+			if l.Position != "" || l.Overlay != nil || l.TextStyle != nil || l.Fill != nil || l.Outline != nil {
 				return fmt.Errorf("hidden legend cannot specify position or overlay")
 			}
 			if old := office.Child(chart, cns, "legend"); old != nil {
@@ -225,6 +239,9 @@ func formatNativeChart(p *opc.Package, owner string, shape *etree.Element, f *Ch
 					return fmt.Errorf("invalid legend position")
 				}
 				chartEnsure(legend, "legendPos", "legendPos legendEntry layout overlay spPr txPr extLst").CreateAttr("val", l.Position)
+			}
+			if err := chartAppearance(legend, l.Fill, l.Outline, l.TextStyle, "legendPos legendEntry layout overlay spPr txPr extLst"); err != nil {
+				return err
 			}
 			if l.Overlay != nil {
 				chartBool(legend, "overlay", *l.Overlay, "legendPos legendEntry layout overlay spPr txPr extLst")
@@ -271,6 +288,9 @@ func formatNativeChart(p *opc.Package, owner string, shape *etree.Element, f *Ch
 			}
 			sp.InsertChildAt(index, line)
 		}
+		if err := formatSeriesExtras(ser, s); err != nil {
+			return err
+		}
 		if l := s.Labels; l != nil {
 			switch kind {
 			case "barChart", "bar3DChart", "lineChart", "line3DChart", "pieChart", "pie3DChart", "doughnutChart", "ofPieChart", "areaChart", "area3DChart", "scatterChart", "bubbleChart", "radarChart":
@@ -282,6 +302,9 @@ func formatNativeChart(p *opc.Package, owner string, shape *etree.Element, f *Ch
 			}
 			labels := chartEnsure(ser, "dLbls", "idx order tx spPr invertIfNegative pictureOptions marker explosion dPt dLbls trendline errBars cat val xVal yVal bubbleSize bubble3D shape smooth extLst")
 			order := "dLbl delete numFmt spPr txPr dLblPos showLegendKey showVal showCatName showSerName showPercent showBubbleSize separator showLeaderLines leaderLines extLst"
+			if err := chartAppearance(labels, nil, nil, l.TextStyle, order); err != nil {
+				return err
+			}
 			if l.Position != "" {
 				switch l.Position {
 				case "bestFit", "b", "ctr", "inBase", "inEnd", "l", "outEnd", "r", "t":
