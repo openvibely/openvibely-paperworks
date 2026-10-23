@@ -17,7 +17,7 @@ func TestReplaceTextPreservesRenderedPageBreak(t *testing.T) {
 		{"after text", `<w:r><w:rPr><w:b/></w:rPr><w:t>Paver</w:t><w:lastRenderedPageBreak/></w:r>`, "Paver", "Finn", []string{"b,t:Finn,lastRenderedPageBreak"}},
 		{"across runs", bold("Pa") + `<w:r><w:lastRenderedPageBreak/><w:t>ver stays</w:t></w:r>`, "Paver", "Finn", []string{"b,t:Finn", "lastRenderedPageBreak,t: stays"}},
 		{"newline", `<w:r><w:rPr><w:b/></w:rPr><w:lastRenderedPageBreak/><w:t>Paver</w:t></w:r>`, "Paver", "Fin\nn", []string{"b,lastRenderedPageBreak,t:Fin,br,t:n"}},
-		{"tab with suffix marker", `<w:r><w:rPr><w:b/></w:rPr><w:t>IBM Paver end</w:t><w:lastRenderedPageBreak/></w:r>`, "Paver", "Fin\tn", []string{"b,t:IBM Fin,tab,t:n end,lastRenderedPageBreak"}},
+		{"tab with suffix marker", `<w:r><w:rPr><w:b/></w:rPr><w:t>IBM Paver end</w:t><w:lastRenderedPageBreak/></w:r>`, "Paver", "Fin\tn", []string{"b,t:IBM ", "b,t:Fin,tab,t:n", "b,t: end,lastRenderedPageBreak"}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			src := mk(t, "page-break", `<w:p>`+tc.runs+`</w:p><w:p>`+run("Unrelated Paver")+`</w:p>`, nil)
@@ -56,6 +56,42 @@ func TestRenderedPageBreakDoesNotMakeProtectedRunsEditable(t *testing.T) {
 		src := mk(t, "protected", body, nil)
 		if _, err := Edit(src, filepath.Join(t.TempDir(), "out.docx"), map[string]any{"operation": "replace-text", "paragraph": float64(0), "old": "Paver", "new": "Finn"}, ""); err == nil || !strings.Contains(err.Error(), "requested occurrence not found") {
 			t.Fatal("expected protected-content rejection", err, body)
+		}
+	}
+}
+
+func TestReplaceTextAfterRenderedPageBreakControlReplacement(t *testing.T) {
+	for _, placement := range []string{"before", "after", "both"} {
+		for _, replacement := range []string{"Fin\nn", "Fin\tn", "Fin\r\nn"} {
+			t.Run(placement+replacement, func(t *testing.T) {
+				before, after := "", ""
+				if placement != "after" {
+					before = "<w:lastRenderedPageBreak/>"
+				}
+				if placement != "before" {
+					after = "<w:lastRenderedPageBreak/>"
+				}
+				src := mk(t, "followup", `<w:p><w:r><w:rPr><w:b/></w:rPr>`+before+`<w:t>IBM Paver stays</w:t>`+after+`</w:r></w:p>`, nil)
+				out := filepath.Join(t.TempDir(), "out.docx")
+				edit := func(old, new string) map[string]any {
+					return map[string]any{"operation": "replace-text", "paragraph": float64(0), "old": old, "new": new}
+				}
+				if _, err := Edit(src, out, map[string]any{"operation": "batch", "edits": []any{edit("Paver", replacement), edit("stays", "remains"), edit("IBM", "Brand")}}, ""); err != nil {
+					t.Fatal(err)
+				}
+				prefix, suffix := "b,t:Brand ", "b,t: remains"
+				if before != "" {
+					prefix = "b,lastRenderedPageBreak,t:Brand "
+				}
+				if after != "" {
+					suffix += ",lastRenderedPageBreak"
+				}
+				control := "br"
+				if strings.Contains(replacement, "\t") {
+					control = "tab"
+				}
+				referenceEqual(t, runShape(storyParas(t, out, "word/document.xml")[0]), []string{prefix, "b,t:Fin," + control + ",t:n", suffix})
+			})
 		}
 	}
 }
