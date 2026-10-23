@@ -202,7 +202,7 @@ func Main(argv []string, stdout, stderr io.Writer) int {
 	if len(argv) == 0 || argv[0] == "help" || argv[0] == "--help" || argv[0] == "-h" {
 		if len(argv) > 1 {
 			if c := commands[argv[1]]; c != nil {
-				fmt.Fprintf(stdout, "%s\n\n%s\n", c.Summary, c.Usage)
+				printCommandHelp(stdout, c)
 				return ExitOK
 			}
 		}
@@ -222,7 +222,7 @@ func Main(argv []string, stdout, stderr io.Writer) int {
 	}
 	for _, s := range argv[1:] {
 		if s == "--help" || s == "-h" {
-			fmt.Fprintf(stdout, "%s\n\n%s\n", c.Summary, c.Usage)
+			printCommandHelp(stdout, c)
 			return ExitOK
 		}
 	}
@@ -273,6 +273,10 @@ func Main(argv []string, stdout, stderr io.Writer) int {
 	}
 	fmt.Fprintf(stderr, "paperworks %s: %s\n", c.Name, err)
 	return ExitFailure
+}
+
+func printCommandHelp(w io.Writer, c *Command) {
+	fmt.Fprintf(w, "%s\n\n%s\n", c.Summary, c.Usage)
 }
 
 func printHelp(w io.Writer) {
