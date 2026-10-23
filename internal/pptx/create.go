@@ -93,6 +93,7 @@ type ImageAnchor struct {
 	Y float64 `json:"y"`
 }
 type Element struct {
+	TableFormat       *TableFormat  `json:"table_format,omitempty"`
 	TextPaint         *TextPaint    `json:"text_paint,omitempty"`
 	SVG               string        `json:"svg,omitempty"`
 	TextBox           *TextBoxStyle `json:"text_box,omitempty"`
@@ -589,6 +590,12 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 		shapes := office.Child(office.Child(d.Root(), pns, "cSld"), pns, "spTree").ChildElements()[2:]
 		// Measure final paragraph formatting before sizing and positioning shapes.
 		for j, e := range slide.Elements {
+			if e.TableFormat != nil {
+				if err := formatTable(shapes[j], e.TableFormat); err != nil {
+					return err
+				}
+				changed = true
+			}
 			if e.TextPaint != nil {
 				if err := paintTextBody(shapes[j], e.TextPaint); err != nil {
 					return err
