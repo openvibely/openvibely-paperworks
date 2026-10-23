@@ -64,3 +64,36 @@ func TestPictureCornerRadius(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestAdditionalPictureMasks(t *testing.T) {
+	in := pictureMaskFixture(t)
+	for _, mask := range []string{"hexagon", "triangle", "diamond", "star5", "heart", "rightArrow"} {
+		t.Run(mask, func(t *testing.T) {
+			out := filepath.Join(t.TempDir(), "out.pptx")
+			if _, err := EditFile(context.Background(), in, out, EditSpec{Edits: []Edit{{Operation: "image-mask", Slide: 1, ShapeID: "2", Mask: mask}}}); err != nil {
+				t.Fatal(err)
+			}
+			p, err := opc.Open(out)
+			if err != nil {
+				t.Fatal(err)
+			}
+			d, err := p.XML("ppt/slides/slide1.xml")
+			if err != nil {
+				t.Fatal(err)
+			}
+			pic := office.All(d.Root(), pns, "pic")[0]
+			geom := office.Child(office.Child(pic, pns, "spPr"), ans, "prstGeom")
+			if geom.SelectAttrValue("prst", "") != mask {
+				t.Fatal("mask missing")
+			}
+			if _, err = office.VerifyPreservation(in, out, []string{"ppt/slides/slide1.xml"}); err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+	for _, mask := range []string{"bogus", "custom", "textbox"} {
+		if _, err := EditFile(context.Background(), in, filepath.Join(t.TempDir(), "bad.pptx"), EditSpec{Edits: []Edit{{Operation: "image-mask", Slide: 1, ShapeID: "2", Mask: mask}}}); err == nil {
+			t.Fatalf("invalid mask %s accepted", mask)
+		}
+	}
+}
