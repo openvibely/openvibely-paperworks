@@ -974,3 +974,12 @@ preset; use its documented adjustment names. Changing presets resets adjustments
 New image elements accept the same field. This changes native `noChangeAspect`
 without changing dimensions, crop or other locks. It controls interactive resizing
 in supporting viewers, not automatic resizing by subsequent CLI edits.
+
+### Native table style options (after RC4)
+
+`table_format.style_options` accepts optional boolean `header_row`, `total_row`,
+`first_column`, `last_column`, `banded_rows`, `banded_columns` for creation and
+`slide-edit` `table-format`. Explicit false disables a flag; omitted flags retain
+existing settings. Existing style IDs and direct cell formatting remain unchanged.
+Flags select regions of the current native table style; direct formatting can
+mask their appearance. They do not insert rows or calculate totals.
