@@ -664,3 +664,13 @@ Use `slide-edit` operation `table-format` with an inspected table shape ID, or `
 ```
 
 Sizes, margins and border widths are points. Size arrays cover the whole axis; omitted axes stay unchanged. The frame is synchronized to the grid. Cell indices are zero-based; target the origin of a merged cell. Borders use `left`, `right`, `top`, `bottom` and the text-outline fill definition. Cells also accept `fill` and `text_paint`. Omitted properties and cell text survive; these controls do not rebuild a table.
+
+### Waterfall and funnel data
+
+`extended-charts` can also add and replace literal data for `waterfall` and
+`funnel`. Use `--requirements` with `action`, `type`, `slide`, `position_emu`,
+`values`, and optional `categories` for creation. For `replace-data`, supply the
+inspected `chart_part` and `values`; omitted categories retain existing labels.
+Funnel values must be nonnegative with at least one positive value. Waterfall
+values are signed increments. Binning and hierarchy paths do not apply.
+Linked workbook charts still use `chart-inputs`.

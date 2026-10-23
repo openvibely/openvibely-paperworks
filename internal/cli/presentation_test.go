@@ -189,11 +189,11 @@ func TestReferenceNewChartInvalidDataNoOutput(t *testing.T) {
 	part := r["charts"].([]any)[0].(map[string]any)["chart"]
 	spec := writeSpec(t, t.TempDir(), "replace.json", map[string]any{"action": "replace-data", "chart_part": part, "values": []int{1, 2, 3}})
 	var stdout, stderr bytes.Buffer
-	if code := Main([]string{"extended-charts", source, "--output", out, "--requirements", spec}, &stdout, &stderr); code == 0 || !strings.Contains(stderr.String(), "data replacement is not supported") {
-		t.Fatalf("want unsupported replacement: %d %s", code, stderr.String())
+	if code := Main([]string{"extended-charts", source, "--output", out, "--requirements", spec}, &stdout, &stderr); code != 0 {
+		t.Fatalf("waterfall replacement: %d %s", code, stderr.String())
 	}
-	if _, e = os.Stat(out); !os.IsNotExist(e) {
-		t.Fatal("published unsupported replacement", e)
+	if _, e = os.Stat(out); e != nil {
+		t.Fatal("missing edited waterfall", e)
 	}
 	after, e := os.ReadFile(source)
 	if e != nil || !bytes.Equal(before, after) {
