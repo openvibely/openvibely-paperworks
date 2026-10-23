@@ -62,6 +62,7 @@ func EditFile(ctx context.Context, input, output, base string, spec EditSpec) er
 	}
 	defer func() { f.Close() }()
 	var sourceWorkbook *office.Workbook
+	var sourceFormulas *excelize.File
 	sourceSheetNames := map[string]string{}
 	var formulaSheetRenames []formulaSheetRename
 	for _, op := range spec.Edits {
@@ -76,6 +77,11 @@ func EditFile(ctx context.Context, input, output, base string, spec EditSpec) er
 		if err != nil {
 			return err
 		}
+		sourceFormulas, err = excelize.OpenFile(input)
+		if err != nil {
+			return err
+		}
+		defer func() { _ = sourceFormulas.Close() }()
 		for name := range sourceWorkbook.Sheets {
 			sourceSheetNames[name] = name
 		}
@@ -112,8 +118,14 @@ func EditFile(ctx context.Context, input, output, base string, spec EditSpec) er
 			}
 			continue
 		}
-		if err = applyEditWithSourceCache(f, base, op, sourceWorkbook, sourceSheetNames[op.Sheet], formulaSheetRenames); err != nil {
+		if err = applyEditWithSourceCache(f, base, op, sourceWorkbook, sourceFormulas, sourceSheetNames[op.Sheet], formulaSheetRenames); err != nil {
 			return fmt.Errorf("edit %d (%s): %w", i, op.Operation, err)
+		}
+		switch op.Operation {
+		case "add-sheet":
+			delete(sourceSheetNames, op.Name)
+		case "delete-sheet":
+			delete(sourceSheetNames, op.Sheet)
 		}
 	}
 	yes := true
@@ -130,10 +142,10 @@ func EditFile(ctx context.Context, input, output, base string, spec EditSpec) er
 	return opc.WriteNew(output, b.Bytes())
 }
 func applyEdit(f *excelize.File, base string, e Edit) error {
-	return applyEditWithSourceCache(f, base, e, nil, "", nil)
+	return applyEditWithSourceCache(f, base, e, nil, nil, "", nil)
 }
 
-func applyEditWithSourceCache(f *excelize.File, base string, e Edit, source *office.Workbook, sourceSheet string, renames []formulaSheetRename) error {
+func applyEditWithSourceCache(f *excelize.File, base string, e Edit, source *office.Workbook, formulas *excelize.File, sourceSheet string, renames []formulaSheetRename) error {
 	// Sheet-independent operations are explicitly enumerated, avoiding silent
 	// sheet creation on misspelled targets.
 	switch e.Operation {
@@ -234,7 +246,7 @@ func applyEditWithSourceCache(f *excelize.File, base string, e Edit, source *off
 		}
 		return f.SetCellStyle(e.Sheet, a, b, id)
 	case "autofit-rows":
-		return autofitRowsWithSourceCache(f, e, source, sourceSheet, renames)
+		return autofitRowsWithSourceCache(f, e, source, formulas, sourceSheet, renames)
 	case "autofit-columns":
 		return f.AutoFitColWidth(e.Sheet, e.Range)
 	case "column-width":
