@@ -234,19 +234,6 @@ func formatParagraph(p *etree.Element, s map[string]any) error {
 // carrying insert as w:t/w:tab/w:br, and suffix, all sharing the run's rPr.
 func splitRunReplace(t *etree.Element, prefix, insert, suffix string) {
 	r := t.Parent()
-	if child(r, "lastRenderedPageBreak") != nil {
-		// Expand only the text node so cached page boundaries retain their
-		// position and the run's formatting survives even for tabs/newlines.
-		replacement := W("r")
-		setRunText(replacement, prefix+strings.ReplaceAll(insert, "\r\n", "\n")+suffix)
-		idx := t.Index()
-		r.RemoveChild(t)
-		for _, c := range replacement.ChildElements() {
-			r.InsertChildAt(idx, c.Copy())
-			idx++
-		}
-		return
-	}
 	parent := r.Parent()
 	idx := r.Index()
 	mid := W("r")
@@ -257,6 +244,41 @@ func splitRunReplace(t *etree.Element, prefix, insert, suffix string) {
 	var tail *etree.Element
 	if suffix != "" {
 		tail = runSlice(r, suffix, false)
+	}
+	// Keep cached page boundaries on the same side of the replaced text.
+	// Prefix and suffix stay in separate runs so later edits can search them.
+	var before, after []*etree.Element
+	for _, c := range r.ChildElements() {
+		if is(c, "lastRenderedPageBreak") {
+			if c.Index() < t.Index() {
+				before = append(before, c.Copy())
+			} else {
+				after = append(after, c.Copy())
+			}
+			r.RemoveChild(c)
+		}
+	}
+	first := mid
+	if prefix != "" {
+		first = r
+	}
+	markerIndex := 0
+	if rp := child(r, "rPr"); rp != nil {
+		markerIndex = 1 // mid carries a copy of rPr as its first child.
+		if first == r {
+			markerIndex = rp.Index() + 1
+		}
+	}
+	for _, marker := range before {
+		first.InsertChildAt(markerIndex, marker)
+		markerIndex++
+	}
+	last := mid
+	if tail != nil {
+		last = tail
+	}
+	for _, marker := range after {
+		last.AddChild(marker)
 	}
 	if prefix == "" {
 		parent.RemoveChildAt(idx)
