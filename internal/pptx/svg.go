@@ -40,8 +40,10 @@ func loadSlideImage(path, svg string) ([]byte, imageDimensions, string, error) {
 	}
 	raster, format, err := image.DecodeConfig(bytes.NewReader(data))
 	cfg := imageDimensions{float64(raster.Width), float64(raster.Height)}
-	if err != nil && bytes.HasPrefix(bytes.TrimSpace(data), []byte("<")) {
-		cfg, err = svgConfig(data)
+	// Strip the optional UTF-8 BOM for detection/parsing only; embed the original bytes.
+	xmlData := bytes.TrimPrefix(data, []byte{0xef, 0xbb, 0xbf})
+	if err != nil && bytes.HasPrefix(bytes.TrimSpace(xmlData), []byte("<")) {
+		cfg, err = svgConfig(xmlData)
 		format = "svg"
 	}
 	if err != nil {
