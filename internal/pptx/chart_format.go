@@ -12,6 +12,7 @@ import (
 
 // ChartFormat changes only selected native formatting properties, retaining data.
 type ChartFormat struct {
+	Title        *string             `json:"title,omitempty"`
 	ChartFill    *DrawingStyle       `json:"chart_fill,omitempty"`
 	PlotAreaFill *DrawingStyle       `json:"plot_area_fill,omitempty"`
 	Axes         []ChartAxisFormat   `json:"axes,omitempty"`
@@ -127,6 +128,26 @@ func formatNativeChart(p *opc.Package, owner string, shape *etree.Element, f *Ch
 	plot := office.Child(chart, cns, "plotArea")
 	if plot == nil {
 		return fmt.Errorf("missing chart plot area")
+	}
+	if f.Title != nil {
+		if *f.Title == "" {
+			if old := office.Child(chart, cns, "title"); old != nil {
+				chart.RemoveChild(old)
+			}
+		} else {
+			title := chartEnsure(chart, "title", "title autoTitleDeleted pivotFmts view3D floor sideWall backWall plotArea legend plotVisOnly dispBlanksAs showDLblsOverMax extLst")
+			tx := chartEnsure(title, "tx", "tx layout overlay spPr txPr extLst")
+			for _, child := range tx.ChildElements() {
+				tx.RemoveChild(child)
+			}
+			rich := tx.CreateElement("c:rich")
+			rich.CreateAttr("xmlns:c", cns)
+			rich.CreateAttr("xmlns:a", ans)
+			rich.CreateElement("a:bodyPr")
+			rich.CreateElement("a:lstStyle")
+			rich.CreateElement("a:p").CreateElement("a:r").CreateElement("a:t").SetText(*f.Title)
+		}
+		chartBool(chart, "autoTitleDeleted", *f.Title == "", "title autoTitleDeleted pivotFmts view3D floor sideWall backWall plotArea legend plotVisOnly dispBlanksAs showDLblsOverMax extLst")
 	}
 	if err := chartAppearance(d.Root(), f.ChartFill, nil, nil, "date1904 lang roundedCorners AlternateContent style clrMapOvr pivotSource protection chart spPr txPr externalData printSettings userShapes extLst"); err != nil {
 		return err

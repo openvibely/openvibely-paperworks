@@ -805,3 +805,14 @@ axes and labels are retained. For example:
 ```json
 {"operation":"chart-format","slide":1,"shape_id":"2","chart_format":{"chart_fill":{"fill":"FFFFFF"},"plot_area_fill":{"fill":"F2F5F9"}}}
 ```
+
+
+## Edit a chart title (after RC4)
+
+Use `chart_format.title` with `slide-edit` to replace an existing standard
+chart title or add one: `{"operation":"chart-format","slide":1,"shape_id":"2","chart_format":{"title":"Revenue by quarter"}}`.
+An empty string removes the title and disables automatic titles. Omission
+preserves it. Replacement uses plain text instead of the previous title's
+formula/runs; title layout and other title properties remain. Chart data and
+the embedded workbook are unchanged. Verify a newer local build exposes
+`title` in `schema slide-edit`; render and inspect the result.
