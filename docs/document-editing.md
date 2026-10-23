@@ -513,8 +513,10 @@ Run through `workbook-edit`. Set final column widths and wrapping first; measure
 only the requested range (up to 10,000 cells). It uses formatted saved values,
 font metrics and rich-text runs, and changes the affected row heights. Include
 all columns whose content should determine those heights. Recalculate formula
-results beforehand; a formula without a saved value fails. Formatting changes
-can alter the displayed value, so fit after formatting too.
+results beforehand; a formula with no saved result fails. A saved empty-string
+result (`t="str"` with an empty `<v/>`) is treated as blank, so other visible
+cells determine the row height or an otherwise empty row uses its baseline height.
+Formatting changes can alter the displayed value, so fit after formatting too.
 
 Complete horizontal merges are supported. Vertical merges, rotated text,
 shrink-to-fit and unavailable fonts fail; results beyond Excel's 409.5-point row
