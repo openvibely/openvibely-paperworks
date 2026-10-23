@@ -38,13 +38,14 @@ type ChartLegendFormat struct {
 	Overlay   *bool           `json:"overlay,omitempty"`
 }
 type ChartSeriesFormat struct {
-	Index      int                `json:"index"` // zero-based order of c:ser in chart XML
-	Outline    *TextOutline       `json:"outline,omitempty"`
-	Fill       *DrawingStyle      `json:"fill,omitempty"`
-	Points     []ChartPointFormat `json:"points,omitempty"`
-	Trendlines *[]ChartTrendline  `json:"trendlines,omitempty"`
-	ErrorBars  *ChartErrorBars    `json:"error_bars,omitempty"`
-	Labels     *ChartLabelsFormat `json:"labels,omitempty"`
+	LabelOverrides []ChartLabelOverride `json:"label_overrides,omitempty"`
+	Index          int                  `json:"index"` // zero-based order of c:ser in chart XML
+	Outline        *TextOutline         `json:"outline,omitempty"`
+	Fill           *DrawingStyle        `json:"fill,omitempty"`
+	Points         []ChartPointFormat   `json:"points,omitempty"`
+	Trendlines     *[]ChartTrendline    `json:"trendlines,omitempty"`
+	ErrorBars      *ChartErrorBars      `json:"error_bars,omitempty"`
+	Labels         *ChartLabelsFormat   `json:"labels,omitempty"`
 }
 type ChartLabelsFormat struct {
 	TextStyle    *ChartTextStyle `json:"text_style,omitempty"`
@@ -287,6 +288,9 @@ func formatNativeChart(p *opc.Package, owner string, shape *etree.Element, f *Ch
 				}
 			}
 			sp.InsertChildAt(index, line)
+		}
+		if err := formatLabelOverrides(ser, s.LabelOverrides); err != nil {
+			return err
 		}
 		if err := formatSeriesExtras(ser, s); err != nil {
 			return err
