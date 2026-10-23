@@ -20,6 +20,9 @@ func replaceRichNotes(body *etree.Element, paragraphs []Paragraph, font string) 
 			return fmt.Errorf("invalid notes paragraph")
 		}
 		for _, r := range p.Runs {
+			if err := validateRunUnderline(r); err != nil {
+				return err
+			}
 			if r.Style != "" {
 				return fmt.Errorf("named run styles are supported for slide text, not notes")
 			}

@@ -93,7 +93,9 @@ func inheritedTextBody(e Element) string {
 			if r.Italic {
 				b.WriteString(` i="1"`)
 			}
-			if r.Underline {
+			if r.UnderlineStyle != "" {
+				b.WriteString(` u="` + esc(r.UnderlineStyle) + `"`)
+			} else if r.Underline {
 				b.WriteString(` u="sng"`)
 			}
 			ink := e.Color
