@@ -95,37 +95,38 @@ type ImageAnchor struct {
 	Y float64 `json:"y"`
 }
 type Element struct {
-	Style             string        `json:"style,omitempty"`
-	TableFormat       *TableFormat  `json:"table_format,omitempty"`
-	TextPaint         *TextPaint    `json:"text_paint,omitempty"`
-	SVG               string        `json:"svg,omitempty"`
-	TextBox           *TextBoxStyle `json:"text_box,omitempty"`
-	DrawingStyle      *DrawingStyle `json:"drawing_style,omitempty"`
-	Connector         *Connector    `json:"connector,omitempty"`
-	Commands          []PathCommand `json:"commands,omitempty"`
-	InheritFormatting bool          `json:"inherit_formatting,omitempty"`
-	Placeholder       string        `json:"placeholder"`
-	Anchor            *ImageAnchor  `json:"anchor"`
-	Fit               string        `json:"fit"`
-	Crop              *Crop         `json:"crop"`
-	Type              string        `json:"type"`
-	Name              string        `json:"name"`
-	X                 float64       `json:"x"`
-	Y                 float64       `json:"y"`
-	W                 float64       `json:"w"`
-	H                 float64       `json:"h"`
-	Text              string        `json:"text"`
-	Paragraphs        []Paragraph   `json:"paragraphs"`
-	FontSize          float64       `json:"font_size"`
-	Bold              bool          `json:"bold"`
-	Color             string        `json:"color"`
-	Fill              string        `json:"fill"`
-	Align             string        `json:"align"`
-	Shape             string        `json:"shape"`
-	Rows              [][]string    `json:"rows"`
-	Path              string        `json:"path"`
-	Description       string        `json:"description"`
-	Chart             *Chart        `json:"chart"`
+	ShapeGeometry     *ShapeGeometry `json:"shape_geometry,omitempty"`
+	Style             string         `json:"style,omitempty"`
+	TableFormat       *TableFormat   `json:"table_format,omitempty"`
+	TextPaint         *TextPaint     `json:"text_paint,omitempty"`
+	SVG               string         `json:"svg,omitempty"`
+	TextBox           *TextBoxStyle  `json:"text_box,omitempty"`
+	DrawingStyle      *DrawingStyle  `json:"drawing_style,omitempty"`
+	Connector         *Connector     `json:"connector,omitempty"`
+	Commands          []PathCommand  `json:"commands,omitempty"`
+	InheritFormatting bool           `json:"inherit_formatting,omitempty"`
+	Placeholder       string         `json:"placeholder"`
+	Anchor            *ImageAnchor   `json:"anchor"`
+	Fit               string         `json:"fit"`
+	Crop              *Crop          `json:"crop"`
+	Type              string         `json:"type"`
+	Name              string         `json:"name"`
+	X                 float64        `json:"x"`
+	Y                 float64        `json:"y"`
+	W                 float64        `json:"w"`
+	H                 float64        `json:"h"`
+	Text              string         `json:"text"`
+	Paragraphs        []Paragraph    `json:"paragraphs"`
+	FontSize          float64        `json:"font_size"`
+	Bold              bool           `json:"bold"`
+	Color             string         `json:"color"`
+	Fill              string         `json:"fill"`
+	Align             string         `json:"align"`
+	Shape             string         `json:"shape"`
+	Rows              [][]string     `json:"rows"`
+	Path              string         `json:"path"`
+	Description       string         `json:"description"`
+	Chart             *Chart         `json:"chart"`
 }
 
 func esc(s string) string { var b bytes.Buffer; xml.EscapeText(&b, []byte(s)); return b.String() }
@@ -611,6 +612,12 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 						changed = true
 					}
 				}
+			}
+			if e.ShapeGeometry != nil {
+				if err := setShapeGeometry(shapes[j], e.ShapeGeometry); err != nil {
+					return err
+				}
+				changed = true
 			}
 			if e.TableFormat != nil {
 				if err := formatTable(shapes[j], e.TableFormat); err != nil {

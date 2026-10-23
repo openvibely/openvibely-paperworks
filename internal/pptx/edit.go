@@ -17,6 +17,7 @@ type EditSpec struct {
 	Edits       []Edit                    `json:"edits"`
 }
 type Edit struct {
+	ShapeGeometry  *ShapeGeometry  `json:"shape_geometry,omitempty"`
 	CornerRadius   *float64        `json:"corner_radius_points,omitempty"`
 	Style          string          `json:"style,omitempty"`
 	Scope          string          `json:"scope,omitempty"`
@@ -224,6 +225,10 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 		}
 		shape := matches[0].Parent().Parent()
 		switch op.Operation {
+		case "shape-geometry":
+			if err := setShapeGeometry(shape, op.ShapeGeometry); err != nil {
+				return nil, err
+			}
 		case "apply-style":
 			if err := applyNamedStyle(p, part, shape, spec.NamedStyles, op.Style, op.Scope, op.Paragraph, op.Run); err != nil {
 				return nil, err
