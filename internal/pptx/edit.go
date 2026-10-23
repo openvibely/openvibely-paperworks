@@ -16,6 +16,7 @@ type EditSpec struct {
 	Edits []Edit `json:"edits"`
 }
 type Edit struct {
+	SVG            string          `json:"svg,omitempty"`
 	BackgroundFill *DrawingStyle   `json:"background_fill,omitempty"`
 	TextBox        *TextBoxStyle   `json:"text_box,omitempty"`
 	Hidden         *bool           `json:"hidden,omitempty"`

@@ -7,11 +7,9 @@ import (
 	"context"
 	"encoding/xml"
 	"fmt"
-	"image"
 	_ "image/jpeg"
 	_ "image/png"
 	"math"
-	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -94,6 +92,7 @@ type ImageAnchor struct {
 	Y float64 `json:"y"`
 }
 type Element struct {
+	SVG               string        `json:"svg,omitempty"`
 	TextBox           *TextBoxStyle `json:"text_box,omitempty"`
 	DrawingStyle      *DrawingStyle `json:"drawing_style,omitempty"`
 	Connector         *Connector    `json:"connector,omitempty"`
@@ -306,7 +305,7 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 		}
 	}
 	b := &builder{p: emptyPackage(), clock: clock}
-	b.ct.WriteString(`<Types xmlns="` + opc.NSCT + `"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Default Extension="jpg" ContentType="image/jpeg"/><Default Extension="xlsx" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>`)
+	b.ct.WriteString(`<Types xmlns="` + opc.NSCT + `"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="svg" ContentType="image/svg+xml"/><Default Extension="png" ContentType="image/png"/><Default Extension="jpg" ContentType="image/jpeg"/><Default Extension="xlsx" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"/>`)
 	if err := b.addTemplateResources(); err != nil {
 		return err
 	}
@@ -502,36 +501,16 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 				if !filepath.IsAbs(path) {
 					path = filepath.Join(base, path)
 				}
-				f, err := os.Open(path)
+				if e.SVG != "" && e.Path == "" {
+					path = ""
+				}
+				data, cfg, format, err := loadSlideImage(path, e.SVG)
 				if err != nil {
 					return err
 				}
-				info, err := f.Stat()
-				if err != nil {
-					f.Close()
-					return err
-				}
-				if !info.Mode().IsRegular() || info.Size() > 32<<20 {
-					f.Close()
-					return fmt.Errorf("image must be a regular file <=32 MiB")
-				}
-				cfg, format, err := image.DecodeConfig(f)
-				f.Close()
-				if err != nil {
-					return err
-				}
-				ext := "png"
+				ext := format
 				if format == "jpeg" {
 					ext = "jpg"
-				} else if format != "png" {
-					return fmt.Errorf("only PNG/JPEG images are supported")
-				}
-				if cfg.Width <= 0 || cfg.Height <= 0 || int64(cfg.Width)*int64(cfg.Height) > 100000000 {
-					return fmt.Errorf("image dimensions exceed limits")
-				}
-				data, err := os.ReadFile(path)
-				if err != nil {
-					return err
 				}
 				b.images++
 				name := fmt.Sprintf("image%d.%s", b.images, ext)

@@ -609,3 +609,13 @@ outline/shadow. For existing slides use `slide-edit` with
 Image fills use local paths relative to the spec and `stretch`, `cover` or `tile`.
 Cover uses the slide dimensions. This changes the actual background, not a
 full-slide shape. Render to check contrast and cropping.
+
+### SVG pictures
+
+Image elements accept a local `.svg` `path` or inline `svg` text instead of
+`path`. `replace-image` accepts the same sources. The SVG is embedded as vector
+image data; it is not converted to editable PowerPoint shapes or rasterized.
+Use self-contained SVG with embedded assets and positive width/height or a
+viewBox. Existing contain/cover/crop settings apply. SVG display requires an
+SVG-capable presentation application; no legacy raster fallback is generated.
+Render the saved deck to verify artwork, fonts and cropping.
