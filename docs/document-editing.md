@@ -956,3 +956,14 @@ Radius is in points, from zero to half the shorter picture side; picture dimensi
 {"edits":[{"operation":"image-mask","slide":1,"shape_id":"INSPECTED_ID","mask":"hexagon"}]}
 ```
 Names are case-sensitive. Unknown names, `textbox` and `custom` are rejected. A new mask uses the preset's default adjustments; keeping the same mask preserves existing adjustments. `corner_radius_points` remains restricted to rectangular masks. Use a newer local build and render the result; RC4 supports only the original three mask shapes.
+
+### Shape geometry (after RC4)
+
+`slide-edit` operation `shape-geometry` takes `shape_geometry` with optional
+`preset`, `corner_radius_points`, or `adjustments:[{"name":"adj","formula":"val 20000"}]`.
+The same object is accepted on new text/shape elements. Omitted preset retains
+existing preset geometry. Radius requires rect/roundRect and explicit dimensions;
+its range is zero to half the shorter side. Radius and adjustments are mutually
+exclusive. Supplied adjustments replace the list; `[]` clears it. Omission retains
+adjustments for the same preset. Formula guide names must resolve in the chosen
+preset; use its documented adjustment names. Changing presets resets adjustments.

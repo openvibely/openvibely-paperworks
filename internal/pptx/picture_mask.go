@@ -13,6 +13,10 @@ func setPictureMask(shape *etree.Element, mask string, radius *float64) error {
 	if !office.Is(shape, pns, "pic") {
 		return fmt.Errorf("image-mask requires a picture")
 	}
+	return setPresetGeometry(shape, mask, radius)
+}
+
+func setPresetGeometry(shape *etree.Element, mask string, radius *float64) error {
 	pr := office.Child(shape, pns, "spPr")
 	if pr == nil {
 		return fmt.Errorf("picture properties missing")
