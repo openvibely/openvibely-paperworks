@@ -43,6 +43,11 @@ type GradientFocus struct {
 	Bottom float64 `json:"bottom"`
 }
 type Outline struct {
+	HeadWidth  string `json:"head_width,omitempty"`
+	HeadLength string `json:"head_length,omitempty"`
+	TailWidth  string `json:"tail_width,omitempty"`
+	TailLength string `json:"tail_length,omitempty"`
+
 	Color string  `json:"color"`
 	Width float64 `json:"width"`
 	Dash  string  `json:"dash,omitempty"`
@@ -291,14 +296,29 @@ func styleDrawing(shape *etree.Element, s *DrawingStyle) error {
 			}
 			line.CreateElement("a:prstDash").CreateAttr("val", l.Dash)
 		}
-		for _, v := range []struct{ tag, value string }{{"headEnd", l.Head}, {"tailEnd", l.Tail}} {
+		for _, v := range []struct{ tag, value, width, length string }{{"headEnd", l.Head, l.HeadWidth, l.HeadLength}, {"tailEnd", l.Tail, l.TailWidth, l.TailLength}} {
+			if v.value == "" && (v.width != "" || v.length != "") {
+				return fmt.Errorf("arrow sizing requires an explicit arrow type")
+			}
+			for _, size := range []string{v.width, v.length} {
+				if size != "" && size != "sm" && size != "med" && size != "lg" {
+					return fmt.Errorf("arrow size must be sm, med or lg")
+				}
+			}
 			if v.value != "" {
 				switch v.value {
 				case "none", "triangle", "stealth", "diamond", "oval", "arrow":
 				default:
 					return fmt.Errorf("invalid arrow type")
 				}
-				line.CreateElement("a:"+v.tag).CreateAttr("type", v.value)
+				end := line.CreateElement("a:" + v.tag)
+				end.CreateAttr("type", v.value)
+				if v.width != "" {
+					end.CreateAttr("w", v.width)
+				}
+				if v.length != "" {
+					end.CreateAttr("len", v.length)
+				}
 			}
 		}
 		insertDrawingProperty(pr, line)
