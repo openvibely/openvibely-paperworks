@@ -6,6 +6,7 @@ import (
 	"github.com/beevik/etree"
 	"github.com/openvibely/openvibely-paperworks/internal/office"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
+	"github.com/xuri/excelize/v2"
 	"path/filepath"
 	"testing"
 )
@@ -116,5 +117,56 @@ func TestChartAxisPlacement(t *testing.T) {
 		if _, err := EditFile(context.Background(), in, filepath.Join(t.TempDir(), "bad.pptx"), EditSpec{Edits: []Edit{{Slide: 1, ShapeID: "2", Operation: "chart-format", ChartFormat: &f}}}); err == nil {
 			t.Fatal("accepted invalid axis placement")
 		}
+	}
+}
+
+func TestChartMarkerEditing(t *testing.T) {
+	in, _ := chartControlFixture(t, "line")
+	size := 12
+	f := ChartFormat{Series: []ChartSeriesFormat{{Index: 0, Marker: &ChartMarkerFormat{Symbol: "diamond", Size: &size, Fill: &DrawingStyle{Fill: "FF0000"}, Outline: &TextOutline{Width: 1, Fill: &DrawingStyle{Fill: "000000"}}}}}}
+	d := editChartControl(t, in, f)
+	m := office.Child(office.All(d.Root(), cns, "ser")[0], cns, "marker")
+	if office.Child(m, cns, "symbol").SelectAttrValue("val", "") != "diamond" || office.Child(m, cns, "size").SelectAttrValue("val", "") != "12" {
+		t.Fatal("marker not saved")
+	}
+	if office.All(m, ans, "srgbClr")[0].SelectAttrValue("val", "") != "FF0000" {
+		t.Fatal("marker color missing")
+	}
+	size = 73
+	if _, err := EditFile(context.Background(), in, filepath.Join(t.TempDir(), "bad.pptx"), EditSpec{Edits: []Edit{{Slide: 1, ShapeID: "2", Operation: "chart-format", ChartFormat: &f}}}); err == nil {
+		t.Fatal("invalid marker size accepted")
+	}
+}
+func TestChartCreationPreservesSeriesFormatting(t *testing.T) {
+	dir := t.TempDir()
+	out := filepath.Join(dir, "created.pptx")
+	opts := &excelize.Chart{Series: []excelize.ChartSeries{{Name: "Wrong!A1", Categories: "Wrong!A2:A3", Values: "Wrong!B2:B3", Sizes: "Wrong!C2:C3", Marker: excelize.ChartMarker{Symbol: "diamond", Size: 12, Fill: excelize.Fill{Color: []string{"FF0000"}}}, Line: excelize.LineOptions{Width: 3}}}}
+	c := &Chart{Type: "line", Categories: []string{"A", "B"}, Series: []Series{{Name: "Sales", Values: []float64{10, 20}}}, Options: opts}
+	if err := Create(context.Background(), Spec{Slides: []Slide{{Elements: []Element{{Type: "chart", W: 8, H: 5, Chart: c}}}}}, dir, out); err != nil {
+		t.Fatal(err)
+	}
+	pkg, err := opc.Open(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	d, err := pkg.XML("ppt/charts/chart1.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := office.VerifyChartData(pkg, "powerpoint"); err != nil {
+		t.Fatal(err)
+	}
+	ser := office.All(d.Root(), cns, "ser")[0]
+	m := office.Child(ser, cns, "marker")
+	if office.Child(m, cns, "symbol").SelectAttrValue("val", "") != "diamond" || office.Child(m, cns, "size").SelectAttrValue("val", "") != "12" {
+		t.Fatal("discarded creation marker options")
+	}
+	for _, f := range office.All(ser, cns, "f") {
+		if bytes.Contains([]byte(f.Text()), []byte("Wrong")) {
+			t.Fatal("retained supplied data reference")
+		}
+	}
+	if opts.Series[0].Name != "Wrong!A1" {
+		t.Fatal("mutated caller options")
 	}
 }

@@ -196,6 +196,11 @@ func formatAxisExtras(axis *etree.Element, a ChartAxisFormat) error {
 }
 func formatSeriesExtras(ser *etree.Element, s ChartSeriesFormat) error {
 	kind := ser.Parent().Tag
+	if s.Marker != nil {
+		if err := formatChartMarker(ser, s.Marker); err != nil {
+			return err
+		}
+	}
 	if len(s.Points) > 0 {
 		switch kind {
 		case "barChart", "bar3DChart", "lineChart", "line3DChart", "pieChart", "pie3DChart", "doughnutChart", "ofPieChart", "areaChart", "area3DChart", "scatterChart", "bubbleChart", "radarChart":

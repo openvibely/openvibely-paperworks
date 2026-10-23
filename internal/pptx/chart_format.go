@@ -40,6 +40,7 @@ type ChartLegendFormat struct {
 	Overlay   *bool           `json:"overlay,omitempty"`
 }
 type ChartSeriesFormat struct {
+	Marker         *ChartMarkerFormat   `json:"marker,omitempty"`
 	LabelOverrides []ChartLabelOverride `json:"label_overrides,omitempty"`
 	Index          int                  `json:"index"` // zero-based order of c:ser in chart XML
 	Outline        *TextOutline         `json:"outline,omitempty"`

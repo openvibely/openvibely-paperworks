@@ -805,6 +805,14 @@ func (b *builder) chart(ctx context.Context, c Chart, font string) (string, erro
 	if c.Options != nil {
 		chartOptions = *c.Options
 		chartOptions.Type = typ
+		if len(c.Options.Series) > len(series) {
+			return "", fmt.Errorf("chart options has more series than chart data")
+		}
+		for i, opts := range c.Options.Series {
+			data := series[i]
+			opts.Name, opts.Categories, opts.Values, opts.Sizes = data.Name, data.Categories, data.Values, data.Sizes
+			series[i] = opts
+		}
 		chartOptions.Series = series
 	}
 	if err := f.AddChart("Sheet1", "A20", &chartOptions); err != nil {
