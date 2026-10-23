@@ -42,12 +42,13 @@ type Spec struct {
 	Slides         []Slide         `json:"slides"`
 }
 type Slide struct {
-	Hidden          *bool       `json:"hidden,omitempty"`
-	NotesParagraphs []Paragraph `json:"notes_paragraphs,omitempty"`
-	Layout          *Layout     `json:"layout,omitempty"`
-	Background      string      `json:"background"`
-	Notes           string      `json:"notes"`
-	Elements        []Element   `json:"elements"`
+	BackgroundFill  *DrawingStyle `json:"background_fill,omitempty"`
+	Hidden          *bool         `json:"hidden,omitempty"`
+	NotesParagraphs []Paragraph   `json:"notes_paragraphs,omitempty"`
+	Layout          *Layout       `json:"layout,omitempty"`
+	Background      string        `json:"background"`
+	Notes           string        `json:"notes"`
+	Elements        []Element     `json:"elements"`
 }
 type Run struct {
 	Text      string  `json:"text"`
@@ -590,6 +591,15 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 		d, err := b.p.XML(name)
 		if err != nil {
 			return err
+		}
+		if slide.BackgroundFill != nil {
+			if slide.Background != "" {
+				return fmt.Errorf("background and background_fill are mutually exclusive")
+			}
+			if err := styleBackground(b.p, name, d.Root(), slide.BackgroundFill, base); err != nil {
+				return err
+			}
+			changed = true
 		}
 		if slide.Hidden != nil {
 			setSlideHidden(d.Root(), *slide.Hidden)

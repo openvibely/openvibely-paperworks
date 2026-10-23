@@ -16,6 +16,7 @@ type EditSpec struct {
 	Edits []Edit `json:"edits"`
 }
 type Edit struct {
+	BackgroundFill *DrawingStyle   `json:"background_fill,omitempty"`
 	TextBox        *TextBoxStyle   `json:"text_box,omitempty"`
 	Hidden         *bool           `json:"hidden,omitempty"`
 	EndRow         int             `json:"end_row,omitempty"`
@@ -165,6 +166,15 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 		d, e := load(part)
 		if e != nil {
 			return nil, e
+		}
+		if op.Operation == "background" {
+			if op.ShapeID != "" {
+				return nil, fmt.Errorf("background does not take shape_id")
+			}
+			if err := styleBackground(p, part, d.Root(), op.BackgroundFill, ""); err != nil {
+				return nil, err
+			}
+			continue
 		}
 		if op.Operation == "visibility" {
 			if op.Part != "" || op.Hidden == nil || op.ShapeID != "" {

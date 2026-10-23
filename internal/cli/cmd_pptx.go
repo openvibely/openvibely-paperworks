@@ -40,6 +40,9 @@ func init() {
 			return nil, err
 		}
 		for i := range s.Edits {
+			if style := s.Edits[i].BackgroundFill; style != nil && style.Image != nil && style.Image.Path != "" && !filepath.IsAbs(style.Image.Path) {
+				style.Image.Path = filepath.Join(filepath.Dir(a.Path("spec")), style.Image.Path)
+			}
 			if style := s.Edits[i].DrawingStyle; style != nil && style.Image != nil && style.Image.Path != "" && !filepath.IsAbs(style.Image.Path) {
 				style.Image.Path = filepath.Join(filepath.Dir(a.Path("spec")), style.Image.Path)
 			}
