@@ -58,3 +58,33 @@ func TestArrowheadSizes(t *testing.T) {
 		}
 	}
 }
+
+func TestLineCapsAndJoins(t *testing.T) {
+	for _, tc := range []struct{ cap, join, native string }{{"round", "bevel", "rnd"}, {"flat", "round", "flat"}, {"square", "miter", "sq"}} {
+		t.Run(tc.cap, func(t *testing.T) {
+			in := lineFixture(t, &Outline{Color: "000000", Width: 2, Cap: tc.cap, Join: tc.join})
+			check := func(path string) {
+				ln := savedLine(t, path)
+				if ln.SelectAttrValue("cap", "") != tc.native || office.Child(ln, ans, tc.join) == nil {
+					t.Fatal("line controls missing")
+				}
+			}
+			check(in)
+			out := filepath.Join(t.TempDir(), "out.pptx")
+			spec := EditSpec{Edits: []Edit{{Operation: "drawing-style", Slide: 1, ShapeID: "3", DrawingStyle: &DrawingStyle{Outline: &Outline{Color: "FF0000", Width: 3, Cap: tc.cap, Join: tc.join}}}}}
+			if _, err := EditFile(context.Background(), in, out, spec); err != nil {
+				t.Fatal(err)
+			}
+			check(out)
+			if _, err := office.VerifyPreservation(in, out, []string{"ppt/slides/slide1.xml"}); err != nil {
+				t.Fatal(err)
+			}
+			for _, bad := range []Outline{{Color: "000000", Width: 2, Cap: "bad"}, {Color: "000000", Width: 2, Join: "bad"}} {
+				spec.Edits[0].DrawingStyle.Outline = &bad
+				if _, err := EditFile(context.Background(), in, filepath.Join(t.TempDir(), "bad.pptx"), spec); err == nil {
+					t.Fatal("invalid line control accepted")
+				}
+			}
+		})
+	}
+}

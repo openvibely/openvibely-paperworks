@@ -43,6 +43,8 @@ type GradientFocus struct {
 	Bottom float64 `json:"bottom"`
 }
 type Outline struct {
+	Cap        string `json:"cap,omitempty"`
+	Join       string `json:"join,omitempty"`
 	HeadWidth  string `json:"head_width,omitempty"`
 	HeadLength string `json:"head_length,omitempty"`
 	TailWidth  string `json:"tail_width,omitempty"`
@@ -285,6 +287,17 @@ func styleDrawing(shape *etree.Element, s *DrawingStyle) error {
 		}
 		line := etree.NewElement("a:ln")
 		line.CreateAttr("w", strconv.FormatInt(int64(l.Width*12700), 10))
+		if l.Cap != "" {
+			cap := map[string]string{"flat": "flat", "round": "rnd", "square": "sq"}[l.Cap]
+			if cap == "" {
+				return fmt.Errorf("line cap must be flat, round or square")
+			}
+			line.CreateAttr("cap", cap)
+		}
+		if l.Join != "" && l.Join != "round" && l.Join != "bevel" && l.Join != "miter" {
+			return fmt.Errorf("line join must be round, bevel or miter")
+		}
+
 		if err := rgbaElement(line.CreateElement("a:solidFill"), l.Color, nil); err != nil {
 			return err
 		}
@@ -295,6 +308,9 @@ func styleDrawing(shape *etree.Element, s *DrawingStyle) error {
 				return fmt.Errorf("invalid line dash")
 			}
 			line.CreateElement("a:prstDash").CreateAttr("val", l.Dash)
+		}
+		if l.Join != "" {
+			line.CreateElement("a:" + l.Join)
 		}
 		for _, v := range []struct{ tag, value, width, length string }{{"headEnd", l.Head, l.HeadWidth, l.HeadLength}, {"tailEnd", l.Tail, l.TailWidth, l.TailLength}} {
 			if v.value == "" && (v.width != "" || v.length != "") {
