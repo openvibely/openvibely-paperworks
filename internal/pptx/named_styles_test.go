@@ -1,12 +1,14 @@
 package pptx
 
 import (
+	"bytes"
 	"context"
 	"github.com/beevik/etree"
 	"github.com/openvibely/openvibely-paperworks/internal/office"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -99,5 +101,94 @@ func TestNamedStyleKeepsHyperlinkAndFontOrder(t *testing.T) {
 	}
 	if office.AttrV(children[1], rns, "id") != "rId42" {
 		t.Fatal("lost hyperlink")
+	}
+}
+
+func TestNamedStyleAlignmentOnImportedSlide(t *testing.T) {
+	for _, scope := range []string{"shape", "paragraph"} {
+		for _, existing := range []bool{false, true} {
+			label := scope + "/missing-properties"
+			if existing {
+				label = scope + "/existing-properties"
+			}
+			t.Run(label, func(t *testing.T) {
+				dir := t.TempDir()
+				original := filepath.Join(dir, "original.pptx")
+				input := filepath.Join(dir, "imported.pptx")
+				output := filepath.Join(dir, "edited.pptx")
+				if err := Create(context.Background(), Spec{Slides: []Slide{{Elements: []Element{{Type: "text", Text: "Keep this text", W: 6, H: 2}}}}}, dir, original); err != nil {
+					t.Fatal(err)
+				}
+				pkg, err := opc.Open(original)
+				if err != nil {
+					t.Fatal(err)
+				}
+				part := "ppt/slides/slide1.xml"
+				raw := strings.NewReplacer("xmlns:a=", "xmlns:z=", "<a:", "<z:", "</a:", "</z:").Replace(string(pkg.Get(part)))
+				doc := etree.NewDocument()
+				if err := doc.ReadFromString(raw); err != nil {
+					t.Fatal(err)
+				}
+				for _, p := range office.All(doc.Root(), ans, "p") {
+					for _, pr := range office.Children(p, ans, "pPr") {
+						p.RemoveChild(pr)
+					}
+					if existing {
+						pr := etree.NewElement("z:pPr")
+						pr.CreateAttr("algn", "l")
+						pr.CreateAttr("marL", "12700")
+						p.InsertChildAt(0, pr)
+					}
+				}
+				if err := pkg.SetXML(part, doc); err != nil {
+					t.Fatal(err)
+				}
+				if err := pkg.SaveNew(input); err != nil {
+					t.Fatal(err)
+				}
+				yes := true
+				if _, err := EditFile(context.Background(), input, output, EditSpec{NamedStyles: map[string]NamedTextStyle{"Centered": {Align: "ctr", Bold: &yes}}, Edits: []Edit{{Slide: 1, ShapeID: "2", Operation: "apply-style", Style: "Centered", Scope: scope}}}); err != nil {
+					t.Fatal(err)
+				}
+				result, err := opc.Open(output)
+				if err != nil {
+					t.Fatal(err)
+				}
+				edited, err := result.XML(part)
+				if err != nil {
+					t.Fatal(err)
+				}
+				// etree accepts unresolved prefixes; check expanded names after serialization.
+				var check func(*etree.Element)
+				check = func(e *etree.Element) {
+					if e.Space != "" && e.NamespaceURI() == "" {
+						t.Fatalf("unbound prefix on %s:%s", e.Space, e.Tag)
+					}
+					for _, c := range e.ChildElements() {
+						check(c)
+					}
+				}
+				check(edited.Root())
+				p := office.All(edited.Root(), ans, "p")[0]
+				props := office.Children(p, ans, "pPr")
+				if len(props) != 1 || props[0].SelectAttrValue("algn", "") != "ctr" {
+					t.Fatal("expected one centered paragraph-properties node")
+				}
+				if existing && props[0].SelectAttrValue("marL", "") != "12700" {
+					t.Fatal("lost existing margin")
+				}
+				if office.All(p, ans, "t")[0].Text() != "Keep this text" {
+					t.Fatal("text changed")
+				}
+				if office.Child(props[0], ans, "defRPr").SelectAttrValue("b", "") != "1" {
+					t.Fatal("default formatting missing")
+				}
+				for _, originalPart := range pkg.Parts {
+					if originalPart.Name != part && !bytes.Equal(originalPart.Data, result.Get(originalPart.Name)) {
+						t.Fatal("changed unrelated part", originalPart.Name)
+					}
+				}
+			})
+		}
 	}
 }

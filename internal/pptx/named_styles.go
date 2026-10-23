@@ -87,17 +87,18 @@ func applyNamedStyle(pkg *opc.Package, part string, shape *etree.Element, styles
 			}
 			continue
 		}
-		if s.Align != "" {
-			if err := styleParagraph(p, &ParagraphStyle{Align: s.Align}); err != nil {
-				return err
-			}
-		}
 		pp := office.Child(p, ans, "pPr")
 		if pp == nil {
 			pp = etree.NewElement("a:pPr")
 			p.InsertChildAt(0, pp)
 		}
 		ensureDrawingPrefix(pp, p)
+		// Bind the new node before namespace-aware paragraph styling looks it up.
+		if s.Align != "" {
+			if err := styleParagraph(p, &ParagraphStyle{Align: s.Align}); err != nil {
+				return err
+			}
+		}
 		def := office.Child(pp, ans, "defRPr")
 		if def == nil {
 			def = etree.NewElement("a:defRPr")
