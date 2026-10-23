@@ -218,7 +218,24 @@ func formatSeriesExtras(ser *etree.Element, s ChartSeriesFormat) error {
 				target = newChartChild(ser, "dPt", seriesOrder)
 				target.CreateElement("c:idx").CreateAttr("val", strconv.Itoa(point.Index))
 			}
-			if err := chartAppearance(target, point.Fill, point.Outline, nil, "idx invertIfNegative marker bubble3D explosion spPr pictureOptions extLst"); err != nil {
+			appearance := target
+			order := "idx invertIfNegative marker bubble3D explosion spPr pictureOptions extLst"
+			switch kind {
+			case "lineChart", "line3DChart", "scatterChart", "radarChart":
+				if err := chartAppearance(target, point.Fill, point.Outline, nil, order); err != nil {
+					return err
+				}
+				appearance = chartEnsure(target, "marker", order)
+				if office.Child(appearance, cns, "symbol") == nil {
+					symbol := "auto"
+					if inherited := office.Child(office.Child(ser, cns, "marker"), cns, "symbol"); inherited != nil {
+						symbol = inherited.SelectAttrValue("val", "auto")
+					}
+					chartEnsure(appearance, "symbol", "symbol size spPr extLst").CreateAttr("val", symbol)
+				}
+				order = "symbol size spPr extLst"
+			}
+			if err := chartAppearance(appearance, point.Fill, point.Outline, nil, order); err != nil {
 				return err
 			}
 		}
