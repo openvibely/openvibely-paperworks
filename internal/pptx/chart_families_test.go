@@ -20,6 +20,9 @@ func TestAdditionalStandardCharts(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+			if _, err := office.VerifyChartData(p, "powerpoint"); err != nil {
+				t.Fatal(err)
+			}
 			d, err := p.XML("ppt/charts/chart1.xml")
 			if err != nil {
 				t.Fatal(err)
