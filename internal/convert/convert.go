@@ -79,6 +79,12 @@ func Convert(ctx context.Context, path, output string, o Options) (map[string]an
 		return nil, err
 	}
 	defer os.RemoveAll(temp)
+	destination := result
+	if o.reuseOutput {
+		// Refresh requires a fresh destination. Publish only after conversion
+		// succeeds, replacing the directory entry rather than a linked target.
+		result = filepath.Join(temp, filepath.Base(result))
+	}
 	source := path
 	if e == ".xlsx" && target == "pdf" {
 		dir := filepath.Join(temp, "selection")
@@ -146,6 +152,12 @@ func Convert(ctx context.Context, path, output string, o Options) (map[string]an
 	}
 	if st, err := os.Stat(result); err != nil || st.Size() == 0 {
 		return nil, errors.New("office conversion produced no output")
+	}
+	if o.reuseOutput {
+		if err := publishRenderPDF(result, destination); err != nil {
+			return nil, err
+		}
+		result = destination
 	}
 	if !o.Recalculate {
 		return map[string]any{"output": result, "visually_inspected": false}, nil

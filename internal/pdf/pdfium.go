@@ -348,16 +348,27 @@ func RenderPages(ctx context.Context, pdfPath, outDir string, opt RenderOptions)
 	var files []string
 	_, err = RenderImages(ctx, data, opt, func(page int, img *image.RGBA) error {
 		name := filepath.Join(outDir, fmt.Sprintf("page-%04d.png", page))
-		f, err := os.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o644)
+		f, err := os.CreateTemp(outDir, ".paperworks-page-*")
 		if err != nil {
 			return err
 		}
+		defer os.Remove(f.Name())
 		if err := encodePagePNG(f, img); err != nil {
 			f.Close()
 			return err
 		}
+		if err := f.Chmod(0o644); err != nil {
+			f.Close()
+			return err
+		}
+		if err := f.Close(); err != nil {
+			return err
+		}
+		if err := os.Rename(f.Name(), name); err != nil {
+			return err
+		}
 		files = append(files, name)
-		return f.Close()
+		return nil
 	})
 	if err != nil {
 		return nil, err
