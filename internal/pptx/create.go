@@ -620,12 +620,6 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 				}
 				changed = true
 			}
-			if e.ShapeGeometry != nil {
-				if err := setShapeGeometry(shapes[j], e.ShapeGeometry); err != nil {
-					return err
-				}
-				changed = true
-			}
 			if e.TableFormat != nil {
 				if err := formatTable(shapes[j], e.TableFormat); err != nil {
 					return err
@@ -687,6 +681,13 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 				}
 			}
 
+			// Resolve point-valued radii against the final layout dimensions.
+			if e.ShapeGeometry != nil {
+				if err := setShapeGeometry(shapes[j], e.ShapeGeometry); err != nil {
+					return err
+				}
+				changed = true
+			}
 			if e.DrawingStyle != nil {
 				if err := styleDrawingInPackage(b.p, name, shapes[j], e.DrawingStyle, base); err != nil {
 					return err
