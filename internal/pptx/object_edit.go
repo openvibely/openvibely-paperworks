@@ -223,50 +223,7 @@ func editObject(pkg *opc.Package, part string, shape *etree.Element, e Edit) err
 			ensureDrawingPrefix(pr, runs[e.Run])
 			runs[e.Run].InsertChildAt(0, pr)
 		}
-		if e.FontSize != nil {
-			if !finite(*e.FontSize) || *e.FontSize <= 0 || *e.FontSize > 400 {
-				return fmt.Errorf("invalid font_size")
-			}
-			pr.CreateAttr("sz", strconv.Itoa(int(*e.FontSize*100)))
-		}
-		for _, v := range []struct {
-			n string
-			p *bool
-		}{{"b", e.Bold}, {"i", e.Italic}} {
-			if v.p != nil {
-				s := "0"
-				if *v.p {
-					s = "1"
-				}
-				pr.CreateAttr(v.n, s)
-			}
-		}
-		if e.Font != "" {
-			drawingChild(pr, "latin").CreateAttr("typeface", e.Font)
-		}
-		if e.Color != "" {
-			if err := paintTextProperties(pr, &TextPaint{Fill: &DrawingStyle{Fill: e.Color}}); err != nil {
-				return err
-			}
-		}
-
-		if e.Underline != nil {
-			v := "none"
-			if *e.Underline {
-				v = "sng"
-			}
-			pr.CreateAttr("u", v)
-		}
-		if e.Hyperlink != nil {
-			if err := setHyperlink(pkg, part, pr, *e.Hyperlink); err != nil {
-				return err
-			}
-		}
-		if e.TextPaint != nil {
-			if err := paintTextProperties(pr, e.TextPaint); err != nil {
-				return err
-			}
-		}
+		return styleRunProperties(pkg, part, pr, e)
 	case "image-mask":
 		if !office.Is(shape, pns, "pic") {
 			return fmt.Errorf("image-mask requires a picture")
@@ -364,4 +321,74 @@ func addNotes(p *opc.Package, slide, text string) (string, error) {
 		}
 	}
 	return name, err
+}
+
+func styleRunProperties(pkg *opc.Package, part string, pr *etree.Element, e Edit) error {
+	if e.FontSize != nil {
+		if !finite(*e.FontSize) || *e.FontSize <= 0 || *e.FontSize > 400 {
+			return fmt.Errorf("invalid font_size")
+		}
+		pr.CreateAttr("sz", strconv.Itoa(int(*e.FontSize*100)))
+	}
+	for _, v := range []struct {
+		n string
+		p *bool
+	}{{"b", e.Bold}, {"i", e.Italic}} {
+		if v.p != nil {
+			s := "0"
+			if *v.p {
+				s = "1"
+			}
+			pr.CreateAttr(v.n, s)
+		}
+	}
+	if e.Font != "" {
+		setRunFont(pr, e.Font)
+	}
+	if e.Color != "" {
+		if err := paintTextProperties(pr, &TextPaint{Fill: &DrawingStyle{Fill: e.Color}}); err != nil {
+			return err
+		}
+	}
+
+	if e.Underline != nil {
+		v := "none"
+		if *e.Underline {
+			v = "sng"
+		}
+		pr.CreateAttr("u", v)
+	}
+	if e.Hyperlink != nil {
+		if err := setHyperlink(pkg, part, pr, *e.Hyperlink); err != nil {
+			return err
+		}
+	}
+	if e.TextPaint != nil {
+		if err := paintTextProperties(pr, e.TextPaint); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func setRunFont(pr *etree.Element, font string) {
+	latin := office.Child(pr, ans, "latin")
+	if latin == nil {
+		latin = etree.NewElement("a:latin")
+		latin.CreateAttr("xmlns:a", ans)
+		index := len(pr.Child)
+		for _, child := range pr.ChildElements() {
+			if child.NamespaceURI() != ans {
+				continue
+			}
+			switch child.Tag {
+			case "ea", "cs", "sym", "hlinkClick", "hlinkMouseOver", "rtl", "extLst":
+				index = child.Index()
+				goto insert
+			}
+		}
+	insert:
+		pr.InsertChildAt(index, latin)
+	}
+	latin.CreateAttr("typeface", font)
 }
