@@ -12,6 +12,8 @@ import (
 
 // ChartFormat changes only selected native formatting properties, retaining data.
 type ChartFormat struct {
+	TitleStyle      *ChartTextStyle     `json:"title_style,omitempty"`
+	TitleOverlay    *bool               `json:"title_overlay,omitempty"`
 	ChartOutline    *TextOutline        `json:"chart_outline,omitempty"`
 	PlotAreaOutline *TextOutline        `json:"plot_area_outline,omitempty"`
 	Title           *string             `json:"title,omitempty"`
@@ -158,6 +160,18 @@ func formatNativeChart(p *opc.Package, owner string, shape *etree.Element, f *Ch
 			rich.CreateElement("a:p").CreateElement("a:r").CreateElement("a:t").SetText(*f.Title)
 		}
 		chartBool(chart, "autoTitleDeleted", *f.Title == "", "title autoTitleDeleted pivotFmts view3D floor sideWall backWall plotArea legend plotVisOnly dispBlanksAs showDLblsOverMax extLst")
+	}
+	if f.TitleStyle != nil || f.TitleOverlay != nil {
+		title := office.Child(chart, cns, "title")
+		if title == nil {
+			return fmt.Errorf("title formatting requires an existing or nonempty new title")
+		}
+		if f.TitleOverlay != nil {
+			chartBool(title, "overlay", *f.TitleOverlay, "tx layout overlay spPr txPr extLst")
+		}
+		if err := formatChartRichText(title, f.TitleStyle, "tx layout overlay spPr txPr extLst"); err != nil {
+			return err
+		}
 	}
 	if err := chartAppearance(d.Root(), f.ChartFill, f.ChartOutline, nil, "date1904 lang roundedCorners AlternateContent style clrMapOvr pivotSource protection chart spPr txPr externalData printSettings userShapes extLst"); err != nil {
 		return err
