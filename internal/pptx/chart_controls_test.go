@@ -8,6 +8,7 @@ import (
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 	"github.com/xuri/excelize/v2"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -200,5 +201,48 @@ func TestChartBackgroundFills(t *testing.T) {
 	}
 	if root[index+1].Tag != "spPr" {
 		t.Fatal("chart fill order invalid")
+	}
+}
+
+func TestIndividualChartLabelInheritedNamespaces(t *testing.T) {
+	for _, prefix := range []string{"a", "z", ""} {
+		t.Run("prefix="+prefix, func(t *testing.T) {
+			binding, qualified := "xmlns", ""
+			if prefix != "" {
+				binding += ":" + prefix
+				qualified = prefix + ":"
+			}
+			xml := `<c:chartSpace xmlns:c="` + cns + `" ` + binding + `="` + ans + `"><c:chart><c:plotArea><c:lineChart><c:ser><c:idx val="0"/><c:order val="0"/><c:dLbls><c:dLbl><c:idx val="0"/><c:tx><c:rich><DRAW:bodyPr/><DRAW:lstStyle/><DRAW:p><DRAW:r><DRAW:rPr sz="1200" i="1"/><DRAW:t>Original</DRAW:t></DRAW:r></DRAW:p></c:rich></c:tx></c:dLbl></c:dLbls><c:val><c:numLit><c:ptCount val="1"/><c:pt idx="0"><c:v>1</c:v></c:pt></c:numLit></c:val></c:ser></c:lineChart></c:plotArea></c:chart></c:chartSpace>`
+			d := etree.NewDocument()
+			if err := d.ReadFromString(strings.ReplaceAll(xml, "DRAW:", qualified)); err != nil {
+				t.Fatal(err)
+			}
+			size := 20.0
+			if err := formatLabelOverrides(office.All(d.Root(), cns, "ser")[0], []ChartLabelOverride{{Index: 0, TextStyle: &ChartTextStyle{FontSize: &size}}}); err != nil {
+				t.Fatal(err)
+			}
+			raw, err := d.WriteToBytes()
+			if err != nil {
+				t.Fatal(err)
+			}
+			saved := etree.NewDocument()
+			if err := saved.ReadFromBytes(raw); err != nil {
+				t.Fatal(err)
+			}
+			rich := office.All(saved.Root(), cns, "rich")[0]
+			for _, tag := range []string{"bodyPr", "lstStyle", "p"} {
+				if got := len(office.Children(rich, ans, tag)); got != 1 {
+					t.Fatalf("%s count = %d, want 1", tag, got)
+				}
+			}
+			runs := office.All(rich, ans, "rPr")
+			if len(runs) != 1 || runs[0].SelectAttrValue("sz", "") != "2000" || runs[0].SelectAttrValue("i", "") != "1" {
+				t.Fatalf("run style not updated/preserved: %s", raw)
+			}
+			texts := office.All(rich, ans, "t")
+			if len(texts) != 1 || texts[0].Text() != "Original" {
+				t.Fatalf("label text changed: %s", raw)
+			}
+		})
 	}
 }
