@@ -221,6 +221,7 @@ func editObject(pkg *opc.Package, part string, shape *etree.Element, e Edit) err
 		pr := office.Child(runs[e.Run], ans, "rPr")
 		if pr == nil {
 			pr = etree.NewElement("a:rPr")
+			ensureDrawingPrefix(pr, runs[e.Run])
 			runs[e.Run].InsertChildAt(0, pr)
 		}
 		if e.FontSize != nil {
