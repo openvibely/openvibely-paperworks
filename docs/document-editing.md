@@ -794,3 +794,14 @@ such as `Marker`, `Line`, `DataLabel`). `Name`, `Categories`, `Values`, and `Siz
 are always replaced with references to the generated workbook. Options map to
 series by index; more options than data series is an error. Missing entries use
 default formatting. This applies to standard charts, not ChartEx creation.
+
+### Existing chart backgrounds (after RC4)
+
+`chart-format` accepts `chart_fill` for the outer chart area and `plot_area_fill`
+for the plot interior. Each uses a solid, gradient or pattern `DrawingStyle`;
+image fills, shadows and embedded outlines are rejected. Existing borders, data,
+axes and labels are retained. For example:
+
+```json
+{"operation":"chart-format","slide":1,"shape_id":"2","chart_format":{"chart_fill":{"fill":"FFFFFF"},"plot_area_fill":{"fill":"F2F5F9"}}}
+```
