@@ -51,6 +51,7 @@ type Slide struct {
 	Elements        []Element     `json:"elements"`
 }
 type Run struct {
+	Hyperlink      string  `json:"hyperlink,omitempty"`
 	UnderlineStyle string  `json:"underline_style,omitempty"`
 	Font           string  `json:"font,omitempty"`
 	Style          string  `json:"style,omitempty"`
@@ -626,6 +627,16 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 					}
 				}
 			}
+			if err := applyRunHyperlinks(b.p, name, office.Child(shapes[j], pns, "txBody"), e.Paragraphs); err != nil {
+				return err
+			}
+			for _, para := range e.Paragraphs {
+				for _, run := range para.Runs {
+					if run.Hyperlink != "" {
+						changed = true
+					}
+				}
+			}
 			if e.LockAspectRatio != nil {
 				if err := setPictureLock(shapes[j], e.LockAspectRatio); err != nil {
 					return err
@@ -633,7 +644,7 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 				changed = true
 			}
 			if e.TableFormat != nil {
-				if err := formatTable(shapes[j], e.TableFormat); err != nil {
+				if err := formatTable(b.p, name, shapes[j], e.TableFormat); err != nil {
 					return err
 				}
 				changed = true
@@ -720,7 +731,7 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 			if len(bodies) != 1 {
 				return fmt.Errorf("notes body is ambiguous")
 			}
-			if err := replaceRichNotes(bodies[0], slide.NotesParagraphs, s.Font); err != nil {
+			if err := replaceRichNotes(b.p, notesPart, bodies[0], slide.NotesParagraphs, s.Font); err != nil {
 				return err
 			}
 			if err := b.p.SetXML(notesPart, nd); err != nil {

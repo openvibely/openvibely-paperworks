@@ -169,7 +169,7 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 				if op.Text != "" {
 					return nil, fmt.Errorf("notes text and paragraphs are mutually exclusive")
 				}
-				if err := replaceRichNotes(bodies[0], op.Paragraphs, "Arial"); err != nil {
+				if err := replaceRichNotes(p, notes, bodies[0], op.Paragraphs, "Arial"); err != nil {
 					return nil, err
 				}
 			} else {
@@ -243,7 +243,7 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 				return nil, err
 			}
 		case "table-format":
-			if err := formatTable(shape, op.TableFormat); err != nil {
+			if err := formatTable(p, part, shape, op.TableFormat); err != nil {
 				return nil, err
 			}
 		case "text-paint":
@@ -323,7 +323,7 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 				if op.Text != "" {
 					return nil, fmt.Errorf("table-cell text and paragraphs are mutually exclusive")
 				}
-				if err := replaceRichTableCell(cells[op.Column], op.Paragraphs); err != nil {
+				if err := replaceRichTableCell(p, part, cells[op.Column], op.Paragraphs); err != nil {
 					return nil, err
 				}
 			} else {

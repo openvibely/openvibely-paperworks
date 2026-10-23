@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"github.com/beevik/etree"
 	"github.com/openvibely/openvibely-paperworks/internal/office"
+	"github.com/openvibely/openvibely-paperworks/internal/opc"
 )
 
 // replaceRichNotes changes paragraphs while retaining the notes placeholder and
 // its body properties, so slide-number and thumbnail placeholders remain intact.
-func replaceRichNotes(body *etree.Element, paragraphs []Paragraph, font string) error {
+func replaceRichNotes(pkg *opc.Package, part string, body *etree.Element, paragraphs []Paragraph, font string) error {
 	if len(paragraphs) > 10000 {
 		return fmt.Errorf("notes paragraph limit exceeded")
 	}
@@ -39,6 +40,9 @@ func replaceRichNotes(body *etree.Element, paragraphs []Paragraph, font string) 
 	}
 	d := etree.NewDocument()
 	if err := d.ReadFromString("<p:txBody" + ns + ">" + textBody(Element{Paragraphs: paragraphs, FontSize: 12}, font) + "</p:txBody>"); err != nil {
+		return err
+	}
+	if err := applyRunHyperlinks(pkg, part, d.Root(), paragraphs); err != nil {
 		return err
 	}
 	ps := office.Children(d.Root(), ans, "p")

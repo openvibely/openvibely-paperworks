@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/beevik/etree"
 	"github.com/openvibely/openvibely-paperworks/internal/office"
+	"github.com/openvibely/openvibely-paperworks/internal/opc"
 	"math"
 	"regexp"
 	"strconv"
@@ -40,7 +41,7 @@ type TableCellFormat struct {
 	TextPaint     *TextPaint             `json:"text_paint,omitempty"`
 }
 
-func formatTable(shape *etree.Element, s *TableFormat) error {
+func formatTable(pkg *opc.Package, part string, shape *etree.Element, s *TableFormat) error {
 	if s == nil {
 		return fmt.Errorf("table_format required")
 	}
@@ -129,7 +130,7 @@ func formatTable(shape *etree.Element, s *TableFormat) error {
 			return fmt.Errorf("format merged cells through their origin")
 		}
 		if c.Paragraphs != nil {
-			if err := replaceRichTableCell(cell, c.Paragraphs); err != nil {
+			if err := replaceRichTableCell(pkg, part, cell, c.Paragraphs); err != nil {
 				return err
 			}
 		}
