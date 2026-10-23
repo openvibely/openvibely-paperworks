@@ -704,3 +704,30 @@ linear angle. Optional `focus` has `left`, `top`, `right`, `bottom` insets in
 0..1; omission focuses the gradient at the center. Opposing insets cannot sum
 to more than 1. Path gradients apply wherever a gradient paint is accepted,
 including text glyphs and outlines.
+
+### Detailed existing-chart formatting (after RC4)
+
+`slide-edit` → `chart-format` additionally accepts:
+
+- Axes: positive `minor_unit`, `text_style`, `major_gridline`/`minor_gridline`
+  (`TextOutline`, points). Numeric intervals require value/date axes.
+- Legend: `text_style`, solid/gradient/pattern `fill`, and `outline`.
+- Series labels: `text_style`.
+- Series `points`: `{ "index": 0, "fill": {"fill":"FF0000"}, "outline": ... }`.
+  Indices refer to the series' cached values; the data remains unchanged.
+- Series `trendlines`: replaces that series' trendlines; `[]` removes them.
+  Types: `linear`, `exponential`, `logarithmic`, `polynomial`, `power`,
+  `movingAverage`. Optional `name`, `order` (polynomial, 2..6), `period`
+  (movingAverage, 2..255), `forward`, `backward`, `intercept`,
+  `display_equation`, `display_r_squared`, and `outline`.
+- Series `error_bars`: `type` (`standardError`, `percentage`,
+  `standardDeviation`, `none`), optional `value`, `direction` (`x`/`y`),
+  `end_style` (`cap`/`noCap`) and `outline`. Defaults: direction y, cap,
+  value 1 for percentage/deviation. Standard error has no value.
+  `none` removes bars in the selected direction.
+
+`text_style` has `font`, `font_size` (points), six-digit hex `color`, `bold`,
+`italic`. Omitted properties remain unchanged. Trendlines/error bars require
+non-stacked 2D bar, line, area, scatter or bubble charts; x bars require scatter
+or bubble. Moving averages cannot specify forecast/intercept/equation options.
+ChartEx remains excluded. Render the result; chart layout is application-dependent.
