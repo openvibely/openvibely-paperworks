@@ -225,27 +225,7 @@ func editObject(pkg *opc.Package, part string, shape *etree.Element, e Edit) err
 		}
 		return styleRunProperties(pkg, part, pr, e)
 	case "image-mask":
-		if !office.Is(shape, pns, "pic") {
-			return fmt.Errorf("image-mask requires a picture")
-		}
-		switch e.Mask {
-		case "rect", "roundRect", "ellipse":
-		default:
-			return fmt.Errorf("mask must be rect, roundRect or ellipse")
-		}
-		pr := office.Child(shape, pns, "spPr")
-		if pr == nil {
-			return fmt.Errorf("picture properties missing")
-		}
-		for _, tag := range []string{"prstGeom", "custGeom"} {
-			if old := office.Child(pr, ans, tag); old != nil {
-				pr.RemoveChild(old)
-			}
-		}
-		geom := etree.NewElement("a:prstGeom")
-		geom.CreateAttr("prst", e.Mask)
-		geom.CreateElement("a:avLst")
-		insertDrawingProperty(pr, geom)
+		return setPictureMask(shape, e.Mask, e.CornerRadius)
 	case "replace-image":
 		blips := office.All(shape, ans, "blip")
 		if len(blips) != 1 {
