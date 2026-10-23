@@ -16,6 +16,7 @@ type EditSpec struct {
 	Edits []Edit `json:"edits"`
 }
 type Edit struct {
+	Hidden         *bool           `json:"hidden,omitempty"`
 	EndRow         int             `json:"end_row,omitempty"`
 	EndColumn      int             `json:"end_column,omitempty"`
 	Paragraphs     []Paragraph     `json:"paragraphs,omitempty"`
@@ -163,6 +164,13 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 		d, e := load(part)
 		if e != nil {
 			return nil, e
+		}
+		if op.Operation == "visibility" {
+			if op.Part != "" || op.Hidden == nil || op.ShapeID != "" {
+				return nil, fmt.Errorf("visibility requires slide and hidden, without part or shape_id")
+			}
+			setSlideHidden(d.Root(), *op.Hidden)
+			continue
 		}
 		if op.Operation == "layout" {
 			if err := layoutObjects(p, part, d.Root(), op.Layout); err != nil {

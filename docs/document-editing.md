@@ -582,3 +582,10 @@ opening and updating fields; application settings or locked fields may prevent r
 Only the settings part changes when it exists. If missing, the command also
 registers that part in content types and document relationships. For strict
 preservation, authorize those exact parts and disclose that refresh is deferred.
+
+### Slide visibility
+
+`create-pptx` slides accept `hidden:true`. Existing decks use
+`slide-edit` with `{"edits":[{"operation":"visibility","slide":1,"hidden":true}]}`.
+Use `false` to show the slide again. No shape ID is needed. Hidden slides remain
+in the file and previews; slideshow applications skip them.
