@@ -92,6 +92,27 @@ func TestAuthoredComboSavedValuesAndAppearance(t *testing.T) {
 	}
 }
 
+func TestCreateUnicodeFormDoesNotMutateSpec(t *testing.T) {
+	textField := &primitives.TextField{
+		ID: "name", Value: "José", Position: [2]float64{130, 700}, Width: 180, Height: 24,
+		Label: &primitives.TextFieldLabel{TextField: primitives.TextField{Value: "Prénom"}, Width: 70, Position: "left"},
+	}
+	combo := &primitives.ComboBox{
+		ID: "country", Position: [2]float64{130, 640}, Width: 180,
+		Options: []string{"España"}, Value: "España",
+	}
+	spec := CreateSpec{Paper: "A4", Pages: []CreatePage{{TextFields: []*primitives.TextField{textField}, ComboBoxes: []*primitives.ComboBox{combo}}}}
+	for i := 0; i < 2; i++ {
+		out := filepath.Join(t.TempDir(), "out.pdf")
+		if err := Create(context.Background(), spec, ".", out); err != nil {
+			t.Fatalf("Create call %d failed: %v", i+1, err)
+		}
+		if textField.Font != nil || textField.Label.Font != nil || combo.Font != nil {
+			t.Fatal("Create mutated caller-owned form font settings")
+		}
+	}
+}
+
 func TestAuthoredUnicodeFormsFillAndFlatten(t *testing.T) {
 	ctx := context.Background()
 	textField := &primitives.TextField{
@@ -120,6 +141,13 @@ func TestAuthoredUnicodeFormsFillAndFlatten(t *testing.T) {
 	}
 	if len(report.Issues) != 0 || len(report.Widgets) != 2 || report.Fields["name"] == nil || *report.Fields["name"] != "José" || report.Fields["country"] == nil || *report.Fields["country"] != "Côte d’Ivoire" {
 		t.Fatalf("unexpected initial form report: %+v", report)
+	}
+	unsupportedFill := filepath.Join(dir, "unsupported-fill.pdf")
+	if _, err := Fill(ctx, source, unsupportedFill, map[string]string{"name": "😀"}, false); err == nil || !strings.Contains(err.Error(), "U+1F600") {
+		t.Fatalf("unsupported fill text returned %v", err)
+	}
+	if _, err := os.Stat(unsupportedFill); !os.IsNotExist(err) {
+		t.Fatalf("unsupported fill wrote output: %v", err)
 	}
 	pageText, err := PageText(ctx, sourceData)
 	if err != nil {

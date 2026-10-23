@@ -17,6 +17,7 @@ import (
 	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/model"
 	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/primitives"
 	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/types"
+	"golang.org/x/image/font/sfnt"
 
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 )
@@ -103,10 +104,11 @@ func fill(ctx context.Context, path, dest string, values map[string]string, arra
 	if err != nil {
 		return nil, err
 	}
-	_, unicodeFontName, err := formUnicodeFont()
+	unicodeFont, unicodeFontName, err := formUnicodeFont()
 	if err != nil {
 		return nil, err
 	}
+	fontBuffer := &sfnt.Buffer{}
 	fontRoot := ""
 	if formHasEmbeddedUnicodeFont(ctx, c.XRefTable, unicodeFontName) {
 		fontRoot, err = os.MkdirTemp("", "paperworks-form-fill-fonts-*")
@@ -256,6 +258,31 @@ func fill(ctx context.Context, path, dest string, values map[string]string, arra
 	}
 	for k, v := range values {
 		filled[k] = v
+	}
+	validateFieldText := func(name, text string) error {
+		if _, err := validateFormText(text, unicodeFont, unicodeFontName, fontBuffer); err != nil {
+			return fmt.Errorf("field %s: %w", name, err)
+		}
+		return nil
+	}
+	for name, text := range filled {
+		f := fields[name]
+		if f == nil || (f.FT != "Tx" && f.FT != "Ch") {
+			continue
+		}
+		if err := validateFieldText(name, text); err != nil {
+			return nil, err
+		}
+	}
+	for name, selections := range arrays {
+		if f := fields[name]; f == nil || f.FT != "Ch" {
+			continue
+		}
+		for _, selection := range selections {
+			if err := validateFieldText(name, selection); err != nil {
+				return nil, err
+			}
+		}
 	}
 	warnings := validateChoiceValues(x, fields, filled, arrays)
 	if len(options) > 0 && options[0].StrictChoices && len(warnings) > 0 {
