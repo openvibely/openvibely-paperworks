@@ -8,7 +8,17 @@ import (
 	"strconv"
 )
 
+type TableStyleOptions struct {
+	HeaderRow     *bool `json:"header_row,omitempty"`
+	TotalRow      *bool `json:"total_row,omitempty"`
+	FirstColumn   *bool `json:"first_column,omitempty"`
+	LastColumn    *bool `json:"last_column,omitempty"`
+	BandedRows    *bool `json:"banded_rows,omitempty"`
+	BandedColumns *bool `json:"banded_columns,omitempty"`
+}
 type TableFormat struct {
+	StyleOptions *TableStyleOptions `json:"style_options,omitempty"`
+
 	// Sizes are points. Omit an array to retain that axis.
 	RowHeights   []float64         `json:"row_heights,omitempty"`
 	ColumnWidths []float64         `json:"column_widths,omitempty"`
@@ -33,6 +43,28 @@ func formatTable(shape *etree.Element, s *TableFormat) error {
 		return fmt.Errorf("one table required")
 	}
 	table := tables[0]
+	if s.StyleOptions != nil {
+		pr := office.Child(table, ans, "tblPr")
+		if pr == nil {
+			pr = etree.NewElement("a:tblPr")
+			pr.CreateAttr("xmlns:a", ans)
+			table.InsertChildAt(0, pr)
+		}
+		v := s.StyleOptions
+		for _, a := range []struct {
+			name  string
+			value *bool
+		}{{"firstRow", v.HeaderRow}, {"lastRow", v.TotalRow}, {"firstCol", v.FirstColumn}, {"lastCol", v.LastColumn}, {"bandRow", v.BandedRows}, {"bandCol", v.BandedColumns}} {
+			if a.value != nil {
+				text := "0"
+				if *a.value {
+					text = "1"
+				}
+				pr.CreateAttr(a.name, text)
+			}
+		}
+	}
+
 	rows := office.Children(table, ans, "tr")
 	cols := office.Children(office.Child(table, ans, "tblGrid"), ans, "gridCol")
 	for _, axis := range []struct {
