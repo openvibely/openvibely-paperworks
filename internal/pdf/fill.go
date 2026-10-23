@@ -1,6 +1,7 @@
 package pdf
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -11,6 +12,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/pdfcpu/pdfcpu/pkg/api"
 	pdffont "github.com/pdfcpu/pdfcpu/pkg/pdfcpu/font"
 	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/model"
 	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/primitives"
@@ -100,6 +102,24 @@ func fill(ctx context.Context, path, dest string, values map[string]string, arra
 	c, _, err := LoadFile(ctx, path)
 	if err != nil {
 		return nil, err
+	}
+	_, unicodeFontName, err := formUnicodeFont()
+	if err != nil {
+		return nil, err
+	}
+	fontRoot := ""
+	if formHasEmbeddedUnicodeFont(ctx, c.XRefTable, unicodeFontName) {
+		fontRoot, err = os.MkdirTemp("", "paperworks-form-fill-fonts-*")
+		if err != nil {
+			return nil, err
+		}
+		defer os.RemoveAll(fontRoot)
+		conf, err := model.LoadConfiguration(fontRoot)
+		if err != nil {
+			return nil, err
+		}
+		c.Configuration = conf
+		c.XRefTable.Conf = conf
 	}
 	if c.Encrypt != nil {
 		return nil, errors.New("decrypt an authorized copy before filling")
@@ -241,7 +261,19 @@ func fill(ctx context.Context, path, dest string, values map[string]string, arra
 	if len(options) > 0 && options[0].StrictChoices && len(warnings) > 0 {
 		return nil, warnings[0]
 	}
-	if err := applyValues(ctx, c, fields, filled, arrays); err != nil {
+	// Rewriting an existing subset font for a combo box can drop its ToUnicode
+	// map. Keep the saved AP when flattening a Unicode form without a new value.
+	preserveComboAppearances := map[string]bool{}
+	if flatten && formHasEmbeddedUnicodeFont(ctx, x, unicodeFontName) {
+		for name, field := range fields {
+			if field.FT == "Ch" && field.Ff&ffCombo != 0 {
+				if _, supplied := values[name]; !supplied {
+					preserveComboAppearances[name] = true
+				}
+			}
+		}
+	}
+	if err := applyValuesWithFontRefresh(ctx, c, fields, filled, true, preserveComboAppearances, arrays); err != nil {
 		return nil, err
 	}
 	// Saved appearances are authoritative after filling. Leaving an inherited
@@ -275,8 +307,11 @@ func fill(ctx context.Context, path, dest string, values map[string]string, arra
 		return nil, fmt.Errorf("filled PDF failed form validation: %s", strings.Join(rep.Issues, "; "))
 	}
 	if flatten {
-		c, err = Load(ctx, data)
+		c, err = api.ReadAndValidate(ctx, bytes.NewReader(data), c.Configuration)
 		if err != nil {
+			return nil, err
+		}
+		if err := c.EnsurePageCount(); err != nil {
 			return nil, err
 		}
 		if err := flattenForm(ctx, c); err != nil {
@@ -304,7 +339,8 @@ func fill(ctx context.Context, path, dest string, values map[string]string, arra
 	return &FillResult{Output: dest, FieldsFilled: names, Flattened: flatten, Warnings: warnings}, nil
 }
 
-func fillFonts(ctx context.Context, x *model.XRefTable) error {
+func fillFonts(ctx context.Context, x *model.XRefTable, replaceUnicodeFont bool) error {
+	_, unicodeFontName, _ := formUnicodeFont()
 	d, err := primitives.FormFontResDict(x)
 	if err != nil || d == nil {
 		return err
@@ -315,7 +351,9 @@ func fillFonts(ctx context.Context, x *model.XRefTable) error {
 			continue
 		}
 		name, _, _, err := primitives.FormFontDetails(ctx, x, ir)
-		if err != nil {
+		if err != nil || (replaceUnicodeFont && name == unicodeFontName) {
+			// pdfcpu's fill path writes UTF-8 bytes directly when reusing this
+			// font. Let Unicode fields use its full UTF-8 form font instead.
 			continue
 		}
 		if ok, _ := x.FontRepository().SupportedFont(ctx, name); ok {
@@ -335,9 +373,83 @@ func inheritedString(x *model.XRefTable, d types.Dict, key string) *string {
 	return nil
 }
 
+func appearanceFontKey(da *string) string {
+	if da == nil {
+		return ""
+	}
+	fields := strings.Fields(*da)
+	for i, field := range fields {
+		if field == "Tf" && i >= 2 {
+			return strings.TrimPrefix(fields[i-2], "/")
+		}
+	}
+	return ""
+}
+
+func formFontRegistered(x *model.XRefTable, da *string) bool {
+	key := appearanceFontKey(da)
+	if key == "" {
+		return false
+	}
+	if _, ok := x.FillFonts[key]; ok {
+		return true
+	}
+	for name := range x.FillFonts {
+		if strings.HasPrefix(name, key) || strings.HasPrefix(key, name) {
+			return true
+		}
+	}
+	return false
+}
+
+func replaceAppearanceFont(x *model.XRefTable, widget types.Dict, key string, fontRef types.IndirectRef) error {
+	if key == "" {
+		return nil
+	}
+	appearance := dictOf(x, widget["AP"]).d
+	if appearance == nil {
+		return nil
+	}
+	streamRef, ok := appearance["N"].(types.IndirectRef)
+	if !ok {
+		return nil
+	}
+	entry, ok := x.FindTableEntryForIndRef(&streamRef)
+	if !ok || entry == nil {
+		return fmt.Errorf("normal appearance stream is missing")
+	}
+	stream, ok := entry.Object.(types.StreamDict)
+	if !ok {
+		return nil
+	}
+	resources := dictOf(x, stream.Dict["Resources"]).d
+	if resources == nil {
+		resources = types.Dict{}
+		stream.Dict["Resources"] = resources
+	}
+	fonts := dictOf(x, resources["Font"]).d
+	if fonts == nil {
+		fonts = types.Dict{}
+		resources["Font"] = fonts
+	}
+	fonts[key] = fontRef
+	if err := stream.Decode(); err != nil {
+		return err
+	}
+	if err := stream.Encode(); err != nil {
+		return err
+	}
+	entry.Object = stream
+	return nil
+}
+
 func applyValues(ctx context.Context, c *model.Context, fields map[string]*field, values map[string]string, selections ...map[string][]string) error {
+	return applyValuesWithFontRefresh(ctx, c, fields, values, false, nil, selections...)
+}
+
+func applyValuesWithFontRefresh(ctx context.Context, c *model.Context, fields map[string]*field, values map[string]string, replaceUnicodeFont bool, preserveComboAppearances map[string]bool, selections ...map[string][]string) error {
 	x := c.XRefTable
-	if err := fillFonts(ctx, x); err != nil {
+	if err := fillFonts(ctx, x, replaceUnicodeFont); err != nil {
 		return err
 	}
 	fonts := map[string]types.IndirectRef{}
@@ -426,7 +538,16 @@ func applyValues(ctx context.Context, c *model.Context, fields map[string]*field
 			for _, w := range f.Widgets {
 				var err error
 				if f.Ff&ffCombo != 0 {
+					if preserveComboAppearances[name] {
+						continue
+					}
+					usesFallbackFont := !formFontRegistered(x, da)
 					err = primitives.EnsureComboBoxAP(ctx, c, w, v, da, fonts)
+					if err == nil && usesFallbackFont {
+						if ir, ok := fonts["Roboto-Regular"]; ok {
+							err = replaceAppearanceFont(x, w, "F0", ir)
+						}
+					}
 				} else {
 					err = primitives.EnsureListBoxAP(ctx, c, w, opts, ind, da, fonts)
 				}
