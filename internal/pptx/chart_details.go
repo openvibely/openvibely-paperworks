@@ -163,6 +163,22 @@ func isChartFill(tag string) bool {
 	return false
 }
 func formatAxisExtras(axis *etree.Element, a ChartAxisFormat) error {
+	if a.CrossesAt != nil {
+		if !finite(*a.CrossesAt) {
+			return fmt.Errorf("crosses_at must be finite")
+		}
+		for _, old := range office.Children(axis, cns, "crosses") {
+			axis.RemoveChild(old)
+		}
+		chartEnsure(axis, "crossesAt", axisOrder).CreateAttr("val", strconv.FormatFloat(*a.CrossesAt, 'g', -1, 64))
+	}
+	if a.LabelOffsetPercent != nil {
+		if (axis.Tag != "catAx" && axis.Tag != "dateAx") || *a.LabelOffsetPercent < 0 || *a.LabelOffsetPercent > 1000 {
+			return fmt.Errorf("label_offset_percent requires a category/date axis and 0..1000")
+		}
+		chartEnsure(axis, "lblOffset", axisOrder).CreateAttr("val", strconv.Itoa(*a.LabelOffsetPercent))
+	}
+
 	if a.Position != "" {
 		pos := map[string]string{"bottom": "b", "left": "l", "right": "r", "top": "t"}[a.Position]
 		if pos == "" {
@@ -185,7 +201,7 @@ func formatAxisExtras(axis *etree.Element, a ChartAxisFormat) error {
 		}
 		chartEnsure(axis, "minorUnit", axisOrder).CreateAttr("val", strconv.FormatFloat(*a.MinorUnit, 'g', -1, 64))
 	}
-	if err := chartAppearance(axis, nil, nil, a.TextStyle, axisOrder); err != nil {
+	if err := chartAppearance(axis, nil, a.Outline, a.TextStyle, axisOrder); err != nil {
 		return err
 	}
 	for _, v := range []struct {

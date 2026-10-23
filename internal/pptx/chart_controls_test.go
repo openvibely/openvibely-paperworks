@@ -284,3 +284,29 @@ func TestChartAreaOutlines(t *testing.T) {
 		t.Fatal("plot outline not cleared")
 	}
 }
+
+func TestChartAxisCrossingAndOutline(t *testing.T) {
+	in, before := chartControlFixture(t, "line")
+	valID := office.Child(office.All(before.Root(), cns, "valAx")[0], cns, "axId").SelectAttrValue("val", "")
+	catID := office.Child(office.All(before.Root(), cns, "catAx")[0], cns, "axId").SelectAttrValue("val", "")
+	cross := 25.0
+	offset := 200
+	d := editChartControl(t, in, ChartFormat{Axes: []ChartAxisFormat{{ID: valID, CrossesAt: &cross, Outline: &TextOutline{Width: 2, Fill: &DrawingStyle{Fill: "FF0000"}}}, {ID: catID, LabelOffsetPercent: &offset}}})
+	val := office.All(d.Root(), cns, "valAx")[0]
+	if office.Child(val, cns, "crosses") != nil || office.Child(val, cns, "crossesAt").SelectAttrValue("val", "") != "25" {
+		t.Fatal("crossing not replaced")
+	}
+	if office.All(office.Child(val, cns, "spPr"), ans, "ln")[0].SelectAttrValue("w", "") != "25400" {
+		t.Fatal("axis outline missing")
+	}
+	cat := office.All(d.Root(), cns, "catAx")[0]
+	if office.Child(cat, cns, "lblOffset").SelectAttrValue("val", "") != "200" {
+		t.Fatal("offset missing")
+	}
+	for _, bad := range []ChartAxisFormat{{ID: valID, LabelOffsetPercent: &offset}, {ID: catID, LabelOffsetPercent: func() *int { x := 1001; return &x }()}} {
+		f := ChartFormat{Axes: []ChartAxisFormat{bad}}
+		if _, err := EditFile(context.Background(), in, filepath.Join(t.TempDir(), "bad.pptx"), EditSpec{Edits: []Edit{{Slide: 1, ShapeID: "2", Operation: "chart-format", ChartFormat: &f}}}); err == nil {
+			t.Fatal("invalid offset accepted")
+		}
+	}
+}

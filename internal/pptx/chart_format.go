@@ -22,19 +22,22 @@ type ChartFormat struct {
 	Series          []ChartSeriesFormat `json:"series,omitempty"`
 }
 type ChartAxisFormat struct {
-	Position          string          `json:"position,omitempty"`
-	TickLabelPosition string          `json:"tick_label_position,omitempty"`
-	ID                string          `json:"id"` // c:axId from chart XML
-	Visible           *bool           `json:"visible,omitempty"`
-	Minimum           *float64        `json:"minimum,omitempty"`
-	Maximum           *float64        `json:"maximum,omitempty"`
-	MinorUnit         *float64        `json:"minor_unit,omitempty"`
-	TextStyle         *ChartTextStyle `json:"text_style,omitempty"`
-	MajorGridline     *TextOutline    `json:"major_gridline,omitempty"`
-	MinorGridline     *TextOutline    `json:"minor_gridline,omitempty"`
-	MajorUnit         *float64        `json:"major_unit,omitempty"`
-	NumberFormat      *string         `json:"number_format,omitempty"`
-	Title             *string         `json:"title,omitempty"`
+	CrossesAt          *float64        `json:"crosses_at,omitempty"`
+	LabelOffsetPercent *int            `json:"label_offset_percent,omitempty"`
+	Outline            *TextOutline    `json:"outline,omitempty"`
+	Position           string          `json:"position,omitempty"`
+	TickLabelPosition  string          `json:"tick_label_position,omitempty"`
+	ID                 string          `json:"id"` // c:axId from chart XML
+	Visible            *bool           `json:"visible,omitempty"`
+	Minimum            *float64        `json:"minimum,omitempty"`
+	Maximum            *float64        `json:"maximum,omitempty"`
+	MinorUnit          *float64        `json:"minor_unit,omitempty"`
+	TextStyle          *ChartTextStyle `json:"text_style,omitempty"`
+	MajorGridline      *TextOutline    `json:"major_gridline,omitempty"`
+	MinorGridline      *TextOutline    `json:"minor_gridline,omitempty"`
+	MajorUnit          *float64        `json:"major_unit,omitempty"`
+	NumberFormat       *string         `json:"number_format,omitempty"`
+	Title              *string         `json:"title,omitempty"`
 }
 type ChartLegendFormat struct {
 	Visible   *bool           `json:"visible,omitempty"`
