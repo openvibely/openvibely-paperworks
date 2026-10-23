@@ -200,6 +200,7 @@ func formatNativeChart(p *opc.Package, owner string, shape *etree.Element, f *Ch
 					tx.RemoveChild(c)
 				}
 				rich := tx.CreateElement("c:rich")
+				rich.CreateAttr("xmlns:c", cns)
 				rich.CreateAttr("xmlns:a", ans)
 				rich.CreateElement("a:bodyPr")
 				rich.CreateElement("a:lstStyle")

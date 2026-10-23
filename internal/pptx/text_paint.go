@@ -49,8 +49,11 @@ func paintTextProperties(pr *etree.Element, s *TextPaint) error {
 			return err
 		}
 		for _, c := range pr.ChildElements() {
-			if strings.HasSuffix(c.Tag, "Fill") {
-				pr.RemoveChild(c)
+			if c.NamespaceURI() == ans {
+				switch c.Tag {
+				case "noFill", "solidFill", "gradFill", "blipFill", "pattFill", "grpFill":
+					pr.RemoveChild(c)
+				}
 			}
 		}
 		index := 0
@@ -96,6 +99,11 @@ func paintTextBody(shape *etree.Element, s *TextPaint) error {
 	if body == nil {
 		return fmt.Errorf("shape has no text body")
 	}
+	return paintBody(body, s)
+}
+
+// Paint the attached body so imported prefixes retain their ancestor bindings.
+func paintBody(body *etree.Element, s *TextPaint) error {
 	body.CreateAttr("xmlns:a", ans)
 	for _, p := range office.Children(body, ans, "p") {
 		pp := office.Child(p, ans, "pPr")
