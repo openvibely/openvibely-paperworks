@@ -12,12 +12,14 @@ import (
 
 // ChartFormat changes only selected native formatting properties, retaining data.
 type ChartFormat struct {
-	Title        *string             `json:"title,omitempty"`
-	ChartFill    *DrawingStyle       `json:"chart_fill,omitempty"`
-	PlotAreaFill *DrawingStyle       `json:"plot_area_fill,omitempty"`
-	Axes         []ChartAxisFormat   `json:"axes,omitempty"`
-	Legend       *ChartLegendFormat  `json:"legend,omitempty"`
-	Series       []ChartSeriesFormat `json:"series,omitempty"`
+	ChartOutline    *TextOutline        `json:"chart_outline,omitempty"`
+	PlotAreaOutline *TextOutline        `json:"plot_area_outline,omitempty"`
+	Title           *string             `json:"title,omitempty"`
+	ChartFill       *DrawingStyle       `json:"chart_fill,omitempty"`
+	PlotAreaFill    *DrawingStyle       `json:"plot_area_fill,omitempty"`
+	Axes            []ChartAxisFormat   `json:"axes,omitempty"`
+	Legend          *ChartLegendFormat  `json:"legend,omitempty"`
+	Series          []ChartSeriesFormat `json:"series,omitempty"`
 }
 type ChartAxisFormat struct {
 	Position          string          `json:"position,omitempty"`
@@ -149,7 +151,7 @@ func formatNativeChart(p *opc.Package, owner string, shape *etree.Element, f *Ch
 		}
 		chartBool(chart, "autoTitleDeleted", *f.Title == "", "title autoTitleDeleted pivotFmts view3D floor sideWall backWall plotArea legend plotVisOnly dispBlanksAs showDLblsOverMax extLst")
 	}
-	if err := chartAppearance(d.Root(), f.ChartFill, nil, nil, "date1904 lang roundedCorners AlternateContent style clrMapOvr pivotSource protection chart spPr txPr externalData printSettings userShapes extLst"); err != nil {
+	if err := chartAppearance(d.Root(), f.ChartFill, f.ChartOutline, nil, "date1904 lang roundedCorners AlternateContent style clrMapOvr pivotSource protection chart spPr txPr externalData printSettings userShapes extLst"); err != nil {
 		return err
 	}
 	// Every chart/axis/data-table child precedes plot-area shape properties.
@@ -159,7 +161,7 @@ func formatNativeChart(p *opc.Package, owner string, shape *etree.Element, f *Ch
 			plotOrder += child.Tag + " "
 		}
 	}
-	if err := chartAppearance(plot, f.PlotAreaFill, nil, nil, plotOrder+"spPr extLst"); err != nil {
+	if err := chartAppearance(plot, f.PlotAreaFill, f.PlotAreaOutline, nil, plotOrder+"spPr extLst"); err != nil {
 		return err
 	}
 	for _, a := range f.Axes {
