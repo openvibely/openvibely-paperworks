@@ -17,6 +17,7 @@ type EditSpec struct {
 	Edits       []Edit                    `json:"edits"`
 }
 type Edit struct {
+	CornerRadius   *float64        `json:"corner_radius_points,omitempty"`
 	Style          string          `json:"style,omitempty"`
 	Scope          string          `json:"scope,omitempty"`
 	ChartFormat    *ChartFormat    `json:"chart_format,omitempty"`

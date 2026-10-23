@@ -940,3 +940,11 @@ Use `workbook-edit` with `add-data-table`. Set up the model inputs, output formu
 {"edits":[{"operation":"add-data-table","sheet":"Model","data_table":{"range":"E3:F4","input1":"B1","input2":"B2"}}]}
 ```
 Here `E3:F4` is the result body, `D2` holds the output formula, `E2:F2` holds row trials, and `D3:D4` holds column trials. `input1` is the row-input cell and `input2` the column-input cell on the same sheet. The command rejects occupied result cells, merges, structured tables and existing formula-range overlaps. It writes a native definition, not calculated results: recalculate the output, inspect the table values, and verify selected scenarios independently. Use a newer local build; RC4 lacks this edit operation.
+
+## Picture corner radius (after RC4)
+
+`slide-edit` `image-mask` accepts `corner_radius_points` for rectangular/rounded-rectangle pictures:
+```json
+{"edits":[{"operation":"image-mask","slide":1,"shape_id":"INSPECTED_ID","mask":"roundRect","corner_radius_points":18}]}
+```
+Radius is in points, from zero to half the shorter picture side; picture dimensions must be explicit. Setting a radius on `rect` converts it to `roundRect`. Omit `mask` to adjust the current rectangular mask. Omitted radius retains adjustments when the mask type stays the same; a different mask uses its defaults. Crop, placement and image bytes remain unchanged. Use a newer local build and render the result.
