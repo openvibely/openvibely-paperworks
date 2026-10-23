@@ -267,3 +267,20 @@ func TestChartTitleEdit(t *testing.T) {
 		}
 	}
 }
+
+func TestChartAreaOutlines(t *testing.T) {
+	in, _ := chartControlFixture(t, "line")
+	d := editChartControl(t, in, ChartFormat{ChartFill: &DrawingStyle{Fill: "EEEEEE"}, ChartOutline: &TextOutline{Width: 2, Fill: &DrawingStyle{Fill: "FF0000"}}, PlotAreaOutline: &TextOutline{Width: 0}})
+	sp := office.Child(d.Root(), cns, "spPr")
+	if office.Child(sp, ans, "solidFill") == nil {
+		t.Fatal("background missing")
+	}
+	line := office.Child(sp, ans, "ln")
+	if line == nil || line.SelectAttrValue("w", "") != "25400" || office.All(line, ans, "srgbClr")[0].SelectAttrValue("val", "") != "FF0000" {
+		t.Fatal("outer outline missing")
+	}
+	plot := office.All(d.Root(), cns, "plotArea")[0]
+	if office.All(office.Child(plot, cns, "spPr"), ans, "noFill") == nil {
+		t.Fatal("plot outline not cleared")
+	}
+}
