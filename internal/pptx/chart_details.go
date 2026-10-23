@@ -424,3 +424,17 @@ func newChartChild(parent *etree.Element, tag, order string) *etree.Element {
 	parent.InsertChildAt(siblings[len(siblings)-1].Index()+1, child)
 	return child
 }
+
+// Apply both fallback text properties and any explicit rich-text run formatting.
+func formatChartRichText(parent *etree.Element, style *ChartTextStyle, order string) error {
+	if style == nil {
+		return nil
+	}
+	if err := chartAppearance(parent, nil, nil, style, order); err != nil {
+		return err
+	}
+	if rich := office.Child(office.Child(parent, cns, "tx"), cns, "rich"); rich != nil {
+		return formatChartTextBody(rich, style)
+	}
+	return nil
+}

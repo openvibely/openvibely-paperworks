@@ -343,3 +343,24 @@ func TestChartAdditionalLabelControls(t *testing.T) {
 		t.Fatal("line percent accepted")
 	}
 }
+
+func TestChartTitleFormatting(t *testing.T) {
+	in, _ := chartControlFixture(t, "line")
+	title := "Revenue"
+	size := 24.0
+	yes := true
+	d := editChartControl(t, in, ChartFormat{Title: &title, TitleStyle: &ChartTextStyle{FontSize: &size, Bold: &yes}, TitleOverlay: &yes})
+	n := office.Child(office.Child(d.Root(), cns, "chart"), cns, "title")
+	if office.Child(n, cns, "overlay").SelectAttrValue("val", "") != "1" {
+		t.Fatal("overlay missing")
+	}
+	rich := office.Child(office.Child(n, cns, "tx"), cns, "rich")
+	if office.All(rich, ans, "defRPr")[0].SelectAttrValue("sz", "") != "2400" {
+		t.Fatal("title style missing")
+	}
+	empty := ""
+	f := ChartFormat{Title: &empty, TitleOverlay: &yes}
+	if _, err := EditFile(context.Background(), in, filepath.Join(t.TempDir(), "bad.pptx"), EditSpec{Edits: []Edit{{Slide: 1, ShapeID: "2", Operation: "chart-format", ChartFormat: &f}}}); err == nil {
+		t.Fatal("formatted nonexistent title")
+	}
+}
