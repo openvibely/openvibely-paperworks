@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"hash/crc32"
 	"image"
 	_ "image/gif"
 	_ "image/jpeg"
@@ -102,6 +103,15 @@ func esc(s string) string {
 	return b.String()
 }
 
+// imageDigestTable is a fast lookup key; bytes.Equal confirms every match.
+var imageDigestTable = crc32.MakeTable(crc32.Castagnoli)
+
+type imageAsset struct {
+	raw   []byte
+	cfg   image.Config
+	relID string
+}
+
 type builder struct {
 	spec             Spec
 	pkg              *opc.Package
@@ -109,6 +119,8 @@ type builder struct {
 	docRels          []string
 	relN             int
 	imgN             int
+	mediaN           int
+	images           map[uint32][]imageAsset
 	numbered         bool
 	bulleted         bool
 	orderedListCount int
@@ -337,27 +349,43 @@ func (b *builder) image(blk Block, align string) error {
 	if err != nil {
 		return err
 	}
-	cfg, format, err := image.DecodeConfig(bytes.NewReader(raw))
-	if err != nil {
-		return fmt.Errorf("image %s: %w", blk.Path, err)
+	digest := crc32.Checksum(raw, imageDigestTable)
+	var asset *imageAsset
+	for i := range b.images[digest] {
+		candidate := &b.images[digest][i]
+		if bytes.Equal(candidate.raw, raw) {
+			asset = candidate
+			break
+		}
 	}
-	if format == "jpeg" {
-		format = "jpg"
+	if asset == nil {
+		cfg, format, err := image.DecodeConfig(bytes.NewReader(raw))
+		if err != nil {
+			return fmt.Errorf("image %s: %w", blk.Path, err)
+		}
+		if format == "jpeg" {
+			format = "jpg"
+		}
+		b.mediaN++
+		name := fmt.Sprintf("media/image%d.%s", b.mediaN, format)
+		b.pkg.Set("word/"+name, raw)
+		contentType := map[string]string{"png": "image/png", "jpg": "image/jpeg", "gif": "image/gif"}[format]
+		if err := b.pkg.EnsureContentType("."+format, contentType); err != nil {
+			return err
+		}
+		asset = &imageAsset{raw: raw, cfg: cfg, relID: b.rel("image", name, false)}
+		b.images[digest] = append(b.images[digest], *asset)
 	}
 	width := blk.WidthIn
 	if width <= 0 {
 		width = min(6, float64(b.usableTwips())/1440)
 	}
 	cx := int64(width * 914400)
-	cy := cx * int64(cfg.Height) / int64(max(cfg.Width, 1))
+	cy := cx * int64(asset.cfg.Height) / int64(max(asset.cfg.Width, 1))
 	b.imgN++
-	name := fmt.Sprintf("media/image%d.%s", b.imgN, format)
-	b.pkg.Set("word/"+name, raw)
-	b.pkg.EnsureContentType("."+format, map[string]string{"png": "image/png", "jpg": "image/jpeg", "gif": "image/gif"}[format])
-	id := b.rel("image", name, false)
 	descr := esc(blk.Description)
 	drawing := fmt.Sprintf(`<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="%d" cy="%d"/><wp:docPr id="%d" name="Picture %d" descr="%s"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="%d" name="Picture %d" descr="%s"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="%s"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="%d" cy="%d"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>`,
-		cx, cy, b.imgN, b.imgN, descr, b.imgN, b.imgN, descr, id, cx, cy)
+		cx, cy, b.imgN, b.imgN, descr, b.imgN, b.imgN, descr, asset.relID, cx, cy)
 	b.body.WriteString(para("", align, "", drawing))
 	return nil
 }
@@ -411,7 +439,7 @@ func build(spec Spec, baseDir string, clock func() time.Time) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	b := &builder{spec: spec, pkg: pkg, base: baseDir}
+	b := &builder{spec: spec, pkg: pkg, base: baseDir, images: make(map[uint32][]imageAsset)}
 	for _, rel := range rels.Root().ChildElements() {
 		n, err := strconv.Atoi(strings.TrimPrefix(rel.SelectAttrValue("Id", ""), "rId"))
 		if err != nil {
