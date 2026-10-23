@@ -32,10 +32,10 @@ func validateFormText(s string, parsed *sfnt.Font, name string, buf *sfnt.Buffer
 	}
 	hasUnicode := false
 	for _, r := range s {
-		if unicode.IsControl(r) && r != '\n' && r != '\r' && r != '\t' {
+		if unicode.IsControl(r) && r != '\n' && r != '\r' && r != '\t' && r != '\v' && r != '\f' {
 			return false, fmt.Errorf("unsupported control character U+%04X in form text", r)
 		}
-		if r <= 126 && r >= 32 || r == '\n' || r == '\r' || r == '\t' {
+		if r <= 126 && r >= 32 || r == '\n' || r == '\r' || r == '\t' || r == '\v' || r == '\f' {
 			continue
 		}
 		hasUnicode = true

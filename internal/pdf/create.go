@@ -42,6 +42,67 @@ type CreatePage struct {
 	ComboBoxes  []*primitives.ComboBox         `json:"combo_boxes"`
 }
 
+func cloneTextFieldLabel(label *primitives.TextFieldLabel) *primitives.TextFieldLabel {
+	if label == nil {
+		return nil
+	}
+	cloned := *label
+	return &cloned
+}
+
+func cloneCreatePageForms(page CreatePage) CreatePage {
+	if page.TextFields != nil {
+		fields := make([]*primitives.TextField, len(page.TextFields))
+		for i, field := range page.TextFields {
+			if field != nil {
+				cloned := *field
+				cloned.Label = cloneTextFieldLabel(field.Label)
+				fields[i] = &cloned
+			}
+		}
+		page.TextFields = fields
+	}
+	if page.ComboBoxes != nil {
+		fields := make([]*primitives.ComboBox, len(page.ComboBoxes))
+		for i, field := range page.ComboBoxes {
+			if field != nil {
+				cloned := *field
+				cloned.Label = cloneTextFieldLabel(field.Label)
+				fields[i] = &cloned
+			}
+		}
+		page.ComboBoxes = fields
+	}
+	if page.Checkboxes != nil {
+		fields := make([]*primitives.CheckBox, len(page.Checkboxes))
+		for i, field := range page.Checkboxes {
+			if field != nil {
+				cloned := *field
+				cloned.Label = cloneTextFieldLabel(field.Label)
+				fields[i] = &cloned
+			}
+		}
+		page.Checkboxes = fields
+	}
+	if page.RadioGroups != nil {
+		fields := make([]*primitives.RadioButtonGroup, len(page.RadioGroups))
+		for i, field := range page.RadioGroups {
+			if field != nil {
+				cloned := *field
+				cloned.Label = cloneTextFieldLabel(field.Label)
+				if field.Buttons != nil {
+					buttons := *field.Buttons
+					buttons.Label = cloneTextFieldLabel(field.Buttons.Label)
+					cloned.Buttons = &buttons
+				}
+				fields[i] = &cloned
+			}
+		}
+		page.RadioGroups = fields
+	}
+	return page
+}
+
 func supportedText(s string) error {
 	for _, r := range s {
 		if (r < 32 && r != '\n' && r != '\r' && r != '\t') || r > 126 {
@@ -122,6 +183,7 @@ func Create(ctx context.Context, spec CreateSpec, base, output string) error {
 	}()
 	elements := 0
 	for i, p := range spec.Pages {
+		p = cloneCreatePageForms(p)
 		if e := ctx.Err(); e != nil {
 			return e
 		}
