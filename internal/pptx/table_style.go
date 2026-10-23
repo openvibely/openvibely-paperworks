@@ -31,14 +31,15 @@ type TableFormat struct {
 	Cells        []TableCellFormat `json:"cells,omitempty"`
 }
 type TableCellFormat struct {
-	Paragraphs    []Paragraph            `json:"paragraphs,omitempty"`
-	Row           int                    `json:"row"`
-	Column        int                    `json:"column"`
-	Margins       *TextInsets            `json:"margins,omitempty"`
-	VerticalAlign string                 `json:"vertical_align,omitempty"`
-	Fill          *DrawingStyle          `json:"fill,omitempty"`
-	Borders       map[string]TextOutline `json:"borders,omitempty"`
-	TextPaint     *TextPaint             `json:"text_paint,omitempty"`
+	HorizontalOverflow string                 `json:"horizontal_overflow,omitempty"`
+	Paragraphs         []Paragraph            `json:"paragraphs,omitempty"`
+	Row                int                    `json:"row"`
+	Column             int                    `json:"column"`
+	Margins            *TextInsets            `json:"margins,omitempty"`
+	VerticalAlign      string                 `json:"vertical_align,omitempty"`
+	Fill               *DrawingStyle          `json:"fill,omitempty"`
+	Borders            map[string]TextOutline `json:"borders,omitempty"`
+	TextPaint          *TextPaint             `json:"text_paint,omitempty"`
 }
 
 func formatTable(pkg *opc.Package, part string, shape *etree.Element, s *TableFormat) error {
@@ -137,6 +138,12 @@ func formatTable(pkg *opc.Package, part string, shape *etree.Element, s *TableFo
 		pr := office.Child(cell, ans, "tcPr")
 		if pr == nil {
 			pr = cell.CreateElement("a:tcPr")
+		}
+		if c.HorizontalOverflow != "" {
+			if c.HorizontalOverflow != "clip" && c.HorizontalOverflow != "overflow" {
+				return fmt.Errorf("horizontal_overflow must be clip or overflow")
+			}
+			pr.CreateAttr("horzOverflow", c.HorizontalOverflow)
 		}
 		if c.VerticalAlign != "" {
 			anchor := map[string]string{"top": "t", "middle": "ctr", "bottom": "b"}[c.VerticalAlign]
