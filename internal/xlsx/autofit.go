@@ -8,20 +8,25 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-func hasSavedEmptyStringResult(wb *office.Workbook, sourceSheet, cell, formula string, renames []formulaSheetRename) bool {
-	if wb == nil || wb.Sheets[sourceSheet] == nil {
+func hasSavedEmptyStringResult(wb *office.Workbook, formulas *excelize.File, sourceSheet, cell, formula string, renames []formulaSheetRename) bool {
+	if wb == nil || formulas == nil || wb.Sheets[sourceSheet] == nil {
 		return false
 	}
 	c := wb.Sheets[sourceSheet].Cells[cell]
 	if c == nil || c.SelectAttrValue("t", "") != "str" {
 		return false
 	}
-	savedFormula := office.Child(c, office.NSS, "f")
-	value := office.Child(c, office.NSS, "v")
-	if savedFormula == nil || value == nil || value.Text() != "" {
+	if office.Child(c, office.NSS, "f") == nil {
 		return false
 	}
-	expectedFormula := savedFormula.Text()
+	value := office.Child(c, office.NSS, "v")
+	if value == nil || value.Text() != "" {
+		return false
+	}
+	expectedFormula, err := formulas.GetCellFormula(sourceSheet, cell)
+	if err != nil || expectedFormula == "" {
+		return false
+	}
 	for _, rename := range renames {
 		expectedFormula = renameFormulaSheet(expectedFormula, rename.from, rename.to)
 	}
@@ -29,10 +34,10 @@ func hasSavedEmptyStringResult(wb *office.Workbook, sourceSheet, cell, formula s
 }
 
 func autofitRows(f *excelize.File, e Edit) error {
-	return autofitRowsWithSourceCache(f, e, nil, "", nil)
+	return autofitRowsWithSourceCache(f, e, nil, nil, "", nil)
 }
 
-func autofitRowsWithSourceCache(f *excelize.File, e Edit, source *office.Workbook, sourceSheet string, renames []formulaSheetRename) error {
+func autofitRowsWithSourceCache(f *excelize.File, e Edit, source *office.Workbook, formulas *excelize.File, sourceSheet string, renames []formulaSheetRename) error {
 	a, b, err := bounds(e.Range)
 	if err != nil {
 		return err
@@ -139,7 +144,7 @@ func autofitRowsWithSourceCache(f *excelize.File, e Edit, source *office.Workboo
 			if err != nil {
 				return err
 			}
-			if formula != "" && value == "" && !hasSavedEmptyStringResult(source, sourceSheet, cell, formula, renames) {
+			if formula != "" && value == "" && !hasSavedEmptyStringResult(source, formulas, sourceSheet, cell, formula, renames) {
 				return fmt.Errorf("%s needs recalculation before autofit", cell)
 			}
 			runs := []office.TextRun{{Text: value, Font: name, Size: size, Bold: bold, Italic: italic}}

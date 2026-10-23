@@ -138,6 +138,65 @@ func TestAutofitRowsAcceptsCachedEmptyStringFormulaInEmptyRow(t *testing.T) {
 	}
 }
 
+func TestAutofitRowsAcceptsCachedEmptyStringSharedFormulaFollower(t *testing.T) {
+	dir := t.TempDir()
+	in := filepath.Join(dir, "input.xlsx")
+	out := filepath.Join(dir, "out.xlsx")
+	f := excelize.NewFile()
+	if err := f.SetDefaultFont("Go"); err != nil {
+		t.Fatal(err)
+	}
+	formulaType := excelize.STCellFormulaTypeShared
+	ref := "A1:A2"
+	if err := f.SetCellFormula("Sheet1", "A1", `IF(B1="","",B1)`, excelize.FormulaOpts{Type: &formulaType, Ref: &ref}); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SaveAs(in); err != nil {
+		t.Fatal(err)
+	}
+	f.Close()
+	setStringFormulaCache(t, in, "Sheet1", "A2", true)
+
+	if err := EditFile(context.Background(), in, out, dir, EditSpec{Edits: []Edit{{Operation: "autofit-rows", Sheet: "Sheet1", Range: "A2:A2"}}}); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestAutofitRejectsFormulaWithoutCacheOnRecreatedSheet(t *testing.T) {
+	dir := t.TempDir()
+	in := filepath.Join(dir, "input.xlsx")
+	out := filepath.Join(dir, "out.xlsx")
+	f := excelize.NewFile()
+	if err := f.SetDefaultFont("Go"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := f.NewSheet("Other"); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SetCellFormula("Sheet1", "A1", `""`); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SaveAs(in); err != nil {
+		t.Fatal(err)
+	}
+	f.Close()
+	setStringFormulaCache(t, in, "Sheet1", "A1", true)
+
+	spec := EditSpec{Edits: []Edit{
+		{Operation: "delete-sheet", Sheet: "Sheet1"},
+		{Operation: "add-sheet", Name: "Sheet1"},
+		{Operation: "formula", Sheet: "Sheet1", Cell: "A1", Formula: `""`},
+		{Operation: "autofit-rows", Sheet: "Sheet1", Range: "A1:A1"},
+	}}
+	err := EditFile(context.Background(), in, out, dir, spec)
+	if err == nil || !strings.Contains(err.Error(), "A1 needs recalculation") {
+		t.Fatalf("got %v, want recalculation error", err)
+	}
+	if _, err := os.Stat(out); !os.IsNotExist(err) {
+		t.Fatalf("published failed edit: %v", err)
+	}
+}
+
 func TestAutofitRowsAcceptsCachedEmptyStringFormulaAfterSheetRename(t *testing.T) {
 	dir := t.TempDir()
 	in := filepath.Join(dir, "input.xlsx")
