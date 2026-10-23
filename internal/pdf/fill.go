@@ -598,7 +598,7 @@ func applyValuesWithFontRefresh(ctx context.Context, c *model.Context, fields ma
 // choiceOptions preserves the export values used by /V alongside the labels
 // painted in appearances. A plain string option uses the same value for both.
 func choiceOptions(x *model.XRefTable, d types.Dict) (exports, labels []string) {
-	a, _ := entryArray(x, entry(x, d, "Opt"))
+	a, _ := entryArray(x, resolvedChoiceOptions(x, d))
 	for _, o := range a {
 		o, _ = deref(x, o)
 		export, label := o, o
