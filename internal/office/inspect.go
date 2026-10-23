@@ -213,7 +213,8 @@ func PackageReport(file string) (Report, error) {
 }
 
 // PresentationSlideSelection reads one slide without parsing unrelated package
-// XML parts. It returns the selected part name and its normalized XML snippet.
+// XML parts. Its value has the same shape as the corresponding PackageReport
+// slides entry.
 func PresentationSlideSelection(file string, index int) (map[string]any, error) {
 	p, err := opc.Open(file)
 	if err != nil {
@@ -227,24 +228,10 @@ func PresentationSlideSelection(file string, index int) (map[string]any, error) 
 	if err != nil {
 		return nil, err
 	}
-	var slideIDs []string
-	if list := Child(presentation.Root(), NSP, "sldIdLst"); list != nil {
-		for _, slide := range Children(list, NSP, "sldId") {
-			slideIDs = append(slideIDs, AttrV(slide, NSR, "id"))
-		}
+	part, err := presentationSlidePart(presentation.Root(), presentationRels, index)
+	if err != nil {
+		return nil, err
 	}
-	if index < 0 || index >= len(slideIDs) {
-		return nil, fmt.Errorf("slide index out of range")
-	}
-	relationships := make(map[string]opc.Relationship, len(presentationRels))
-	for _, rel := range presentationRels {
-		relationships[rel.ID] = rel
-	}
-	rel, ok := relationships[slideIDs[index]]
-	if !ok || !strings.HasSuffix(rel.Type, "/slide") || rel.TargetMode == "External" {
-		return nil, fmt.Errorf("ppt/presentation.xml: slide %d has no valid slide relationship", index)
-	}
-	part := opc.Resolve("ppt/presentation.xml", rel.Target)
 	slide, err := p.XML(part)
 	if err != nil {
 		return nil, err
@@ -252,7 +239,42 @@ func PresentationSlideSelection(file string, index int) (map[string]any, error) 
 	if !Is(slide.Root(), NSP, "sld") {
 		return nil, fmt.Errorf("%s: expected a presentation slide", part)
 	}
-	return map[string]any{"part": part, "xml": xmlString(slide.Root())}, nil
+	return presentationSlideEntry(part, slide.Root()), nil
+}
+
+func presentationSlideIDs(presentation *etree.Element) []string {
+	var ids []string
+	if list := Child(presentation, NSP, "sldIdLst"); list != nil {
+		for _, slide := range Children(list, NSP, "sldId") {
+			ids = append(ids, AttrV(slide, NSR, "id"))
+		}
+	}
+	return ids
+}
+
+func presentationSlidePart(presentation *etree.Element, rels []opc.Relationship, index int) (string, error) {
+	ids := presentationSlideIDs(presentation)
+	if index < 0 || index >= len(ids) {
+		return "", fmt.Errorf("slide index out of range")
+	}
+	for _, rel := range rels {
+		if rel.ID != ids[index] {
+			continue
+		}
+		if !strings.HasSuffix(rel.Type, "/slide") || rel.TargetMode == "External" {
+			break
+		}
+		return opc.Resolve("ppt/presentation.xml", rel.Target), nil
+	}
+	return "", fmt.Errorf("ppt/presentation.xml: slide %d has no valid slide relationship", index)
+}
+
+func presentationSlideEntry(part string, root *etree.Element) map[string]any {
+	return map[string]any{
+		"part":       part,
+		"attributes": reportAttrMap(root),
+		"xml":        xmlString(root),
+	}
 }
 
 func PackageReportOf(p *opc.Package) (Report, error) {
@@ -1033,7 +1055,36 @@ func presentationReport(p *opc.Package, roots map[string]*etree.Document, report
 	if l := Child(pres, NSP, "sldIdLst"); l != nil {
 		n = len(l.ChildElements())
 	}
-	report["slides"] = n
+	var slideRels []opc.Relationship
+	if relDoc := roots["ppt/_rels/presentation.xml.rels"]; relDoc != nil {
+		for _, rel := range relDoc.Root().ChildElements() {
+			slideRels = append(slideRels, opc.Relationship{
+				ID: rel.SelectAttrValue("Id", ""), Type: rel.SelectAttrValue("Type", ""),
+				Target: rel.SelectAttrValue("Target", ""), TargetMode: rel.SelectAttrValue("TargetMode", ""),
+			})
+		}
+	}
+	slideIDs := presentationSlideIDs(pres)
+	slides := make([]any, 0, len(slideIDs))
+	for index := range slideIDs {
+		part, err := presentationSlidePart(pres, slideRels, index)
+		if err != nil {
+			return err
+		}
+		doc := roots[part]
+		if doc == nil {
+			doc, err = p.XML(part)
+			if err != nil {
+				return err
+			}
+		}
+		if !Is(doc.Root(), NSP, "sld") {
+			return fmt.Errorf("%s: expected a presentation slide", part)
+		}
+		slides = append(slides, presentationSlideEntry(part, doc.Root()))
+	}
+	report["slides"] = slides
+	report["slide_count"] = n
 	fonts := []any{}
 	// Preserve archive order, as the reference report does for font definitions.
 	for _, name := range p.Names() {

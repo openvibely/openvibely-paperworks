@@ -10,6 +10,8 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+
+	"github.com/openvibely/openvibely-paperworks/internal/opc"
 )
 
 func referenceInspection(t *testing.T, parts []referenceCheckPart) map[string]any {
@@ -165,17 +167,27 @@ func TestReferenceSlideInspection(t *testing.T) {
 			objects := `<p:cSld><p:spTree>` + tc.objects + `</p:spTree></p:cSld>`
 			if tc.name == "slide-bounds" {
 				filename = "slides.pptx"
-				presentation = `<p:presentation xmlns:p="` + NSP + `"><p:sldIdLst><p:sldId/></p:sldIdLst><p:sldSz cx="100" cy="100"/></p:presentation>`
+				presentation = `<p:presentation xmlns:p="` + NSP + `" xmlns:r="` + NSR + `"><p:sldIdLst><p:sldId r:id="rId1"/></p:sldIdLst><p:sldSz cx="100" cy="100"/></p:presentation>`
 				objects = tc.objects
 			} else if tc.name == "sibling" {
 				filename = "grouped.pptx"
 			}
-			r, unchanged := referenceInspectionRead(t, filename, []referenceCheckPart{
+			parts := []referenceCheckPart{
 				{"ppt/presentation.xml", presentation},
 				{"ppt/slides/slide1.xml", `<p:sld xmlns:p="` + NSP + `" xmlns:a="` + NSA + `">` + objects + `</p:sld>`},
-			})
-			if tc.name == "slide-bounds" && r["slides"] != float64(1) {
-				t.Fatal(r["slides"])
+			}
+			if tc.name == "slide-bounds" {
+				parts = append(parts, referenceCheckPart{"ppt/_rels/presentation.xml.rels", `<Relationships xmlns="` + opc.NSRel + `"><Relationship Id="rId1" Type="` + NSR + `/slide" Target="slides/slide1.xml"/></Relationships>`})
+			}
+			r, unchanged := referenceInspectionRead(t, filename, parts)
+			if tc.name == "slide-bounds" {
+				if r["slide_count"] != float64(1) {
+					t.Fatal(r["slide_count"])
+				}
+				slides := r["slides"].([]any)
+				if len(slides) != 1 || slides[0].(map[string]any)["part"] != "ppt/slides/slide1.xml" {
+					t.Fatal(slides)
+				}
 			}
 			issues := r["issues"].([]any)
 			if tc.name == "sibling" {

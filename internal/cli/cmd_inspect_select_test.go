@@ -2,8 +2,10 @@ package cli
 
 import (
 	"bytes"
+	"encoding/json"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -46,13 +48,19 @@ func makeInspectSelectWorkbook(t *testing.T) string {
 	return path
 }
 
-func makeInspectSelectPresentation(t *testing.T, malformedSlide bool) string {
+func makeInspectSelectPresentation(t *testing.T, malformedSlide, malformedUnrelated, escapedAttributes bool) string {
 	t.Helper()
 	pkg, err := opc.Open("../../testdata/reference-mirror/literal-chart.pptx")
 	if err != nil {
 		t.Fatal(err)
 	}
-	pkg.Set("custom/ignored.xml", []byte("<broken"))
+	if malformedUnrelated {
+		pkg.Set("custom/ignored.xml", []byte("<broken"))
+	}
+	if escapedAttributes {
+		slide := strings.Replace(string(pkg.Get("ppt/slides/slide1.xml")), "<p:sld ", `<p:sld xmlns:t="urn:example~namespace" t:custom="tilde" r:custom="slash" `, 1)
+		pkg.Set("ppt/slides/slide1.xml", []byte(slide))
+	}
 	if malformedSlide {
 		pkg.Set("ppt/slides/slide1.xml", []byte("<broken"))
 	}
@@ -61,6 +69,19 @@ func makeInspectSelectPresentation(t *testing.T, malformedSlide bool) string {
 		t.Fatal(err)
 	}
 	return path
+}
+
+func runCLIValue(t *testing.T, args ...string) any {
+	t.Helper()
+	var stdout, stderr bytes.Buffer
+	if code := Main(args, &stdout, &stderr); code != 0 {
+		t.Fatalf("%v: exit %d: %s", args, code, stderr.String())
+	}
+	var value any
+	if err := json.Unmarshal(stdout.Bytes(), &value); err != nil {
+		t.Fatal(err, stdout.String())
+	}
+	return value
 }
 
 func runInspectSelectError(t *testing.T, args ...string) (int, string, string) {
@@ -189,7 +210,7 @@ func TestInspectSelectPointerAndFullReportSearch(t *testing.T) {
 }
 
 func TestInspectSelectPPTXSlideIgnoresMalformedUnrelatedXML(t *testing.T) {
-	input := makeInspectSelectPresentation(t, false)
+	input := makeInspectSelectPresentation(t, false, true, false)
 	if _, err := office.PackageReport(input); err == nil {
 		t.Fatal("full inspection should reject the malformed unrelated XML part")
 	}
@@ -204,8 +225,33 @@ func TestInspectSelectPPTXSlideIgnoresMalformedUnrelatedXML(t *testing.T) {
 	}
 }
 
+func TestInspectSelectPPTXPointerMatchesFullReportAndEscaping(t *testing.T) {
+	input := makeInspectSelectPresentation(t, false, false, true)
+	fullReport := runCLIValue(t, "inspect", input).(map[string]any)
+	slides, ok := fullReport["slides"].([]any)
+	if !ok || len(slides) == 0 {
+		t.Fatalf("full report slides = %T %v", fullReport["slides"], fullReport["slides"])
+	}
+
+	selected := runCLIValue(t, "inspect-select", input, "--path", "/slides/0")
+	if !reflect.DeepEqual(selected, slides[0]) {
+		t.Fatalf("focused selection = %#v, full-report subtree = %#v", selected, slides[0])
+	}
+	attributes := slides[0].(map[string]any)["attributes"].(map[string]any)
+	for key, want := range attributes {
+		if !strings.ContainsAny(key, "/~") {
+			continue
+		}
+		segment := strings.ReplaceAll(strings.ReplaceAll(key, "~", "~0"), "/", "~1")
+		got := runCLIValue(t, "inspect-select", input, "--path", "/slides/0/attributes/"+segment)
+		if !reflect.DeepEqual(got, want) {
+			t.Fatalf("escaped pointer key %q selected %#v, want %#v", key, got, want)
+		}
+	}
+}
+
 func TestInspectSelectPPTXSlideReportsMalformedRequiredXML(t *testing.T) {
-	input := makeInspectSelectPresentation(t, true)
+	input := makeInspectSelectPresentation(t, true, true, false)
 	code, stdout, stderr := runInspectSelectError(t, "inspect-select", input, "--path", "/slides/0")
 	if code == 0 || !strings.Contains(stderr, "ppt/slides/slide1.xml") {
 		t.Fatalf("exit=%d stdout=%q stderr=%q; want selected slide part error", code, stdout, stderr)
