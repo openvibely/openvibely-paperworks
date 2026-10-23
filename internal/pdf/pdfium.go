@@ -348,7 +348,7 @@ func RenderPages(ctx context.Context, pdfPath, outDir string, opt RenderOptions)
 	var files []string
 	_, err = RenderImages(ctx, data, opt, func(page int, img *image.RGBA) error {
 		name := filepath.Join(outDir, fmt.Sprintf("page-%04d.png", page))
-		f, err := os.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o644)
+		f, err := os.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o644)
 		if err != nil {
 			return err
 		}

@@ -16,6 +16,7 @@ import (
 )
 
 type Options struct {
+	reuseOutput bool // Render retries may reuse their output directory.
 	Recalculate bool
 	Refresh     bool
 	Sheet       string
@@ -59,7 +60,11 @@ func Convert(ctx context.Context, path, output string, o Options) (map[string]an
 	if externalResources(report) {
 		return nil, errors.New("External resources require review/removal on a copy before conversion")
 	}
-	if err := NewOutputDir(output); err != nil {
+	if o.reuseOutput {
+		if err := os.MkdirAll(output, 0o755); err != nil {
+			return nil, err
+		}
+	} else if err := NewOutputDir(output); err != nil {
 		return nil, err
 	}
 	target := "pdf"
