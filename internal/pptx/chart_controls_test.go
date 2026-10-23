@@ -364,3 +364,25 @@ func TestChartTitleFormatting(t *testing.T) {
 		t.Fatal("formatted nonexistent title")
 	}
 }
+
+func TestChartUnderlineAlignment(t *testing.T) {
+	in, _ := chartControlFixture(t, "line")
+	style := &ChartTextStyle{Underline: "dbl", Alignment: "right"}
+	text := "Point"
+	d := editChartControl(t, in, ChartFormat{Legend: &ChartLegendFormat{TextStyle: style}, Series: []ChartSeriesFormat{{Index: 0, LabelOverrides: []ChartLabelOverride{{Index: 0, Text: &text, TextStyle: style}}}}})
+	for _, parent := range []*etree.Element{office.All(d.Root(), cns, "legend")[0], office.All(office.All(d.Root(), cns, "dLbl")[0], cns, "rich")[0]} {
+		ps := office.All(parent, ans, "pPr")
+		if len(ps) == 0 || ps[0].SelectAttrValue("algn", "") != "r" {
+			t.Fatal("alignment missing")
+		}
+		if office.All(parent, ans, "defRPr")[0].SelectAttrValue("u", "") != "dbl" {
+			t.Fatal("underline missing")
+		}
+	}
+	for _, bad := range []ChartTextStyle{{Underline: "bogus"}, {Alignment: "bogus"}} {
+		f := ChartFormat{Legend: &ChartLegendFormat{TextStyle: &bad}}
+		if _, err := EditFile(context.Background(), in, filepath.Join(t.TempDir(), "bad.pptx"), EditSpec{Edits: []Edit{{Slide: 1, ShapeID: "2", Operation: "chart-format", ChartFormat: &f}}}); err == nil {
+			t.Fatal("invalid text style accepted")
+		}
+	}
+}

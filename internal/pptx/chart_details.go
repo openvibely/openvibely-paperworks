@@ -9,11 +9,13 @@ import (
 
 // ChartTextStyle uses points, matching the rest of the presentation editor.
 type ChartTextStyle struct {
-	Font     string   `json:"font,omitempty"`
-	FontSize *float64 `json:"font_size,omitempty"`
-	Color    string   `json:"color,omitempty"`
-	Bold     *bool    `json:"bold,omitempty"`
-	Italic   *bool    `json:"italic,omitempty"`
+	Underline string   `json:"underline,omitempty"`
+	Alignment string   `json:"alignment,omitempty"`
+	Font      string   `json:"font,omitempty"`
+	FontSize  *float64 `json:"font_size,omitempty"`
+	Color     string   `json:"color,omitempty"`
+	Bold      *bool    `json:"bold,omitempty"`
+	Italic    *bool    `json:"italic,omitempty"`
 }
 type ChartPointFormat struct {
 	Index   int           `json:"index"`
@@ -76,6 +78,18 @@ func chartAppearance(parent *etree.Element, fill *DrawingStyle, outline *TextOut
 
 // Style the attached text body so inherited namespace bindings remain available.
 func formatChartTextBody(tx *etree.Element, text *ChartTextStyle) error {
+	if text.Underline != "" {
+		switch text.Underline {
+		case "none", "words", "sng", "dbl", "heavy", "dotted", "dottedHeavy", "dash", "dashHeavy", "dashLong", "dashLongHeavy", "dotDash", "dotDashHeavy", "dotDotDash", "dotDotDashHeavy", "wavy", "wavyHeavy", "wavyDbl":
+		default:
+			return fmt.Errorf("invalid chart underline")
+		}
+	}
+	align := map[string]string{"left": "l", "center": "ctr", "right": "r", "justify": "just"}[text.Alignment]
+	if text.Alignment != "" && align == "" {
+		return fmt.Errorf("invalid chart text alignment")
+	}
+
 	if text.FontSize != nil && (!finite(*text.FontSize) || *text.FontSize <= 0 || *text.FontSize > 400) {
 		return fmt.Errorf("chart font_size must be 0..400 points, exclusive of zero")
 	}
@@ -99,6 +113,9 @@ func formatChartTextBody(tx *etree.Element, text *ChartTextStyle) error {
 			pp = etree.NewElement("a:pPr")
 			p.InsertChildAt(0, pp)
 		}
+		if align != "" {
+			pp.CreateAttr("algn", align)
+		}
 		def := office.Child(pp, ans, "defRPr")
 		if def == nil {
 			def = etree.NewElement("a:defRPr")
@@ -113,6 +130,9 @@ func formatChartTextBody(tx *etree.Element, text *ChartTextStyle) error {
 		props = append(props, office.Children(p, ans, "endParaRPr")...)
 		for _, pr := range props {
 			pr.CreateAttr("xmlns:a", ans)
+			if text.Underline != "" {
+				pr.CreateAttr("u", text.Underline)
+			}
 			if text.FontSize != nil {
 				pr.CreateAttr("sz", strconv.Itoa(int(*text.FontSize*100)))
 			}
