@@ -538,14 +538,14 @@ func applyValuesWithFontRefresh(ctx context.Context, c *model.Context, fields ma
 				v = opts[i]
 			}
 			f.D["V"] = types.StringLiteral(*s)
-			// Choices store V without I, matching the reference. Keep indices
-			// locally for appearance generation; array selections retain their
-			// requested ordering in V.
+			// Keep /V in the caller's selection order. /I records sorted option
+			// indexes for valid multi-select lists and also drives the appearance.
 			delete(f.D, "I")
 			if len(selections) > 0 {
 				if selected, ok := selections[0][name]; ok {
 					array := types.Array{}
 					ind = types.Array{}
+					indices := make([]int, 0, len(selected))
 					for _, item := range selected {
 						escaped, err := types.EscapedUTF16String(item)
 						if err != nil {
@@ -554,9 +554,18 @@ func applyValuesWithFontRefresh(ctx context.Context, c *model.Context, fields ma
 						array = append(array, types.StringLiteral(*escaped))
 						if i := slices.Index(exports, item); i >= 0 {
 							ind = append(ind, types.Integer(i))
+							indices = append(indices, i)
 						}
 					}
 					f.D["V"] = array
+					if f.Ff&ffMultiSelect != 0 && len(selected) > 0 && len(indices) == len(selected) {
+						sort.Ints(indices)
+						savedIndices := make(types.Array, 0, len(indices))
+						for _, i := range indices {
+							savedIndices = append(savedIndices, types.Integer(i))
+						}
+						f.D["I"] = savedIndices
+					}
 					// The reference concatenates selections for appearance matching,
 					// even when a label spans adjacent selected values. V stays typed.
 					v = strings.Join(selected, "")

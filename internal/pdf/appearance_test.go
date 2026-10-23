@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/types"
 )
 
 func TestFillPreservesWidgetDecoration(t *testing.T) {
@@ -487,8 +489,28 @@ func TestArrayListSelectionAndFlatten(t *testing.T) {
 					t.Fatalf("selection item %d = %v", i, got)
 				}
 			}
-			if _, ok := f.D["I"]; ok {
-				t.Fatal("unexpected selection indices")
+			wantIndices := types.Array{}
+			for i, option := range []string{"Alpha", "Beta", "AlphaBeta"} {
+				for _, item := range selected {
+					if item == option {
+						wantIndices = append(wantIndices, types.Integer(i))
+						break
+					}
+				}
+			}
+			gotIndices, hasIndices := entryArray(c.XRefTable, f.D["I"])
+			if len(wantIndices) == 0 {
+				if hasIndices && len(gotIndices) != 0 {
+					t.Fatalf("unexpected selection indices: %v", gotIndices)
+				}
+			} else if !hasIndices || len(gotIndices) != len(wantIndices) {
+				t.Fatalf("selection indices = %v, want %v", f.D["I"], wantIndices)
+			} else {
+				for i := range wantIndices {
+					if gotIndices[i] != wantIndices[i] {
+						t.Fatalf("selection indices = %v, want %v", gotIndices, wantIndices)
+					}
+				}
 			}
 			ap := dictOf(c.XRefTable, f.Widgets[0]["AP"]).d
 			sd, _ := streamOf(c.XRefTable, ap["N"])
