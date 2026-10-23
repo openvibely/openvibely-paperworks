@@ -234,6 +234,19 @@ func formatParagraph(p *etree.Element, s map[string]any) error {
 // carrying insert as w:t/w:tab/w:br, and suffix, all sharing the run's rPr.
 func splitRunReplace(t *etree.Element, prefix, insert, suffix string) {
 	r := t.Parent()
+	if child(r, "lastRenderedPageBreak") != nil {
+		// Expand only the text node so cached page boundaries retain their
+		// position and the run's formatting survives even for tabs/newlines.
+		replacement := W("r")
+		setRunText(replacement, prefix+strings.ReplaceAll(insert, "\r\n", "\n")+suffix)
+		idx := t.Index()
+		r.RemoveChild(t)
+		for _, c := range replacement.ChildElements() {
+			r.InsertChildAt(idx, c.Copy())
+			idx++
+		}
+		return
+	}
 	parent := r.Parent()
 	idx := r.Index()
 	mid := W("r")
@@ -324,7 +337,7 @@ func replaceOrdinary(p *etree.Element, s map[string]any) error {
 		}
 		ts := office.Children(r, nsW, "t")
 		for _, c := range r.ChildElements() {
-			if !is(c, "rPr") && !is(c, "t") {
+			if !is(c, "rPr") && !is(c, "t") && !is(c, "lastRenderedPageBreak") {
 				plain = false
 			}
 		}
