@@ -22,7 +22,15 @@ type ChartPointFormat struct {
 	Fill    *DrawingStyle `json:"fill,omitempty"`
 	Outline *TextOutline  `json:"outline,omitempty"`
 }
+type ChartTrendlineLabel struct {
+	Text      *string         `json:"text,omitempty"`
+	TextStyle *ChartTextStyle `json:"text_style,omitempty"`
+	Fill      *DrawingStyle   `json:"fill,omitempty"`
+	Outline   *TextOutline    `json:"outline,omitempty"`
+}
 type ChartTrendline struct {
+	Label *ChartTrendlineLabel `json:"label,omitempty"`
+
 	Type            string       `json:"type"`
 	Name            string       `json:"name,omitempty"`
 	Order           *int         `json:"order,omitempty"`
@@ -379,6 +387,22 @@ func formatSeriesExtras(ser *etree.Element, s ChartSeriesFormat) error {
 			}{{"dispRSqr", t.DisplayRSquared}, {"dispEq", t.DisplayEquation}} {
 				if v.n != nil {
 					chartBool(n, v.tag, *v.n, "name spPr trendlineType order period forward backward intercept dispRSqr dispEq trendlineLbl extLst")
+				}
+			}
+			if label := t.Label; label != nil {
+				nl := n.CreateElement("c:trendlineLbl")
+				if label.Text != nil {
+					rich := nl.CreateElement("c:tx").CreateElement("c:rich")
+					rich.CreateAttr("xmlns:a", ans)
+					rich.CreateElement("a:bodyPr")
+					rich.CreateElement("a:lstStyle")
+					rich.CreateElement("a:p").CreateElement("a:r").CreateElement("a:t").SetText(*label.Text)
+				}
+				if err := chartAppearance(nl, label.Fill, label.Outline, nil, "layout tx numFmt spPr txPr extLst"); err != nil {
+					return err
+				}
+				if err := formatChartRichText(nl, label.TextStyle, "layout tx numFmt spPr txPr extLst"); err != nil {
+					return err
 				}
 			}
 		}
