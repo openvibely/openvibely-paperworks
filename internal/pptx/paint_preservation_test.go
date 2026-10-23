@@ -174,3 +174,38 @@ func TestRunPaintCreatesNamespacedProperties(t *testing.T) {
 		t.Fatal("run text changed")
 	}
 }
+
+func TestRunColorPreservesImportedFormatting(t *testing.T) {
+	_, p := paintFixture(t, Element{Type: "text", Text: "Keep me", W: 4, H: 2, TextPaint: &TextPaint{Outline: &TextOutline{Width: 1, Fill: &DrawingStyle{Fill: "000000"}}}})
+	part := "ppt/slides/slide1.xml"
+	raw := strings.NewReplacer("xmlns:a=", "xmlns:draw=", "<a:", "<draw:", "</a:", "</draw:").Replace(string(p.Get(part)))
+	d, err := opc.ParseXML([]byte(raw))
+	if err != nil {
+		t.Fatal(err)
+	}
+	run := office.All(d.Root(), ans, "r")[0]
+	pr := office.Child(run, ans, "rPr")
+	pr.CreateAttr("u", "sng")
+	underline := etree.NewElement("draw:uFill")
+	underline.CreateElement("draw:solidFill").CreateElement("draw:srgbClr").CreateAttr("val", "00FF00")
+	pr.InsertChildAt(office.Child(pr, ans, "latin").Index(), underline)
+	input := savePaintFixture(t, p, part, d)
+	d = editedPaintPart(t, input, part, Edit{Slide: 1, ShapeID: "2", Operation: "run-format", Color: "FF0000"})
+	run = office.All(d.Root(), ans, "r")[0]
+	pr = office.Child(run, ans, "rPr")
+	fill := office.Child(pr, ans, "solidFill")
+	if fill == nil || office.Child(fill, ans, "srgbClr").SelectAttrValue("val", "") != "FF0000" {
+		t.Fatal("requested run color is missing or has an unbound namespace")
+	}
+	line := office.Child(pr, ans, "ln")
+	if line == nil || line.Index() >= fill.Index() {
+		t.Fatal("outline must remain before glyph fill")
+	}
+	underlineColor := office.Child(office.Child(office.Child(pr, ans, "uFill"), ans, "solidFill"), ans, "srgbClr")
+	if underlineColor == nil || underlineColor.SelectAttrValue("val", "") != "00FF00" || pr.SelectAttrValue("u", "") != "sng" {
+		t.Fatal("underline formatting changed")
+	}
+	if office.Child(run, ans, "t").Text() != "Keep me" {
+		t.Fatal("run text changed")
+	}
+}
