@@ -16,7 +16,7 @@ func TestOutputDirectoryExisting(t *testing.T) {
 	before := contents(t, src)
 
 	for _, nonempty := range []bool{false, true} {
-		for _, action := range []string{"convert", "recalculate", "refresh", "render-office", "render-chart", "render-pdf", "compare"} {
+		for _, action := range []string{"convert", "recalculate", "refresh", "compare"} {
 			t.Run(action+map[bool]string{false: "/empty", true: "/nonempty"}[nonempty], func(t *testing.T) {
 				ctx := withDeps(dependencies{
 					refresh: func(context.Context, string, string, bool) error { t.Fatal("LibreOffice refresh invoked"); return nil },
@@ -38,15 +38,6 @@ func TestOutputDirectoryExisting(t *testing.T) {
 				}
 				var err error
 				switch action {
-				case "render-office":
-					_, err = RenderFile(ctx, src, out, "", "", pdf.RenderOptions{})
-				case "render-chart":
-					chart := "../../testdata/fixtures/reference-categorical-histogram.pptx"
-					original := contents(t, chart)
-					_, err = RenderFile(ctx, chart, out, "", "", pdf.RenderOptions{})
-					assertUnchanged(t, chart, original)
-				case "render-pdf":
-					_, err = RenderFile(ctx, "source.pdf", out, "", "", pdf.RenderOptions{})
 				case "compare":
 					_, err = Compare(ctx, "before.pdf", "after.pdf", out, pdf.RenderOptions{})
 				default:
@@ -129,5 +120,55 @@ func TestConvertNestedOutputDirectory(t *testing.T) {
 			}
 			assertUnchanged(t, src, original)
 		})
+	}
+}
+
+// A failed Office export leaves the output directory behind. Retrying must
+// reach conversion again, and later renders must overwrite their page images.
+func TestRenderReuseAfterFailedExport(t *testing.T) {
+	src := "../../testdata/regression/word-comment-anchor-baseline/source.docx"
+	out := filepath.Join(t.TempDir(), "render")
+	failed := errors.New("export failed")
+	calls := 0
+	ctx := withDeps(dependencies{export: func(_ context.Context, _, dir, _ string) (string, error) {
+		calls++
+		if calls == 1 {
+			return "", failed
+		}
+		dst := filepath.Join(dir, "converted.pdf")
+		return dst, os.WriteFile(dst, contents(t, "../../testdata/fixtures/libreoffice-unsupported-treemap.pdf"), 0600)
+	}})
+	if _, err := RenderFile(ctx, src, out, "", "", pdf.RenderOptions{DPI: 36}); !errors.Is(err, failed) {
+		t.Fatal(err)
+	}
+	sentinel := filepath.Join(out, "notes.txt")
+	if err := os.WriteFile(sentinel, []byte("keep"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := RenderFile(ctx, src, out, "", "", pdf.RenderOptions{}); err != nil {
+		t.Fatal(err)
+	}
+	if calls != 2 {
+		t.Fatal(calls)
+	}
+	input := "../../testdata/fixtures/libreoffice-unsupported-treemap.pdf"
+	for i := 0; i < 2; i++ {
+		pages, err := RenderFile(context.Background(), input, out, "", "", pdf.RenderOptions{DPI: 36})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(pages) == 0 {
+			t.Fatal("no pages")
+		}
+		if i == 0 {
+			if err := os.WriteFile(pages[0], []byte("stale"), 0600); err != nil {
+				t.Fatal(err)
+			}
+		} else if string(contents(t, pages[0])) == "stale" {
+			t.Fatal("page not replaced")
+		}
+	}
+	if string(contents(t, sentinel)) != "keep" {
+		t.Fatal("unrelated file changed")
 	}
 }

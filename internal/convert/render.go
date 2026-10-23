@@ -77,7 +77,7 @@ func VerifyOfficeChartPreview(ctx context.Context, source, pdfPath string) error
 	return nil
 }
 
-// RenderFile renders a PDF or Office file to PNG pages in a new directory.
+// RenderFile renders a PDF or Office file to PNG pages, reusing an existing output directory if present.
 func RenderFile(ctx context.Context, path, output, sheet, cellRange string, opt pdf.RenderOptions) ([]string, error) {
 	e := ext(path)
 	if (sheet != "" || cellRange != "") && (e != ".xlsx" || sheet == "") {
@@ -88,12 +88,12 @@ func RenderFile(ctx context.Context, path, output, sheet, cellRange string, opt 
 	}
 	var pdfPath string
 	if e == ".pdf" {
-		if err := NewOutputDir(output); err != nil {
+		if err := os.MkdirAll(output, 0o755); err != nil {
 			return nil, err
 		}
 		pdfPath = path
 	} else {
-		o := Options{Sheet: sheet, CellRange: cellRange, WholeSheets: e == ".xlsx" && cellRange == ""}
+		o := Options{reuseOutput: true, Sheet: sheet, CellRange: cellRange, WholeSheets: e == ".xlsx" && cellRange == ""}
 		res, err := deps(ctx).convert(ctx, path, output, o)
 		if err != nil {
 			return nil, err

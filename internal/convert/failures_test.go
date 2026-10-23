@@ -299,7 +299,7 @@ func TestReferenceRenderForwardsSelection(t *testing.T) {
 		t.Fatal(calls)
 	}
 	c := calls[0]
-	if c.in != src || c.out != out || !reflect.DeepEqual(c.options, Options{Sheet: "Inputs", CellRange: "B2:D4"}) {
+	if c.in != src || c.out != out || !reflect.DeepEqual(c.options, Options{reuseOutput: true, Sheet: "Inputs", CellRange: "B2:D4"}) {
 		t.Fatal(c)
 	}
 }

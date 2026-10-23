@@ -45,7 +45,7 @@ func officeErr(err error) error {
 func init() {
 	register(&Command{
 		Name:    "render",
-		Summary: "Render PDF/DOCX/XLSX/PPTX pages to PNG in a new directory (Office files via LibreOffice).",
+		Summary: "Render PDF/DOCX/XLSX/PPTX pages to PNG; reuse output directories and overwrite matching pages (Office files via LibreOffice).",
 		Usage:   "paperworks render INPUT --output NEW_DIR [--dpi N | --max-pixels N] [--sheet NAME [--range A1:D20]]",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, err := input(a, 1)
