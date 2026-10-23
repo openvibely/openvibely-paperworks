@@ -24,6 +24,7 @@ type ChartFormat struct {
 	Series          []ChartSeriesFormat `json:"series,omitempty"`
 }
 type ChartAxisFormat struct {
+	TitleStyle         *ChartTextStyle `json:"title_style,omitempty"`
 	CrossesAt          *float64        `json:"crosses_at,omitempty"`
 	LabelOffsetPercent *int            `json:"label_offset_percent,omitempty"`
 	Outline            *TextOutline    `json:"outline,omitempty"`
@@ -290,6 +291,16 @@ func formatNativeChart(p *opc.Package, owner string, shape *etree.Element, f *Ch
 				rich.CreateElement("a:p").CreateElement("a:r").CreateElement("a:t").SetText(*a.Title)
 			}
 		}
+		if a.TitleStyle != nil {
+			title := office.Child(axis, cns, "title")
+			if title == nil {
+				return fmt.Errorf("axis title formatting requires an existing or nonempty new title")
+			}
+			if err := formatChartRichText(title, a.TitleStyle, "tx layout overlay spPr txPr extLst"); err != nil {
+				return err
+			}
+		}
+
 	}
 	if l := f.Legend; l != nil {
 		if l.Visible != nil && !*l.Visible {

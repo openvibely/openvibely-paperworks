@@ -919,3 +919,8 @@ Use a `tab-color` operation with a six-digit RGB `color`; an empty string clears
 ```
 
 Run with `paperworks workbook-edit input.xlsx --spec edits.json --output updated.xlsx`. This requires the updated Paperworks build; the currently pinned RC4 does not provide this operation.
+
+## Separate axis-title styling (after RC4)
+
+Each inspected `chart_format.axes[]` entry accepts `title_style`, independently of `text_style` for tick labels. For example: `{"id":"INSPECTED_AXIS_ID","title":"Revenue","title_style":{"font_size":21,"bold":true},"text_style":{"font_size":10}}`.
+Omit `title` to style the existing title without replacing its text or formula reference. Styling requires an existing or nonempty new title; it fails if the title is removed. Supplied properties apply to its rich text and fallback text properties; omitted properties remain unchanged. Use a newer local build exposing this field, then render and inspect the title and tick labels.
