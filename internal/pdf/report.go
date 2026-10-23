@@ -19,6 +19,7 @@ const (
 	ffRadio         = 1 << 15
 	ffPushbutton    = 1 << 16
 	ffCombo         = 1 << 17
+	ffMultiSelect   = 1 << 21
 )
 
 type field struct {
