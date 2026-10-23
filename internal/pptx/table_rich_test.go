@@ -13,7 +13,7 @@ func TestRichTableCells(t *testing.T) {
 	ctx := context.Background()
 	in := filepath.Join(t.TempDir(), "in.pptx")
 	out := filepath.Join(t.TempDir(), "out.pptx")
-	paragraphs := []Paragraph{{Runs: []Run{{Text: "Revenue:", Bold: &yes}, {Text: " $200", Bold: &no, Italic: true, Color: "008000"}}}}
+	paragraphs := []Paragraph{{Runs: []Run{{Text: "Revenue:", Font: "Courier New", Bold: &yes}, {Text: " $200", Font: "Arial", Bold: &no, Italic: true, Color: "008000"}}}}
 	if err := Create(ctx, Spec{Slides: []Slide{{Elements: []Element{{Type: "table", W: 4, H: 2, Rows: [][]string{{"replace", "Keep"}}, TableFormat: &TableFormat{Cells: []TableCellFormat{{Row: 0, Column: 0, Paragraphs: paragraphs}}}}}}}}, "", in); err != nil {
 		t.Fatal(err)
 	}
@@ -31,6 +31,11 @@ func TestRichTableCells(t *testing.T) {
 		runs := office.All(cells[0], ans, "r")
 		if len(runs) != 2 || office.Child(runs[0], ans, "rPr").SelectAttrValue("b", "") != "1" || office.Child(runs[1], ans, "rPr").SelectAttrValue("b", "") != "0" {
 			t.Fatal("mixed formatting lost")
+		}
+		for i, want := range []string{"Courier New", "Arial"} {
+			if office.All(runs[i], ans, "latin")[0].SelectAttrValue("typeface", "") != want {
+				t.Fatal("run font lost")
+			}
 		}
 		if office.All(cells[1], ans, "t")[0].Text() != "Keep" {
 			t.Fatal("other cell changed")

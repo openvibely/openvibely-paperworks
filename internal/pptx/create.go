@@ -51,6 +51,7 @@ type Slide struct {
 	Elements        []Element     `json:"elements"`
 }
 type Run struct {
+	Font      string  `json:"font,omitempty"`
 	Style     string  `json:"style,omitempty"`
 	Text      string  `json:"text"`
 	FontSize  float64 `json:"font_size"`
@@ -213,6 +214,10 @@ func authoredTextBody(e Element, font string, inheritBold bool) string {
 			fmt.Fprintf(&b, `<a:pPr algn="%s"><a:buNone/></a:pPr>`, align)
 		}
 		for _, r := range runs {
+			runFont := font
+			if r.Font != "" {
+				runFont = r.Font
+			}
 			bold, italic := 0, 0
 			if p.Bold || e.Bold {
 				bold = 1
@@ -253,7 +258,7 @@ func authoredTextBody(e Element, font string, inheritBold bool) string {
 					decoration += ` u="sng"`
 				}
 			}
-			fmt.Fprintf(&b, `<a:r><a:rPr lang="en-US" sz="%d"%s%s><a:solidFill><a:srgbClr val="%s"/></a:solidFill><a:latin typeface="%s"/></a:rPr><a:t>%s</a:t></a:r>`, int(size*100), boldAttr, decoration, ink, esc(font), esc(r.Text))
+			fmt.Fprintf(&b, `<a:r><a:rPr lang="en-US" sz="%d"%s%s><a:solidFill><a:srgbClr val="%s"/></a:solidFill><a:latin typeface="%s"/></a:rPr><a:t>%s</a:t></a:r>`, int(size*100), boldAttr, decoration, ink, esc(runFont), esc(r.Text))
 		}
 		fmt.Fprintf(&b, `<a:endParaRPr lang="en-US" sz="%d"/></a:p>`, int(sz*100))
 	})
