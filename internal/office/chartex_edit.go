@@ -138,8 +138,8 @@ func ExtendedCharts(p *opc.Package, s ExtendedChartSpec) ([]*ChartExReport, erro
 		return v
 	}
 	if s.Action == "add" {
-		if kind != "treemap" && kind != "sunburst" && kind != "histogram" {
-			return nil, fmt.Errorf("supported types: treemap, sunburst, histogram")
+		if kind != "treemap" && kind != "sunburst" && kind != "histogram" && kind != "waterfall" && kind != "funnel" {
+			return nil, fmt.Errorf("supported types: treemap, sunburst, histogram, waterfall, funnel")
 		}
 		slides, e := PresentationSlides(p)
 		if e != nil {
@@ -179,6 +179,8 @@ func ExtendedCharts(p *opc.Package, s ExtendedChartSpec) ([]*ChartExReport, erro
 		child(series, "dataId").CreateAttr("val", "0")
 		if kind == "histogram" {
 			child(child(series, "layoutPr"), "binning")
+		}
+		if kind == "histogram" || kind == "waterfall" || kind == "funnel" {
 			axis := child(plot, "axis")
 			axis.CreateAttr("id", "0")
 			child(axis, "catScaling").CreateAttr("gapWidth", "0")
@@ -260,16 +262,16 @@ func ExtendedCharts(p *opc.Package, s ExtendedChartSpec) ([]*ChartExReport, erro
 		}
 		series := report.Series[0]
 		kind = series.Type
-		if kind != "treemap" && kind != "sunburst" && kind != "histogram" {
+		if kind != "treemap" && kind != "sunburst" && kind != "histogram" && kind != "waterfall" && kind != "funnel" {
 			return nil, fmt.Errorf("data replacement is not supported for %s", kind)
 		}
-		if kind == "histogram" && s.categoriesInvalid {
-			return nil, fmt.Errorf("Histogram categories must match values")
+		if (kind == "histogram" || kind == "waterfall" || kind == "funnel") && s.categoriesInvalid {
+			return nil, fmt.Errorf("%s categories must match values", chartCategoryLabel(kind))
 		}
-		if kind == "histogram" && (s.categoriesNotList || s.CategoriesPresent && s.Categories == nil) {
-			return nil, fmt.Errorf("Histogram categories must be a list matching values")
+		if (kind == "histogram" || kind == "waterfall" || kind == "funnel") && (s.categoriesNotList || s.CategoriesPresent && s.Categories == nil) {
+			return nil, fmt.Errorf("%s categories must be a list matching values", chartCategoryLabel(kind))
 		}
-		if kind == "histogram" && s.Categories == nil {
+		if (kind == "histogram" || kind == "waterfall" || kind == "funnel") && s.Categories == nil {
 			s.Categories = series.dims.Str["cat"]
 		}
 		d, e = p.XML(part)
@@ -288,14 +290,20 @@ func ExtendedCharts(p *opc.Package, s ExtendedChartSpec) ([]*ChartExReport, erro
 			data.RemoveChild(v)
 		}
 	}
+	if kind != "histogram" && (s.BinSize != nil || s.BinCount != nil || s.binCountJSON != nil || s.Interval != nil || s.Underflow != nil || s.Overflow != nil) {
+		return nil, fmt.Errorf("bin settings only apply to histogram")
+	}
 	levels := [][]string{}
-	if kind == "histogram" && s.categoriesInvalid {
-		return nil, fmt.Errorf("Histogram categories must match values")
+	if (kind == "histogram" || kind == "waterfall" || kind == "funnel") && s.categoriesInvalid {
+		return nil, fmt.Errorf("%s categories must match values", chartCategoryLabel(kind))
 	}
-	if kind == "histogram" && (s.categoriesNotList || s.CategoriesPresent && s.Categories == nil) {
-		return nil, fmt.Errorf("Histogram categories must be a list matching values")
+	if (kind == "histogram" || kind == "waterfall" || kind == "funnel") && (s.categoriesNotList || s.CategoriesPresent && s.Categories == nil) {
+		return nil, fmt.Errorf("%s categories must be a list matching values", chartCategoryLabel(kind))
 	}
-	if kind == "histogram" {
+	if kind == "histogram" || kind == "waterfall" || kind == "funnel" {
+		if s.Paths != nil {
+			return nil, fmt.Errorf("category_paths only applies to hierarchy charts")
+		}
 		if s.Categories != nil {
 			levels = append(levels, s.Categories)
 		}
@@ -334,7 +342,7 @@ func ExtendedCharts(p *opc.Package, s ExtendedChartSpec) ([]*ChartExReport, erro
 		for _, labels := range levels {
 			if len(labels) != len(s.Values) {
 				if kind == "histogram" {
-					return nil, fmt.Errorf("Histogram categories must match values")
+					return nil, fmt.Errorf("%s categories must match values", chartCategoryLabel(kind))
 				}
 				return nil, fmt.Errorf("categories must match values")
 			}
@@ -344,7 +352,7 @@ func ExtendedCharts(p *opc.Package, s ExtendedChartSpec) ([]*ChartExReport, erro
 	}
 	dim := child(data, "numDim")
 	typ := "val"
-	if kind != "histogram" {
+	if kind == "treemap" || kind == "sunburst" {
 		typ = "size"
 	}
 	dim.CreateAttr("type", typ)
@@ -427,4 +435,11 @@ func ExtendedCharts(p *opc.Package, s ExtendedChartSpec) ([]*ChartExReport, erro
 		return nil, e
 	}
 	return chartExReports(p)
+}
+
+func chartCategoryLabel(kind string) string {
+	if kind == "histogram" {
+		return "Histogram"
+	}
+	return "Chart"
 }
