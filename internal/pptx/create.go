@@ -40,6 +40,7 @@ type Spec struct {
 	Slides         []Slide         `json:"slides"`
 }
 type Slide struct {
+	AutoLayout      *AutoLayout   `json:"auto_layout,omitempty"`
 	BackgroundFill  *DrawingStyle `json:"background_fill,omitempty"`
 	Hidden          *bool         `json:"hidden,omitempty"`
 	NotesParagraphs []Paragraph   `json:"notes_paragraphs,omitempty"`
@@ -607,6 +608,15 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 					}
 				}
 			}
+		}
+		if slide.AutoLayout != nil {
+			if slide.Layout != nil {
+				return fmt.Errorf("layout and auto_layout are mutually exclusive")
+			}
+			if err := autoLayoutObjects(b.p, name, d.Root(), slide.AutoLayout); err != nil {
+				return err
+			}
+			changed = true
 		}
 		if slide.Layout != nil {
 			if err := layoutObjects(b.p, name, d.Root(), slide.Layout); err != nil {

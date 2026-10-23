@@ -16,6 +16,7 @@ type EditSpec struct {
 	Edits []Edit `json:"edits"`
 }
 type Edit struct {
+	AutoLayout     *AutoLayout     `json:"auto_layout,omitempty"`
 	SVG            string          `json:"svg,omitempty"`
 	BackgroundFill *DrawingStyle   `json:"background_fill,omitempty"`
 	TextBox        *TextBoxStyle   `json:"text_box,omitempty"`
@@ -182,6 +183,12 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 				return nil, fmt.Errorf("visibility requires slide and hidden, without part or shape_id")
 			}
 			setSlideHidden(d.Root(), *op.Hidden)
+			continue
+		}
+		if op.Operation == "auto-layout" {
+			if err := autoLayoutObjects(p, part, d.Root(), op.AutoLayout); err != nil {
+				return nil, err
+			}
 			continue
 		}
 		if op.Operation == "layout" {
