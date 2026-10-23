@@ -68,15 +68,8 @@ func Read(raw []byte) (*Package, error) {
 	if err != nil {
 		return nil, fmt.Errorf("not a valid Office package (zip): %w", err)
 	}
-	if len(zr.File) > MaxParts {
-		return nil, errors.New("package exceeds inspection limits; nothing was inspected")
-	}
-	var total uint64
-	for _, f := range zr.File {
-		total += f.UncompressedSize64
-	}
-	if total > MaxTotalBytes {
-		return nil, errors.New("package exceeds inspection limits; nothing was inspected")
+	if err := validateZipStructure(zr.File); err != nil {
+		return nil, err
 	}
 	// Private copy so later caller mutations of raw cannot leak into Bytes.
 	retained := bytes.Clone(raw)
@@ -84,9 +77,6 @@ func Read(raw []byte) (*Package, error) {
 	for _, f := range zr.File {
 		if strings.HasSuffix(f.Name, "/") {
 			continue
-		}
-		if strings.Contains(f.Name, "..") || strings.HasPrefix(f.Name, "/") {
-			return nil, fmt.Errorf("unsafe part name: %s", f.Name)
 		}
 		rc, err := f.Open()
 		if err != nil {
@@ -100,14 +90,66 @@ func Read(raw []byte) (*Package, error) {
 		if len(data) > MaxPartBytes {
 			return nil, fmt.Errorf("part too large: %s", f.Name)
 		}
-		if _, dup := p.index[f.Name]; dup {
-			return nil, fmt.Errorf("duplicate part: %s", f.Name)
-		}
 		part := &Part{Name: f.Name, Data: data, Header: f.FileHeader, src: rawSourceOf(retained, f)}
 		p.Parts = append(p.Parts, part)
 		p.index[f.Name] = part
 	}
 	return p, nil
+}
+
+type packageMember struct {
+	name string
+	size uint64
+}
+
+// validatePackageMembers checks ZIP structure and advertised expansion limits
+// without opening member streams. Read still opens every input member below to
+// validate its actual size and CRC.
+func validatePackageMembers(members []packageMember) error {
+	if len(members) > MaxParts {
+		return errors.New("package exceeds inspection limits; nothing was inspected")
+	}
+	seen := make(map[string]struct{}, len(members))
+	var total uint64
+	for _, member := range members {
+		if member.size > uint64(MaxTotalBytes)-total {
+			return errors.New("package exceeds inspection limits; nothing was inspected")
+		}
+		total += member.size
+		if strings.HasSuffix(member.name, "/") {
+			continue
+		}
+		if strings.Contains(member.name, "..") || strings.HasPrefix(member.name, "/") {
+			return fmt.Errorf("unsafe part name: %s", member.name)
+		}
+		if member.size > MaxPartBytes {
+			return fmt.Errorf("part too large: %s", member.name)
+		}
+		if _, dup := seen[member.name]; dup {
+			return fmt.Errorf("duplicate part: %s", member.name)
+		}
+		seen[member.name] = struct{}{}
+	}
+	return nil
+}
+
+func validateZipStructure(files []*zip.File) error {
+	members := make([]packageMember, len(files))
+	for i, f := range files {
+		members[i] = packageMember{name: f.Name, size: f.UncompressedSize64}
+	}
+	return validatePackageMembers(members)
+}
+
+func validatePackageForSave(parts []*Part) error {
+	members := make([]packageMember, len(parts))
+	for i, part := range parts {
+		if part == nil {
+			return fmt.Errorf("nil package part at index %d", i)
+		}
+		members[i] = packageMember{name: part.Name, size: uint64(len(part.Data))}
+	}
+	return validatePackageMembers(members)
 }
 
 func (p *Package) Has(name string) bool { _, ok := p.index[name]; return ok }
@@ -200,10 +242,25 @@ func (part *Part) rawCopyable() bool {
 // Bytes serializes the package. Unmodified members are copied in their
 // original compressed form; all other members are deflated.
 func (p *Package) Bytes() ([]byte, error) {
+	data, _, err := p.serialize(false)
+	return data, err
+}
+
+// serialize optionally records which members were copied from an already
+// validated input package, so SaveNew can validate output CRC metadata without
+// rescanning unchanged media.
+func (p *Package) serialize(trackRawCopies bool) ([]byte, []bool, error) {
 	var buf bytes.Buffer
 	zw := zip.NewWriter(&buf)
-	for _, part := range p.Parts {
+	var rawCopied []bool
+	if trackRawCopies {
+		rawCopied = make([]bool, len(p.Parts))
+	}
+	for i, part := range p.Parts {
 		if part.rawCopyable() {
+			if rawCopied != nil {
+				rawCopied[i] = true
+			}
 			h := part.Header
 			s := part.src
 			h.Name, h.Method, h.Flags = s.header.Name, s.header.Method, s.header.Flags
@@ -211,10 +268,10 @@ func (p *Package) Bytes() ([]byte, error) {
 			h.Extra = nil
 			w, err := zw.CreateRaw(&h)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 			if _, err := w.Write(s.compressed); err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 			continue
 		}
@@ -228,16 +285,16 @@ func (p *Package) Bytes() ([]byte, error) {
 		h.Extra = nil
 		w, err := zw.CreateHeader(&h)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		if _, err := w.Write(part.Data); err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 	}
 	if err := zw.Close(); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return buf.Bytes(), nil
+	return buf.Bytes(), rawCopied, nil
 }
 
 // CheckXML rejects DTD/entity declarations, which Office parts never need.
@@ -534,13 +591,45 @@ func writeNewContents(file string, f io.WriteCloser, data []byte) error {
 	return nil
 }
 
+func validateSerializedPackage(data []byte, parts []*Part, rawCopied []bool) error {
+	zr, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
+	if err != nil {
+		return fmt.Errorf("not a valid Office package (zip): %w", err)
+	}
+	if err := validateZipStructure(zr.File); err != nil {
+		return err
+	}
+	if len(zr.File) != len(parts) || len(rawCopied) != len(parts) {
+		return fmt.Errorf("serialized part count mismatch: got %d, want %d", len(zr.File), len(parts))
+	}
+	for i, f := range zr.File {
+		part := parts[i]
+		if f.Name != part.Name || f.UncompressedSize64 != uint64(len(part.Data)) {
+			return fmt.Errorf("serialized part metadata mismatch: %s", part.Name)
+		}
+		var wantCRC uint32
+		if rawCopied[i] {
+			wantCRC = part.src.header.CRC32
+		} else {
+			wantCRC = crc32.ChecksumIEEE(part.Data)
+		}
+		if f.CRC32 != wantCRC {
+			return fmt.Errorf("serialized part content mismatch: %s", part.Name)
+		}
+	}
+	return nil
+}
+
 // SaveNew serializes the package and writes it to a new file.
 func (p *Package) SaveNew(file string) error {
-	data, err := p.Bytes()
+	if err := validatePackageForSave(p.Parts); err != nil {
+		return fmt.Errorf("refusing to write invalid package: %w", err)
+	}
+	data, rawCopied, err := p.serialize(true)
 	if err != nil {
 		return err
 	}
-	if _, err := Read(data); err != nil {
+	if err := validateSerializedPackage(data, p.Parts, rawCopied); err != nil {
 		return fmt.Errorf("refusing to write invalid package: %w", err)
 	}
 	return WriteNew(file, data)
