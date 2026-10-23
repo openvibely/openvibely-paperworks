@@ -386,3 +386,23 @@ func TestChartUnderlineAlignment(t *testing.T) {
 		}
 	}
 }
+
+func TestChartTrendlineLabel(t *testing.T) {
+	in, _ := chartControlFixture(t, "line")
+	text := "Trend & forecast"
+	yes := true
+	size := 18.0
+	trends := []ChartTrendline{{Type: "linear", DisplayEquation: &yes, Label: &ChartTrendlineLabel{Text: &text, TextStyle: &ChartTextStyle{FontSize: &size, Underline: "sng"}, Fill: &DrawingStyle{Fill: "EEEEEE"}, Outline: &TextOutline{Width: 1, Fill: &DrawingStyle{Fill: "FF0000"}}}}}
+	d := editChartControl(t, in, ChartFormat{Series: []ChartSeriesFormat{{Index: 0, Trendlines: &trends}}})
+	label := office.All(d.Root(), cns, "trendlineLbl")[0]
+	if office.All(label, ans, "t")[0].Text() != text {
+		t.Fatal("trendline label text missing")
+	}
+	if office.All(label, ans, "defRPr")[0].SelectAttrValue("sz", "") != "1800" {
+		t.Fatal("trendline label style missing")
+	}
+	sp := office.Child(label, cns, "spPr")
+	if office.Child(sp, ans, "solidFill") == nil || office.Child(sp, ans, "ln") == nil {
+		t.Fatal("trendline label paint missing")
+	}
+}
