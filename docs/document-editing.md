@@ -967,3 +967,10 @@ its range is zero to half the shorter side. Radius and adjustments are mutually
 exclusive. Supplied adjustments replace the list; `[]` clears it. Omission retains
 adjustments for the same preset. Formula guide names must resolve in the chosen
 preset; use its documented adjustment names. Changing presets resets adjustments.
+
+### Picture aspect-ratio locking (after RC4)
+
+`slide-edit` operation `image-lock` takes `lock_aspect_ratio:true` or `false`.
+New image elements accept the same field. This changes native `noChangeAspect`
+without changing dimensions, crop or other locks. It controls interactive resizing
+in supporting viewers, not automatic resizing by subsequent CLI edits.
