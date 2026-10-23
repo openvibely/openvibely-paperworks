@@ -430,3 +430,23 @@ func TestChartSeriesLabelAppearance(t *testing.T) {
 		t.Fatal("labels not shown")
 	}
 }
+
+func TestAxisTitleStyleSeparateFromTicks(t *testing.T) {
+	in, source := chartControlFixture(t, "line")
+	id := office.Child(office.All(source.Root(), cns, "valAx")[0], cns, "axId").SelectAttrValue("val", "")
+	title, size, tickSize := "Revenue", 21.0, 10.0
+	d := editChartControl(t, in, ChartFormat{Axes: []ChartAxisFormat{{ID: id, Title: &title, TitleStyle: &ChartTextStyle{FontSize: &size, Color: "FF0000"}, TextStyle: &ChartTextStyle{FontSize: &tickSize}}}})
+	axis := office.All(d.Root(), cns, "valAx")[0]
+	n := office.Child(axis, cns, "title")
+	if office.All(n, ans, "t")[0].Text() != title || office.All(n, ans, "defRPr")[0].SelectAttrValue("sz", "") != "2100" {
+		t.Fatal("axis title style missing")
+	}
+	if office.All(office.Child(axis, cns, "txPr"), ans, "defRPr")[0].SelectAttrValue("sz", "") != "1000" {
+		t.Fatal("title style changed tick labels")
+	}
+	empty := ""
+	bad := ChartFormat{Axes: []ChartAxisFormat{{ID: id, Title: &empty, TitleStyle: &ChartTextStyle{FontSize: &size}}}}
+	if _, err := EditFile(context.Background(), in, filepath.Join(t.TempDir(), "bad.pptx"), EditSpec{Edits: []Edit{{Slide: 1, ShapeID: "2", Operation: "chart-format", ChartFormat: &bad}}}); err == nil {
+		t.Fatal("styled removed axis title")
+	}
+}
