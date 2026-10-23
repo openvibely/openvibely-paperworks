@@ -517,7 +517,7 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 				name := fmt.Sprintf("image%d.%s", b.images, ext)
 				b.p.Set("ppt/media/"+name, data)
 				rid := rels.add("image", "../media/"+name)
-				e, crop, err := imagePlacement(e, cfg.Width, cfg.Height)
+				e, crop, err := imagePlacementDimensions(e, cfg.Width, cfg.Height)
 				if err != nil {
 					return err
 				}
