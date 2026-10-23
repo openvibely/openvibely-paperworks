@@ -599,3 +599,13 @@ Alignment is `top`, `middle` or `bottom`; wrap is `square` or `none`; autofit is
 `none`, `shrinkText` or `resizeShapeToFitText`. Autofit is a native application
 setting, not measured layout: render and check the result, and rerun measured
 layout after padding/wrapping changes.
+
+### Slide backgrounds
+
+Creation accepts `background_fill` instead of the solid `background` string.
+Use a `DrawingStyle` fill (`fill`, `gradient`, `pattern` or `image`), without
+outline/shadow. For existing slides use `slide-edit` with
+`{"edits":[{"operation":"background","slide":1,"background_fill":{"gradient":{"angle":90,"stops":[{"position":0,"color":"FFFFFF"},{"position":1,"color":"17324D"}]}}}]}`.
+Image fills use local paths relative to the spec and `stretch`, `cover` or `tile`.
+Cover uses the slide dimensions. This changes the actual background, not a
+full-slide shape. Render to check contrast and cropping.
