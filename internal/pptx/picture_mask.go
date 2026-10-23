@@ -45,17 +45,18 @@ func setPictureMask(shape *etree.Element, mask string, radius *float64) error {
 		adj = int(math.Round(*radius / side * 100000))
 		mask = "roundRect"
 	}
-	geom := etree.NewElement("a:prstGeom")
-	geom.CreateAttr("xmlns:a", ans)
-	geom.CreateAttr("prst", mask)
-	if old != nil && old.SelectAttrValue("prst", "") == mask {
-		if av := office.Child(old, ans, "avLst"); av != nil {
-			geom.AddChild(av.Copy())
-		}
+	// Keep matching geometry attached while editing its adjustments. Copying
+	// avLst alone loses namespace declarations inherited from prstGeom.
+	geom := old
+	if geom == nil || geom.SelectAttrValue("prst", "") != mask {
+		geom = etree.NewElement("a:prstGeom")
+		geom.CreateAttr("xmlns:a", ans)
+		geom.CreateAttr("prst", mask)
 	}
 	av := office.Child(geom, ans, "avLst")
 	if av == nil {
 		av = geom.CreateElement("a:avLst")
+		av.CreateAttr("xmlns:a", ans)
 	}
 	if adj >= 0 {
 		for _, g := range av.ChildElements() {
@@ -64,6 +65,7 @@ func setPictureMask(shape *etree.Element, mask string, radius *float64) error {
 			}
 		}
 		g := av.CreateElement("a:gd")
+		g.CreateAttr("xmlns:a", ans)
 		g.CreateAttr("name", "adj")
 		g.CreateAttr("fmla", fmt.Sprintf("val %d", adj))
 	}
