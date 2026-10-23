@@ -7,19 +7,19 @@ import (
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 )
 
-func applyRunHyperlinks(pkg *opc.Package, part string, body *etree.Element, paragraphs []Paragraph) error {
+func applyStructuredRunProperties(pkg *opc.Package, part string, body *etree.Element, paragraphs []Paragraph) error {
 	ps := office.Children(body, ans, "p")
 	for pi, para := range paragraphs {
 		for ri, run := range para.Runs {
-			if run.Hyperlink == "" {
+			if run.Hyperlink == "" && run.TextPaint == nil {
 				continue
 			}
 			if pi >= len(ps) {
-				return fmt.Errorf("hyperlink paragraph not found")
+				return fmt.Errorf("structured run paragraph not found")
 			}
 			runs := office.Children(ps[pi], ans, "r")
 			if ri >= len(runs) {
-				return fmt.Errorf("hyperlink run not found")
+				return fmt.Errorf("structured run not found")
 			}
 			pr := office.Child(runs[ri], ans, "rPr")
 			if pr == nil {
@@ -27,6 +27,14 @@ func applyRunHyperlinks(pkg *opc.Package, part string, body *etree.Element, para
 				runs[ri].InsertChildAt(0, pr)
 			}
 			ensureDrawingPrefix(pr, runs[ri])
+			if run.TextPaint != nil {
+				if err := paintTextProperties(pr, run.TextPaint); err != nil {
+					return err
+				}
+			}
+			if run.Hyperlink == "" {
+				continue
+			}
 			if err := setHyperlink(pkg, part, pr, run.Hyperlink); err != nil {
 				return err
 			}

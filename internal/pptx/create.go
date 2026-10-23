@@ -51,16 +51,17 @@ type Slide struct {
 	Elements        []Element     `json:"elements"`
 }
 type Run struct {
-	Hyperlink      string  `json:"hyperlink,omitempty"`
-	UnderlineStyle string  `json:"underline_style,omitempty"`
-	Font           string  `json:"font,omitempty"`
-	Style          string  `json:"style,omitempty"`
-	Text           string  `json:"text"`
-	FontSize       float64 `json:"font_size"`
-	Color          string  `json:"color"`
-	Bold           *bool   `json:"bold"`
-	Italic         bool    `json:"italic"`
-	Underline      bool    `json:"underline"`
+	TextPaint      *TextPaint `json:"text_paint,omitempty"`
+	Hyperlink      string     `json:"hyperlink,omitempty"`
+	UnderlineStyle string     `json:"underline_style,omitempty"`
+	Font           string     `json:"font,omitempty"`
+	Style          string     `json:"style,omitempty"`
+	Text           string     `json:"text"`
+	FontSize       float64    `json:"font_size"`
+	Color          string     `json:"color"`
+	Bold           *bool      `json:"bold"`
+	Italic         bool       `json:"italic"`
+	Underline      bool       `json:"underline"`
 }
 type Paragraph struct {
 	Format *ParagraphStyle `json:"format,omitempty"`
@@ -627,12 +628,12 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 					}
 				}
 			}
-			if err := applyRunHyperlinks(b.p, name, office.Child(shapes[j], pns, "txBody"), e.Paragraphs); err != nil {
+			if err := applyStructuredRunProperties(b.p, name, office.Child(shapes[j], pns, "txBody"), e.Paragraphs); err != nil {
 				return err
 			}
 			for _, para := range e.Paragraphs {
 				for _, run := range para.Runs {
-					if run.Hyperlink != "" {
+					if run.Hyperlink != "" || run.TextPaint != nil {
 						changed = true
 					}
 				}
