@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/openvibely/openvibely-paperworks/internal/office"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 	"github.com/xuri/excelize/v2"
 )
@@ -55,6 +56,21 @@ func EditFile(ctx context.Context, input, output, base string, spec EditSpec) er
 		return err
 	}
 	defer func() { f.Close() }()
+	var sourceWorkbook *office.Workbook
+	for _, op := range spec.Edits {
+		if op.Operation != "autofit-rows" {
+			continue
+		}
+		pkg, err := opc.Open(input)
+		if err != nil {
+			return err
+		}
+		sourceWorkbook, err = office.OpenWorkbook(pkg)
+		if err != nil {
+			return err
+		}
+		break
+	}
 	for i, op := range spec.Edits {
 		if err = ctx.Err(); err != nil {
 			return err
@@ -76,7 +92,7 @@ func EditFile(ctx context.Context, input, output, base string, spec EditSpec) er
 			}
 			continue
 		}
-		if err = applyEdit(f, base, op); err != nil {
+		if err = applyEditWithSourceCache(f, base, op, sourceWorkbook); err != nil {
 			return fmt.Errorf("edit %d (%s): %w", i, op.Operation, err)
 		}
 	}
@@ -94,6 +110,10 @@ func EditFile(ctx context.Context, input, output, base string, spec EditSpec) er
 	return opc.WriteNew(output, b.Bytes())
 }
 func applyEdit(f *excelize.File, base string, e Edit) error {
+	return applyEditWithSourceCache(f, base, e, nil)
+}
+
+func applyEditWithSourceCache(f *excelize.File, base string, e Edit, source *office.Workbook) error {
 	// Sheet-independent operations are explicitly enumerated, avoiding silent
 	// sheet creation on misspelled targets.
 	switch e.Operation {
@@ -194,7 +214,7 @@ func applyEdit(f *excelize.File, base string, e Edit) error {
 		}
 		return f.SetCellStyle(e.Sheet, a, b, id)
 	case "autofit-rows":
-		return autofitRows(f, e)
+		return autofitRowsWithSourceCache(f, e, source)
 	case "autofit-columns":
 		return f.AutoFitColWidth(e.Sheet, e.Range)
 	case "column-width":

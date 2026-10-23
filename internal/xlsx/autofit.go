@@ -8,7 +8,24 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
+func hasSavedEmptyStringResult(wb *office.Workbook, sheet, cell, formula string) bool {
+	if wb == nil || wb.Sheets[sheet] == nil {
+		return false
+	}
+	c := wb.Sheets[sheet].Cells[cell]
+	if c == nil || c.SelectAttrValue("t", "") != "str" {
+		return false
+	}
+	savedFormula := office.Child(c, office.NSS, "f")
+	value := office.Child(c, office.NSS, "v")
+	return savedFormula != nil && savedFormula.Text() == formula && value != nil && value.Text() == ""
+}
+
 func autofitRows(f *excelize.File, e Edit) error {
+	return autofitRowsWithSourceCache(f, e, nil)
+}
+
+func autofitRowsWithSourceCache(f *excelize.File, e Edit, source *office.Workbook) error {
 	a, b, err := bounds(e.Range)
 	if err != nil {
 		return err
@@ -115,7 +132,7 @@ func autofitRows(f *excelize.File, e Edit) error {
 			if err != nil {
 				return err
 			}
-			if formula != "" && value == "" {
+			if formula != "" && value == "" && !hasSavedEmptyStringResult(source, e.Sheet, cell, formula) {
 				return fmt.Errorf("%s needs recalculation before autofit", cell)
 			}
 			runs := []office.TextRun{{Text: value, Font: name, Size: size, Bold: bold, Italic: italic}}

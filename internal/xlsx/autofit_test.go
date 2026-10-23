@@ -2,11 +2,14 @@ package xlsx
 
 import (
 	"context"
-	"github.com/xuri/excelize/v2"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/openvibely/openvibely-paperworks/internal/office"
+	"github.com/openvibely/openvibely-paperworks/internal/opc"
+	"github.com/xuri/excelize/v2"
 )
 
 func TestAutofitRowsSavesWrappedAndRichTextHeights(t *testing.T) {
@@ -51,6 +54,145 @@ func TestAutofitRowsSavesWrappedAndRichTextHeights(t *testing.T) {
 	after, _ := os.ReadFile(in)
 	if string(original) != string(after) {
 		t.Fatal("source changed")
+	}
+}
+
+func TestAutofitRowsAcceptsCachedEmptyStringFormulaWithOtherContent(t *testing.T) {
+	dir := t.TempDir()
+	in := filepath.Join(dir, "input.xlsx")
+	out := filepath.Join(dir, "out.xlsx")
+	f := excelize.NewFile()
+	if err := f.SetDefaultFont("Go"); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SetColWidth("Sheet1", "B", "B", 9); err != nil {
+		t.Fatal(err)
+	}
+	style, err := f.NewStyle(&excelize.Style{Alignment: &excelize.Alignment{WrapText: true}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SetCellStyle("Sheet1", "B1", "B1", style); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SetCellFormula("Sheet1", "A1", `""`); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SetCellValue("Sheet1", "B1", "A long visible value that wraps onto several lines in this narrow column"); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SaveAs(in); err != nil {
+		t.Fatal(err)
+	}
+	f.Close()
+	setStringFormulaCache(t, in, "Sheet1", "A1", true)
+
+	if err := EditFile(context.Background(), in, out, dir, EditSpec{Edits: []Edit{{Operation: "autofit-rows", Sheet: "Sheet1", Range: "A1:B1"}}}); err != nil {
+		t.Fatal(err)
+	}
+	got, err := excelize.OpenFile(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer got.Close()
+	height, err := got.GetRowHeight("Sheet1", 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if height <= 20 {
+		t.Fatalf("row height %v did not account for wrapped visible content", height)
+	}
+}
+
+func TestAutofitRowsAcceptsCachedEmptyStringFormulaInEmptyRow(t *testing.T) {
+	dir := t.TempDir()
+	in := filepath.Join(dir, "input.xlsx")
+	out := filepath.Join(dir, "out.xlsx")
+	f := excelize.NewFile()
+	if err := f.SetDefaultFont("Go"); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SetCellFormula("Sheet1", "A1", `""`); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SaveAs(in); err != nil {
+		t.Fatal(err)
+	}
+	f.Close()
+	setStringFormulaCache(t, in, "Sheet1", "A1", true)
+
+	if err := EditFile(context.Background(), in, out, dir, EditSpec{Edits: []Edit{{Operation: "autofit-rows", Sheet: "Sheet1", Range: "A1:A1"}}}); err != nil {
+		t.Fatal(err)
+	}
+	got, err := excelize.OpenFile(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer got.Close()
+	height, err := got.GetRowHeight("Sheet1", 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if height != 16.2 {
+		t.Fatalf("row height %v, want baseline 16.2", height)
+	}
+}
+
+func TestAutofitRowsRejectsFormulaWithoutCachedResultAndDoesNotPublish(t *testing.T) {
+	dir := t.TempDir()
+	in := filepath.Join(dir, "input.xlsx")
+	out := filepath.Join(dir, "out.xlsx")
+	f := excelize.NewFile()
+	if err := f.SetDefaultFont("Go"); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SetCellFormula("Sheet1", "A1", `""`); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SaveAs(in); err != nil {
+		t.Fatal(err)
+	}
+	f.Close()
+	setStringFormulaCache(t, in, "Sheet1", "A1", false)
+
+	err := EditFile(context.Background(), in, out, dir, EditSpec{Edits: []Edit{{Operation: "autofit-rows", Sheet: "Sheet1", Range: "A1:A1"}}})
+	if err == nil || !strings.Contains(err.Error(), "A1 needs recalculation") {
+		t.Fatalf("got %v, want recalculation error", err)
+	}
+	if _, err := os.Stat(out); !os.IsNotExist(err) {
+		t.Fatalf("published failed edit: %v", err)
+	}
+}
+
+func setStringFormulaCache(t *testing.T, path, sheetName, cellName string, hasEmptyResult bool) {
+	t.Helper()
+	pkg, err := opc.Open(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	wb, err := office.OpenWorkbook(pkg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	sheet := wb.Sheets[sheetName]
+	if sheet == nil || sheet.Cells[cellName] == nil {
+		t.Fatalf("missing test cell %s!%s", sheetName, cellName)
+	}
+	cell := sheet.Cells[cellName]
+	cell.CreateAttr("t", "str")
+	office.RemoveAll(cell, office.NSS, "v")
+	if hasEmptyResult {
+		office.NewChild(cell, office.NSS, "v", nil)
+	}
+	if err := pkg.SetXML(sheet.Part, sheet.Doc); err != nil {
+		t.Fatal(err)
+	}
+	data, err := pkg.Bytes()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, data, 0600); err != nil {
+		t.Fatal(err)
 	}
 }
 
