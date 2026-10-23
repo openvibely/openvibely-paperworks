@@ -12,9 +12,18 @@ import (
 )
 
 func TestSVGCreationAndReplacement(t *testing.T) {
+	testSVGCreationAndReplacement(t, "")
+}
+
+func TestSVGUTF8BOMCreationAndReplacement(t *testing.T) {
+	testSVGCreationAndReplacement(t, "\ufeff")
+}
+
+func testSVGCreationAndReplacement(t *testing.T, prefix string) {
+	t.Helper()
 	ctx := context.Background()
 	dir := t.TempDir()
-	svg := `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 100"><rect width="200" height="100" fill="blue"/></svg>`
+	svg := prefix + `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 100"><rect width="200" height="100" fill="blue"/></svg>`
 	path := filepath.Join(dir, "art.svg")
 	os.WriteFile(path, []byte(svg), 0600)
 	for _, source := range []string{"path", "inline"} {
@@ -37,8 +46,16 @@ func TestSVGCreationAndReplacement(t *testing.T) {
 			t.Fatal("SVG aspect ratio lost")
 		}
 		out := filepath.Join(dir, source+"-out.pptx")
-		replacement := `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><circle cx="50" cy="50" r="40" fill="green"/></svg>`
-		if _, err := EditFile(ctx, in, out, EditSpec{Edits: []Edit{{Operation: "replace-image", Slide: 1, ShapeID: "2", SVG: replacement}}}); err != nil {
+		replacement := prefix + `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><circle cx="50" cy="50" r="40" fill="green"/></svg>`
+		edit := Edit{Operation: "replace-image", Slide: 1, ShapeID: "2", SVG: replacement}
+		if source == "path" {
+			replacementPath := filepath.Join(dir, "replacement.svg")
+			if err := os.WriteFile(replacementPath, []byte(replacement), 0600); err != nil {
+				t.Fatal(err)
+			}
+			edit.Path, edit.SVG = replacementPath, ""
+		}
+		if _, err := EditFile(ctx, in, out, EditSpec{Edits: []Edit{edit}}); err != nil {
 			t.Fatal(err)
 		}
 		p, _ = opc.Open(out)
