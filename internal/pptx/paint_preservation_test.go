@@ -146,3 +146,31 @@ func TestGlyphFillPreservesUnderlinePaint(t *testing.T) {
 		})
 	}
 }
+
+func TestRunPaintCreatesNamespacedProperties(t *testing.T) {
+	_, p := paintFixture(t, Element{Type: "text", Text: "Keep me", W: 4, H: 2})
+	part := "ppt/slides/slide1.xml"
+	raw := strings.NewReplacer("xmlns:a=", "xmlns:draw=", "<a:", "<draw:", "</a:", "</draw:").Replace(string(p.Get(part)))
+	d, err := opc.ParseXML([]byte(raw))
+	if err != nil {
+		t.Fatal(err)
+	}
+	run := office.All(d.Root(), ans, "r")[0]
+	if pr := office.Child(run, ans, "rPr"); pr != nil {
+		run.RemoveChild(pr)
+	}
+	input := savePaintFixture(t, p, part, d)
+	d = editedPaintPart(t, input, part, Edit{Slide: 1, ShapeID: "2", Operation: "run-format", TextPaint: &TextPaint{Fill: &DrawingStyle{Fill: "FF0000"}}})
+	run = office.All(d.Root(), ans, "r")[0]
+	pr := office.Child(run, ans, "rPr")
+	if pr == nil {
+		t.Fatal("new run properties have an unbound drawing namespace")
+	}
+	color := office.Child(office.Child(pr, ans, "solidFill"), ans, "srgbClr")
+	if color == nil || color.SelectAttrValue("val", "") != "FF0000" {
+		t.Fatal("requested run color was not saved")
+	}
+	if office.Child(run, ans, "t").Text() != "Keep me" {
+		t.Fatal("run text changed")
+	}
+}
