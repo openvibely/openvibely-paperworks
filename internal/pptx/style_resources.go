@@ -100,10 +100,17 @@ func inheritedTextBody(e Element) string {
 			if r.Color != "" {
 				ink = r.Color
 			}
-			if ink == "" {
+			if ink == "" && r.Font == "" {
 				b.WriteString(`/>`)
 			} else {
-				b.WriteString(`><a:solidFill><a:srgbClr val="` + ink + `"/></a:solidFill></a:rPr>`)
+				b.WriteString(`>`)
+				if ink != "" {
+					b.WriteString(`<a:solidFill><a:srgbClr val="` + ink + `"/></a:solidFill>`)
+				}
+				if r.Font != "" {
+					b.WriteString(`<a:latin typeface="` + esc(r.Font) + `"/>`)
+				}
+				b.WriteString(`</a:rPr>`)
 			}
 			b.WriteString(`<a:t>` + esc(r.Text) + `</a:t></a:r>`)
 		}
