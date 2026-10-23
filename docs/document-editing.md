@@ -991,3 +991,16 @@ braced GUID, for creation and `table-format` edits. It replaces an inline style
 when present. It preserves region flags, cells and direct formatting. It does
 not import a custom style definition; supply one through creation style resources
 or use a style already defined in the deck. Verify appearance in the target viewer.
+
+### Structured table-cell text (after RC4)
+
+`table-cell` edits accept `paragraphs` instead of `text`, using the existing
+paragraph/run structure. For creation or `table-format`, set `paragraphs` on a
+`table_format.cells` entry with zero-based row/column. Example:
+`{"paragraphs":[{"runs":[{"text":"Revenue:","bold":true},{"text":" $200","bold":false}]}]}`.
+This replaces all paragraphs in that cell; `[]` clears it. Cell/body properties
+and unrelated cells remain. Runs accept bold, italic, underline, color and font
+size; paragraphs accept bullet/level and `format`. Named run styles are not
+supported here. Unspecified authored text uses Arial 12pt and the helper's default
+text color; specify intended sizes/colors explicitly when matching a template.
+Render after editing to check wrapping and row height.

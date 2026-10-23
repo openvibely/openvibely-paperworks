@@ -30,6 +30,7 @@ type TableFormat struct {
 	Cells        []TableCellFormat `json:"cells,omitempty"`
 }
 type TableCellFormat struct {
+	Paragraphs    []Paragraph            `json:"paragraphs,omitempty"`
 	Row           int                    `json:"row"`
 	Column        int                    `json:"column"`
 	Margins       *TextInsets            `json:"margins,omitempty"`
@@ -126,6 +127,11 @@ func formatTable(shape *etree.Element, s *TableFormat) error {
 		cell := cells[c.Column]
 		if mergedContinuation(cell) {
 			return fmt.Errorf("format merged cells through their origin")
+		}
+		if c.Paragraphs != nil {
+			if err := replaceRichTableCell(cell, c.Paragraphs); err != nil {
+				return err
+			}
 		}
 		pr := office.Child(cell, ans, "tcPr")
 		if pr == nil {

@@ -319,7 +319,16 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 			if body == nil {
 				return nil, fmt.Errorf("cell has no text body")
 			}
-			replaceBody(body, op.Text)
+			if op.Paragraphs != nil {
+				if op.Text != "" {
+					return nil, fmt.Errorf("table-cell text and paragraphs are mutually exclusive")
+				}
+				if err := replaceRichTableCell(cells[op.Column], op.Paragraphs); err != nil {
+					return nil, err
+				}
+			} else {
+				replaceBody(body, op.Text)
+			}
 		default:
 			return nil, fmt.Errorf("unsupported slide edit operation %q", op.Operation)
 		}
