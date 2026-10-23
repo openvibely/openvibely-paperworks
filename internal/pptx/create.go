@@ -42,6 +42,7 @@ type Spec struct {
 	Slides         []Slide         `json:"slides"`
 }
 type Slide struct {
+	Hidden          *bool       `json:"hidden,omitempty"`
 	NotesParagraphs []Paragraph `json:"notes_paragraphs,omitempty"`
 	Layout          *Layout     `json:"layout,omitempty"`
 	Background      string      `json:"background"`
@@ -588,6 +589,10 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 		d, err := b.p.XML(name)
 		if err != nil {
 			return err
+		}
+		if slide.Hidden != nil {
+			setSlideHidden(d.Root(), *slide.Hidden)
+			changed = true
 		}
 		shapes := office.Child(office.Child(d.Root(), pns, "cSld"), pns, "spTree").ChildElements()[2:]
 		// Measure final paragraph formatting before sizing and positioning shapes.
