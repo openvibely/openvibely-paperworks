@@ -653,3 +653,13 @@ New text elements accept `text_paint`; `slide-edit` operation `text-paint` appli
 ```
 
 These are glyph effects, not text-box backgrounds. Fill and outline fills accept solid colors, linear gradients or patterns; outline width is in points, zero removes the outline. Omitted settings survive. Images/shadows are not text fills. Inspect the rendered result in the intended application.
+
+### Table cell formatting and individual sizes
+
+Use `slide-edit` operation `table-format` with an inspected table shape ID, or `table_format` on a new table element:
+
+```json
+{"operation":"table-format","slide":1,"shape_id":"2","table_format":{"column_widths":[120,180],"row_heights":[30,40],"cells":[{"row":0,"column":0,"vertical_align":"middle","margins":{"left":8,"right":8},"borders":{"bottom":{"width":1,"fill":{"fill":"000000"}}}}]}}
+```
+
+Sizes, margins and border widths are points. Size arrays cover the whole axis; omitted axes stay unchanged. The frame is synchronized to the grid. Cell indices are zero-based; target the origin of a merged cell. Borders use `left`, `right`, `top`, `bottom` and the text-outline fill definition. Cells also accept `fill` and `text_paint`. Omitted properties and cell text survive; these controls do not rebuild a table.
