@@ -1012,3 +1012,10 @@ with `sm`, `med`, or `lg`. Supply the corresponding `head`/`tail` type when sizi
 it. These work during creation and `drawing-style` edits. The outline object
 replaces the existing line style: include every line property you want retained.
 Omitted sizes use application defaults. Endpoints and attachments are unchanged.
+
+### Line caps and joins (after RC4)
+
+Drawing outlines accept `cap` (`flat`, `round`, `square`) and `join` (`round`,
+`bevel`, `miter`) in creation and `drawing-style` edits. Omitted values use viewer
+defaults. The outline replaces existing line formatting; include the desired
+color, width, dash and arrowhead settings. These settings do not reroute connectors.
