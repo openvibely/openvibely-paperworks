@@ -9,13 +9,14 @@ import (
 
 // ChartTextStyle uses points, matching the rest of the presentation editor.
 type ChartTextStyle struct {
-	Underline string   `json:"underline,omitempty"`
-	Alignment string   `json:"alignment,omitempty"`
-	Font      string   `json:"font,omitempty"`
-	FontSize  *float64 `json:"font_size,omitempty"`
-	Color     string   `json:"color,omitempty"`
-	Bold      *bool    `json:"bold,omitempty"`
-	Italic    *bool    `json:"italic,omitempty"`
+	Fill      *DrawingStyle `json:"fill,omitempty"`
+	Underline string        `json:"underline,omitempty"`
+	Alignment string        `json:"alignment,omitempty"`
+	Font      string        `json:"font,omitempty"`
+	FontSize  *float64      `json:"font_size,omitempty"`
+	Color     string        `json:"color,omitempty"`
+	Bold      *bool         `json:"bold,omitempty"`
+	Italic    *bool         `json:"italic,omitempty"`
 }
 type ChartPointFormat struct {
 	Index   int           `json:"index"`
@@ -86,6 +87,14 @@ func chartAppearance(parent *etree.Element, fill *DrawingStyle, outline *TextOut
 
 // Style the attached text body so inherited namespace bindings remain available.
 func formatChartTextBody(tx *etree.Element, text *ChartTextStyle) error {
+	if text.Fill != nil && text.Color != "" {
+		return fmt.Errorf("chart text style must specify fill or color, not both")
+	}
+	fill := text.Fill
+	if text.Color != "" {
+		fill = &DrawingStyle{Fill: text.Color}
+	}
+
 	if text.Underline != "" {
 		switch text.Underline {
 		case "none", "words", "sng", "dbl", "heavy", "dotted", "dottedHeavy", "dash", "dashHeavy", "dashLong", "dashLongHeavy", "dotDash", "dotDashHeavy", "dotDotDash", "dotDotDashHeavy", "wavy", "wavyHeavy", "wavyDbl":
@@ -156,8 +165,8 @@ func formatChartTextBody(tx *etree.Element, text *ChartTextStyle) error {
 					pr.CreateAttr(b.k, v)
 				}
 			}
-			if text.Color != "" {
-				if err := paintTextProperties(pr, &TextPaint{Fill: &DrawingStyle{Fill: text.Color}}); err != nil {
+			if fill != nil {
+				if err := paintTextProperties(pr, &TextPaint{Fill: fill}); err != nil {
 					return err
 				}
 			}
