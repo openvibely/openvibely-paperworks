@@ -30,8 +30,17 @@ type GradientStop struct {
 	Opacity  *float64 `json:"opacity,omitempty"`
 }
 type Gradient struct {
+	Path  string         `json:"path,omitempty"` // circle, rect, shape; omitted means linear
+	Focus *GradientFocus `json:"focus,omitempty"`
+
 	Angle float64        `json:"angle"`
 	Stops []GradientStop `json:"stops"`
+}
+type GradientFocus struct {
+	Left   float64 `json:"left"`
+	Top    float64 `json:"top"`
+	Right  float64 `json:"right"`
+	Bottom float64 `json:"bottom"`
 }
 type Outline struct {
 	Color string  `json:"color"`
@@ -219,7 +228,40 @@ func styleDrawing(shape *etree.Element, s *DrawingStyle) error {
 			if angle < 0 {
 				angle += 21600000
 			}
-			fill.CreateElement("a:lin").CreateAttr("ang", strconv.FormatInt(angle, 10))
+			if g.Path == "" {
+				if g.Focus != nil {
+					return fmt.Errorf("gradient focus requires a path gradient")
+				}
+				fill.CreateElement("a:lin").CreateAttr("ang", strconv.FormatInt(angle, 10))
+			} else {
+				switch g.Path {
+				case "circle", "rect", "shape":
+				default:
+					return fmt.Errorf("invalid gradient path")
+				}
+				if g.Angle != 0 {
+					return fmt.Errorf("path gradient does not accept angle")
+				}
+				focus := g.Focus
+				if focus == nil {
+					focus = &GradientFocus{Left: .5, Top: .5, Right: .5, Bottom: .5}
+				}
+				path := fill.CreateElement("a:path")
+				path.CreateAttr("path", g.Path)
+				rect := path.CreateElement("a:fillToRect")
+				for _, v := range []struct {
+					k string
+					v float64
+				}{{"l", focus.Left}, {"t", focus.Top}, {"r", focus.Right}, {"b", focus.Bottom}} {
+					if !finite(v.v) || v.v < 0 || v.v > 1 {
+						return fmt.Errorf("gradient focus insets must be in 0..1")
+					}
+					rect.CreateAttr(v.k, strconv.Itoa(int(v.v*100000)))
+				}
+				if focus.Left+focus.Right > 1 || focus.Top+focus.Bottom > 1 {
+					return fmt.Errorf("gradient focus rectangle is inverted")
+				}
+			}
 		} else {
 			fill = etree.NewElement("a:solidFill")
 			if err := rgbaElement(fill, s.Fill, s.Opacity); err != nil {
