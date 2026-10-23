@@ -16,6 +16,7 @@ type EditSpec struct {
 	Edits []Edit `json:"edits"`
 }
 type Edit struct {
+	TextBox        *TextBoxStyle   `json:"text_box,omitempty"`
 	Hidden         *bool           `json:"hidden,omitempty"`
 	EndRow         int             `json:"end_row,omitempty"`
 	EndColumn      int             `json:"end_column,omitempty"`
@@ -189,6 +190,10 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 		}
 		shape := matches[0].Parent().Parent()
 		switch op.Operation {
+		case "text-box":
+			if err := styleTextBox(shape, op.TextBox); err != nil {
+				return nil, err
+			}
 		case "table-merge", "table-unmerge":
 			if err := mergeTableCells(shape, op); err != nil {
 				return nil, err
