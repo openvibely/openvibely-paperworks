@@ -1,0 +1,102 @@
+package pptx
+
+import (
+	"bytes"
+	"context"
+	"github.com/beevik/etree"
+	"github.com/openvibely/openvibely-paperworks/internal/office"
+	"github.com/openvibely/openvibely-paperworks/internal/opc"
+	"path/filepath"
+	"testing"
+)
+
+func chartControlFixture(t *testing.T, kind string) (string, *etree.Document) {
+	t.Helper()
+	dir := t.TempDir()
+	in := filepath.Join(dir, "in.pptx")
+	c := &Chart{Type: kind, Categories: []string{"A", "B", "C"}, Series: []Series{{Name: "Sales", Values: []float64{10, 20, 30}}}}
+	if err := Create(context.Background(), Spec{Slides: []Slide{{Elements: []Element{{Type: "chart", W: 8, H: 5, Chart: c}}}}}, dir, in); err != nil {
+		t.Fatal(err)
+	}
+	p, err := opc.Open(in)
+	if err != nil {
+		t.Fatal(err)
+	}
+	d, err := p.XML("ppt/charts/chart1.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	return in, d
+}
+func editChartControl(t *testing.T, in string, f ChartFormat) *etree.Document {
+	t.Helper()
+	out := filepath.Join(t.TempDir(), "out.pptx")
+	if _, err := EditFile(context.Background(), in, out, EditSpec{Edits: []Edit{{Slide: 1, ShapeID: "2", Operation: "chart-format", ChartFormat: &f}}}); err != nil {
+		t.Fatal(err)
+	}
+	p, _ := opc.Open(in)
+	q, err := opc.Open(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, part := range p.Parts {
+		if part.Name != "ppt/charts/chart1.xml" && !bytes.Equal(part.Data, q.Get(part.Name)) {
+			t.Fatal("changed unrelated part", part.Name)
+		}
+	}
+	before, _ := p.XML("ppt/charts/chart1.xml")
+	after, err := q.XML("ppt/charts/chart1.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tag := range []string{"cat", "val", "xVal", "yVal", "externalData"} {
+		a := office.All(before.Root(), cns, tag)
+		b := office.All(after.Root(), cns, tag)
+		if len(a) != len(b) {
+			t.Fatal("changed data count", tag)
+		}
+		for i := range a {
+			da := etree.NewDocument()
+			da.SetRoot(a[i].Copy())
+			db := etree.NewDocument()
+			db.SetRoot(b[i].Copy())
+			aa, _ := da.WriteToBytes()
+			bb, _ := db.WriteToBytes()
+			if !bytes.Equal(aa, bb) {
+				t.Fatal("changed data", tag)
+			}
+		}
+	}
+	if _, err := office.VerifyChartData(q, "powerpoint"); err != nil {
+		t.Fatal(err)
+	}
+	return after
+}
+func TestIndividualChartLabel(t *testing.T) {
+	in, _ := chartControlFixture(t, "bar")
+	text := "Special & <label>"
+	size := 20.0
+	yes := true
+	f := ChartFormat{Series: []ChartSeriesFormat{{Index: 0, LabelOverrides: []ChartLabelOverride{{Index: 1, Text: &text, TextStyle: &ChartTextStyle{FontSize: &size, Bold: &yes}, Fill: &DrawingStyle{Fill: "FFFF00"}, Position: "outEnd"}}}}}
+	d := editChartControl(t, in, f)
+	labels := office.All(d.Root(), cns, "dLbl")
+	if len(labels) != 1 {
+		t.Fatal("wrong label count")
+	}
+	l := labels[0]
+	if office.Child(l, cns, "idx").SelectAttrValue("val", "") != "1" || office.All(l, ans, "t")[0].Text() != text {
+		t.Fatal("label text/index lost")
+	}
+	rich := office.Child(office.Child(l, cns, "tx"), cns, "rich")
+	pr := office.All(rich, ans, "defRPr")[0]
+	if pr.SelectAttrValue("sz", "") != "2000" || pr.SelectAttrValue("b", "") != "1" {
+		t.Fatal("rich formatting missing")
+	}
+	if office.All(office.Child(l, cns, "spPr"), ans, "srgbClr")[0].SelectAttrValue("val", "") != "FFFF00" {
+		t.Fatal("label fill missing")
+	}
+	f.Series[0].LabelOverrides[0].Index = 3
+	if _, err := EditFile(context.Background(), in, filepath.Join(t.TempDir(), "bad.pptx"), EditSpec{Edits: []Edit{{Slide: 1, ShapeID: "2", Operation: "chart-format", ChartFormat: &f}}}); err == nil {
+		t.Fatal("invalid label index accepted")
+	}
+}

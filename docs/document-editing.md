@@ -761,3 +761,15 @@ styles apply after the element style. Explicit paragraph `format` and element
 Notes do not accept named styles. Definitions are spec-level recipes: exported
 PPTX stores resolved formatting, not live named-style bindings. Supply the map
 again in a later edit spec; changing a definition does not restyle prior output.
+
+### Individual chart labels (after RC4)
+
+A `chart-format` series accepts `label_overrides`, selecting zero-based cached
+point indices. Each override accepts `text`, `text_style`, `fill`, `outline`,
+and `position` (the same tokens as series labels). Omitted fields and other
+labels remain unchanged. Custom text replaces that label's text formula/runs,
+not the series values or workbook. Existing hidden-label settings are preserved.
+
+```json
+{"operation":"chart-format","slide":1,"shape_id":"2","chart_format":{"series":[{"index":0,"label_overrides":[{"index":1,"text":"Priority","text_style":{"font_size":18,"bold":true},"position":"outEnd"}]}]}}
+```
