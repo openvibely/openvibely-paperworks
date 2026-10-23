@@ -156,7 +156,7 @@ func alignSingleLineAppearance(x *model.XRefTable, w types.Dict, f *field, value
 		// The reference rebuilds the saved appearance from all options even
 		// when TI is present. Preserve TI for the viewer without offsetting
 		// this appearance or falling back to the generator's older layout.
-		opts, ok := entryArray(x, f.D["Opt"])
+		opts, ok := entryArray(x, resolvedChoiceOptions(x, f.D))
 		if !ok {
 			return nil
 		}

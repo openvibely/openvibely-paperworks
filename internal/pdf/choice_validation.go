@@ -8,26 +8,32 @@ import (
 	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/types"
 )
 
+// resolvedChoiceOptions returns the nearest /Opt entry in a field's parent
+// chain. Presence, rather than array length, determines precedence so an
+// explicit empty local /Opt shadows options inherited from a parent.
+func resolvedChoiceOptions(x *model.XRefTable, d types.Dict) types.Object {
+	for depth := 0; d != nil && depth < 64; depth++ {
+		if opts, present := d["Opt"]; present {
+			return opts
+		}
+		d = dictOf(x, d["Parent"]).d
+	}
+	return nil
+}
+
 // choiceExportValues resolves inherited options without changing appearance labels.
 // A two-element option uses its first (export) value for /V, not its display label.
 func choiceExportValues(x *model.XRefTable, d types.Dict) []string {
 	out := []string{}
-	for depth := 0; d != nil && depth < 64; depth++ {
-		if _, present := d["Opt"]; !present {
-			d = dictOf(x, d["Parent"]).d
-			continue
+	opts, _ := entryArray(x, resolvedChoiceOptions(x, d))
+	for _, opt := range opts {
+		opt, _ = deref(x, opt)
+		if pair, ok := opt.(types.Array); ok && len(pair) == 2 {
+			opt, _ = deref(x, pair[0])
 		}
-		opts, _ := entryArray(x, d["Opt"])
-		for _, opt := range opts {
-			opt, _ = deref(x, opt)
-			if pair, ok := opt.(types.Array); ok && len(pair) == 2 {
-				opt, _ = deref(x, pair[0])
-			}
-			if value, ok := textOf(opt); ok {
-				out = append(out, value)
-			}
+		if value, ok := textOf(opt); ok {
+			out = append(out, value)
 		}
-		break
 	}
 	return out
 }

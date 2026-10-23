@@ -3,12 +3,14 @@ package pdf
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
+	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/model"
 	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/types"
 )
 
@@ -182,5 +184,164 @@ func TestFillPairedChoiceAppearances(t *testing.T) {
 				})
 			}
 		})
+	}
+}
+
+func inheritedPairedChoicePDF(localOptions, value, appearance string) []byte {
+	objs := formObjs()
+	objs[0] = strings.Replace(objs[0], "13 0 R 15 0 R", "13 0 R 29 0 R", 1)
+	objs[14] = strings.Replace(objs[14], "/Ff 131072", "/Ff 0", 1)
+	objs[14] = strings.Replace(objs[14], "/V (Alpha) /Opt [(Alpha) (Beta)]", "/V ("+value+") /Parent 29 0 R", 1)
+	objs[14] = strings.Replace(objs[14], "/Parent 29 0 R", "/Parent 29 0 R"+localOptions, 1)
+	objs[27] = strings.Replace(objs[27], "(Alpha)", "("+appearance+")", 1)
+	objs = append(objs, "<< /T (group) /Opt [[(A) (Alpha)] [(B) (Beta)]] /Kids [15 0 R] >>")
+	return rawPDF(objs)
+}
+
+func savedChoiceAppearance(t *testing.T, c *model.Context, flattened bool) []byte {
+	t.Helper()
+	var object types.Object
+	if flattened {
+		page, inh, err := pageDict(context.Background(), c, 2)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if page["Annots"] != nil {
+			t.Fatal("flattened output retains page annotations")
+		}
+		object = dictOf(c.XRefTable, inh.Resources["XObject"]).d["Fm_widget_1"]
+	} else {
+		fields, _, err := fieldTree(c.XRefTable)
+		if err != nil {
+			t.Fatal(err)
+		}
+		object = dictOf(c.XRefTable, fields["group.choice"].Widgets[0]["AP"]).d["N"]
+	}
+	sd, _ := streamOf(c.XRefTable, object)
+	if sd == nil {
+		t.Fatal("missing saved choice appearance")
+	}
+	if err := sd.Decode(); err != nil {
+		t.Fatal(err)
+	}
+	return append([]byte(nil), sd.Content...)
+}
+
+func TestFillInheritedPairedChoiceAppearances(t *testing.T) {
+	ctx := context.Background()
+	inheritedSource := writeTemp(t, "inherited.pdf", inheritedPairedChoicePDF("", "A", "stale"))
+	directSource := writeTemp(t, "direct.pdf", inheritedPairedChoicePDF(" /Opt [[(A) (Alpha)] [(B) (Beta)]]", "A", "stale"))
+
+	for _, flatten := range []bool{false, true} {
+		for _, strict := range []bool{false, true} {
+			t.Run(fmt.Sprintf("flatten=%v/strict=%v", flatten, strict), func(t *testing.T) {
+				var docs [2][]byte
+				var appearances [2][]byte
+				for i, source := range []string{inheritedSource, directSource} {
+					output := filepath.Join(t.TempDir(), "filled.pdf")
+					result, err := Fill(ctx, source, output, map[string]string{"group.choice": "A"}, flatten, FillOptions{StrictChoices: strict})
+					if err != nil || len(result.Warnings) != 0 {
+						t.Fatalf("fill result=%+v error=%v", result, err)
+					}
+					c, data, err := LoadFile(ctx, output)
+					if err != nil {
+						t.Fatal(err)
+					}
+					docs[i] = data
+					appearances[i] = savedChoiceAppearance(t, c, flatten)
+					if !flatten {
+						fields, _, err := fieldTree(c.XRefTable)
+						if err != nil {
+							t.Fatal(err)
+						}
+						if got := display(c.XRefTable, fields["group.choice"].D["V"]); got == nil || *got != "A" {
+							t.Fatalf("saved export value = %v, want A", got)
+						}
+					}
+					if !bytes.Contains(appearances[i], []byte("(Alpha)")) {
+						t.Fatalf("appearance does not show Alpha: %s", appearances[i])
+					}
+				}
+				if !bytes.Equal(appearances[0], appearances[1]) {
+					t.Fatalf("inherited and direct appearances differ:\n%s\nwant:\n%s", appearances[0], appearances[1])
+				}
+				if !bytes.Equal(images(t, docs[0])[1].Pix, images(t, docs[1])[1].Pix) {
+					t.Fatal("inherited and direct rendered pages differ")
+				}
+			})
+		}
+	}
+}
+
+func TestFillInheritedPairedChoicePrecedence(t *testing.T) {
+	ctx := context.Background()
+	for _, tc := range []struct {
+		name        string
+		local       string
+		value       string
+		strict      bool
+		wantWarning bool
+		wantLabel   string
+	}{
+		{"local overrides parent", " /Opt [[(L) (Local)]]", "L", true, false, "Local"},
+		{"empty local shadows parent", " /Opt []", "A", false, false, ""},
+		{"empty local rejects inherited value", " /Opt []", "A", true, true, ""},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			source := writeTemp(t, "source.pdf", inheritedPairedChoicePDF(tc.local, "A", "stale"))
+			output := filepath.Join(t.TempDir(), "filled.pdf")
+			_, err := Fill(ctx, source, output, map[string]string{"group.choice": tc.value}, false, FillOptions{StrictChoices: tc.strict})
+			if tc.wantWarning {
+				var warning ChoiceWarning
+				if !errors.As(err, &warning) || len(warning.AllowedChoices) != 0 {
+					t.Fatalf("error = %v, want no allowed choices", err)
+				}
+				if _, statErr := os.Stat(output); !os.IsNotExist(statErr) {
+					t.Fatalf("rejected fill created output: %v", statErr)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			c, _, err := LoadFile(ctx, output)
+			if err != nil {
+				t.Fatal(err)
+			}
+			fields, _, err := fieldTree(c.XRefTable)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got := display(c.XRefTable, fields["group.choice"].D["V"]); got == nil || *got != tc.value {
+				t.Fatalf("saved value = %v, want %q", got, tc.value)
+			}
+			appearance := savedChoiceAppearance(t, c, false)
+			if tc.wantLabel != "" && !bytes.Contains(appearance, []byte("("+tc.wantLabel+")")) {
+				t.Fatalf("local label %q missing: %s", tc.wantLabel, appearance)
+			}
+			if tc.wantLabel == "" && bytes.Contains(appearance, []byte("(Alpha)")) {
+				t.Fatalf("inherited label leaked through explicit local /Opt: %s", appearance)
+			}
+		})
+	}
+}
+
+func TestFlattenInheritedPairedChoiceExistingSelection(t *testing.T) {
+	ctx := context.Background()
+	source := writeTemp(t, "source.pdf", inheritedPairedChoicePDF("", "A", "stale"))
+	output := filepath.Join(t.TempDir(), "flattened.pdf")
+	if _, err := Fill(ctx, source, output, map[string]string{"name": "Ada"}, true, FillOptions{StrictChoices: true}); err != nil {
+		t.Fatal(err)
+	}
+	c, data, err := LoadFile(ctx, output)
+	if err != nil {
+		t.Fatal(err)
+	}
+	appearance := savedChoiceAppearance(t, c, true)
+	if !bytes.Contains(appearance, []byte("(Alpha)")) || bytes.Contains(appearance, []byte("(stale)")) {
+		t.Fatalf("flattened appearance did not refresh inherited selection: %s", appearance)
+	}
+	if len(images(t, data)) < 2 {
+		t.Fatal("flattened document is missing the choice page")
 	}
 }
