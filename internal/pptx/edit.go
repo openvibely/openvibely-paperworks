@@ -217,7 +217,7 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 			if err := styleDrawingInPackage(p, part, shape, op.DrawingStyle, ""); err != nil {
 				return nil, err
 			}
-		case "image-mask", "geometry", "delete", "front", "back", "run-format", "paragraph-format", "fill", "replace-image", "crop":
+		case "image-mask", "geometry", "delete", "front", "back", "forward", "backward", "run-format", "paragraph-format", "fill", "replace-image", "crop":
 			if e := editObject(p, part, shape, op); e != nil {
 				return nil, e
 			}

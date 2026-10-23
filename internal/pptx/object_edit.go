@@ -47,8 +47,44 @@ func editObject(pkg *opc.Package, part string, shape *etree.Element, e Edit) err
 	case "delete":
 		detachDeletedShapeConnections(shape)
 		shape.Parent().RemoveChild(shape)
+	case "forward", "backward":
+		parent := shape.Parent()
+		if parent == nil || (parent.Tag != "spTree" && parent.Tag != "grpSp") {
+			return fmt.Errorf("stacking requires a drawing object")
+		}
+		var siblings []*etree.Element
+		at := -1
+		for _, c := range parent.ChildElements() {
+			switch c.Tag {
+			case "sp", "pic", "cxnSp", "graphicFrame", "grpSp", "contentPart":
+				if c == shape {
+					at = len(siblings)
+				}
+				siblings = append(siblings, c)
+			}
+		}
+		if at < 0 {
+			return fmt.Errorf("unsupported stacking object")
+		}
+		next := at - 1
+		if e.Operation == "forward" {
+			next = at + 1
+		}
+		if next < 0 || next >= len(siblings) {
+			return nil
+		}
+		target := siblings[next]
+		parent.RemoveChild(shape)
+		index := target.Index()
+		if e.Operation == "forward" {
+			index++
+		}
+		parent.InsertChildAt(index, shape)
 	case "front", "back":
 		parent := shape.Parent()
+		if parent == nil || (parent.Tag != "spTree" && parent.Tag != "grpSp") {
+			return fmt.Errorf("stacking requires a drawing object")
+		}
 		parent.RemoveChild(shape)
 		if e.Operation == "front" {
 			if ext := office.Child(parent, pns, "extLst"); ext != nil {

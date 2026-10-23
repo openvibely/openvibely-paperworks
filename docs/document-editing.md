@@ -619,3 +619,11 @@ Use self-contained SVG with embedded assets and positive width/height or a
 viewBox. Existing contain/cover/crop settings apply. SVG display requires an
 SVG-capable presentation application; no legacy raster fallback is generated.
 Render the saved deck to verify artwork, fonts and cropping.
+
+### One-position stacking
+
+`slide-edit` operations `forward` and `backward` move the selected `shape_id`
+one drawable position within its slide/group. At either end they do nothing.
+`front` and `back` still move to the ends. Example:
+`{"edits":[{"operation":"forward","slide":1,"shape_id":"2"}]}`.
+These change overlap order, not geometry or group membership.
