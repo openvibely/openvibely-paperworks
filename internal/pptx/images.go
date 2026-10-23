@@ -11,6 +11,10 @@ import (
 // in native DrawingML srcRect coordinates. Cover adds an anchored crop inside
 // the explicit source crop, rather than stretching the visible pixels.
 func imagePlacement(e Element, width, height int) (Element, string, error) {
+	return imagePlacementDimensions(e, float64(width), float64(height))
+}
+
+func imagePlacementDimensions(e Element, width, height float64) (Element, string, error) {
 	if e.Fit != "" && e.Fit != "contain" && e.Fit != "cover" {
 		return e, "", fmt.Errorf("image fit must be contain or cover")
 	}
@@ -34,7 +38,7 @@ func imagePlacement(e Element, width, height int) (Element, string, error) {
 		return e, "", fmt.Errorf("image crop removes all source pixels")
 	}
 	sw, sh := 1-c.Left-c.Right, 1-c.Top-c.Bottom
-	ratio := float64(width) * sw / (float64(height) * sh)
+	ratio := (width / height) * (sw / sh)
 	if e.Fit == "cover" {
 		if e.W/e.H > ratio {
 			remove := sh * (1 - ratio/(e.W/e.H))
