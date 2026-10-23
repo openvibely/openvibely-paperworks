@@ -115,3 +115,22 @@ func TestChartTrendlineOrder(t *testing.T) {
 		t.Fatal("trendlines follow data")
 	}
 }
+
+func TestPointFormattingPreservesMarkerSymbol(t *testing.T) {
+	d := etree.NewDocument()
+	if err := d.ReadFromString(`<c:lineChart xmlns:c="` + cns + `"><c:ser><c:idx val="0"/><c:order val="0"/><c:marker><c:symbol val="diamond"/></c:marker><c:val><c:numLit><c:ptCount val="1"/><c:pt idx="0"><c:v>3</c:v></c:pt></c:numLit></c:val></c:ser></c:lineChart>`); err != nil {
+		t.Fatal(err)
+	}
+	ser := office.Child(d.Root(), cns, "ser")
+	if err := formatSeriesExtras(ser, ChartSeriesFormat{Points: []ChartPointFormat{{Index: 0, Fill: &DrawingStyle{Fill: "FF0000"}}}}); err != nil {
+		t.Fatal(err)
+	}
+	point := office.Child(ser, cns, "dPt")
+	marker := office.Child(point, cns, "marker")
+	if office.Child(marker, cns, "symbol").SelectAttrValue("val", "") != "diamond" {
+		t.Fatal("marker shape lost")
+	}
+	if len(office.All(marker, ans, "srgbClr")) != 1 {
+		t.Fatal("missing marker paint")
+	}
+}
