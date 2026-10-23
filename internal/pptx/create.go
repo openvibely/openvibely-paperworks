@@ -32,12 +32,13 @@ const colors = `<p:clrMap accent1="accent1" accent2="accent2" accent3="accent3" 
 const override = `<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr>`
 
 type Spec struct {
-	StyleResources *StyleResources `json:"style_resources,omitempty"`
-	Width          float64         `json:"width_in"`
-	Height         float64         `json:"height_in"`
-	Font           string          `json:"font"`
-	Title          string          `json:"title"`
-	Slides         []Slide         `json:"slides"`
+	NamedStyles    map[string]NamedTextStyle `json:"named_styles,omitempty"`
+	StyleResources *StyleResources           `json:"style_resources,omitempty"`
+	Width          float64                   `json:"width_in"`
+	Height         float64                   `json:"height_in"`
+	Font           string                    `json:"font"`
+	Title          string                    `json:"title"`
+	Slides         []Slide                   `json:"slides"`
 }
 type Slide struct {
 	AutoLayout      *AutoLayout   `json:"auto_layout,omitempty"`
@@ -50,6 +51,7 @@ type Slide struct {
 	Elements        []Element     `json:"elements"`
 }
 type Run struct {
+	Style     string  `json:"style,omitempty"`
 	Text      string  `json:"text"`
 	FontSize  float64 `json:"font_size"`
 	Color     string  `json:"color"`
@@ -93,6 +95,7 @@ type ImageAnchor struct {
 	Y float64 `json:"y"`
 }
 type Element struct {
+	Style             string        `json:"style,omitempty"`
 	TableFormat       *TableFormat  `json:"table_format,omitempty"`
 	TextPaint         *TextPaint    `json:"text_paint,omitempty"`
 	SVG               string        `json:"svg,omitempty"`
@@ -283,6 +286,9 @@ func Create(ctx context.Context, s Spec, base, output string) error {
 	return createWithClock(ctx, s, base, output, time.Now)
 }
 func createWithClock(ctx context.Context, s Spec, base, output string, clock func() time.Time) error {
+	if err := validateNamedStyles(s.NamedStyles); err != nil {
+		return err
+	}
 	if len(s.Slides) < 1 || len(s.Slides) > 1000 {
 		return fmt.Errorf("slides must contain 1..1000 entries")
 	}
@@ -590,6 +596,22 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 		shapes := office.Child(office.Child(d.Root(), pns, "cSld"), pns, "spTree").ChildElements()[2:]
 		// Measure final paragraph formatting before sizing and positioning shapes.
 		for j, e := range slide.Elements {
+			if e.Style != "" {
+				if err := applyNamedStyle(b.p, name, shapes[j], s.NamedStyles, e.Style, "shape", 0, 0); err != nil {
+					return err
+				}
+				changed = true
+			}
+			for pi, paragraph := range e.Paragraphs {
+				for ri, run := range paragraph.Runs {
+					if run.Style != "" {
+						if err := applyNamedStyle(b.p, name, shapes[j], s.NamedStyles, run.Style, "run", pi, ri); err != nil {
+							return err
+						}
+						changed = true
+					}
+				}
+			}
 			if e.TableFormat != nil {
 				if err := formatTable(shapes[j], e.TableFormat); err != nil {
 					return err

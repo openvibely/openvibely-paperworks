@@ -333,8 +333,8 @@ rather than being described as completed edits. In particular:
 - Word table restructuring does not handle vertical merges. Template-component
   cloning has the dependency restrictions below; arbitrary floating-picture
   positioning is not exposed.
-- PowerPoint row/column insertion and deletion require unmerged tables. Named-style
-  authoring is not exposed. Table merge/unmerge, nested layouts, pattern/image
+- PowerPoint row/column insertion and deletion require unmerged tables. Reusable named text styles are supported through `named_styles`; native
+  PowerPoint theme-style authoring still uses imported XML resources. Table merge/unmerge, nested layouts, pattern/image
   fills and formatted notes are covered by the local extensions below.
 - Chart type names not listed above are not newly enabled. Full reference chart
   export support is itself not established; do not infer it from an API name.
@@ -731,3 +731,28 @@ including text glyphs and outlines.
 non-stacked 2D bar, line, area, scatter or bubble charts; x bars require scatter
 or bubble. Moving averages cannot specify forecast/intercept/equation options.
 ChartEx remains excluded. Render the result; chart layout is application-dependent.
+
+
+### Reusable named text styles (after RC4)
+
+`create-pptx` and `slide-edit` accept a top-level `named_styles` map. Definitions
+have `description`, `font`, `font_size` (points), `color` (six hex digits),
+`bold`, `italic`, `underline`, and `align` (`l`, `r`, `ctr`, `just`). Omitted
+properties leave existing formatting intact; explicit false clears a flag.
+
+```json
+{"named_styles":{"Heading":{"font_size":28,"bold":true,"color":"17324D","align":"ctr"}},"edits":[{"operation":"apply-style","slide":1,"shape_id":"2","style":"Heading"}]}
+```
+
+`apply-style` defaults to `scope:"shape"`. Use `scope:"paragraph"` plus a
+zero-based `paragraph`, or `scope:"run"` plus zero-based `paragraph`/`run`.
+Run-scoped styles cannot set paragraph alignment. Shape scope also styles field
+text and empty-paragraph defaults, without replacing text or hyperlinks.
+
+For creation, set `style:"Heading"` on a text/shape element, or a run in its
+`paragraphs`. Named styles override conflicting authored text properties; run
+styles apply after the element style. Explicit paragraph `format` and element
+`text_paint` are applied afterward. Geometry is measured after style application.
+Notes do not accept named styles. Definitions are spec-level recipes: exported
+PPTX stores resolved formatting, not live named-style bindings. Supply the map
+again in a later edit spec; changing a definition does not restyle prior output.

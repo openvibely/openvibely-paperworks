@@ -13,9 +13,12 @@ import (
 
 // EditSpec makes bounded edits by stable shape ID, never reconstructing a deck.
 type EditSpec struct {
-	Edits []Edit `json:"edits"`
+	NamedStyles map[string]NamedTextStyle `json:"named_styles,omitempty"`
+	Edits       []Edit                    `json:"edits"`
 }
 type Edit struct {
+	Style          string          `json:"style,omitempty"`
+	Scope          string          `json:"scope,omitempty"`
 	ChartFormat    *ChartFormat    `json:"chart_format,omitempty"`
 	TableFormat    *TableFormat    `json:"table_format,omitempty"`
 	TextPaint      *TextPaint      `json:"text_paint,omitempty"`
@@ -63,6 +66,9 @@ type Edit struct {
 }
 
 func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]string, error) {
+	if err := validateNamedStyles(spec.NamedStyles); err != nil {
+		return nil, err
+	}
 	if len(spec.Edits) < 1 || len(spec.Edits) > 10000 {
 		return nil, fmt.Errorf("edits must contain 1..10000 operations")
 	}
@@ -217,6 +223,10 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 		}
 		shape := matches[0].Parent().Parent()
 		switch op.Operation {
+		case "apply-style":
+			if err := applyNamedStyle(p, part, shape, spec.NamedStyles, op.Style, op.Scope, op.Paragraph, op.Run); err != nil {
+				return nil, err
+			}
 		case "chart-format":
 			if err := formatNativeChart(p, part, shape, op.ChartFormat); err != nil {
 				return nil, err
