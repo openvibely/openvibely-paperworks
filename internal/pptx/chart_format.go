@@ -59,6 +59,11 @@ type ChartSeriesFormat struct {
 	Labels         *ChartLabelsFormat   `json:"labels,omitempty"`
 }
 type ChartLabelsFormat struct {
+	Separator       *string `json:"separator,omitempty"`
+	ShowLegendKey   *bool   `json:"show_legend_key,omitempty"`
+	ShowLeaderLines *bool   `json:"show_leader_lines,omitempty"`
+	ShowBubbleSize  *bool   `json:"show_bubble_size,omitempty"`
+
 	TextStyle    *ChartTextStyle `json:"text_style,omitempty"`
 	ShowValue    *bool           `json:"show_value,omitempty"`
 	ShowCategory *bool           `json:"show_category,omitempty"`
@@ -361,6 +366,9 @@ func formatNativeChart(p *opc.Package, owner string, shape *etree.Element, f *Ch
 				}
 				chartEnsure(labels, "dLblPos", order).CreateAttr("val", l.Position)
 			}
+			if l.Separator != nil {
+				chartEnsure(labels, "separator", order).SetText(*l.Separator)
+			}
 			if l.NumberFormat != nil {
 				n := chartEnsure(labels, "numFmt", order)
 				n.CreateAttr("formatCode", *l.NumberFormat)
@@ -369,7 +377,7 @@ func formatNativeChart(p *opc.Package, owner string, shape *etree.Element, f *Ch
 			for _, v := range []struct {
 				tag   string
 				value *bool
-			}{{"showVal", l.ShowValue}, {"showCatName", l.ShowCategory}, {"showSerName", l.ShowSeries}, {"showPercent", l.ShowPercent}} {
+			}{{"showVal", l.ShowValue}, {"showCatName", l.ShowCategory}, {"showSerName", l.ShowSeries}, {"showPercent", l.ShowPercent}, {"showLegendKey", l.ShowLegendKey}, {"showLeaderLines", l.ShowLeaderLines}, {"showBubbleSize", l.ShowBubbleSize}} {
 				if v.value != nil {
 					chartBool(labels, v.tag, *v.value, order)
 				}
