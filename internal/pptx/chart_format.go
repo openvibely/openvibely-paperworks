@@ -12,9 +12,11 @@ import (
 
 // ChartFormat changes only selected native formatting properties, retaining data.
 type ChartFormat struct {
-	Axes   []ChartAxisFormat   `json:"axes,omitempty"`
-	Legend *ChartLegendFormat  `json:"legend,omitempty"`
-	Series []ChartSeriesFormat `json:"series,omitempty"`
+	ChartFill    *DrawingStyle       `json:"chart_fill,omitempty"`
+	PlotAreaFill *DrawingStyle       `json:"plot_area_fill,omitempty"`
+	Axes         []ChartAxisFormat   `json:"axes,omitempty"`
+	Legend       *ChartLegendFormat  `json:"legend,omitempty"`
+	Series       []ChartSeriesFormat `json:"series,omitempty"`
 }
 type ChartAxisFormat struct {
 	Position          string          `json:"position,omitempty"`
@@ -125,6 +127,19 @@ func formatNativeChart(p *opc.Package, owner string, shape *etree.Element, f *Ch
 	plot := office.Child(chart, cns, "plotArea")
 	if plot == nil {
 		return fmt.Errorf("missing chart plot area")
+	}
+	if err := chartAppearance(d.Root(), f.ChartFill, nil, nil, "date1904 lang roundedCorners AlternateContent style clrMapOvr pivotSource protection chart spPr txPr externalData printSettings userShapes extLst"); err != nil {
+		return err
+	}
+	// Every chart/axis/data-table child precedes plot-area shape properties.
+	plotOrder := ""
+	for _, child := range plot.ChildElements() {
+		if child.Tag != "spPr" && child.Tag != "extLst" {
+			plotOrder += child.Tag + " "
+		}
+	}
+	if err := chartAppearance(plot, f.PlotAreaFill, nil, nil, plotOrder+"spPr extLst"); err != nil {
+		return err
 	}
 	for _, a := range f.Axes {
 		var axis *etree.Element

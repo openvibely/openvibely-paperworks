@@ -170,3 +170,35 @@ func TestChartCreationPreservesSeriesFormatting(t *testing.T) {
 		t.Fatal("mutated caller options")
 	}
 }
+
+func TestChartBackgroundFills(t *testing.T) {
+	in, _ := chartControlFixture(t, "bar")
+	d := editChartControl(t, in, ChartFormat{ChartFill: &DrawingStyle{Fill: "EEEEEE"}, PlotAreaFill: &DrawingStyle{Fill: "DDDDDD"}})
+	plot := office.All(d.Root(), cns, "plotArea")[0]
+	for _, v := range []struct {
+		node  *etree.Element
+		color string
+	}{{d.Root(), "EEEEEE"}, {plot, "DDDDDD"}} {
+		sp := office.Child(v.node, cns, "spPr")
+		if sp == nil {
+			t.Fatal("missing background properties")
+		}
+		if office.All(sp, ans, "srgbClr")[0].SelectAttrValue("val", "") != v.color {
+			t.Fatal("wrong background color")
+		}
+	}
+	children := plot.ChildElements()
+	if children[len(children)-1].Tag != "spPr" {
+		t.Fatal("plot fill placed before chart/axes")
+	}
+	root := d.Root().ChildElements()
+	index := 0
+	for i, n := range root {
+		if n.Tag == "chart" {
+			index = i
+		}
+	}
+	if root[index+1].Tag != "spPr" {
+		t.Fatal("chart fill order invalid")
+	}
+}
