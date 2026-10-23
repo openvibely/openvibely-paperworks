@@ -406,3 +406,27 @@ func TestChartTrendlineLabel(t *testing.T) {
 		t.Fatal("trendline label paint missing")
 	}
 }
+
+func TestChartSeriesLabelAppearance(t *testing.T) {
+	in, _ := chartControlFixture(t, "line")
+	yes, no := true, false
+	format := "0.0"
+	f := ChartFormat{Series: []ChartSeriesFormat{{Index: 0, Labels: &ChartLabelsFormat{Visible: &no, Fill: &DrawingStyle{Fill: "FFFF00"}, Outline: &TextOutline{Width: 1, Fill: &DrawingStyle{Fill: "FF0000"}}, NumberFormat: &format, NumberFormatSourceLinked: &yes}}}}
+	d := editChartControl(t, in, f)
+	l := office.Child(office.All(d.Root(), cns, "ser")[0], cns, "dLbls")
+	if office.Child(l, cns, "delete").SelectAttrValue("val", "") != "1" {
+		t.Fatal("visibility missing")
+	}
+	n := office.Child(l, cns, "numFmt")
+	if n.SelectAttrValue("sourceLinked", "") != "1" || n.SelectAttrValue("formatCode", "") != format {
+		t.Fatal("number format missing")
+	}
+	if office.All(office.Child(l, cns, "spPr"), ans, "ln")[0].SelectAttrValue("w", "") != "12700" {
+		t.Fatal("label outline missing")
+	}
+	f.Series[0].Labels.Visible = &yes
+	d = editChartControl(t, in, f)
+	if office.Child(office.Child(office.All(d.Root(), cns, "ser")[0], cns, "dLbls"), cns, "delete").SelectAttrValue("val", "") != "0" {
+		t.Fatal("labels not shown")
+	}
+}

@@ -61,6 +61,11 @@ type ChartSeriesFormat struct {
 	Labels         *ChartLabelsFormat   `json:"labels,omitempty"`
 }
 type ChartLabelsFormat struct {
+	Visible                  *bool         `json:"visible,omitempty"`
+	Fill                     *DrawingStyle `json:"fill,omitempty"`
+	Outline                  *TextOutline  `json:"outline,omitempty"`
+	NumberFormatSourceLinked *bool         `json:"number_format_source_linked,omitempty"`
+
 	Separator       *string `json:"separator,omitempty"`
 	ShowLegendKey   *bool   `json:"show_legend_key,omitempty"`
 	ShowLeaderLines *bool   `json:"show_leader_lines,omitempty"`
@@ -369,8 +374,11 @@ func formatNativeChart(p *opc.Package, owner string, shape *etree.Element, f *Ch
 			}
 			labels := chartEnsure(ser, "dLbls", "idx order tx spPr invertIfNegative pictureOptions marker explosion dPt dLbls trendline errBars cat val xVal yVal bubbleSize bubble3D shape smooth extLst")
 			order := "dLbl delete numFmt spPr txPr dLblPos showLegendKey showVal showCatName showSerName showPercent showBubbleSize separator showLeaderLines leaderLines extLst"
-			if err := chartAppearance(labels, nil, nil, l.TextStyle, order); err != nil {
+			if err := chartAppearance(labels, l.Fill, l.Outline, l.TextStyle, order); err != nil {
 				return err
+			}
+			if l.Visible != nil {
+				chartBool(labels, "delete", !*l.Visible, order)
 			}
 			if l.Position != "" {
 				switch l.Position {
@@ -386,7 +394,20 @@ func formatNativeChart(p *opc.Package, owner string, shape *etree.Element, f *Ch
 			if l.NumberFormat != nil {
 				n := chartEnsure(labels, "numFmt", order)
 				n.CreateAttr("formatCode", *l.NumberFormat)
-				n.CreateAttr("sourceLinked", "0")
+				if l.NumberFormatSourceLinked == nil {
+					n.CreateAttr("sourceLinked", "0")
+				}
+			}
+			if l.NumberFormatSourceLinked != nil {
+				n := office.Child(labels, cns, "numFmt")
+				if n == nil {
+					return fmt.Errorf("number_format_source_linked requires existing or supplied number_format")
+				}
+				value := "0"
+				if *l.NumberFormatSourceLinked {
+					value = "1"
+				}
+				n.CreateAttr("sourceLinked", value)
 			}
 			for _, v := range []struct {
 				tag   string
