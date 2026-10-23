@@ -46,6 +46,23 @@ func makeInspectSelectWorkbook(t *testing.T) string {
 	return path
 }
 
+func makeInspectSelectPresentation(t *testing.T, malformedSlide bool) string {
+	t.Helper()
+	pkg, err := opc.Open("../../testdata/reference-mirror/literal-chart.pptx")
+	if err != nil {
+		t.Fatal(err)
+	}
+	pkg.Set("custom/ignored.xml", []byte("<broken"))
+	if malformedSlide {
+		pkg.Set("ppt/slides/slide1.xml", []byte("<broken"))
+	}
+	path := filepath.Join(t.TempDir(), "focused.pptx")
+	if err := pkg.SaveNew(path); err != nil {
+		t.Fatal(err)
+	}
+	return path
+}
+
 func runInspectSelectError(t *testing.T, args ...string) (int, string, string) {
 	t.Helper()
 	var stdout, stderr bytes.Buffer
@@ -169,4 +186,39 @@ func TestInspectSelectPointerAndFullReportSearch(t *testing.T) {
 		}
 	}
 	t.Fatal(result)
+}
+
+func TestInspectSelectPPTXSlideIgnoresMalformedUnrelatedXML(t *testing.T) {
+	input := makeInspectSelectPresentation(t, false)
+	if _, err := office.PackageReport(input); err == nil {
+		t.Fatal("full inspection should reject the malformed unrelated XML part")
+	}
+
+	selection := runCLI(t, "inspect-select", input, "--path", "/slides/0")
+	if selection["part"] != "ppt/slides/slide1.xml" {
+		t.Fatalf("selected part = %v", selection["part"])
+	}
+	slideXML, ok := selection["xml"].(string)
+	if !ok || !strings.Contains(slideXML, "<") || !strings.Contains(slideXML, "sld") {
+		t.Fatalf("selected slide XML = %v", selection["xml"])
+	}
+}
+
+func TestInspectSelectPPTXSlideReportsMalformedRequiredXML(t *testing.T) {
+	input := makeInspectSelectPresentation(t, true)
+	code, stdout, stderr := runInspectSelectError(t, "inspect-select", input, "--path", "/slides/0")
+	if code == 0 || !strings.Contains(stderr, "ppt/slides/slide1.xml") {
+		t.Fatalf("exit=%d stdout=%q stderr=%q; want selected slide part error", code, stdout, stderr)
+	}
+}
+
+func TestSelectJSONPointerEscaping(t *testing.T) {
+	segments, err := decodeJSONPointer("/a~1b/~0key")
+	if err != nil {
+		t.Fatal(err)
+	}
+	value, err := selectJSONPointer(map[string]any{"a/b": map[string]any{"~key": "selected"}}, segments)
+	if err != nil || value != "selected" {
+		t.Fatalf("selection = %v, error = %v", value, err)
+	}
 }

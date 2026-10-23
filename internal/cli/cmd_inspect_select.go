@@ -8,14 +8,20 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/openvibely/openvibely-paperworks/internal/office"
 	"github.com/xuri/excelize/v2"
 )
 
 func init() {
 	register(&Command{Name: "inspect-select", Summary: "Select a JSON pointer from an inspection report, or search bounded matching values.", Usage: "paperworks inspect-select INPUT [--path /slides/0] [--sheet NAME --range A1:D20] [--search TEXT] [--max-items 100] [--max-chars 20000]", Run: func(ctx context.Context, a Args) (any, error) {
 		hasSheet, hasRange := a.Str("sheet") != "", a.Str("range") != ""
+		pointer := a.Str("path")
+		segments, err := decodeJSONPointer(pointer)
+		if err != nil {
+			return nil, err
+		}
 		var report any
-		var err error
+		var selectedSlide bool
 		if hasSheet || hasRange {
 			if !hasSheet || !hasRange {
 				return nil, usagef("sheet and range must be supplied together")
@@ -31,6 +37,21 @@ func init() {
 				return nil, err
 			}
 			report, err = inspectSheetRange(in[0], a.Str("sheet"), a.Str("range"))
+		} else if len(segments) >= 2 && segments[0] == "slides" {
+			in, inputErr := input(a, 1)
+			if inputErr != nil {
+				return nil, inputErr
+			}
+			index, indexErr := strconv.Atoi(segments[1])
+			if ext(in[0]) == ".pptx" && indexErr == nil {
+				if err := existing(in[0]); err != nil {
+					return nil, err
+				}
+				report, err = office.PresentationSlideSelection(in[0], index)
+				selectedSlide = true
+			} else {
+				report, err = commands["inspect"].Run(ctx, a)
+			}
 		} else {
 			report, err = commands["inspect"].Run(ctx, a)
 		}
@@ -45,30 +66,13 @@ func init() {
 		if err = json.Unmarshal(data, &value); err != nil {
 			return nil, err
 		}
-		pointer := a.Str("path")
-		if pointer != "" {
-			if !strings.HasPrefix(pointer, "/") {
-				return nil, usagef("path must be a JSON pointer beginning with /")
-			}
-			for _, segment := range strings.Split(pointer[1:], "/") {
-				segment = strings.ReplaceAll(strings.ReplaceAll(segment, "~1", "/"), "~0", "~")
-				switch v := value.(type) {
-				case map[string]any:
-					var ok bool
-					value, ok = v[segment]
-					if !ok {
-						return nil, usagef("path not found")
-					}
-				case []any:
-					i, err := strconv.Atoi(segment)
-					if err != nil || i < 0 || i >= len(v) {
-						return nil, usagef("array index out of range")
-					}
-					value = v[i]
-				default:
-					return nil, usagef("path crosses a scalar")
-				}
-			}
+		walkPointer := segments
+		if selectedSlide {
+			walkPointer = walkPointer[2:]
+		}
+		value, err = selectJSONPointer(value, walkPointer)
+		if err != nil {
+			return nil, err
 		}
 		limit, err := a.Int("max-items", 100)
 		if err != nil {
@@ -128,6 +132,42 @@ func init() {
 		walk(value, pointer)
 		return map[string]any{"matches": results, "truncated": truncated}, nil
 	}})
+}
+
+func decodeJSONPointer(pointer string) ([]string, error) {
+	if pointer == "" {
+		return nil, nil
+	}
+	if !strings.HasPrefix(pointer, "/") {
+		return nil, usagef("path must be a JSON pointer beginning with /")
+	}
+	parts := strings.Split(pointer[1:], "/")
+	for i, part := range parts {
+		parts[i] = strings.ReplaceAll(strings.ReplaceAll(part, "~1", "/"), "~0", "~")
+	}
+	return parts, nil
+}
+
+func selectJSONPointer(value any, segments []string) (any, error) {
+	for _, segment := range segments {
+		switch v := value.(type) {
+		case map[string]any:
+			var ok bool
+			value, ok = v[segment]
+			if !ok {
+				return nil, usagef("path not found")
+			}
+		case []any:
+			i, err := strconv.Atoi(segment)
+			if err != nil || i < 0 || i >= len(v) {
+				return nil, usagef("array index out of range")
+			}
+			value = v[i]
+		default:
+			return nil, usagef("path crosses a scalar")
+		}
+	}
+	return value, nil
 }
 
 func inspectSheetRange(path, sheet, selection string) (map[string]any, error) {
