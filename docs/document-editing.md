@@ -909,3 +909,13 @@ To change source linkage, a number format must already exist or be supplied.
 Setting `number_format` alone retains the existing command behavior of disabling
 source linkage. Otherwise omitted properties remain unchanged. Inspect the newer
 local schema and the saved labels, then render to check the final appearance.
+
+### Existing worksheet tab colors (post-RC4)
+
+Use a `tab-color` operation with a six-digit RGB `color`; an empty string clears the tab color. The sheet must exist. Replacing a color removes its previous theme, indexed-color and tint settings.
+
+```json
+{"edits":[{"operation":"tab-color","sheet":"Summary","color":"4472C4"}]}
+```
+
+Run with `paperworks workbook-edit input.xlsx --spec edits.json --output updated.xlsx`. This requires the updated Paperworks build; the currently pinned RC4 does not provide this operation.
