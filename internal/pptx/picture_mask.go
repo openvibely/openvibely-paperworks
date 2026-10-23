@@ -21,10 +21,8 @@ func setPictureMask(shape *etree.Element, mask string, radius *float64) error {
 	if mask == "" && radius != nil && old != nil {
 		mask = old.SelectAttrValue("prst", "")
 	}
-	switch mask {
-	case "rect", "roundRect", "ellipse":
-	default:
-		return fmt.Errorf("mask must be rect, roundRect or ellipse")
+	if !validPictureMask(mask) {
+		return fmt.Errorf("mask must be a DrawingML preset shape name")
 	}
 	adj := -1
 	if radius != nil {
