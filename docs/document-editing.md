@@ -781,3 +781,16 @@ not the series values or workbook. Existing hidden-label settings are preserved.
 axis `id`; omitted settings are retained. This changes native placement flags,
 not axis-crossing values. Render to verify placement with the chart's existing
 crossing configuration.
+
+### Chart markers and creation series options (after RC4)
+
+A `chart-format` series accepts `marker` with `symbol` (`auto`, `circle`,
+`diamond`, `dot`, `none`, `plus`, `square`, `star`, `triangle`, `x`), `size`
+(2..72 points), `fill` and `outline`. Line, scatter and radar families support
+markers. Omitted properties and per-point marker overrides remain unchanged.
+
+Creation preserves `chart.options.Series[i]` formatting (Excelize field names,
+such as `Marker`, `Line`, `DataLabel`). `Name`, `Categories`, `Values`, and `Sizes`
+are always replaced with references to the generated workbook. Options map to
+series by index; more options than data series is an error. Missing entries use
+default formatting. This applies to standard charts, not ChartEx creation.
