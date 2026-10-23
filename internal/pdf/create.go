@@ -12,7 +12,9 @@ import (
 
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 	"github.com/pdfcpu/pdfcpu/pkg/api"
+	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/model"
 	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/primitives"
+	"golang.org/x/image/font/sfnt"
 )
 
 // CreateSpec provides fixed-layout PDF authoring in points with a bottom-left
@@ -43,7 +45,7 @@ type CreatePage struct {
 func supportedText(s string) error {
 	for _, r := range s {
 		if (r < 32 && r != '\n' && r != '\r' && r != '\t') || r > 126 {
-			return fmt.Errorf("PDF authoring currently supports printable ASCII text only; embedded Unicode fonts are not implemented (U+%04X)", r)
+			return fmt.Errorf("PDF authoring supports printable ASCII only outside interactive form text (unsupported character U+%04X)", r)
 		}
 	}
 	return nil
@@ -75,8 +77,6 @@ func Create(ctx context.Context, spec CreateSpec, base, output string) error {
 	if spec.Paper == "" {
 		spec.Paper = "A4"
 	}
-	// The built-in PDF fonts need no runtime font installation. Reject other
-	// fonts until an embedded Unicode font path is implemented and tested.
 	checkFont := func(f *primitives.FormFont) error {
 		if f == nil {
 			return nil
@@ -85,16 +85,33 @@ func Create(ctx context.Context, spec CreateSpec, base, output string) error {
 		case "", "Helvetica", "Helvetica-Bold", "Helvetica-Oblique", "Helvetica-BoldOblique", "Times-Roman", "Times-Bold", "Times-Italic", "Times-BoldItalic", "Courier", "Courier-Bold", "Courier-Oblique", "Courier-BoldOblique", "Symbol", "ZapfDingbats":
 			return nil
 		}
-		return fmt.Errorf("unsupported PDF font %q: embedded Unicode fonts are not yet supported", f.Name)
+		return fmt.Errorf("unsupported PDF font %q", f.Name)
 	}
-	checkLabel := func(label *primitives.TextFieldLabel) error {
+	unicodeFont, unicodeFontName, err := formUnicodeFont()
+	if err != nil {
+		return err
+	}
+	fontBuffer := &sfnt.Buffer{}
+	usesUnicodeFont := false
+	validateFormText := func(s string) (bool, error) {
+		return validateFormText(s, unicodeFont, unicodeFontName, fontBuffer)
+	}
+	checkLabel := func(label *primitives.TextFieldLabel) (bool, error) {
 		if label == nil {
-			return nil
+			return false, nil
 		}
-		if err := supportedText(label.Value); err != nil {
-			return err
+		unicodeText, err := validateFormText(label.Value)
+		if err != nil {
+			return false, err
 		}
-		return checkFont(label.Font)
+		if err := checkFont(label.Font); err != nil {
+			return false, err
+		}
+		if unicodeText {
+			usesUnicodeFont = true
+			withFormUnicodeFont(&label.Font, unicodeFontName)
+		}
+		return unicodeText, nil
 	}
 	doc := &primitives.PDF{Paper: spec.Paper, Origin: "ll", Fonts: map[string]*primitives.FormFont{"input": {Name: "Helvetica", Size: 12}, "label": {Name: "Helvetica", Size: 12}, "text": {Name: "Helvetica", Size: 12}}, Pages: map[string]*primitives.PDFPage{}}
 	imageRoot := ""
@@ -175,39 +192,53 @@ func Create(ctx context.Context, spec CreateSpec, base, output string) error {
 			if v == nil {
 				return fmt.Errorf("null text field")
 			}
-			if err := checkLabel(v.Label); err != nil {
+			if _, err := checkLabel(v.Label); err != nil {
 				return err
 			}
+			valueUnicode := false
 			for _, text := range []string{v.Value, v.Default} {
-				if e := supportedText(text); e != nil {
-					return e
+				unicodeText, err := validateFormText(text)
+				if err != nil {
+					return err
 				}
+				valueUnicode = valueUnicode || unicodeText
 			}
-			if e := checkFont(v.Font); e != nil {
-				return e
+			if err := checkFont(v.Font); err != nil {
+				return err
+			}
+			if valueUnicode {
+				usesUnicodeFont = true
+				withFormUnicodeFont(&v.Font, unicodeFontName)
 			}
 		}
 		for _, v := range p.ComboBoxes {
 			if v == nil {
 				return fmt.Errorf("null combo box")
 			}
+			valueUnicode := false
 			for _, text := range append([]string{v.Value, v.Default}, v.Options...) {
-				if err := supportedText(text); err != nil {
+				unicodeText, err := validateFormText(text)
+				if err != nil {
 					return err
 				}
+				valueUnicode = valueUnicode || unicodeText
 			}
-			if err := checkLabel(v.Label); err != nil {
+			if _, err := checkLabel(v.Label); err != nil {
 				return err
 			}
-			if e := checkFont(v.Font); e != nil {
-				return e
+			if err := checkFont(v.Font); err != nil {
+				return err
+			}
+			if valueUnicode {
+				usesUnicodeFont = true
+				withFormUnicodeFont(&v.Font, unicodeFontName)
 			}
 		}
 		for _, v := range p.Checkboxes {
 			if v == nil {
 				return fmt.Errorf("null checkbox")
 			}
-			if err := checkLabel(v.Label); err != nil {
+			if _, err := checkLabel(v.Label); err != nil {
 				return err
 			}
 		}
@@ -216,7 +247,7 @@ func Create(ctx context.Context, spec CreateSpec, base, output string) error {
 				return fmt.Errorf("null radio group")
 			}
 			if v.Buttons != nil {
-				if err := checkLabel(v.Buttons.Label); err != nil {
+				if _, err := checkLabel(v.Buttons.Label); err != nil {
 					return err
 				}
 				for _, text := range v.Buttons.Values {
@@ -225,7 +256,7 @@ func Create(ctx context.Context, spec CreateSpec, base, output string) error {
 					}
 				}
 			}
-			if err := checkLabel(v.Label); err != nil {
+			if _, err := checkLabel(v.Label); err != nil {
 				return err
 			}
 		}
@@ -275,14 +306,32 @@ func Create(ctx context.Context, spec CreateSpec, base, output string) error {
 		return e
 	}
 	conf := config()
+	if usesUnicodeFont {
+		fontRoot, err := os.MkdirTemp("", "paperworks-form-fonts-*")
+		if err != nil {
+			return err
+		}
+		defer os.RemoveAll(fontRoot)
+		conf, err = model.LoadConfiguration(fontRoot)
+		if err != nil {
+			return err
+		}
+		fontDir, _ := conf.UserFontStore()
+		if err := installFormUnicodeFont(fontDir); err != nil {
+			return err
+		}
+	}
 	conf.Offline = true
 	conf.LocalImageRoot = imageRoot
 	var out bytes.Buffer
 	if e = api.Create(ctx, nil, bytes.NewReader(data), &out, conf); e != nil {
 		return e
 	}
-	c, e := Load(ctx, out.Bytes())
+	c, e := api.ReadAndValidate(ctx, bytes.NewReader(out.Bytes()), conf)
 	if e != nil {
+		return fmt.Errorf("validate generated PDF: %w", e)
+	}
+	if e = c.EnsurePageCount(); e != nil {
 		return fmt.Errorf("validate generated PDF: %w", e)
 	}
 	// pdfcpu creates choice widgets without a normal appearance. Materialize
@@ -312,7 +361,7 @@ func Create(ctx context.Context, spec CreateSpec, base, output string) error {
 		}
 	}
 	if len(choices) > 0 {
-		if e = applyValues(ctx, c, fields, choices); e != nil {
+		if e = applyValuesWithFontRefresh(ctx, c, fields, choices, usesUnicodeFont, nil); e != nil {
 			return e
 		}
 		if data, e = Serialize(ctx, c); e != nil {
