@@ -589,3 +589,13 @@ preservation, authorize those exact parts and disclose that refresh is deferred.
 `slide-edit` with `{"edits":[{"operation":"visibility","slide":1,"hidden":true}]}`.
 Use `false` to show the slide again. No shape ID is needed. Hidden slides remain
 in the file and previews; slideshow applications skip them.
+
+### Text boxes
+
+Created text/shape elements accept `text_box`. Existing shapes use
+`{"operation":"text-box","slide":1,"shape_id":"2","text_box":{"insets":{"left":12,"right":12,"top":6,"bottom":6},"vertical_align":"middle","wrap":"square","auto_fit":"none"}}`
+inside `slide-edit`'s `edits` array. Insets are points; omitted fields stay unchanged.
+Alignment is `top`, `middle` or `bottom`; wrap is `square` or `none`; autofit is
+`none`, `shrinkText` or `resizeShapeToFitText`. Autofit is a native application
+setting, not measured layout: render and check the result, and rerun measured
+layout after padding/wrapping changes.

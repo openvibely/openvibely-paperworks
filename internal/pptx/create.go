@@ -93,6 +93,7 @@ type ImageAnchor struct {
 	Y float64 `json:"y"`
 }
 type Element struct {
+	TextBox           *TextBoxStyle `json:"text_box,omitempty"`
 	DrawingStyle      *DrawingStyle `json:"drawing_style,omitempty"`
 	Connector         *Connector    `json:"connector,omitempty"`
 	Commands          []PathCommand `json:"commands,omitempty"`
@@ -597,6 +598,12 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 		shapes := office.Child(office.Child(d.Root(), pns, "cSld"), pns, "spTree").ChildElements()[2:]
 		// Measure final paragraph formatting before sizing and positioning shapes.
 		for j, e := range slide.Elements {
+			if e.TextBox != nil {
+				if err := styleTextBox(shapes[j], e.TextBox); err != nil {
+					return err
+				}
+				changed = true
+			}
 			if body := office.Child(shapes[j], pns, "txBody"); body != nil {
 				paragraphs := office.Children(body, ans, "p")
 				for k, paragraph := range e.Paragraphs {
