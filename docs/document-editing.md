@@ -643,3 +643,13 @@ existing top-level shape's frame. The frame cannot also be a selected object.
 Objects need explicit geometry and must be top-level; inherited geometry and
 overflow fail instead of guessing or shrinking. Layout uses unrotated frames.
 Rerun after edits and inspect the render for rotated objects or overlapping content.
+
+### Glyph fills and outlines
+
+New text elements accept `text_paint`; `slide-edit` operation `text-paint` applies it to a whole text shape, and `run-format` accepts it for one inspected paragraph/run. Example:
+
+```json
+{"operation":"text-paint","slide":1,"shape_id":"2","text_paint":{"fill":{"gradient":{"angle":0,"stops":[{"position":0,"color":"FF0000"},{"position":1,"color":"0000FF"}]}},"outline":{"width":1,"fill":{"fill":"000000"}}}}
+```
+
+These are glyph effects, not text-box backgrounds. Fill and outline fills accept solid colors, linear gradients or patterns; outline width is in points, zero removes the outline. Omitted settings survive. Images/shadows are not text fills. Inspect the rendered result in the intended application.
