@@ -42,7 +42,7 @@ func replaceRichNotes(pkg *opc.Package, part string, body *etree.Element, paragr
 	if err := d.ReadFromString("<p:txBody" + ns + ">" + textBody(Element{Paragraphs: paragraphs, FontSize: 12}, font) + "</p:txBody>"); err != nil {
 		return err
 	}
-	if err := applyRunHyperlinks(pkg, part, d.Root(), paragraphs); err != nil {
+	if err := applyStructuredRunProperties(pkg, part, d.Root(), paragraphs); err != nil {
 		return err
 	}
 	ps := office.Children(d.Root(), ans, "p")
