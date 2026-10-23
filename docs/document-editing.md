@@ -733,8 +733,8 @@ or bubble. Moving averages cannot specify forecast/intercept/equation options.
 ChartEx remains excluded. Render the result; chart layout is application-dependent.
 
 
-Preview limitation: the tested LibreOffice build ignores individual line-chart
-marker colors even when the native point and marker fills are stored. Verify
+Preview limitation: the tested LibreOffice build ignores line-chart marker colors
+(including series-level colors) even when native marker fills are stored. Verify
 those colors in the intended PowerPoint application; a LibreOffice preview alone
 does not confirm them.
 
