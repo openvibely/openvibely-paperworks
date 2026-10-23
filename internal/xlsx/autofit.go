@@ -8,24 +8,31 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-func hasSavedEmptyStringResult(wb *office.Workbook, sheet, cell, formula string) bool {
-	if wb == nil || wb.Sheets[sheet] == nil {
+func hasSavedEmptyStringResult(wb *office.Workbook, sourceSheet, cell, formula string, renames []formulaSheetRename) bool {
+	if wb == nil || wb.Sheets[sourceSheet] == nil {
 		return false
 	}
-	c := wb.Sheets[sheet].Cells[cell]
+	c := wb.Sheets[sourceSheet].Cells[cell]
 	if c == nil || c.SelectAttrValue("t", "") != "str" {
 		return false
 	}
 	savedFormula := office.Child(c, office.NSS, "f")
 	value := office.Child(c, office.NSS, "v")
-	return savedFormula != nil && savedFormula.Text() == formula && value != nil && value.Text() == ""
+	if savedFormula == nil || value == nil || value.Text() != "" {
+		return false
+	}
+	expectedFormula := savedFormula.Text()
+	for _, rename := range renames {
+		expectedFormula = renameFormulaSheet(expectedFormula, rename.from, rename.to)
+	}
+	return expectedFormula == formula
 }
 
 func autofitRows(f *excelize.File, e Edit) error {
-	return autofitRowsWithSourceCache(f, e, nil)
+	return autofitRowsWithSourceCache(f, e, nil, "", nil)
 }
 
-func autofitRowsWithSourceCache(f *excelize.File, e Edit, source *office.Workbook) error {
+func autofitRowsWithSourceCache(f *excelize.File, e Edit, source *office.Workbook, sourceSheet string, renames []formulaSheetRename) error {
 	a, b, err := bounds(e.Range)
 	if err != nil {
 		return err
@@ -132,7 +139,7 @@ func autofitRowsWithSourceCache(f *excelize.File, e Edit, source *office.Workboo
 			if err != nil {
 				return err
 			}
-			if formula != "" && value == "" && !hasSavedEmptyStringResult(source, e.Sheet, cell, formula) {
+			if formula != "" && value == "" && !hasSavedEmptyStringResult(source, sourceSheet, cell, formula, renames) {
 				return fmt.Errorf("%s needs recalculation before autofit", cell)
 			}
 			runs := []office.TextRun{{Text: value, Font: name, Size: size, Bold: bold, Italic: italic}}

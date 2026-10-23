@@ -138,6 +138,44 @@ func TestAutofitRowsAcceptsCachedEmptyStringFormulaInEmptyRow(t *testing.T) {
 	}
 }
 
+func TestAutofitRowsAcceptsCachedEmptyStringFormulaAfterSheetRename(t *testing.T) {
+	dir := t.TempDir()
+	in := filepath.Join(dir, "input.xlsx")
+	out := filepath.Join(dir, "out.xlsx")
+	f := excelize.NewFile()
+	if err := f.SetDefaultFont("Go"); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SetCellFormula("Sheet1", "A1", `IF(Sheet1!B1="","",Sheet1!B1)`); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SaveAs(in); err != nil {
+		t.Fatal(err)
+	}
+	f.Close()
+	setStringFormulaCache(t, in, "Sheet1", "A1", true)
+
+	spec := EditSpec{Edits: []Edit{
+		{Operation: "rename-sheet", Sheet: "Sheet1", Name: "Renamed"},
+		{Operation: "autofit-rows", Sheet: "Renamed", Range: "A1:A1"},
+	}}
+	if err := EditFile(context.Background(), in, out, dir, spec); err != nil {
+		t.Fatal(err)
+	}
+	got, err := excelize.OpenFile(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer got.Close()
+	height, err := got.GetRowHeight("Renamed", 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if height != 16.2 {
+		t.Fatalf("row height %v, want baseline 16.2", height)
+	}
+}
+
 func TestAutofitRowsRejectsFormulaWithoutCachedResultAndDoesNotPublish(t *testing.T) {
 	dir := t.TempDir()
 	in := filepath.Join(dir, "input.xlsx")
