@@ -2,7 +2,7 @@
 
 Standalone Go CLI for creating, editing, inspecting, and rendering documents.
 
-Builds require Go 1.27.3 (also selected by CI via `go.mod`).
+Builds require the Go version declared in `go.mod` (also selected by CI).
 
 ```sh
 go build -o paperworks ./cmd/paperworks
