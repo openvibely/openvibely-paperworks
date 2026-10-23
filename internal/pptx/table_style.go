@@ -129,18 +129,9 @@ func formatTable(shape *etree.Element, s *TableFormat) error {
 			if body == nil {
 				return fmt.Errorf("missing cell text")
 			}
-			temp := etree.NewElement("p:sp")
-			temp.CreateAttr("xmlns:p", pns)
-			temp.CreateAttr("xmlns:a", ans)
-			copy := body.Copy()
-			copy.Space = "p"
-			temp.AddChild(copy)
-			if err := paintTextBody(temp, c.TextPaint); err != nil {
+			if err := paintBody(body, c.TextPaint); err != nil {
 				return err
 			}
-			copy.Space = "a"
-			cell.InsertChildAt(body.Index(), copy)
-			cell.RemoveChild(body)
 		}
 	}
 	// Keep the frame consistent with the native table grid.
