@@ -44,3 +44,32 @@ func TestNativeTextPaint(t *testing.T) {
 		t.Fatal("unsupported fill accepted")
 	}
 }
+
+func TestNativePathGradientText(t *testing.T) {
+	dir := t.TempDir()
+	out := filepath.Join(dir, "gradient.pptx")
+	g := &Gradient{Path: "circle", Stops: []GradientStop{{Position: 0, Color: "FFFFFF"}, {Position: 1, Color: "0000FF"}}}
+	spec := Spec{Slides: []Slide{{Elements: []Element{{Type: "text", Text: "Gradient", W: 4, H: 2, TextPaint: &TextPaint{Fill: &DrawingStyle{Gradient: g}}}}}}}
+	if err := Create(context.Background(), spec, dir, out); err != nil {
+		t.Fatal(err)
+	}
+	p, err := opc.Open(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	d, err := p.XML("ppt/slides/slide1.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	paths := office.All(d.Root(), ans, "path")
+	if len(paths) == 0 || paths[0].SelectAttrValue("path", "") != "circle" {
+		t.Fatal("missing path gradient")
+	}
+	if office.Child(paths[0], ans, "fillToRect").SelectAttrValue("l", "") != "50000" {
+		t.Fatal("missing gradient focus")
+	}
+	g.Focus = &GradientFocus{Left: .8, Right: .8}
+	if err := Create(context.Background(), spec, dir, filepath.Join(dir, "bad.pptx")); err == nil {
+		t.Fatal("inverted gradient accepted")
+	}
+}

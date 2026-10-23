@@ -698,3 +698,9 @@ Read axis IDs from the chart XML identified by inspection; do not guess them.
 This operation edits the chart part itself, so references sharing that part see
 the same formatting. It does not style ChartEx charts or reconstruct image-only
 charts. Per-point label overrides remain intact.
+
+Gradient fills also accept `path:"circle"`, `"rect"`, or `"shape"` instead of a
+linear angle. Optional `focus` has `left`, `top`, `right`, `bottom` insets in
+0..1; omission focuses the gradient at the center. Opposing insets cannot sum
+to more than 1. Path gradients apply wherever a gradient paint is accepted,
+including text glyphs and outlines.
