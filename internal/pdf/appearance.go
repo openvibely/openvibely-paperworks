@@ -426,7 +426,7 @@ func alignSingleLineAppearance(x *model.XRefTable, w types.Dict, f *field, value
 			if i == 0 {
 				yPos = box[3]/2 - ascent*points/2000
 			}
-			literal := strings.NewReplacer("\\", "\\\\", "(", "\\(", ")", "\\)").Replace(string(glyph))
+			literal := fixedString(string(glyph))
 			fmt.Fprintf(&b, "%g %g Td (%s) Tj ", math.Round((xPos-previousX)*1000)/1000, math.Round(yPos*1000)/1000, literal)
 			previousX = xPos
 		}
@@ -465,7 +465,7 @@ func alignSingleLineAppearance(x *model.XRefTable, w types.Dict, f *field, value
 				fmt.Fprintf(&b, "1 %g %g %g re 0.5 0.5 0.5 rg s %s", math.Round(y*1000)/1000, box[2]-2, points+2, strings.TrimPrefix(fontOperators, "BT "))
 			}
 			previousX = lineX
-			literal := strings.NewReplacer("\\", "\\\\", "(", "\\(", ")", "\\)").Replace(line)
+			literal := fixedString(line)
 			fmt.Fprintf(&b, "%g %g Td (%s) Tj ", math.Round(xPos*1000)/1000, math.Round(yPos*1000)/1000, literal)
 		}
 		b.WriteString("ET Q EMC ")

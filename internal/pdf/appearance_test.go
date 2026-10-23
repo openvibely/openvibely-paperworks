@@ -270,8 +270,12 @@ func TestMultilineCoreFontLayout(t *testing.T) {
 				if lines > 1 && !strings.Contains(string(sd.Content), leading) {
 					t.Fatalf("wrong leading: %s", sd.Content)
 				}
-				if strings.Contains(value, "(literal)") && !strings.Contains(string(sd.Content), `A \(literal\) \\ path`) {
-					t.Fatalf("unescaped literal: %s", sd.Content)
+				if strings.Contains(value, "(literal)") {
+					for _, want := range []string{`A \(literal\) \\ path`, `(Second line) Tj`} {
+						if !strings.Contains(string(sd.Content), want) {
+							t.Fatalf("missing escaped multiline text %q: %s", want, sd.Content)
+						}
+					}
 				}
 				if _, err := Fill(ctx, filled, flat, nil, true); err != nil {
 					t.Fatal(err)
@@ -643,7 +647,7 @@ func TestBorderlessListClippingAndFlatten(t *testing.T) {
 }
 
 func TestCombGlyphCentersAndStoredOverflow(t *testing.T) {
-	for _, value := range []string{"Wi", "Ab12WxyzMORE", `W(\)`, ""} {
+	for _, value := range []string{"Wi", "Ab12WxyzMORE", `W(\\)`, ""} {
 		t.Run(value, func(t *testing.T) {
 			objs := formObjs()
 			objs[12] = strings.Replace(objs[12], "/FT /Tx", "/FT /Tx /Ff 16777216 /MaxLen 8", 1)
@@ -688,8 +692,15 @@ func TestCombGlyphCentersAndStoredOverflow(t *testing.T) {
 			if value == "Ab12WxyzMORE" && (strings.Count(stream, ") Tj") != 8 || strings.Contains(stream, "(M) Tj")) {
 				t.Fatalf("overflow not clipped to cells: %s", stream)
 			}
-			if value == `W(\)` && !strings.Contains(stream, `(\() Tj`) {
-				t.Fatalf("unescaped glyph: %s", stream)
+			if value == `W(\\)` {
+				for _, want := range []string{`(\() Tj`, `(\\) Tj`, `(\)) Tj`} {
+					if !strings.Contains(stream, want) {
+						t.Fatalf("missing escaped glyph %q: %s", want, stream)
+					}
+				}
+				if strings.Count(stream, `(\\) Tj`) != 2 {
+					t.Fatalf("backslash glyphs were not escaped individually: %s", stream)
+				}
 			}
 			if _, err := Fill(ctx, out, flat, map[string]string{}, true); err != nil {
 				t.Fatal(err)
