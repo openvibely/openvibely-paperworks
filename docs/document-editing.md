@@ -932,3 +932,11 @@ Chart `text_style` and `title_style` accept `fill` using Paperworks' existing so
 {"title_style":{"fill":{"gradient":{"angle":45,"stops":[{"position":0,"color":"FF0000"},{"position":1,"color":"0000FF"}]}}}}
 ```
 Gradient stop positions are ascending fractions from 0 to 1; angles are degrees. The existing `color` field remains a solid-color shortcut. Supply `color` or `fill`, never both. Supplied fills replace existing run/default fills; omission preserves them. Image fills, shadows and outlines are not accepted inside text `fill`. Use a newer local build exposing this field and render to verify the result in the intended viewer.
+
+## Add a sensitivity table to an existing workbook (after RC4)
+
+Use `workbook-edit` with `add-data-table`. Set up the model inputs, output formula and trial headers first, either in earlier edits or in the existing workbook.
+```json
+{"edits":[{"operation":"add-data-table","sheet":"Model","data_table":{"range":"E3:F4","input1":"B1","input2":"B2"}}]}
+```
+Here `E3:F4` is the result body, `D2` holds the output formula, `E2:F2` holds row trials, and `D3:D4` holds column trials. `input1` is the row-input cell and `input2` the column-input cell on the same sheet. The command rejects occupied result cells, merges, structured tables and existing formula-range overlaps. It writes a native definition, not calculated results: recalculate the output, inspect the table values, and verify selected scenarios independently. Use a newer local build; RC4 lacks this edit operation.

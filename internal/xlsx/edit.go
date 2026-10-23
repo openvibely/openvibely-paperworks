@@ -27,6 +27,7 @@ type formulaSheetRename struct {
 }
 
 type Edit struct {
+	DataTable    *DataTable                          `json:"data_table,omitempty"`
 	Color        *string                             `json:"color,omitempty"`
 	FormulaStyle string                              `json:"formula_style,omitempty"`
 	Operation    string                              `json:"operation"`
@@ -93,13 +94,15 @@ func EditFile(ctx context.Context, input, output, base string, spec EditSpec) er
 			return err
 		}
 		switch op.Operation {
-		case "tab-color", "rename-sheet", "copy", "copy-values", "copy-formulas", "copy-formats":
+		case "add-data-table", "tab-color", "rename-sheet", "copy", "copy-values", "copy-formulas", "copy-formats":
 			var next *excelize.File
 			var originalSheet string
 			var hasOriginalSheet bool
 			if op.Operation == "rename-sheet" {
 				originalSheet, hasOriginalSheet = sourceSheetNames[op.Sheet]
 				next, err = renameSheet(f, op.Sheet, op.Name)
+			} else if op.Operation == "add-data-table" {
+				next, err = addDataTable(ctx, f, op.Sheet, op.DataTable)
 			} else if op.Operation == "tab-color" {
 				next, err = setTabColor(f, op.Sheet, op.Color)
 			} else {

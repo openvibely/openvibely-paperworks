@@ -185,3 +185,42 @@ func TestDataTableValidationEnforcesTotalCellLimit(t *testing.T) {
 		t.Fatalf("got %v, want total result cell limit error", err)
 	}
 }
+
+func TestAddDataTableToExistingWorkbook(t *testing.T) {
+	dir := t.TempDir()
+	in, out := filepath.Join(dir, "in.xlsx"), filepath.Join(dir, "out.xlsx")
+	spec := tableSpec()
+	table := spec.Sheets[0].DataTables[0]
+	spec.Sheets[0].DataTables = nil
+	if err := Create(context.Background(), spec, dir, in); err != nil {
+		t.Fatal(err)
+	}
+	edits := []Edit{{Operation: "add-data-table", Sheet: "Model", DataTable: &table}, {Operation: "value", Sheet: "Model", Cell: "A10", Value: "Keep"}, {Operation: "rename-sheet", Sheet: "Model", Name: "Result"}}
+	if err := EditFile(context.Background(), in, out, dir, EditSpec{Edits: edits}); err != nil {
+		t.Fatal(err)
+	}
+	p, err := opc.Open(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	w, err := office.OpenWorkbook(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	sheet := w.Sheets["Result"]
+	f := office.Child(sheet.Cells["E3"], office.NSS, "f")
+	if f == nil || f.SelectAttrValue("t", "") != "dataTable" || f.SelectAttrValue("ref", "") != "E3:F4" || f.SelectAttrValue("r1", "") != "B1" || f.SelectAttrValue("r2", "") != "B2" {
+		t.Fatal("native table not retained through later edits")
+	}
+	if office.Child(sheet.Cells["B3"], office.NSS, "f").Text() != "B1+10*B2" {
+		t.Fatal("model formula changed")
+	}
+	// The interior of an existing uncalculated table may appear empty.
+	overlap := DataTable{Range: "F4:G5", Input1: "B1", Input2: "B2"}
+	if err := EditFile(context.Background(), out, filepath.Join(dir, "bad.xlsx"), dir, EditSpec{Edits: []Edit{{Operation: "add-data-table", Sheet: "Result", DataTable: &overlap}}}); err == nil || !strings.Contains(err.Error(), "overlaps formula range") {
+		t.Fatalf("overlap accepted: %v", err)
+	}
+	if err := EditFile(context.Background(), in, filepath.Join(dir, "occupied.xlsx"), dir, EditSpec{Edits: []Edit{{Operation: "value", Sheet: "Model", Cell: "F4", Value: 42}, {Operation: "add-data-table", Sheet: "Model", DataTable: &table}}}); err == nil {
+		t.Fatal("overwrote existing result cell")
+	}
+}
