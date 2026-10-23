@@ -13,7 +13,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/openvibely/openvibely-paperworks/internal/lo"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 	"github.com/xuri/excelize/v2"
 )
@@ -297,9 +296,9 @@ func TestExcelPairedThreadReply(t *testing.T) {
 }
 
 func TestThreadLegacyLibreOffice(t *testing.T) {
-	soffice, err := lo.Find()
-	if err != nil {
-		t.Fatal(err)
+	soffice := os.Getenv("DOCUMENT_SOFFICE")
+	if soffice == "" {
+		t.Fatal("LibreOffice test dependency was not initialized")
 	}
 	source := "../../testdata/reference-mirror/stale-sparkline.xlsx"
 	if _, err := os.Stat(source); err != nil {
