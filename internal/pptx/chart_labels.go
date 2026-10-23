@@ -8,6 +8,14 @@ import (
 )
 
 type ChartLabelOverride struct {
+	Separator      *string `json:"separator,omitempty"`
+	ShowValue      *bool   `json:"show_value,omitempty"`
+	ShowCategory   *bool   `json:"show_category,omitempty"`
+	ShowSeries     *bool   `json:"show_series,omitempty"`
+	ShowPercent    *bool   `json:"show_percent,omitempty"`
+	ShowLegendKey  *bool   `json:"show_legend_key,omitempty"`
+	ShowBubbleSize *bool   `json:"show_bubble_size,omitempty"`
+
 	Index     int             `json:"index"`
 	Text      *string         `json:"text,omitempty"`
 	TextStyle *ChartTextStyle `json:"text_style,omitempty"`
@@ -45,6 +53,13 @@ func formatLabelOverrides(ser *etree.Element, overrides []ChartLabelOverride) er
 		if v.Index < 0 || v.Index >= count || seen[v.Index] {
 			return fmt.Errorf("invalid or duplicate label index")
 		}
+		if v.ShowPercent != nil && *v.ShowPercent {
+			switch ser.Parent().Tag {
+			case "pieChart", "pie3DChart", "doughnutChart", "ofPieChart":
+			default:
+				return fmt.Errorf("percent labels require pie or doughnut")
+			}
+		}
 		seen[v.Index] = true
 		labels := chartEnsure(ser, "dLbls", seriesOrder)
 		var label *etree.Element
@@ -60,6 +75,20 @@ func formatLabelOverrides(ser *etree.Element, overrides []ChartLabelOverride) er
 		if label == nil {
 			label = newChartChild(labels, "dLbl", labelsOrder)
 			label.CreateElement("c:idx").CreateAttr("val", strconv.Itoa(v.Index))
+		}
+		if v.Separator != nil {
+			chartEnsure(label, "separator", labelOrder).SetText(*v.Separator)
+		}
+		for _, flag := range []struct {
+			tag   string
+			value *bool
+		}{
+			{"showVal", v.ShowValue}, {"showCatName", v.ShowCategory}, {"showSerName", v.ShowSeries},
+			{"showPercent", v.ShowPercent}, {"showLegendKey", v.ShowLegendKey}, {"showBubbleSize", v.ShowBubbleSize},
+		} {
+			if flag.value != nil {
+				chartBool(label, flag.tag, *flag.value, labelOrder)
+			}
 		}
 		if v.Position != "" {
 			switch v.Position {

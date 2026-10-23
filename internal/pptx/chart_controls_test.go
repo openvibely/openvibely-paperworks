@@ -310,3 +310,36 @@ func TestChartAxisCrossingAndOutline(t *testing.T) {
 		}
 	}
 }
+
+func TestChartAdditionalLabelControls(t *testing.T) {
+	in, _ := chartControlFixture(t, "line")
+	yes, no := true, false
+	sep := " / "
+	empty := ""
+	d := editChartControl(t, in, ChartFormat{Series: []ChartSeriesFormat{{Index: 0, Labels: &ChartLabelsFormat{Separator: &sep, ShowLeaderLines: &yes, ShowLegendKey: &yes}, LabelOverrides: []ChartLabelOverride{{Index: 1, Separator: &empty, ShowValue: &no, ShowCategory: &yes, ShowSeries: &yes}}}}})
+	labels := office.Child(office.All(d.Root(), cns, "ser")[0], cns, "dLbls")
+	if office.Child(labels, cns, "separator").Text() != sep {
+		t.Fatal("separator missing")
+	}
+	for _, tag := range []string{"showLeaderLines", "showLegendKey"} {
+		if office.Child(labels, cns, tag).SelectAttrValue("val", "") != "1" {
+			t.Fatal("flag missing", tag)
+		}
+	}
+	label := office.Child(labels, cns, "dLbl")
+	if office.Child(label, cns, "separator") == nil || office.Child(label, cns, "separator").Text() != "" {
+		t.Fatal("empty separator missing")
+	}
+	for tag, want := range map[string]string{"showVal": "0", "showCatName": "1", "showSerName": "1"} {
+		if office.Child(label, cns, tag).SelectAttrValue("val", "") != want {
+			t.Fatal("point flag missing", tag)
+		}
+	}
+	if office.Child(label, cns, "showPercent") != nil {
+		t.Fatal("omitted flag changed")
+	}
+	bad := ChartFormat{Series: []ChartSeriesFormat{{Index: 0, LabelOverrides: []ChartLabelOverride{{Index: 0, ShowPercent: &yes}}}}}
+	if _, err := EditFile(context.Background(), in, filepath.Join(t.TempDir(), "bad.pptx"), EditSpec{Edits: []Edit{{Slide: 1, ShapeID: "2", Operation: "chart-format", ChartFormat: &bad}}}); err == nil {
+		t.Fatal("line percent accepted")
+	}
+}
