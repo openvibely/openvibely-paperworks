@@ -450,3 +450,56 @@ func TestAxisTitleStyleSeparateFromTicks(t *testing.T) {
 		t.Fatal("styled removed axis title")
 	}
 }
+
+func TestChartTextGradient(t *testing.T) {
+	in, source := chartControlFixture(t, "line")
+	id := office.Child(office.All(source.Root(), cns, "valAx")[0], cns, "axId").SelectAttrValue("val", "")
+	title := "Revenue"
+	fill := &DrawingStyle{Gradient: &Gradient{Angle: 45, Stops: []GradientStop{{Position: 0, Color: "FF0000"}, {Position: 1, Color: "0000FF"}}}}
+	style := &ChartTextStyle{Fill: fill}
+	d := editChartControl(t, in, ChartFormat{Title: &title, TitleStyle: style, Axes: []ChartAxisFormat{{ID: id, Title: &title, TitleStyle: style, TextStyle: style}}, Legend: &ChartLegendFormat{TextStyle: style}, Series: []ChartSeriesFormat{{Index: 0, Labels: &ChartLabelsFormat{TextStyle: style}, LabelOverrides: []ChartLabelOverride{{Index: 0, Text: &title, TextStyle: style}}}}})
+	for _, tag := range []string{"title", "valAx", "legend", "dLbls", "dLbl"} {
+		nodes := office.All(d.Root(), cns, tag)
+		if len(nodes) == 0 {
+			t.Fatalf("%s missing", tag)
+		}
+		for _, n := range nodes {
+			if tag == "dLbls" && n.Parent().Tag != "ser" {
+				continue
+			}
+			gradients := office.All(n, ans, "gradFill")
+			if len(gradients) == 0 {
+				t.Fatalf("%s gradient missing", tag)
+			}
+			for _, g := range gradients {
+				if len(office.All(g, ans, "gs")) != 2 {
+					t.Fatal("missing gradient stops")
+				}
+			}
+		}
+	}
+	// Imported explicit run fills must be replaced, not left overriding defaults.
+	doc := etree.NewDocument()
+	if err := doc.ReadFromString(`<c:rich xmlns:c="` + cns + `" xmlns:a="` + ans + `"><a:bodyPr/><a:lstStyle/><a:p><a:r><a:rPr b="1"><a:solidFill><a:srgbClr val="00FF00"/></a:solidFill></a:rPr><a:t>Keep text</a:t></a:r></a:p></c:rich>`); err != nil {
+		t.Fatal(err)
+	}
+	if err := formatChartTextBody(doc.Root(), style); err != nil {
+		t.Fatal(err)
+	}
+	run := office.All(doc.Root(), ans, "rPr")[0]
+	if office.Child(run, ans, "solidFill") != nil || office.Child(run, ans, "gradFill") == nil || run.SelectAttrValue("b", "") != "1" || office.All(doc.Root(), ans, "t")[0].Text() != "Keep text" {
+		t.Fatal("run fill replacement changed content or left old fill")
+	}
+	if err := formatChartTextBody(doc.Root(), &ChartTextStyle{Color: "123456"}); err != nil {
+		t.Fatal(err)
+	}
+	if office.Child(run, ans, "gradFill") != nil || office.Child(run, ans, "solidFill") == nil {
+		t.Fatal("solid color did not replace gradient")
+	}
+	for _, bad := range []*ChartTextStyle{{Color: "FF0000", Fill: fill}, {Fill: &DrawingStyle{Gradient: &Gradient{Stops: []GradientStop{{Position: 0, Color: "bad"}}}}}} {
+		f := ChartFormat{Title: &title, TitleStyle: bad}
+		if _, err := EditFile(context.Background(), in, filepath.Join(t.TempDir(), "bad.pptx"), EditSpec{Edits: []Edit{{Slide: 1, ShapeID: "2", Operation: "chart-format", ChartFormat: &f}}}); err == nil {
+			t.Fatal("invalid chart text paint accepted")
+		}
+	}
+}
