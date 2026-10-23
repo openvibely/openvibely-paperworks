@@ -709,7 +709,7 @@ func theme(font string) string {
 	return `<a:theme xmlns:a="` + ans + `" name="Paperworks"><a:themeElements><a:clrScheme name="Paperworks">` + c.String() + `</a:clrScheme><a:fontScheme name="Paperworks"><a:majorFont><a:latin typeface="` + esc(font) + `"/><a:ea typeface=""/><a:cs typeface=""/></a:majorFont><a:minorFont><a:latin typeface="` + esc(font) + `"/><a:ea typeface=""/><a:cs typeface=""/></a:minorFont></a:fontScheme><a:fmtScheme name="Paperworks"><a:fillStyleLst>` + strings.Repeat(fill, 3) + `</a:fillStyleLst><a:lnStyleLst>` + strings.Repeat(line, 3) + `</a:lnStyleLst><a:effectStyleLst>` + strings.Repeat(`<a:effectStyle><a:effectLst/></a:effectStyle>`, 3) + `</a:effectStyleLst><a:bgFillStyleLst>` + strings.Repeat(fill, 3) + `</a:bgFillStyleLst></a:fmtScheme></a:themeElements></a:theme>`
 }
 func (b *builder) chart(ctx context.Context, c Chart, font string) (string, error) {
-	types := map[string]excelize.ChartType{"column": excelize.Col, "bar": excelize.Bar, "line": excelize.Line, "pie": excelize.Pie, "doughnut": excelize.Doughnut, "area": excelize.Area, "scatter": excelize.Scatter, "radar": excelize.Radar, "bubble": excelize.Bubble, "area3D": excelize.Area3D, "bar3D": excelize.Bar3DClustered, "pie3D": excelize.Pie3D, "line3D": excelize.Line3D, "stock-hlc": excelize.StockHighLowClose, "stock-ohlc": excelize.StockOpenHighLowClose}
+	types := map[string]excelize.ChartType{"column": excelize.Col, "bar": excelize.Bar, "line": excelize.Line, "pie": excelize.Pie, "doughnut": excelize.Doughnut, "area": excelize.Area, "scatter": excelize.Scatter, "radar": excelize.Radar, "bubble": excelize.Bubble, "area3D": excelize.Area3D, "bar3D": excelize.Bar3DClustered, "pie3D": excelize.Pie3D, "line3D": excelize.Line3D, "stock-hlc": excelize.StockHighLowClose, "stock-ohlc": excelize.StockOpenHighLowClose, "surface": excelize.Contour, "surface3D": excelize.Surface3D, "ofPie": excelize.PieOfPie, "barOfPie": excelize.BarOfPie}
 	typ, ok := types[c.Type]
 	if !ok {
 		return "", fmt.Errorf("unsupported chart type %q", c.Type)
@@ -717,7 +717,7 @@ func (b *builder) chart(ctx context.Context, c Chart, font string) (string, erro
 	if len(c.Categories) < 1 || len(c.Categories) > 10000 || len(c.Series) < 1 || len(c.Series) > 100 {
 		return "", fmt.Errorf("chart requires 1..10000 categories and 1..100 series")
 	}
-	if (c.Type == "pie" || c.Type == "doughnut") && len(c.Series) != 1 {
+	if (c.Type == "pie" || c.Type == "doughnut" || c.Type == "ofPie" || c.Type == "barOfPie") && len(c.Series) != 1 {
 		return "", fmt.Errorf("pie/doughnut charts require one series")
 	}
 	f := excelize.NewFile()

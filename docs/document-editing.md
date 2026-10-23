@@ -309,7 +309,8 @@ new paragraph definitions. `run-format` additionally accepts `underline` and
 `hyperlink` (http/https/mailto URL, or empty string to remove).
 
 Presentation chart creation adds `bubble`, `radar`, `stock-hlc`, `stock-ohlc`,
-`area3D`, `bar3D`, `pie3D`, and `line3D`. Bubble categories must be numeric X
+`area3D`, `bar3D`, `pie3D`, `line3D`, `surface`, `surface3D`, `ofPie`, and
+`barOfPie`. The pie variants require one series. Bubble categories must be numeric X
 coordinates; each series needs `sizes` alongside `values`. `options` exposes
 Excelize chart settings while type/series bindings come from the authoring spec.
 This does not claim support for every chart name in the reference APIs.
