@@ -51,14 +51,15 @@ type Slide struct {
 	Elements        []Element     `json:"elements"`
 }
 type Run struct {
-	Font      string  `json:"font,omitempty"`
-	Style     string  `json:"style,omitempty"`
-	Text      string  `json:"text"`
-	FontSize  float64 `json:"font_size"`
-	Color     string  `json:"color"`
-	Bold      *bool   `json:"bold"`
-	Italic    bool    `json:"italic"`
-	Underline bool    `json:"underline"`
+	UnderlineStyle string  `json:"underline_style,omitempty"`
+	Font           string  `json:"font,omitempty"`
+	Style          string  `json:"style,omitempty"`
+	Text           string  `json:"text"`
+	FontSize       float64 `json:"font_size"`
+	Color          string  `json:"color"`
+	Bold           *bool   `json:"bold"`
+	Italic         bool    `json:"italic"`
+	Underline      bool    `json:"underline"`
 }
 type Paragraph struct {
 	Format *ParagraphStyle `json:"format,omitempty"`
@@ -235,6 +236,9 @@ func authoredTextBody(e Element, font string, inheritBold bool) string {
 			if r.Underline {
 				underline = "sng"
 			}
+			if r.UnderlineStyle != "" {
+				underline = r.UnderlineStyle
+			}
 			size, ink := sz, col
 			if r.FontSize != 0 {
 				size = r.FontSize
@@ -254,8 +258,8 @@ func authoredTextBody(e Element, font string, inheritBold bool) string {
 				if r.Italic {
 					decoration += ` i="1"`
 				}
-				if r.Underline {
-					decoration += ` u="sng"`
+				if r.Underline || r.UnderlineStyle != "" {
+					decoration += ` u="` + underline + `"`
 				}
 			}
 			fmt.Fprintf(&b, `<a:r><a:rPr lang="en-US" sz="%d"%s%s><a:solidFill><a:srgbClr val="%s"/></a:solidFill><a:latin typeface="%s"/></a:rPr><a:t>%s</a:t></a:r>`, int(size*100), boldAttr, decoration, ink, esc(runFont), esc(r.Text))
@@ -435,6 +439,9 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 					return fmt.Errorf("paragraph run limit exceeded")
 				}
 				for _, r := range p.Runs {
+					if err := validateRunUnderline(r); err != nil {
+						return err
+					}
 					if !finite(r.FontSize) || r.FontSize < 0 || r.FontSize > 400 {
 						return fmt.Errorf("invalid run font size")
 					}

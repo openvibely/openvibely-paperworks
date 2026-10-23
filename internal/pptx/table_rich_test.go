@@ -13,7 +13,7 @@ func TestRichTableCells(t *testing.T) {
 	ctx := context.Background()
 	in := filepath.Join(t.TempDir(), "in.pptx")
 	out := filepath.Join(t.TempDir(), "out.pptx")
-	paragraphs := []Paragraph{{Runs: []Run{{Text: "Revenue:", Font: "Courier New", Bold: &yes}, {Text: " $200", Font: "Arial", Bold: &no, Italic: true, Color: "008000"}}}}
+	paragraphs := []Paragraph{{Runs: []Run{{Text: "Revenue:", Font: "Courier New", UnderlineStyle: "dbl", Bold: &yes}, {Text: " $200", Font: "Arial", Bold: &no, Italic: true, Color: "008000"}}}}
 	if err := Create(ctx, Spec{Slides: []Slide{{Elements: []Element{{Type: "table", W: 4, H: 2, Rows: [][]string{{"replace", "Keep"}}, TableFormat: &TableFormat{Cells: []TableCellFormat{{Row: 0, Column: 0, Paragraphs: paragraphs}}}}}}}}, "", in); err != nil {
 		t.Fatal(err)
 	}
@@ -36,6 +36,9 @@ func TestRichTableCells(t *testing.T) {
 			if office.All(runs[i], ans, "latin")[0].SelectAttrValue("typeface", "") != want {
 				t.Fatal("run font lost")
 			}
+		}
+		if office.Child(runs[0], ans, "rPr").SelectAttrValue("u", "") != "dbl" {
+			t.Fatal("double underline lost")
 		}
 		if office.All(cells[1], ans, "t")[0].Text() != "Keep" {
 			t.Fatal("other cell changed")
