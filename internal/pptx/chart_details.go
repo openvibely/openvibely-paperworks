@@ -95,7 +95,12 @@ func chartAppearance(parent *etree.Element, fill *DrawingStyle, outline *TextOut
 			}
 			def := office.Child(pp, ans, "defRPr")
 			if def == nil {
-				def = pp.CreateElement("a:defRPr")
+				def = etree.NewElement("a:defRPr")
+				if ext := office.Child(pp, ans, "extLst"); ext != nil {
+					pp.InsertChildAt(ext.Index(), def)
+				} else {
+					pp.AddChild(def)
+				}
 			}
 			props := []*etree.Element{def}
 			props = append(props, office.All(p, ans, "rPr")...)
@@ -350,13 +355,12 @@ func formatSeriesExtras(ser *etree.Element, s ChartSeriesFormat) error {
 	return nil
 }
 func newChartChild(parent *etree.Element, tag, order string) *etree.Element {
-	// Use an ordered placeholder even when siblings of the same kind exist.
-	n := chartEnsure(parent, tag, order)
-	copy := etree.NewElement("c:" + tag)
-	copy.CreateAttr("xmlns:c", cns)
-	parent.InsertChildAt(n.Index()+1, copy)
-	if len(n.Child) == 0 && len(n.Attr) == 1 {
-		parent.RemoveChild(n)
+	siblings := office.Children(parent, cns, tag)
+	if len(siblings) == 0 {
+		return chartEnsure(parent, tag, order)
 	}
-	return copy
+	child := etree.NewElement("c:" + tag)
+	child.CreateAttr("xmlns:c", cns)
+	parent.InsertChildAt(siblings[len(siblings)-1].Index()+1, child)
+	return child
 }

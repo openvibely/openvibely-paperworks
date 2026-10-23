@@ -3,6 +3,7 @@ package pptx
 import (
 	"bytes"
 	"context"
+	"github.com/beevik/etree"
 	"github.com/openvibely/openvibely-paperworks/internal/office"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 	"os"
@@ -91,5 +92,26 @@ func TestChartDetailedFormatting(t *testing.T) {
 	f.Series[0].ErrorBars.Type = "standardError"
 	if edit(bad) == nil {
 		t.Fatal("accepted stdErr value")
+	}
+}
+
+func TestChartTrendlineOrder(t *testing.T) {
+	d := etree.NewDocument()
+	if err := d.ReadFromString(`<c:lineChart xmlns:c="` + cns + `"><c:ser><c:idx val="0"/><c:order val="0"/><c:val/></c:ser></c:lineChart>`); err != nil {
+		t.Fatal(err)
+	}
+	trends := []ChartTrendline{{Type: "linear", Name: "first"}, {Type: "power", Name: "second"}, {Type: "logarithmic", Name: "third"}}
+	ser := office.Child(d.Root(), cns, "ser")
+	if err := formatSeriesExtras(ser, ChartSeriesFormat{Trendlines: &trends}); err != nil {
+		t.Fatal(err)
+	}
+	nodes := office.Children(ser, cns, "trendline")
+	for i, n := range nodes {
+		if office.Child(n, cns, "name").Text() != trends[i].Name {
+			t.Fatal("trendlines reordered")
+		}
+	}
+	if ser.ChildElements()[len(ser.ChildElements())-1].Tag != "val" {
+		t.Fatal("trendlines follow data")
 	}
 }
