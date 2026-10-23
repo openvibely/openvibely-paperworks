@@ -1004,3 +1004,11 @@ size; paragraphs accept bullet/level and `format`. Named run styles are not
 supported here. Unspecified authored text uses Arial 12pt and the helper's default
 text color; specify intended sizes/colors explicitly when matching a template.
 Render after editing to check wrapping and row height.
+
+### Arrowhead sizing (after RC4)
+
+Drawing outlines accept `head_width`, `head_length`, `tail_width`, `tail_length`
+with `sm`, `med`, or `lg`. Supply the corresponding `head`/`tail` type when sizing
+it. These work during creation and `drawing-style` edits. The outline object
+replaces the existing line style: include every line property you want retained.
+Omitted sizes use application defaults. Endpoints and attachments are unchanged.
