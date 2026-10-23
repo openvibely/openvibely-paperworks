@@ -69,7 +69,11 @@ func imagePlacement(e Element, width, height int) (Element, string, error) {
 func attachImage(pkg *opc.Package, part, prefix, format string, data []byte) (string, error) {
 	name := pkg.UnusedName(prefix, "."+format)
 	pkg.Set(name, data)
-	if err := pkg.EnsureContentType(name, "image/"+format); err != nil {
+	mime := "image/" + format
+	if format == "svg" {
+		mime = "image/svg+xml"
+	}
+	if err := pkg.EnsureContentType(name, mime); err != nil {
 		return "", err
 	}
 	target := opc.Relative(part, name)

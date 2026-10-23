@@ -2,8 +2,6 @@ package pptx
 
 import (
 	"fmt"
-	"image"
-	"os"
 	"strconv"
 	"strings"
 
@@ -263,19 +261,7 @@ func editObject(pkg *opc.Package, part string, shape *etree.Element, e Edit) err
 		if len(blips) != 1 {
 			return fmt.Errorf("shape must contain one image")
 		}
-		f, err := os.Open(e.Path)
-		if err != nil {
-			return err
-		}
-		_, format, err := image.DecodeConfig(f)
-		f.Close()
-		if err != nil {
-			return err
-		}
-		if format != "png" && format != "jpeg" {
-			return fmt.Errorf("replacement must be PNG or JPEG")
-		}
-		data, err := os.ReadFile(e.Path)
+		data, _, format, err := loadSlideImage(e.Path, e.SVG)
 		if err != nil {
 			return err
 		}
