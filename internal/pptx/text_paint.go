@@ -32,7 +32,9 @@ func paintFill(s *DrawingStyle) (*etree.Element, error) {
 	}
 	for _, c := range office.Child(d.Root(), pns, "spPr").ChildElements() {
 		if strings.HasSuffix(c.Tag, "Fill") {
-			return c.Copy(), nil
+			fill := c.Copy()
+			fill.CreateAttr("xmlns:a", ans)
+			return fill, nil
 		}
 	}
 	return nil, fmt.Errorf("text paint requires a fill")
@@ -63,6 +65,7 @@ func paintTextProperties(pr *etree.Element, s *TextPaint) error {
 			return fmt.Errorf("text outline width must be 0..100 points")
 		}
 		line := etree.NewElement("a:ln")
+		line.CreateAttr("xmlns:a", ans)
 		line.CreateAttr("w", strconv.FormatInt(int64(o.Width*12700), 10))
 		if o.Width == 0 {
 			line.CreateElement("a:noFill")
@@ -93,6 +96,7 @@ func paintTextBody(shape *etree.Element, s *TextPaint) error {
 	if body == nil {
 		return fmt.Errorf("shape has no text body")
 	}
+	body.CreateAttr("xmlns:a", ans)
 	for _, p := range office.Children(body, ans, "p") {
 		pp := office.Child(p, ans, "pPr")
 		if pp == nil {

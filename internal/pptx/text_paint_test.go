@@ -5,6 +5,7 @@ import (
 	"github.com/openvibely/openvibely-paperworks/internal/office"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -71,5 +72,49 @@ func TestNativePathGradientText(t *testing.T) {
 	g.Focus = &GradientFocus{Left: .8, Right: .8}
 	if err := Create(context.Background(), spec, dir, filepath.Join(dir, "bad.pptx")); err == nil {
 		t.Fatal("inverted gradient accepted")
+	}
+}
+
+func TestTextPaintWithAlternateDrawingPrefix(t *testing.T) {
+	dir := t.TempDir()
+	in := filepath.Join(dir, "in.pptx")
+	if err := Create(context.Background(), Spec{Slides: []Slide{{Elements: []Element{{Type: "text", Text: "Preserved", W: 4, H: 2}}}}}, dir, in); err != nil {
+		t.Fatal(err)
+	}
+	p, err := opc.Open(in)
+	if err != nil {
+		t.Fatal(err)
+	}
+	part := "ppt/slides/slide1.xml"
+	text := string(p.Get(part))
+	text = strings.ReplaceAll(text, "xmlns:a=", "xmlns:draw=")
+	text = strings.ReplaceAll(text, "<a:", "<draw:")
+	text = strings.ReplaceAll(text, "</a:", "</draw:")
+	d, err := opc.ParseXML([]byte(text))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = p.SetXML(part, d); err != nil {
+		t.Fatal(err)
+	}
+	imported := filepath.Join(dir, "imported.pptx")
+	if err = p.SaveNew(imported); err != nil {
+		t.Fatal(err)
+	}
+	out := filepath.Join(dir, "out.pptx")
+	if _, err = EditFile(context.Background(), imported, out, EditSpec{Edits: []Edit{{Slide: 1, ShapeID: "2", Operation: "text-paint", TextPaint: &TextPaint{Fill: &DrawingStyle{Fill: "FF0000"}, Outline: &TextOutline{Width: 1, Fill: &DrawingStyle{Fill: "FFFFFF"}}}}}}); err != nil {
+		t.Fatal(err)
+	}
+	p, err = opc.Open(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	d, err = p.XML(part)
+	if err != nil {
+		t.Fatal(err)
+	}
+	pr := office.Child(office.All(d.Root(), ans, "r")[0], ans, "rPr")
+	if office.Child(pr, ans, "solidFill") == nil || office.Child(pr, ans, "ln") == nil {
+		t.Fatal("unbound drawing prefixes")
 	}
 }
