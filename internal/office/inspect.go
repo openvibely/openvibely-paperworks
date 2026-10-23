@@ -141,6 +141,27 @@ func Text(e *etree.Element, ns, local string) string {
 	return b.String()
 }
 
+// spreadsheetText returns a SpreadsheetML rich string's base text in document
+// order, excluding pronunciation text nested in phonetic runs.
+func spreadsheetText(e *etree.Element) string {
+	var b strings.Builder
+	var walk func(*etree.Element)
+	walk = func(node *etree.Element) {
+		if node == nil || Is(node, NSS, "rPh") {
+			return
+		}
+		if Is(node, NSS, "t") {
+			b.WriteString(node.Text())
+			return
+		}
+		for _, child := range node.ChildElements() {
+			walk(child)
+		}
+	}
+	walk(e)
+	return b.String()
+}
+
 func attrMap(e *etree.Element) map[string]string {
 	m := map[string]string{}
 	for _, a := range e.Attr {

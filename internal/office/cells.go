@@ -21,7 +21,7 @@ func SharedStrings(p *opc.Package) ([]string, error) {
 	}
 	var out []string
 	for _, si := range Children(doc.Root(), NSS, "si") {
-		out = append(out, Text(si, NSS, "t"))
+		out = append(out, spreadsheetText(si))
 	}
 	return out, nil
 }
@@ -134,7 +134,7 @@ func (wb *Workbook) CellValueOf(c *etree.Element) (CellValue, error) {
 	switch kind {
 	case "inlineStr":
 		if is := Child(c, NSS, "is"); is != nil {
-			out.Kind, out.Text = "str", Text(is, NSS, "t")
+			out.Kind, out.Text = "str", spreadsheetText(is)
 		}
 		return out, nil
 	case "s":
