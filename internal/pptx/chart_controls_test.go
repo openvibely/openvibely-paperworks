@@ -100,3 +100,21 @@ func TestIndividualChartLabel(t *testing.T) {
 		t.Fatal("invalid label index accepted")
 	}
 }
+
+func TestChartAxisPlacement(t *testing.T) {
+	in, before := chartControlFixture(t, "line")
+	axis := office.All(before.Root(), cns, "valAx")[0]
+	id := office.Child(axis, cns, "axId").SelectAttrValue("val", "")
+	f := ChartFormat{Axes: []ChartAxisFormat{{ID: id, Position: "right", TickLabelPosition: "high"}}}
+	d := editChartControl(t, in, f)
+	axis = office.All(d.Root(), cns, "valAx")[0]
+	if office.Child(axis, cns, "axPos").SelectAttrValue("val", "") != "r" || office.Child(axis, cns, "tickLblPos").SelectAttrValue("val", "") != "high" {
+		t.Fatal("axis placement not saved")
+	}
+	for _, bad := range []ChartAxisFormat{{ID: id, Position: "bogus"}, {ID: id, TickLabelPosition: "bogus"}} {
+		f.Axes = []ChartAxisFormat{bad}
+		if _, err := EditFile(context.Background(), in, filepath.Join(t.TempDir(), "bad.pptx"), EditSpec{Edits: []Edit{{Slide: 1, ShapeID: "2", Operation: "chart-format", ChartFormat: &f}}}); err == nil {
+			t.Fatal("accepted invalid axis placement")
+		}
+	}
+}
