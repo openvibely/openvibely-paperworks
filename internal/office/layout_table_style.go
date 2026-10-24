@@ -58,6 +58,16 @@ func layoutTableFormatting(cell *etree.Element, palette layoutPalette, textDefau
 			sources := append([]*etree.Element{Child(run, NSA, "rPr")}, defaults...)
 			for _, src := range sources {
 				for k, v := range layoutAttributes(src) {
+					if Is(src, NSA, "tcTxStyle") && (k == "b" || k == "i") {
+						switch v {
+						case "def":
+							continue
+						case "on":
+							v = "1"
+						case "off":
+							v = "0"
+						}
+					}
 					if _, ok := attrs[k]; !ok {
 						attrs[k] = v
 					}

@@ -29,3 +29,24 @@ func TestTableStyleExplicitFonts(t *testing.T) {
 		})
 	}
 }
+
+func TestTableStyleDefaultToggles(t *testing.T) {
+	for _, tc := range []struct{ name, region, run, b, i string }{
+		{"inherit", `b="def" i="def"`, "", "1", "0"},
+		{"override", `b="off" i="on"`, "", "0", "1"},
+		{"direct", `b="on" i="off"`, `b="0" i="1"`, "0", "1"},
+		{"omitted", "", "", "1", "0"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			whole := paintFixture(t, `<a:wholeTbl xmlns:a="`+NSA+`"><a:tcTxStyle b="on" i="off"/></a:wholeTbl>`)
+			first := paintFixture(t, `<a:firstRow xmlns:a="`+NSA+`"><a:tcTxStyle `+tc.region+`/></a:firstRow>`)
+			cell := paintFixture(t, `<a:tc xmlns:a="`+NSA+`"><a:txBody><a:p><a:r><a:rPr `+tc.run+`/><a:t>Text</a:t></a:r></a:p></a:txBody></a:tc>`)
+			effective, defaults := layoutTableStyleCell(cell, []*etree.Element{whole, first})
+			f := layoutTableFormatting(effective, newLayoutPalette(nil, nil), defaults...)
+			props := f["paragraphs"].([]map[string]any)[0]["runs"].([]map[string]any)[0]["style"].(map[string]any)["properties"].(map[string]string)
+			if props["b"] != tc.b || props["i"] != tc.i {
+				t.Fatal(props)
+			}
+		})
+	}
+}
