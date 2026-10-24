@@ -39,7 +39,8 @@ func placeholderKey(sp *etree.Element) (string, string, bool) {
 	if ph == nil {
 		return "", "", false
 	}
-	return ph.SelectAttrValue("type", "body"), ph.SelectAttrValue("idx", "0"), true
+	// DrawingML defaults an omitted placeholder type to obj, not body.
+	return ph.SelectAttrValue("type", "obj"), ph.SelectAttrValue("idx", "0"), true
 }
 
 // inheritedXfrm finds placeholder geometry on the layout, then the master.
