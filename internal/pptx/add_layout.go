@@ -102,6 +102,7 @@ func registerStyleID(list *etree.Element, tag, rid string) error {
 		return fmt.Errorf("style IDs exhausted")
 	}
 	child := list.CreateElement("p:" + tag)
+	child.CreateAttr("xmlns:p", pns)
 	child.CreateAttr("id", strconv.FormatUint(max+1, 10))
 	child.CreateAttr("r:id", rid)
 	child.CreateAttr("xmlns:r", rns)
@@ -156,6 +157,7 @@ func addPresentationStylePart(pkg *opc.Package, main string, presentation *etree
 		list := office.Child(presentation.Root(), pns, "sldMasterIdLst")
 		if list == nil {
 			list = etree.NewElement("p:sldMasterIdLst")
+			list.CreateAttr("xmlns:p", pns)
 			presentation.Root().InsertChildAt(0, list)
 		}
 		if err = registerStyleID(list, "sldMasterId", rid); err != nil {
@@ -190,6 +192,7 @@ func addPresentationStylePart(pkg *opc.Package, main string, presentation *etree
 	list := office.Child(parent.Root(), pns, "sldLayoutIdLst")
 	if list == nil {
 		list = etree.NewElement("p:sldLayoutIdLst")
+		list.CreateAttr("xmlns:p", pns)
 		inserted := false
 		for _, c := range parent.Root().ChildElements() {
 			if c.Tag == "transition" || c.Tag == "timing" || c.Tag == "hf" || c.Tag == "txStyles" || c.Tag == "extLst" {
