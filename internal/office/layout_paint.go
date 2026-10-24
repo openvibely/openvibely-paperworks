@@ -23,14 +23,37 @@ func newLayoutPalette(theme *etree.Element, roots []*etree.Element) layoutPalett
 			}
 		}
 	}
+	masterAliases := map[string]string{}
+	for k, v := range p.aliases {
+		masterAliases[k] = v
+	}
+	for _, root := range roots {
+		if Is(root, NSP, "sldMaster") {
+			if mapping := Child(root, NSP, "clrMap"); mapping != nil {
+				for _, a := range mapping.Attr {
+					if a.Space == "" && a.Key != "xmlns" {
+						masterAliases[a.Key] = a.Value
+					}
+				}
+			}
+		}
+	}
 	for i := len(roots) - 1; i >= 0; i-- {
 		mapping := Child(roots[i], NSP, "clrMap")
 		if o := Child(roots[i], NSP, "clrMapOvr"); o != nil {
+			if Child(o, NSA, "masterClrMapping") != nil {
+				p.aliases = map[string]string{}
+				for k, v := range masterAliases {
+					p.aliases[k] = v
+				}
+			}
 			mapping = Child(o, NSA, "overrideClrMapping")
 		}
 		if mapping != nil {
 			for _, a := range mapping.Attr {
-				p.aliases[a.Key] = a.Value
+				if a.Space == "" && a.Key != "xmlns" {
+					p.aliases[a.Key] = a.Value
+				}
 			}
 		}
 	}
