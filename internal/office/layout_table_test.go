@@ -20,3 +20,20 @@ func TestLayoutTableCells(t *testing.T) {
 		t.Fatal(r)
 	}
 }
+
+func TestTableStructuredFormatting(t *testing.T) {
+	cell := paintFixture(t, `<a:tc xmlns:a="`+NSA+`"><a:txBody><a:lstStyle><a:lvl1pPr><a:defRPr sz="1800" b="1"/></a:lvl1pPr></a:lstStyle><a:p><a:pPr algn="ctr"><a:defRPr i="1"/></a:pPr><a:r><a:rPr b="0"><a:solidFill><a:srgbClr val="ABCDEF"/></a:solidFill></a:rPr><a:t>Hi</a:t></a:r><a:br/></a:p></a:txBody><a:tcPr marL="91440"><a:lnL w="12700"><a:solidFill><a:srgbClr val="123456"/></a:solidFill></a:lnL></a:tcPr></a:tc>`)
+	f := layoutTableFormatting(cell, newLayoutPalette(nil, nil))
+	p := f["paragraphs"].([]map[string]any)[0]
+	r := p["runs"].([]map[string]any)
+	props := r[0]["style"].(map[string]any)["properties"].(map[string]string)
+	if props["b"] != "0" || props["i"] != "1" || props["sz"] != "1800" || r[1]["text"] != "\n" {
+		t.Fatal(f)
+	}
+	if f["properties"].(map[string]string)["marL"] != "91440" || p["properties"].(map[string]string)["algn"] != "ctr" {
+		t.Fatal(f)
+	}
+	if f["borders"].(map[string]any)["lnL"] == nil {
+		t.Fatal(f)
+	}
+}

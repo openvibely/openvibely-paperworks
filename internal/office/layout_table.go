@@ -7,6 +7,9 @@ import (
 )
 
 func layoutTable(record map[string]any, table *etree.Element) {
+	layoutStyledTable(record, table, newLayoutPalette(nil, nil))
+}
+func layoutStyledTable(record map[string]any, table *etree.Element, palette layoutPalette) {
 	if table == nil {
 		return
 	}
@@ -24,9 +27,12 @@ func layoutTable(record map[string]any, table *etree.Element) {
 				paragraphs = append(paragraphs, paraText(p))
 			}
 			c := map[string]any{"id": id, "table_id": record["id"], "row": ri + 1, "column": ci + 1, "text": strings.Join(paragraphs, "\n"), "row_span": emuAttr(cell, "rowSpan", 1), "column_span": emuAttr(cell, "gridSpan", 1), "horizontal_merge": Truthy(AttrOr(cell, "hMerge", "0"), false), "vertical_merge": Truthy(AttrOr(cell, "vMerge", "0"), false), "properties_xml": layoutXML(Child(cell, NSA, "tcPr")), "text_xml": layoutXML(Child(cell, NSA, "txBody")), "owned_element_ids": []string{}}
+			c["formatting"] = layoutTableFormatting(cell, palette)
 			cells = append(cells, c)
 		}
 	}
+	record["table_properties"] = layoutAttributes(Child(table, NSA, "tblPr"))
+	record["table_style_id"] = Text(Child(table, NSA, "tblPr"), NSA, "tableStyleId")
 	record["cells"] = cells
 	record["column_widths"] = widths
 	record["row_heights"] = heights
