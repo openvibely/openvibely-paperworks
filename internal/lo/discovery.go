@@ -3,6 +3,7 @@ package lo
 import (
 	"context"
 	"encoding/hex"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -54,6 +55,10 @@ func findCachedOffice(cache, platform, arch string, probe func(string) bool) (st
 		return "", ErrMissing
 	}
 	for _, v := range releases {
+		paths := relative
+		if platform == "linux" {
+			paths = append(append([]string{}, relative...), fmt.Sprintf("opt/libreoffice%d.%d/program/soffice", v.version.Major(), v.version.Minor()))
+		}
 		dir := filepath.Join(root, v.name, platform, arch)
 		packages, err := os.ReadDir(dir)
 		if err != nil {
@@ -64,7 +69,7 @@ func findCachedOffice(cache, platform, arch string, probe func(string) bool) (st
 			if !pkg.IsDir() || err != nil || len(hash) != 32 {
 				continue
 			}
-			for _, rel := range relative {
+			for _, rel := range paths {
 				candidate := filepath.Join(dir, pkg.Name(), filepath.FromSlash(rel))
 				st, err := os.Stat(candidate)
 				if err != nil || !st.Mode().IsRegular() {
