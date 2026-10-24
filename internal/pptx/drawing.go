@@ -18,6 +18,7 @@ type PathCommand struct {
 type Connection struct {
 	ShapeID string `json:"shape_id"`
 	Site    int    `json:"site"`
+	Side    string `json:"side,omitempty"` // top, left, bottom, right, or auto
 }
 type Connector struct {
 	Kind  string      `json:"kind"`
@@ -91,10 +92,10 @@ func drawingElement(id int, e Element) (string, error) {
 		if c == nil {
 			return "", fmt.Errorf("connector specification required")
 		}
-		presets := map[string]string{"straight": "line", "elbow": "bentConnector3", "curved": "curvedConnector3"}
+		presets := connectorPresets
 		preset := presets[c.Kind]
 		if preset == "" {
-			return "", fmt.Errorf("connector kind must be straight, elbow or curved")
+			return "", fmt.Errorf("connector kind must be straight, elbow, elbow2, elbow3, elbow4, elbow5 or curved")
 		}
 		geom := pr.CreateElement("a:prstGeom")
 		geom.CreateAttr("prst", preset)
