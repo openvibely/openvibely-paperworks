@@ -1115,7 +1115,7 @@ Geometry reference: https://github.com/apache/poi/blob/trunk/poi/src/main/resour
 
 ### Paired slide previews and layout reports
 
-`paperworks slide-preview input.pptx --output new-preview-dir` writes matching `slide-N.png` and `slide-N.layout.json` files and returns their paths. It uses the same input snapshot for both, requires a new output directory, and publishes the directory only after every pair succeeds. LibreOffice is required. A rendered-page/slide-count mismatch fails rather than pairing the wrong objects with an image.
+`paperworks slide-preview input.pptx --output new-preview-dir` writes matching `slide-N.png` and `slide-N.layout.json` files and returns their paths. It uses the same input snapshot for both, stages output before replacing the preview directory, and publishes only after every requested pair succeeds. LibreOffice is required. A rendered-page/slide-count mismatch fails rather than pairing the wrong objects with an image.
 
 The versioned `paperworks.slide-layout/v1` report uses logical pixels at 96 pixels per inch, independent of preview resolution. `preview.width/height` give the actual PNG dimensions. Slide-owned elements include an `edit_target` (`slide`, `shape_id`) usable with `slide-edit`; convert position pixels to editing inches by dividing by 96. Inherited layout/master records are marked `editable:false` and retain their part and native IDs. They describe source layers, not additional visible objects. Their XML and all native object XML remain available for deeper inspection.
 
@@ -1151,3 +1151,9 @@ cell margins. Native properties retain OOXML units (font size in hundredths of
 a point, margins in EMUs). Table style IDs and table properties are reported
 separately. Conditional table-style regions and renderer defaults are not
 materialized into effective cell formatting.
+
+Layout paint resolves ordered tint/shade, alpha set/modulation/offset, RGB
+channel set/modulation/offset, hue/saturation/luminance set/modulation/offset,
+inverse and complementary-color transforms. Unknown transforms stay explicitly
+unresolved. Transform semantics follow Microsoft's DrawingML primer:
+https://download.microsoft.com/download/e/1/4/e14fb96f-83b8-4a2a-84db-7fa8acbe061a/Office%20Open%20XML%20Part%203%20-%20Primer.pdf
