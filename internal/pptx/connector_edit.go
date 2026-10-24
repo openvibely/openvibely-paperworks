@@ -6,6 +6,7 @@ import (
 	"github.com/openvibely/openvibely-paperworks/internal/office"
 	"math"
 	"strconv"
+	"strings"
 )
 
 var connectorPresets = map[string]string{"straight": "line", "elbow": "bentConnector3", "elbow2": "bentConnector2", "elbow3": "bentConnector3", "elbow4": "bentConnector4", "elbow5": "bentConnector5", "curved": "curvedConnector3"}
@@ -109,8 +110,19 @@ func editConnector(root, shape *etree.Element, c *Connector) error {
 			}
 			pr := office.Child(target, pns, "spPr")
 			xf := office.Child(pr, ans, "xfrm")
-			if xf != nil && (xf.SelectAttrValue("rot", "0") != "0" || xf.SelectAttrValue("flipH", "0") == "1" || xf.SelectAttrValue("flipV", "0") == "1") {
-				return fmt.Errorf("side selection on transformed shapes requires explicit site")
+			if xf != nil {
+				if xf.SelectAttrValue("rot", "0") != "0" {
+					return fmt.Errorf("side selection on transformed shapes requires explicit site")
+				}
+				for _, attr := range []string{"flipH", "flipV"} {
+					switch strings.TrimSpace(xf.SelectAttrValue(attr, "0")) {
+					case "1", "true":
+						return fmt.Errorf("side selection on transformed shapes requires explicit site")
+					case "0", "false":
+					default:
+						return fmt.Errorf("invalid %s boolean on connector endpoint", attr)
+					}
+				}
 			}
 			geom := office.Child(pr, ans, "prstGeom")
 			if geom == nil {
