@@ -739,6 +739,14 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 				return err
 			}
 		}
+		for j, e := range slide.Elements {
+			if e.Connector != nil {
+				if err := editConnector(d.Root(), shapes[j], e.Connector); err != nil {
+					return err
+				}
+				changed = true
+			}
+		}
 		if changed {
 			if err := b.p.SetXML(name, d); err != nil {
 				return err

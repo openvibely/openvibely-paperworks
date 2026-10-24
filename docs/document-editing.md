@@ -1019,3 +1019,24 @@ Drawing outlines accept `cap` (`flat`, `round`, `square`) and `join` (`round`,
 `bevel`, `miter`) in creation and `drawing-style` edits. Omitted values use viewer
 defaults. The outline replaces existing line formatting; include the desired
 color, width, dash and arrowhead settings. These settings do not reroute connectors.
+
+## Connector endpoints
+
+Connector creation accepts `straight`, `elbow` (alias of `elbow3`), `elbow2`,
+`elbow3`, `elbow4`, `elbow5`, and `curved`. Endpoint objects use `shape_id`
+and either an explicit `site` index or `side:top/left/bottom/right/auto`.
+Side selection supports unrotated, unflipped rectangles, rounded rectangles and
+diamonds. Other geometry needs an inspected explicit connection-site index.
+`auto` chooses the side facing the other endpoint's center. It does not route
+around obstacles or change the connector's supplied geometry.
+
+To change an existing connector without replacing it:
+```json
+{"edits":[{"operation":"connector","slide":1,"shape_id":"4","connector":{
+ "kind":"elbow4","start":{"shape_id":"2","side":"auto"},
+ "end":{"shape_id":"3","side":"auto"}
+}}]}
+```
+Omitted endpoints retain their attachments; omitted kind retains its geometry.
+Use `geometry` separately to update its bounds. Verify the saved attachments
+and render the result. These additions require a build newer than RC5.

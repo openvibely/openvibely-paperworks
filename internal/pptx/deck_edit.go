@@ -308,29 +308,8 @@ func DeckEditFile(ctx context.Context, input, output, base string, spec DeckEdit
 					}
 					rewriteRelIDs(copy, remap)
 					if e.Element != nil && e.Element.Connector != nil {
-						properties := office.All(copy, pns, "cNvCxnSpPr")
-						if len(properties) != 1 {
-							return fmt.Errorf("connector properties missing")
-						}
-						for _, end := range []struct {
-							tag string
-							c   *Connection
-						}{{"stCxn", e.Element.Connector.Start}, {"endCxn", e.Element.Connector.End}} {
-							if end.c == nil {
-								continue
-							}
-							found := false
-							for _, prop := range office.All(destTree, pns, "cNvPr") {
-								if prop.SelectAttrValue("id", "") == end.c.ShapeID {
-									found = true
-								}
-							}
-							if !found || end.c.Site < 0 || end.c.Site > 255 {
-								return fmt.Errorf("invalid connector endpoint")
-							}
-							ref := properties[0].CreateElement("a:" + end.tag)
-							ref.CreateAttr("id", end.c.ShapeID)
-							ref.CreateAttr("idx", strconv.Itoa(end.c.Site))
+						if err := editConnector(dest.Root(), copy, e.Element.Connector); err != nil {
+							return err
 						}
 					}
 				}

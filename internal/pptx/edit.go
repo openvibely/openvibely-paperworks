@@ -17,6 +17,7 @@ type EditSpec struct {
 	Edits       []Edit                    `json:"edits"`
 }
 type Edit struct {
+	Connector       *Connector      `json:"connector,omitempty"`
 	LockAspectRatio *bool           `json:"lock_aspect_ratio,omitempty"`
 	ShapeGeometry   *ShapeGeometry  `json:"shape_geometry,omitempty"`
 	CornerRadius    *float64        `json:"corner_radius_points,omitempty"`
@@ -226,6 +227,10 @@ func EditFile(ctx context.Context, input, output string, spec EditSpec) ([]strin
 		}
 		shape := matches[0].Parent().Parent()
 		switch op.Operation {
+		case "connector":
+			if err := editConnector(d.Root(), shape, op.Connector); err != nil {
+				return nil, err
+			}
 		case "image-lock":
 			if err := setPictureLock(shape, op.LockAspectRatio); err != nil {
 				return nil, err
