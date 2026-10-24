@@ -33,3 +33,23 @@ func TestLayoutInheritedPaint(t *testing.T) {
 		t.Fatal("unsupported effect claimed resolved")
 	}
 }
+
+func TestLayoutMasterMappingReset(t *testing.T) {
+	theme := paintFixture(t, `<a:theme xmlns:a="`+NSA+`"><a:themeElements><a:clrScheme><a:accent1><a:srgbClr val="112233"/></a:accent1><a:accent2><a:srgbClr val="445566"/></a:accent2></a:clrScheme></a:themeElements></a:theme>`)
+	master := paintFixture(t, `<p:sldMaster xmlns:p="`+NSP+`"><p:clrMap bg1="accent1"/></p:sldMaster>`)
+	layout := paintFixture(t, `<p:sldLayout xmlns:p="`+NSP+`" xmlns:a="`+NSA+`"><p:clrMapOvr><a:overrideClrMapping bg1="accent2"/></p:clrMapOvr></p:sldLayout>`)
+	fill := paintFixture(t, `<a:solidFill xmlns:a="`+NSA+`"><a:schemeClr val="bg1"/></a:solidFill>`)
+	for _, tc := range []struct{ name, override, want string }{
+		{"inherit", "", "#445566"},
+		{"master", "<a:masterClrMapping/>", "#112233"},
+		{"explicit", "<a:overrideClrMapping bg1=\"accent1\"/>", "#112233"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			slide := paintFixture(t, `<p:sld xmlns:p="`+NSP+`" xmlns:a="`+NSA+`"><p:clrMapOvr>`+tc.override+`</p:clrMapOvr></p:sld>`)
+			c := newLayoutPalette(theme, []*etree.Element{slide, layout, master}).color(fill)
+			if c["resolved"] != true || c["rgb"] != tc.want {
+				t.Fatal(c)
+			}
+		})
+	}
+}
