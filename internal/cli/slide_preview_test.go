@@ -3,6 +3,7 @@ package cli
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/openvibely/openvibely-paperworks/internal/office"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 	"github.com/openvibely/openvibely-paperworks/internal/pptx"
@@ -152,5 +153,53 @@ func TestSlideLayoutInheritedGeometryAndStyle(t *testing.T) {
 		if runs[0]["style"].(map[string]any)["font_size_px"] != float64(40) {
 			t.Fatal(runs)
 		}
+	}
+}
+
+func TestSelectedSlidePreviewUpdate(t *testing.T) {
+	dir := t.TempDir()
+	out := filepath.Join(dir, "out")
+	if err := os.Mkdir(out, 0755); err != nil {
+		t.Fatal(err)
+	}
+	for name, data := range map[string]string{"slide-1.png": "old1", "slide-1.layout.json": "oldmeta", "slide-3.png": "stale", "notes.txt": "keep"} {
+		if err := os.WriteFile(filepath.Join(out, name), []byte(data), 0644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	publish := func(selection map[int]bool) {
+		t.Helper()
+		stage, err := os.MkdirTemp(dir, "stage")
+		if err != nil {
+			t.Fatal(err)
+		}
+		var pages []string
+		for i := 0; i < 2; i++ {
+			p := filepath.Join(stage, fmt.Sprintf("%d.png", i))
+			if err := writePreview(p, image.NewRGBA(image.Rect(0, 0, 2, 2)), "png"); err != nil {
+				t.Fatal(err)
+			}
+			pages = append(pages, p)
+		}
+		if _, err := publishSelectedSlidePreview(context.Background(), stage, out, pages, []map[string]any{{"slide": 1}, {"slide": 2}}, selection); err != nil {
+			t.Fatal(err)
+		}
+	}
+	publish(map[int]bool{2: true})
+	if b, err := os.ReadFile(filepath.Join(out, "slide-1.png")); err != nil || string(b) != "old1" {
+		t.Fatal("unselected changed")
+	}
+	if _, err := os.Stat(filepath.Join(out, "slide-2.layout.json")); err != nil {
+		t.Fatal(err)
+	}
+	publish(nil)
+	if _, err := os.Stat(filepath.Join(out, "slide-3.png")); !os.IsNotExist(err) {
+		t.Fatal("stale preview retained")
+	}
+	if b, err := os.ReadFile(filepath.Join(out, "notes.txt")); err != nil || string(b) != "keep" {
+		t.Fatal("unrelated file changed")
+	}
+	if _, err := previewSelection("0,3", 2); err == nil {
+		t.Fatal("invalid selection accepted")
 	}
 }
