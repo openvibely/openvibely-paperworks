@@ -82,6 +82,10 @@ func DeckEditFile(ctx context.Context, input, output, base string, spec DeckEdit
 			if err := addPresentationStylePart(pkg, main, d, base, e); err != nil {
 				return err
 			}
+		case "populate-placeholders":
+			if err := populatePlaceholders(ctx, pkg, slides[e.Slide-1]); err != nil {
+				return err
+			}
 		case "set-layout":
 			if pkg.ContentType(e.Part) != "application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml" {
 				return fmt.Errorf("part must identify an existing slide layout")
