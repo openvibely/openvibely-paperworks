@@ -1108,3 +1108,7 @@ operations. Ellipse cardinal connection-site indices are 0, 2, 4 and 6, unlike
 the rectangle's 0, 1, 2 and 3. Explicit sites remain unchanged. Auto chooses
 the side facing the peer's center; connector placement/routing is unchanged.
 Geometry reference: https://github.com/apache/poi/blob/trunk/poi/src/main/resources/org/apache/poi/sl/draw/geom/presetShapeDefinitions.xml
+
+### Reassign an existing slide layout to another master
+
+`deck-edit` accepts `{"edits":[{"operation":"set-layout-master","part":"ppt/slideLayouts/slideLayout1.xml","parent_part":"ppt/slideMasters/brand.xml"}]}`. Both parts must already exist. This updates the layout's master relationship and both masters' layout registrations, preserving layout XML and slide assignments. Repeating the assignment is a no-op. Inspect all slides sharing this layout and render them: inherited theme, fonts and background can change. Ambiguous or broken registrations fail without saving.
