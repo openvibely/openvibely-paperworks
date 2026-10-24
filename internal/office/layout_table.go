@@ -27,7 +27,13 @@ func layoutStyledTable(record map[string]any, table *etree.Element, palette layo
 				paragraphs = append(paragraphs, paraText(p))
 			}
 			c := map[string]any{"id": id, "table_id": record["id"], "row": ri + 1, "column": ci + 1, "text": strings.Join(paragraphs, "\n"), "row_span": emuAttr(cell, "rowSpan", 1), "column_span": emuAttr(cell, "gridSpan", 1), "horizontal_merge": Truthy(AttrOr(cell, "hMerge", "0"), false), "vertical_merge": Truthy(AttrOr(cell, "vMerge", "0"), false), "properties_xml": layoutXML(Child(cell, NSA, "tcPr")), "text_xml": layoutXML(Child(cell, NSA, "txBody")), "owned_element_ids": []string{}}
-			c["formatting"] = layoutTableFormatting(cell, palette)
+			regions, styleID, found := layoutTableRegions(table, palette.tableStyles, ri, ci, len(Children(table, NSA, "tr")), len(widths))
+			effective, defaults := layoutTableStyleCell(cell, regions)
+			formatting := layoutTableFormatting(effective, palette, defaults...)
+			formatting["table_style_id"] = styleID
+			formatting["table_style_found"] = found
+			formatting["style_scope"] = "explicit cell, local text defaults, and embedded table-style regions; renderer defaults excluded"
+			c["formatting"] = formatting
 			cells = append(cells, c)
 		}
 	}

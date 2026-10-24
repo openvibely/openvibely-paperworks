@@ -74,6 +74,13 @@ func PresentationLayouts(p *opc.Package) ([]map[string]any, error) {
 			}
 		}
 		palette := newLayoutPalette(themeRoot, roots)
+		if part := relOfType(p, main, "tableStyles"); part != "" {
+			styles, err := p.XML(part)
+			if err != nil {
+				return nil, err
+			}
+			palette.tableStyles = styles.Root()
+		}
 		var elements []map[string]any
 		var layers []map[string]any
 		for j, root := range roots {
