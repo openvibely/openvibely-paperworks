@@ -74,12 +74,16 @@ func DeckEditFile(ctx context.Context, input, output, base string, spec DeckEdit
 			return err
 		}
 		ids := office.Children(list, pns, "sldId")
-		if e.Operation != "add-slide" && e.Operation != "replace-theme" && e.Operation != "add-master" && e.Operation != "add-layout" && (e.Slide < 1 || e.Slide > len(slides)) {
+		if e.Operation != "add-slide" && e.Operation != "replace-theme" && e.Operation != "add-master" && e.Operation != "add-layout" && e.Operation != "set-layout-master" && (e.Slide < 1 || e.Slide > len(slides)) {
 			return fmt.Errorf("edit %d: slide out of range", i)
 		}
 		switch e.Operation {
 		case "add-master", "add-layout":
 			if err := addPresentationStylePart(pkg, main, d, base, e); err != nil {
+				return err
+			}
+		case "set-layout-master":
+			if err := setLayoutMaster(pkg, e.Part, e.ParentPart); err != nil {
 				return err
 			}
 		case "populate-placeholders":
