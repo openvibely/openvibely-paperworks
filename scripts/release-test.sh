@@ -19,7 +19,7 @@ done
 BUILD
 cat > "$tmp/bin/uname" <<'MOCK'
 #!/bin/sh
-echo Darwin
+case "${1:-}" in -m) echo test-host ;; *) echo Darwin ;; esac
 MOCK
 cat > "$tmp/bin/git" <<'MOCK'
 #!/bin/sh
@@ -28,6 +28,10 @@ case "$1" in
   rev-parse) echo aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ;;
   *) exit 1 ;;
 esac
+MOCK
+cat > "$tmp/bin/codesign" <<'MOCK'
+#!/usr/bin/env bash
+if [[ "$1" == --verify ]]; then grep -q signed "${@: -1}"; else echo signed >> "${@: -1}"; fi
 MOCK
 cat > "$tmp/bin/xcrun" <<'MOCK'
 #!/bin/sh

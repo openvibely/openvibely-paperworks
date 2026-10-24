@@ -25,7 +25,7 @@ set +a
 : "${OPENVIBELY_MACOS_SIGN_IDENTITY:?Missing Developer ID identity}"
 : "${OPENVIBELY_MACOS_NOTARY_PROFILE:?Missing notary profile}"
 export SKIP_WAILS_DOCKER_SETUP=1
-for helper in sign-macos.sh sign-windows.sh verify-windows.sh; do
+for helper in sign-windows.sh verify-windows.sh; do
   [[ -x "$helpers/$helper" ]] || { echo "Missing helper: $helpers/$helper" >&2; exit 1; }
 done
 PAPERWORKS_VERSION="$version" bash scripts/build.sh
@@ -37,7 +37,16 @@ for os in darwin linux windows; do
     [[ "$os" != windows ]] || name="$name.exe"
     binary="$PWD/dist/$name"
     case "$os" in
-      darwin) bash "$helpers/sign-macos.sh" "$binary" ;;
+      darwin)
+        codesign --force --options runtime --timestamp --sign "$OPENVIBELY_MACOS_SIGN_IDENTITY" --entitlements scripts/macos-entitlements.plist "$binary"
+        codesign --verify --strict --verbose=2 "$binary"
+        # Exercise executable WASM memory, not just the version flag, before notarizing.
+        native_arch="$(uname -m)"
+        [[ "$native_arch" != x86_64 ]] || native_arch=amd64
+        if [[ "$arch" == "$native_arch" ]]; then
+          "$binary" pdf-fonts testdata/regression/pdf-radial-bounded-baseline/source.pdf > "$out/signed-pdf-smoke.json"
+        fi
+        ;;
       windows) bash "$helpers/sign-windows.sh" "$binary"; bash "$helpers/verify-windows.sh" "$binary" ;;
     esac
     # Keep the established archive names and root executable paths used by OV skills.
