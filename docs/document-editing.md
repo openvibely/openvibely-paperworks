@@ -1099,3 +1099,12 @@ placeholder type and index on supported authored element types where applicable.
 New text/shape/image/chart/table elements accept `placeholder` and `placeholder_index`.
 Render and check every affected slide. This operation does not infer missing
 layout definitions from master furniture or resize existing slide content.
+
+### Ellipse connector sides
+
+Builds after RC5 also accept `top`, `left`, `bottom`, `right` and `auto` on
+unrotated, unflipped ellipse endpoints in creation and `slide-edit` connector
+operations. Ellipse cardinal connection-site indices are 0, 2, 4 and 6, unlike
+the rectangle's 0, 1, 2 and 3. Explicit sites remain unchanged. Auto chooses
+the side facing the peer's center; connector placement/routing is unchanged.
+Geometry reference: https://github.com/apache/poi/blob/trunk/poi/src/main/resources/org/apache/poi/sl/draw/geom/presetShapeDefinitions.xml
