@@ -7,9 +7,10 @@ import (
 
 // Resolve supported paint explicitly; never label unsupported transforms as RGB.
 type layoutPalette struct {
-	colors  map[string]string
-	aliases map[string]string
-	theme   *etree.Element
+	colors      map[string]string
+	aliases     map[string]string
+	theme       *etree.Element
+	tableStyles *etree.Element
 }
 
 func newLayoutPalette(theme *etree.Element, roots []*etree.Element) layoutPalette {

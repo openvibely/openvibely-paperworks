@@ -17,7 +17,7 @@ func layoutAttributes(e *etree.Element) map[string]string {
 	}
 	return out
 }
-func layoutTableFormatting(cell *etree.Element, palette layoutPalette) map[string]any {
+func layoutTableFormatting(cell *etree.Element, palette layoutPalette, textDefaults ...*etree.Element) map[string]any {
 	body := Child(cell, NSA, "txBody")
 	pr := Child(cell, NSA, "tcPr")
 	result := map[string]any{"properties": layoutAttributes(pr), "body_properties": layoutAttributes(Child(body, NSA, "bodyPr"))}
@@ -47,6 +47,7 @@ func layoutTableFormatting(cell *etree.Element, palette layoutPalette) map[strin
 		level := int(emuAttr(pp, "lvl", 0))
 		list := Child(body, NSA, "lstStyle")
 		defaults := []*etree.Element{Child(pp, NSA, "defRPr"), Child(Child(list, NSA, fmt.Sprintf("lvl%dpPr", level+1)), NSA, "defRPr"), Child(Child(list, NSA, "defPPr"), NSA, "defRPr")}
+		defaults = append(defaults, textDefaults...)
 		var runs []map[string]any
 		for _, run := range par.ChildElements() {
 			if !Is(run, NSA, "r") && !Is(run, NSA, "fld") && !Is(run, NSA, "br") {

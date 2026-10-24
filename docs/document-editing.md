@@ -1169,3 +1169,9 @@ Grouped layout records expose transformed slide-space `position` bounds and
 space. Nested group scaling, offsets, flips and rotations are composed.
 Do not use the slide-space bounding box as the local edit rectangle.
 Incomplete or zero-sized ancestor transforms remain explicitly unresolved.
+
+Embedded table styles now contribute whole-table, row/column banding, first/last
+row/column and corner-region fills, text defaults and explicit outer/diagonal
+borders. Direct cell/run formatting wins. The report identifies the style ID
+and whether its definition was found. Application-provided styles absent from
+the package, style references and renderer defaults are not synthesized.
