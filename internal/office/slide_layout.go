@@ -59,18 +59,21 @@ func PresentationLayouts(p *opc.Package) ([]map[string]any, error) {
 			roots = append(roots, d.Root())
 		}
 		themeFonts := map[string]string{}
+		var themeRoot *etree.Element
 		if len(owners) == 3 {
 			if tp := relOfType(p, owners[2], "theme"); tp != "" {
 				td, e := p.XML(tp)
 				if e != nil {
 					return nil, e
 				}
+				themeRoot = td.Root()
 				fs := Child(Child(td.Root(), NSA, "themeElements"), NSA, "fontScheme")
 				for _, f := range []struct{ tag, token string }{{"majorFont", "+mj-lt"}, {"minorFont", "+mn-lt"}} {
 					themeFonts[f.token] = AttrOr(Child(Child(fs, NSA, f.tag), NSA, "latin"), "typeface", "")
 				}
 			}
 		}
+		palette := newLayoutPalette(themeRoot, roots)
 		var elements []map[string]any
 		var layers []map[string]any
 		for j, root := range roots {
@@ -196,6 +199,7 @@ func PresentationLayouts(p *opc.Package) ([]map[string]any, error) {
 									for _, tag := range []string{"solidFill", "gradFill", "noFill"} {
 										if fill := Child(d, NSA, tag); fill != nil {
 											style["fill_xml"] = xmlString(fill)
+											style["fill"] = palette.fill(fill)
 											break
 										}
 									}
@@ -214,6 +218,7 @@ func PresentationLayouts(p *opc.Package) ([]map[string]any, error) {
 						}
 						paras = append(paras, map[string]any{"text": paraText(par), "runs": runs, "paragraph_xml": layoutXML(pp)})
 					}
+					record["fill"] = palette.shapeFill(chain)
 					record["text"] = strings.Join(text, "\n")
 					record["paragraphs"] = paras
 					for _, candidate := range chain {

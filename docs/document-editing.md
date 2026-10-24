@@ -1131,3 +1131,10 @@ Each cell has a stable ID, `table_id`, one-based row/column, text, spans and
 merge flags. Text and cell-property XML retain detailed native formatting.
 `owned_element_ids` is empty because DrawingML table-cell text is inline,
 not a separate shape. These IDs are report references, not CLI shape IDs.
+
+Layout `fill` records resolve placeholder inheritance and theme fill-style
+references, theme colors and color-map overrides. Solid colors expose RGB and
+alpha; gradients expose stops; patterns expose foreground/background colors.
+Run styles also expose structured fills. Unsupported color transforms remain
+`resolved:false` with native XML, rather than reporting an incorrect color.
+This is native fill inspection, not full rendering of inherited effects.
