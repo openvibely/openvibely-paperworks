@@ -1157,3 +1157,9 @@ channel set/modulation/offset, hue/saturation/luminance set/modulation/offset,
 inverse and complementary-color transforms. Unknown transforms stay explicitly
 unresolved. Transform semantics follow Microsoft's DrawingML primer:
 https://download.microsoft.com/download/e/1/4/e14fb96f-83b8-4a2a-84db-7fa8acbe061a/Office%20Open%20XML%20Part%203%20-%20Primer.pdf
+
+Publication to an existing preview directory is coordinated across CLI processes.
+A simultaneous publisher receives a lock error and can retry after the active
+publisher finishes. The lock covers reading the existing files through replacing
+the directory. If a process is forcibly terminated, remove the lock directory
+named in the error only after confirming no publisher is running.
