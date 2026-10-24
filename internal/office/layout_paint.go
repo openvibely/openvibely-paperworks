@@ -2,7 +2,6 @@ package office
 
 import (
 	"github.com/beevik/etree"
-	"strconv"
 	"strings"
 )
 
@@ -84,19 +83,12 @@ func (p layoutPalette) color(parent *etree.Element) map[string]any {
 		if !hex6.MatchString(v) {
 			return result
 		}
-		alpha := 1.0
-		for _, tr := range c.ChildElements() {
-			if !Is(tr, NSA, "alpha") {
-				return result
-			}
-			n, e := strconv.ParseFloat(AttrOr(tr, "val", ""), 64)
-			if e != nil {
-				return result
-			}
-			alpha = n / 100000
+		rgb, alpha, ok := layoutTransformColor(v, c.ChildElements())
+		if !ok {
+			return result
 		}
 		result["resolved"] = true
-		result["rgb"] = "#" + strings.ToUpper(v)
+		result["rgb"] = rgb
 		result["alpha"] = alpha
 		return result
 	}

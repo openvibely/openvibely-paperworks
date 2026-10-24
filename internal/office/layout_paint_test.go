@@ -28,7 +28,7 @@ func TestLayoutInheritedPaint(t *testing.T) {
 	if p.shapeFill([]*etree.Element{direct, sh})["kind"] != "noFill" {
 		t.Fatal("local fill must win")
 	}
-	unsupported := paintFixture(t, `<a:solidFill xmlns:a="`+NSA+`"><a:srgbClr val="123456"><a:hueOff val="100"/></a:srgbClr></a:solidFill>`)
+	unsupported := paintFixture(t, `<a:solidFill xmlns:a="`+NSA+`"><a:srgbClr val="123456"><a:unknownTransform val="100"/></a:srgbClr></a:solidFill>`)
 	if p.fill(unsupported)["color"].(map[string]any)["resolved"] != false {
 		t.Fatal("unsupported effect claimed resolved")
 	}
