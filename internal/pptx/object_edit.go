@@ -338,6 +338,14 @@ func styleRunProperties(pkg *opc.Package, part string, pr *etree.Element, e Edit
 		}
 		pr.CreateAttr("u", v)
 	}
+	if e.Link != nil {
+		if e.Hyperlink != nil {
+			return fmt.Errorf("link and hyperlink are mutually exclusive")
+		}
+		if err := setTextLink(pkg, part, pr, e.Link); err != nil {
+			return err
+		}
+	}
 	if e.Hyperlink != nil {
 		if err := setHyperlink(pkg, part, pr, *e.Hyperlink); err != nil {
 			return err

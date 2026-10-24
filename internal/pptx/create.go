@@ -51,6 +51,7 @@ type Slide struct {
 	Elements        []Element     `json:"elements"`
 }
 type Run struct {
+	Link           *TextLink  `json:"link,omitempty"`
 	TextPaint      *TextPaint `json:"text_paint,omitempty"`
 	Hyperlink      string     `json:"hyperlink,omitempty"`
 	UnderlineStyle string     `json:"underline_style,omitempty"`
@@ -633,7 +634,7 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 			}
 			for _, para := range e.Paragraphs {
 				for _, run := range para.Runs {
-					if run.Hyperlink != "" || run.TextPaint != nil {
+					if run.Hyperlink != "" || run.Link != nil || run.TextPaint != nil {
 						changed = true
 					}
 				}

@@ -17,6 +17,7 @@ type EditSpec struct {
 	Edits       []Edit                    `json:"edits"`
 }
 type Edit struct {
+	Link            *TextLink       `json:"link,omitempty"`
 	Connector       *Connector      `json:"connector,omitempty"`
 	LockAspectRatio *bool           `json:"lock_aspect_ratio,omitempty"`
 	ShapeGeometry   *ShapeGeometry  `json:"shape_geometry,omitempty"`
