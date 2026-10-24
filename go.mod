@@ -7,6 +7,7 @@ replace github.com/luo-studio/go-tex => github.com/dubee/go-tex v0.0.0-202610162
 replace codeberg.org/go-pdf/fpdf => github.com/luo-studio/fpdf v0.0.0-20260331214128-5b17f92a99a5
 
 require (
+	github.com/Masterminds/semver/v3 v3.4.0
 	github.com/HugoSmits86/nativewebp v1.3.0
 	github.com/beevik/etree v1.8.1
 	github.com/klippa-app/go-pdfium v1.21.4
