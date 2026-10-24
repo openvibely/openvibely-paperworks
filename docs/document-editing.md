@@ -1138,3 +1138,9 @@ alpha; gradients expose stops; patterns expose foreground/background colors.
 Run styles also expose structured fills. Unsupported color transforms remain
 `resolved:false` with native XML, rather than reporting an incorrect color.
 This is native fill inspection, not full rendering of inherited effects.
+
+Slide preview updates: `slide-preview deck.pptx --output previews --slides 1,3`
+updates only the selected one-based slide pairs, retaining other files. Without
+`--slides`, the complete preview set is replaced (obsolete slide pairs removed).
+Existing output directories must contain only regular files. Rendering still
+uses the complete source deck to preserve layout; selection controls publication.
