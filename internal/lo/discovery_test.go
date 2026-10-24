@@ -86,3 +86,14 @@ func TestCachedOfficeProbeAndOverride(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestCachedOfficePreservedDEBLayout(t *testing.T) {
+	for _, arch := range []string{"amd64", "arm64"} {
+		root := t.TempDir()
+		want := cachedFixture(t, root, "26.8.1", "linux", arch, strings.Repeat("b", 64), "opt/libreoffice26.8/program/soffice")
+		got, err := findCachedOffice(root, "linux", arch, func(string) bool { return true })
+		if err != nil || got != want {
+			t.Fatalf("%s %v", got, err)
+		}
+	}
+}
