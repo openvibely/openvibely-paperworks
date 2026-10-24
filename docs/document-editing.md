@@ -1057,3 +1057,28 @@ An empty `link:{}` clears the link. Navigation without a target accepts
 `previousslide`, `firstslide`, `lastslide`, `endshow`, and `lastslideviewed`.
 Programs/macros and other action schemes are rejected. Inspect relationships;
 verify interactive behavior in PowerPoint, since rendered images cannot test links.
+
+## Add masters and layouts to an existing deck
+
+Builds after RC5 support these `deck-edit` operations:
+```json
+{"edits":[
+ {"operation":"add-master","part":"ppt/slideMasters/brand.xml","name":"Brand"},
+ {"operation":"add-layout","part":"ppt/slideLayouts/brand-title.xml","parent_part":"ppt/slideMasters/brand.xml","name":"Brand title",
+  "placeholders":[{"type":"title","index":0,"x":1,"y":0.5,"w":10,"h":1}]},
+ {"operation":"set-layout","slide":1,"part":"ppt/slideLayouts/brand-title.xml"}
+]}
+```
+New part paths must not already exist. `add-master` registers a new master and
+blank layout; `theme_part` selects an existing theme (default: first theme by
+part name). `add-layout` registers a layout under its existing `parent_part`.
+Neither operation moves existing slide content. `set-layout` changes inheritance,
+so render every affected slide and inspect placeholders and fonts.
+
+Optional `path` loads a self-contained master/layout XML resource, as in creation
+style resources, instead of generated placeholders. It cannot be combined with
+`placeholders`; relationship-dependent assets are rejected. The master resource's
+layout list is replaced by the registered blank layout. Its color map, background
+and shape content are retained. Generated placeholders use inch coordinates and
+unique nonnegative `index` values, with type `title`, `ctrTitle`, `subTitle`,
+`body`, `obj`, `pic`, `chart`, `tbl`, `dt`, `ftr`, or `sldNum`.
