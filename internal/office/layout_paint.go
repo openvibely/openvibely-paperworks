@@ -150,32 +150,17 @@ func (p layoutPalette) shapeFill(chain []*etree.Element) map[string]any {
 		if list == nil || idx < 1 || idx > len(list.ChildElements()) {
 			return map[string]any{"resolved": false, "reference_xml": xmlString(ref)}
 		}
-		source := list.ChildElements()[idx-1]
-		f := source.Copy()
-		// Copies lose ancestor namespace declarations. Preserve the in-scope
-		// bindings before namespace-aware traversal and serialization.
-		seen := map[string]bool{}
-		for ancestor := source; ancestor != nil; ancestor = ancestor.Parent() {
-			for _, a := range ancestor.Attr {
-				if a.Space == "xmlns" || (a.Space == "" && a.Key == "xmlns") {
-					key := a.FullKey()
-					if !seen[key] {
-						f.CreateAttr(key, a.Value)
-						seen[key] = true
-					}
-				}
-			}
-		}
+		f := copyLayoutPaintElement(list.ChildElements()[idx-1])
 		// phClr inherits the color (and its transforms) from the style reference.
 		for _, ph := range All(f, NSA, "schemeClr") {
 			if AttrOr(ph, "val", "") != "phClr" {
 				continue
 			}
 			for _, c := range ref.ChildElements() {
-				if strings.HasSuffix(c.Tag, "Clr") {
-					replacement := c.Copy()
+				if c.NamespaceURI() == NSA && strings.HasSuffix(c.Tag, "Clr") {
+					replacement := copyLayoutPaintElement(c)
 					for _, tr := range ph.ChildElements() {
-						replacement.AddChild(tr.Copy())
+						replacement.AddChild(copyLayoutPaintElement(tr))
 					}
 					par := ph.Parent()
 					at := ph.Index()
@@ -188,4 +173,24 @@ func (p layoutPalette) shapeFill(chain []*etree.Element) map[string]any {
 		return p.fill(f)
 	}
 	return nil
+}
+
+// copyLayoutPaintElement preserves namespace bindings when moving XML between
+// parts. Bindings belong on each copied subtree so conflicting prefixes in the
+// destination cannot change the meaning of its color or transform elements.
+func copyLayoutPaintElement(source *etree.Element) *etree.Element {
+	copy := source.Copy()
+	seen := map[string]bool{}
+	for ancestor := source; ancestor != nil; ancestor = ancestor.Parent() {
+		for _, a := range ancestor.Attr {
+			if a.Space == "xmlns" || (a.Space == "" && a.Key == "xmlns") {
+				key := a.FullKey()
+				if !seen[key] {
+					copy.CreateAttr(key, a.Value)
+					seen[key] = true
+				}
+			}
+		}
+	}
+	return copy
 }
