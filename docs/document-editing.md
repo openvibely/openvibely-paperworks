@@ -1112,3 +1112,11 @@ Geometry reference: https://github.com/apache/poi/blob/trunk/poi/src/main/resour
 ### Reassign an existing slide layout to another master
 
 `deck-edit` accepts `{"edits":[{"operation":"set-layout-master","part":"ppt/slideLayouts/slideLayout1.xml","parent_part":"ppt/slideMasters/brand.xml"}]}`. Both parts must already exist. This updates the layout's master relationship and both masters' layout registrations, preserving layout XML and slide assignments. Repeating the assignment is a no-op. Inspect all slides sharing this layout and render them: inherited theme, fonts and background can change. Ambiguous or broken registrations fail without saving.
+
+### Paired slide previews and layout reports
+
+`paperworks slide-preview input.pptx --output new-preview-dir` writes matching `slide-N.png` and `slide-N.layout.json` files and returns their paths. It uses the same input snapshot for both, requires a new output directory, and publishes the directory only after every pair succeeds. LibreOffice is required. A rendered-page/slide-count mismatch fails rather than pairing the wrong objects with an image.
+
+The versioned `paperworks.slide-layout/v1` report uses logical pixels at 96 pixels per inch, independent of preview resolution. `preview.width/height` give the actual PNG dimensions. Slide-owned elements include an `edit_target` (`slide`, `shape_id`) usable with `slide-edit`; convert position pixels to editing inches by dividing by 96. Inherited layout/master records are marked `editable:false` and retain their part and native IDs. They describe source layers, not additional visible objects. Their XML and all native object XML remain available for deeper inspection.
+
+Position resolves local or placeholder-inherited geometry. Text runs include cascading run/paragraph/list/master/presentation font properties and Latin theme-font resolution. Paint, image cropping and table content remain in namespace-complete native XML. Group-transformed positions are explicitly unresolved. This is native object metadata, not raster-measured glyph bounds: it does not certify renderer font substitution, resolve every theme paint effect, or establish visibility of every inherited placeholder. Always inspect the paired PNGs. Unknown properties are not evidence of a zero/default value. This command is available in builds after RC5.
