@@ -59,3 +59,32 @@ func TestListFontsEmbeddedAndEmpty(t *testing.T) {
 		t.Fatal("accepted invalid PDF")
 	}
 }
+
+func TestListFontsKeepsUnnamedUsesSeparate(t *testing.T) {
+	data := rawPDF([]string{
+		"<< /Type /Catalog /Pages 2 0 R >>",
+		"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+		"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 300] /Resources << /Font << /F 5 0 R /G 7 0 R >> >> /Contents 4 0 R >>",
+		stream("", "BT /F 20 Tf 20 20 Td (A) Tj /G 20 Tf 40 0 Td (A) Tj /F 20 Tf 40 0 Td (A) Tj ET"),
+		"<< /Type /Font /Subtype /Type3 /FontBBox [0 0 600 700] /FontMatrix [.001 0 0 .001 0 0] /CharProcs << /A 6 0 R >> /Encoding << /Type /Encoding /Differences [65 /A] >> /FirstChar 65 /LastChar 65 /Widths [600] /Resources << >> >>",
+		stream("", "600 0 d0 0 0 500 700 re f"),
+		"<< /Type /Font /Subtype /Type3 /FontBBox [0 0 600 700] /FontMatrix [.001 0 0 .001 0 0] /CharProcs << /A 8 0 R >> /Encoding << /Type /Encoding /Differences [65 /A] >> /FirstChar 65 /LastChar 65 /Widths [600] /Resources << >> >>",
+		stream("", "600 0 d0 0 0 300 300 re f"),
+	})
+	got, err := ListFonts(context.Background(), data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(got) != 3 {
+		t.Fatalf("expected one entry per unnamed text object: %+v", got)
+	}
+	for i, f := range got {
+		if f.Name != "unavailable" || !f.NameUnavailable || f.TextObject != i+1 || !f.Embedded || !reflect.DeepEqual(f.Pages, []int{1}) {
+			t.Fatalf("unexpected unnamed entry: %+v", f)
+		}
+	}
+	again, err := ListFonts(context.Background(), data)
+	if err != nil || !reflect.DeepEqual(got, again) {
+		t.Fatalf("unstable results: %+v %v", again, err)
+	}
+}
