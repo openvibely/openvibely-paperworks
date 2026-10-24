@@ -33,7 +33,8 @@ func editConnector(root, shape *etree.Element, c *Connector) error {
 			for _, child := range geom.ChildElements() {
 				geom.RemoveChild(child)
 			}
-			geom.CreateElement("a:avLst")
+			av := geom.CreateElement("a:avLst")
+			ensureDrawingPrefix(av, geom)
 		}
 		geom.CreateAttr("prst", preset)
 	}
@@ -138,6 +139,7 @@ func editConnector(root, shape *etree.Element, c *Connector) error {
 			props[0].RemoveChild(old)
 		}
 		ref := etree.NewElement("a:" + v.tag)
+		ensureDrawingPrefix(ref, props[0])
 		ref.CreateAttr("id", v.end.ShapeID)
 		ref.CreateAttr("idx", strconv.Itoa(site))
 		if v.tag == "stCxn" {
