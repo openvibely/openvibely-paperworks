@@ -62,9 +62,13 @@ func layoutTableFormatting(cell *etree.Element, palette layoutPalette, textDefau
 						attrs[k] = v
 					}
 				}
+				fontSource := src
+				if Is(src, NSA, "tcTxStyle") {
+					fontSource = Child(src, NSA, "font")
+				}
 				for _, font := range []string{"latin", "ea", "cs", "sym"} {
 					if _, ok := style[font]; !ok {
-						if e := Child(src, NSA, font); e != nil {
+						if e := Child(fontSource, NSA, font); e != nil {
 							style[font] = layoutAttributes(e)
 						}
 					}
