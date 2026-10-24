@@ -12,7 +12,14 @@ go build -o paperworks ./cmd/paperworks
 ```
 
 Office rendering and spreadsheet recalculation require LibreOffice, discovered
-through `DOCUMENT_SOFFICE`, PATH, or standard application locations. PDF operations
+through `DOCUMENT_SOFFICE`, PATH, standard application locations, then OpenVibely’s
+cache under `os.UserCacheDir()/openvibely/skill-tools/libreoffice`. The cache fallback
+uses the binary’s OS/architecture, tries strict SemVer versions newest first, and
+validates candidates with an isolated `--headless --version` call. Invalid or
+non-SemVer installations are skipped; an explicit `DOCUMENT_SOFFICE` is never
+overridden. Equal-precedence versions and package hashes use lexical order.
+The fallback searches known executable layouts, not arbitrary custom package paths.
+This fallback is available after RC6. PDF operations
 use embedded PDFium WebAssembly. Equation rendering runs natively in Go.
 
 Use command help for supported options. Creation and editing require new output

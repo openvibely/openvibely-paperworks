@@ -33,7 +33,7 @@ var ErrMissing = errors.New("LibreOffice (soffice) not found: install it or set 
 
 const runTimeout = 180 * time.Second
 
-// Find locates soffice via DOCUMENT_SOFFICE, PATH and standard install paths.
+// Find locates soffice via DOCUMENT_SOFFICE, PATH, standard installs, then OV cache.
 func Find() (string, error) {
 	if p := os.Getenv("DOCUMENT_SOFFICE"); p != "" {
 		if st, err := os.Stat(p); err == nil && !st.IsDir() {
@@ -63,6 +63,9 @@ func Find() (string, error) {
 		if st, err := os.Stat(c); err == nil && !st.IsDir() {
 			return c, nil
 		}
+	}
+	if root, err := os.UserCacheDir(); err == nil {
+		return findCachedOffice(root, runtime.GOOS, runtime.GOARCH, probeCachedOffice)
 	}
 	return "", ErrMissing
 }
