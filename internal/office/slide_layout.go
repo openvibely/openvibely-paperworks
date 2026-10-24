@@ -239,7 +239,7 @@ func PresentationLayouts(p *opc.Package) ([]map[string]any, error) {
 					}
 					if frame := Child(Child(sh, NSA, "graphic"), NSA, "graphicData"); frame != nil {
 						record["content_xml"] = xmlString(frame)
-						layoutTable(record, Child(frame, NSA, "tbl"))
+						layoutStyledTable(record, Child(frame, NSA, "tbl"), palette)
 					}
 					elements = append(elements, record)
 					if sh.Tag == "grpSp" {

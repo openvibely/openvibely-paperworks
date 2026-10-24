@@ -1144,3 +1144,10 @@ updates only the selected one-based slide pairs, retaining other files. Without
 `--slides`, the complete preview set is replaced (obsolete slide pairs removed).
 Existing output directories must contain only regular files. Rendering still
 uses the complete source deck to preserve layout; selection controls publication.
+
+Table cells also expose `formatting`: paragraph/run properties (with local
+text defaults applied), font declarations, fills, borders, body properties and
+cell margins. Native properties retain OOXML units (font size in hundredths of
+a point, margins in EMUs). Table style IDs and table properties are reported
+separately. Conditional table-style regions and renderer defaults are not
+materialized into effective cell formatting.
