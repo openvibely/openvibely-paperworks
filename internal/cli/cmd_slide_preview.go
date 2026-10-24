@@ -71,6 +71,11 @@ func publishSelectedSlidePreview(ctx context.Context, stage, out string, pages [
 	if len(pages) != len(reports) {
 		return nil, fmt.Errorf("rendered page count %d differs from slide count %d; cannot pair layouts", len(pages), len(reports))
 	}
+	release, err := lockSlidePreview(out)
+	if err != nil {
+		return nil, err
+	}
+	defer release()
 	payload := filepath.Join(stage, "paired")
 	if err := os.Mkdir(payload, 0755); err != nil {
 		return nil, err
