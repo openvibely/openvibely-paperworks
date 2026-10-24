@@ -230,6 +230,7 @@ func PresentationLayouts(p *opc.Package) ([]map[string]any, error) {
 					}
 					if pic := Child(sh, NSP, "blipFill"); pic != nil {
 						record["image_xml"] = xmlString(pic)
+						layoutImage(record, sh, pic)
 					}
 					if frame := Child(Child(sh, NSA, "graphic"), NSA, "graphicData"); frame != nil {
 						record["content_xml"] = xmlString(frame)

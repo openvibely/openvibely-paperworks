@@ -1120,3 +1120,8 @@ Geometry reference: https://github.com/apache/poi/blob/trunk/poi/src/main/resour
 The versioned `paperworks.slide-layout/v1` report uses logical pixels at 96 pixels per inch, independent of preview resolution. `preview.width/height` give the actual PNG dimensions. Slide-owned elements include an `edit_target` (`slide`, `shape_id`) usable with `slide-edit`; convert position pixels to editing inches by dividing by 96. Inherited layout/master records are marked `editable:false` and retain their part and native IDs. They describe source layers, not additional visible objects. Their XML and all native object XML remain available for deeper inspection.
 
 Position resolves local or placeholder-inherited geometry. Text runs include cascading run/paragraph/list/master/presentation font properties and Latin theme-font resolution. Paint, image cropping and table content remain in namespace-complete native XML. Group-transformed positions are explicitly unresolved. This is native object metadata, not raster-measured glyph bounds: it does not certify renderer font substitution, resolve every theme paint effect, or establish visibility of every inherited placeholder. Always inspect the paired PNGs. Unknown properties are not evidence of a zero/default value. This command is available in builds after RC5.
+
+Slide layout image records expose source `crop` fractions (l/t/r/b), native
+`fit.mode` (stretch/tile/unspecified), stretch fill rectangles or tile settings,
+and preset/custom `mask` geometry. These describe DrawingML, not inferred CSS
+cover/contain settings. Custom geometry remains explicit XML.
