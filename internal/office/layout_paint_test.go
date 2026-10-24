@@ -53,3 +53,27 @@ func TestLayoutMasterMappingReset(t *testing.T) {
 		})
 	}
 }
+
+func TestLayoutStyleColorNamespaces(t *testing.T) {
+	for _, tc := range []struct{ name, decl, prefix string }{
+		{"alternate", `xmlns:d="` + NSA + `"`, "d:"},
+		{"default", `xmlns="` + NSA + `"`, ""},
+		{"conflicting", `xmlns:d="` + NSA + `" xmlns:a="urn:other"`, "d:"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			theme := paintFixture(t, `<a:theme xmlns:a="`+NSA+`"><a:themeElements><a:fmtScheme><a:fillStyleLst><a:solidFill><a:schemeClr val="phClr"><a:alpha val="50000"/></a:schemeClr></a:solidFill></a:fillStyleLst></a:fmtScheme></a:themeElements></a:theme>`)
+			shape := paintFixture(t, `<p:sp xmlns:p="`+NSP+`" `+tc.decl+`><p:style><`+tc.prefix+`fillRef idx="1"><`+tc.prefix+`srgbClr val="123456"/></`+tc.prefix+`fillRef></p:style></p:sp>`)
+			fill := newLayoutPalette(theme, nil).shapeFill([]*etree.Element{shape})
+			c := fill["color"].(map[string]any)
+			if c["resolved"] != true || c["rgb"] != "#123456" || c["alpha"] != .5 {
+				t.Fatal(fill)
+			}
+			// The serialized report must retain the same namespace semantics.
+			saved := paintFixture(t, fill["xml"].(string))
+			again := newLayoutPalette(nil, nil).color(saved)
+			if again["rgb"] != "#123456" || again["alpha"] != .5 {
+				t.Fatal(again)
+			}
+		})
+	}
+}
