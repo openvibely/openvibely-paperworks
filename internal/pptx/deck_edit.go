@@ -170,6 +170,7 @@ func DeckEditFile(ctx context.Context, input, output, base string, spec DeckEdit
 			sourcePart := ""
 			reuse := e.Operation == "duplicate-slide"
 			var cleanup func()
+			var deferred map[string]string
 			if reuse {
 				sourcePart = slides[e.Slide-1]
 			} else {
@@ -190,6 +191,11 @@ func DeckEditFile(ctx context.Context, input, output, base string, spec DeckEdit
 						element.Connector = &connector
 					}
 					slide.Elements = []Element{element}
+				}
+				var err error
+				slide, deferred, err = deferSlideLinks(pkg, slide)
+				if err != nil {
+					return err
 				}
 				size := office.Child(d.Root(), pns, "sldSz")
 				w, h := 13.333333, 7.5
@@ -222,8 +228,15 @@ func DeckEditFile(ctx context.Context, input, output, base string, spec DeckEdit
 				}
 				sourcePart = parts[0]
 			}
+			priorParts := map[string]bool{}
+			for _, name := range pkg.Names() {
+				priorParts[name] = true
+			}
 			imported, err := importPartGraph(ctx, pkg, source, sourcePart, reuse, map[string]string{})
 			if err != nil {
+				return err
+			}
+			if err := resolveDeferredSlideLinks(pkg, priorParts, deferred); err != nil {
 				return err
 			}
 			if e.Operation == "add-element" || e.Operation == "replace-element" {
