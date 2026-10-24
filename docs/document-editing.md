@@ -1125,3 +1125,9 @@ Slide layout image records expose source `crop` fractions (l/t/r/b), native
 `fit.mode` (stretch/tile/unspecified), stretch fill rectangles or tile settings,
 and preset/custom `mask` geometry. These describe DrawingML, not inferred CSS
 cover/contain settings. Custom geometry remains explicit XML.
+
+Table layout records expose `cells`, `column_widths`, and `row_heights`.
+Each cell has a stable ID, `table_id`, one-based row/column, text, spans and
+merge flags. Text and cell-property XML retain detailed native formatting.
+`owned_element_ids` is empty because DrawingML table-cell text is inline,
+not a separate shape. These IDs are report references, not CLI shape IDs.
