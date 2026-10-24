@@ -18,14 +18,18 @@ type DeckEditSpec struct {
 	Edits []DeckEdit `json:"edits"`
 }
 type DeckEdit struct {
-	Part      string   `json:"part,omitempty"`
-	Path      string   `json:"path,omitempty"`
-	Operation string   `json:"operation"`
-	ShapeID   string   `json:"shape_id,omitempty"`
-	Slide     int      `json:"slide"`
-	Position  int      `json:"position,omitempty"`
-	Content   *Slide   `json:"content,omitempty"`
-	Element   *Element `json:"element,omitempty"`
+	Name         string              `json:"name,omitempty"`
+	ParentPart   string              `json:"parent_part,omitempty"`
+	ThemePart    string              `json:"theme_part,omitempty"`
+	Placeholders []LayoutPlaceholder `json:"placeholders,omitempty"`
+	Part         string              `json:"part,omitempty"`
+	Path         string              `json:"path,omitempty"`
+	Operation    string              `json:"operation"`
+	ShapeID      string              `json:"shape_id,omitempty"`
+	Slide        int                 `json:"slide"`
+	Position     int                 `json:"position,omitempty"`
+	Content      *Slide              `json:"content,omitempty"`
+	Element      *Element            `json:"element,omitempty"`
 }
 
 // DeckEditFile uses current one-based slide positions. Imported dependency
@@ -70,10 +74,14 @@ func DeckEditFile(ctx context.Context, input, output, base string, spec DeckEdit
 			return err
 		}
 		ids := office.Children(list, pns, "sldId")
-		if e.Operation != "add-slide" && e.Operation != "replace-theme" && (e.Slide < 1 || e.Slide > len(slides)) {
+		if e.Operation != "add-slide" && e.Operation != "replace-theme" && e.Operation != "add-master" && e.Operation != "add-layout" && (e.Slide < 1 || e.Slide > len(slides)) {
 			return fmt.Errorf("edit %d: slide out of range", i)
 		}
 		switch e.Operation {
+		case "add-master", "add-layout":
+			if err := addPresentationStylePart(pkg, main, d, base, e); err != nil {
+				return err
+			}
 		case "set-layout":
 			if pkg.ContentType(e.Part) != "application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml" {
 				return fmt.Errorf("part must identify an existing slide layout")
