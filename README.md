@@ -1,103 +1,151 @@
 # Paperworks
 
-Standalone Go CLI for creating, editing, inspecting, and rendering documents.
+Paperworks is a command-line tool for working with Word documents, Excel
+spreadsheets, PowerPoint presentations, and PDFs. Create files from JSON, edit
+existing documents, inspect their contents, and render pages for review—all from
+your terminal or an automated workflow.
 
-Builds require the Go version declared in `go.mod` (also selected by CI).
+It works with local files. Microsoft Office is not required. LibreOffice is
+needed for Office-to-PDF conversion, Office rendering, spreadsheet recalculation,
+and field refresh; most other operations run directly in Paperworks.
+
+## What you can do
+
+| Format | Features |
+| --- | --- |
+| **Word (.docx)** | Create documents with headings, styles, tables, images, and equations. Edit text, add comments and tracked changes, and work with headers, footers, and tables of contents. |
+| **Excel (.xlsx)** | Create and edit workbooks, formulas, formatting, tables, charts, and comments. Import CSV, trace formula references, and recalculate saved results with LibreOffice. |
+| **PowerPoint (.pptx)** | Create slides with editable text, tables, charts, images, and speaker notes. Edit slide contents, reorder or duplicate slides, and manage comments. |
+| **PDF (.pdf)** | Create PDFs, extract text and layout, inspect fonts, fill forms, merge or split files, select and rotate pages, add watermarks, and edit selected page objects. |
+| **Review and export** | Inspect document structure as JSON, render page previews, export Office documents to PDF, and compare before-and-after documents visually. |
+
+Paperworks is a file-processing tool, not a desktop editor. Commands support
+specific operations and document features; they do not guarantee identical
+rendering in every Office application. Render and review important edits before
+sharing the result.
+
+## Install
+
+Download the ZIP for your operating system and processor from
+[Releases](https://github.com/openvibely/openvibely-paperworks/releases/latest).
+
+Builds are available for **macOS, Linux, and Windows**, each on **amd64 (x64)** and
+**arm64**. Extract the executable and put it on your PATH. The examples below use
+the name `paperworks`; rename the downloaded binary to `paperworks`
+(`paperworks.exe` on Windows), or use its original filename.
+
+macOS downloads are signed and notarized. Windows executables are signed and
+timestamped. Each release includes `SHA256SUMS` for verifying the downloads.
+
+```sh
+paperworks version
+paperworks capabilities
+```
+
+`capabilities` reports the available engines and whether LibreOffice was found.
+
+### LibreOffice
+
+Install LibreOffice if you need Office rendering, PDF export, recalculation, or
+field refresh. Paperworks looks on PATH, in standard installation locations,
+and in OpenVibely's dependency cache. To select a particular installation, set
+`DOCUMENT_SOFFICE` to its executable path:
+
+```sh
+export DOCUMENT_SOFFICE="/Applications/LibreOffice.app/Contents/MacOS/soffice"
+```
+
+PDF operations use an embedded engine and do not require LibreOffice or Poppler.
+Fonts available on the machine can affect document appearance.
+
+## Try it
+
+### Inspect a document
+
+```sh
+paperworks inspect report.docx
+paperworks inspect budget.xlsx
+paperworks pdf-fonts report.pdf
+```
+
+### Create a Word document
+
+Save this as `report.json`:
+
+```json
+{
+  "blocks": [
+    {"type": "paragraph", "text": "A document created with Paperworks."}
+  ]
+}
+```
+
+Then create the document and export it to PDF:
+
+```sh
+paperworks create-docx --spec report.json --output report.docx
+paperworks convert report.docx --output exported
+```
+
+The conversion step requires LibreOffice.
+
+### Edit and review
+
+Inspect the document to find the paragraph you want to change. For a document
+whose first body paragraph contains `Draft`, save this as `edit.json`:
+
+```json
+{
+  "operation": "replace-text",
+  "paragraph": 0,
+  "old": "Draft",
+  "new": "Final",
+  "occurrence": 0
+}
+```
+
+```sh
+paperworks word-edit draft.docx --spec edit.json --output final.docx
+paperworks render final.docx --output preview
+paperworks compare draft.docx --against final.docx --output comparison
+```
+
+Open the generated previews to check the result. Word paragraph indices are
+zero-based; see the editing reference for how paragraphs are counted.
+
+### Combine PDFs
+
+```sh
+paperworks pdf-merge cover.pdf report.pdf --output combined.pdf
+```
+
+## Command help and JSON inputs
+
+```sh
+paperworks help
+paperworks help word-edit
+paperworks schema word-edit
+```
+
+Command help describes arguments and flags. `schema` describes the JSON inputs
+for supported creation and editing commands. Paths inside JSON specifications
+are relative to the specification file.
+
+Results are JSON on stdout, with diagnostics on stderr. Creation and editing
+commands write new files and reject existing output files. Rendering can reuse
+an output directory and overwrite matching preview images.
+
+See [document editing commands and examples](docs/document-editing.md) for Word,
+Excel, PowerPoint, and PDF operations, input fields, and limitations.
+
+## Build from source
+
+Use the Go version declared in [go.mod](go.mod):
 
 ```sh
 go build -o paperworks ./cmd/paperworks
-./paperworks version
-./paperworks capabilities
-./paperworks help
 ```
 
-Office rendering and spreadsheet recalculation require LibreOffice, discovered
-through `DOCUMENT_SOFFICE`, PATH, standard application locations, then OpenVibely’s
-cache under `os.UserCacheDir()/openvibely/skill-tools/libreoffice`. The cache fallback
-uses the binary’s OS/architecture, tries strict SemVer versions newest first, and
-validates candidates with an isolated `--headless --version` call. Invalid or
-non-SemVer installations are skipped; an explicit `DOCUMENT_SOFFICE` is never
-overridden. Equal-precedence versions and package hashes use lexical order.
-The fallback searches known executable layouts, not arbitrary custom package paths.
-This fallback is available after RC6. PDF operations
-use embedded PDFium WebAssembly. Equation rendering runs natively in Go.
-
-Use command help for supported options. Creation and editing require new output
-paths. JSON results go to stdout; diagnostics go to stderr.
-
-PDF form filling accepts arbitrary choice values by default. Use
-`paperworks fill INPUT.pdf --values values.json --output NEW.pdf --strict-choices`
-to reject values outside a list or non-editable combo's options before writing.
-For export/display option pairs, supply the export value; inherited options are
-supported. Editable combos allow custom text. An empty string clears a selection;
-an empty array clears a multi-select list (an empty item inside an array is still
-validated against the options). Permissive fills report unmatched values in the
-JSON `warnings` array, with `code: "unmatched_choice"`, `field`, `value`, and
-`allowed_choices`. With `--flatten`, validation also covers existing choice values
-whose appearances are regenerated. Rejected fills create no output and leave the
-input unchanged.
-
-```sh
-go test ./...
-bash scripts/build.sh
-```
-
-GitHub Actions installs LibreOffice, Node, and fonts, then uses `make deps` for
-the checksum-verified SheetJS 0.20.3 reader and shared dependency checks. Downloaded
-tools are cached between runs. CI runs the full Go suite and vet. Test logs are retained
-as workflow artifacts, including failures and skips. Pinned macOS font tests can
-skip on Linux; installing dependencies does not guarantee acceptance tests pass.
-
-For native local integration tests:
-
-```sh
-make deps       # Once: reuse installed tools/cache, download only missing tools
-go test ./...   # Discovers dependencies automatically; no shell exports
-make test       # Ensure dependencies, then run the full suite and vet
-```
-
-The download script is an implementation detail of `make deps`. Plain `go test`
-never downloads or installs anything. Missing dependencies fail with instructions
-to run `make deps`; explicit environment overrides take precedence over the cache.
-
-Go must already be installed. On macOS, setup reuses Node 22+ and
-LibreOffice when available, or downloads pinned official releases into
-`~/Library/Caches/paperworks-tests`. It verifies SHA-256 checksums before
-extracting Node and copying LibreOffice from its DMG. No Homebrew, Java,
-Docker, administrator access, or system installation is needed. The first run
-may download several hundred megabytes; subsequent runs reuse the cache.
-
-The pinned SheetJS reader is downloaded and verified automatically. It is only
-a test dependency. `DOCUMENT_SOFFICE` and `PAPERWORKS_TEST_SHEETJS` overrides
-are respected (the reader must have the pinned checksum). `XDG_CACHE_HOME`
-overrides the cache parent. Existing system fonts are used; font-dependent
-tests can fail or skip when their required fonts are absent.
-
-On Linux, Node and SheetJS can be downloaded the same way, but LibreOffice must
-already be installed: a portable Linux Office download is not configured.
-The script stops with an explanation if it is unavailable. Tests and vet run
-natively, and failures return a nonzero exit status; dependencies do not waive
-acceptance failures or platform-specific skips.
-
-Document skills are maintained outside this repository. Regression examples live
-under `testdata/document-examples/`.
-
-## Editing existing documents
-
-See [document editing commands and JSON examples](docs/document-editing.md) for
-Word, Excel, PowerPoint and PDF editing, field schemas, focused inspection and
-preview export. Run `paperworks schema COMMAND` for the supported typed inputs.
-
-## Releases
-
-Stable releases include macOS, Linux, and Windows builds for both amd64 and
-arm64. macOS binaries are Developer ID signed and their ZIP archives notarized;
-Windows executables are Authenticode signed and timestamped. Linux archives are
-covered by SHA256SUMS. Checksums are generated after signing.
-
-The [release workflow](.openvibely/skills/paperworks_release_workflow/SKILL.md)
-documents validation and publication. `scripts/release-build.sh X.Y.Z --dry-run`
-previews the build; omit `--dry-run` to build signed artifacts on a macOS release
-coordinator. Signing reuses the sibling OpenVibely repository's release helpers
-and private configuration; `PAPERWORKS_OV_ROOT` and `PAPERWORKS_SIGNING_ENV`
-can select other locations. Ordinary `scripts/build.sh` builds remain unsigned.
+For development, `make deps` prepares test dependencies and `make test` runs the
+test suite and vet. Linux test setup requires an existing LibreOffice installation.
+Release maintainers can use the [release workflow](.openvibely/skills/paperworks_release_workflow/SKILL.md).

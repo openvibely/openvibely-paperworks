@@ -242,6 +242,20 @@ relative to the page before each edit. Nested artwork in a form must be treated
 as a whole form; no semantic “find the robot” detector is provided. This is not
 secure redaction. Always verify the saved preview.
 
+### Filling PDF forms
+
+PDF form filling accepts arbitrary choice values by default. Use
+`paperworks fill INPUT.pdf --values values.json --output NEW.pdf --strict-choices`
+to reject values outside a list or non-editable combo's options before writing.
+For export/display option pairs, supply the export value; inherited options are
+supported. Editable combos allow custom text. An empty string clears a selection;
+an empty array clears a multi-select list (an empty item inside an array is still
+validated against the options). Permissive fills report unmatched values in the
+JSON `warnings` array, with `code: "unmatched_choice"`, `field`, `value`, and
+`allowed_choices`. With `--flatten`, validation also covers existing choice values
+whose appearances are regenerated. Rejected fills create no output and leave the
+input unchanged.
+
 ## Focused inspection and preview export
 
 ```sh
