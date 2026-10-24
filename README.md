@@ -87,3 +87,17 @@ under `testdata/document-examples/`.
 See [document editing commands and JSON examples](docs/document-editing.md) for
 Word, Excel, PowerPoint and PDF editing, field schemas, focused inspection and
 preview export. Run `paperworks schema COMMAND` for the supported typed inputs.
+
+## Releases
+
+Stable releases include macOS, Linux, and Windows builds for both amd64 and
+arm64. macOS binaries are Developer ID signed and their ZIP archives notarized;
+Windows executables are Authenticode signed and timestamped. Linux archives are
+covered by SHA256SUMS. Checksums are generated after signing.
+
+The [release workflow](.openvibely/skills/paperworks_release_workflow/SKILL.md)
+documents validation and publication. `scripts/release-build.sh X.Y.Z --dry-run`
+previews the build; omit `--dry-run` to build signed artifacts on a macOS release
+coordinator. Signing reuses the sibling OpenVibely repository's release helpers
+and private configuration; `PAPERWORKS_OV_ROOT` and `PAPERWORKS_SIGNING_ENV`
+can select other locations. Ordinary `scripts/build.sh` builds remain unsigned.

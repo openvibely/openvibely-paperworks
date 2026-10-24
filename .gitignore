@@ -5,3 +5,11 @@
 
 .worktrees/
 .openvibely/
+
+# Keep this project's release instructions in source control.
+!.openvibely/
+.openvibely/*
+!.openvibely/skills/
+.openvibely/skills/*
+!.openvibely/skills/paperworks_release_workflow/
+.release-signing.env

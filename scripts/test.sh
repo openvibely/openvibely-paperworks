@@ -2,6 +2,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 bash scripts/build-test.sh
+bash scripts/release-test.sh
 # Reject forbidden equation dependencies even if accidentally added as indirect.
 check_equation_graph() {
   graph="$(go list -m all)"
