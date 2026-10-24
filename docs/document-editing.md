@@ -1163,3 +1163,9 @@ A simultaneous publisher receives a lock error and can retry after the active
 publisher finishes. The lock covers reading the existing files through replacing
 the directory. If a process is forcibly terminated, remove the lock directory
 named in the error only after confirming no publisher is running.
+
+Grouped layout records expose transformed slide-space `position` bounds and
+`corners`, plus `local_position` for edits in the parent group's coordinate
+space. Nested group scaling, offsets, flips and rotations are composed.
+Do not use the slide-space bounding box as the local edit rectangle.
+Incomplete or zero-sized ancestor transforms remain explicitly unresolved.

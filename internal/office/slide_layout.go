@@ -125,7 +125,7 @@ func PresentationLayouts(p *opc.Package) ([]map[string]any, error) {
 						}
 					}
 					if grouped || sh.Tag == "grpSp" {
-						record["position_unresolved"] = "group transform; inspect native XML"
+						layoutGroupGeometry(record, sh)
 					} else if xf != nil {
 						off, ext := Child(xf, NSA, "off"), Child(xf, NSA, "ext")
 						if off != nil && ext != nil {
@@ -249,7 +249,7 @@ func PresentationLayouts(p *opc.Package) ([]map[string]any, error) {
 			}
 			walk(tree, false)
 		}
-		reports = append(reports, map[string]any{"schema": "paperworks.slide-layout/v1", "slide": i + 1, "part": part, "units": "px", "pixels_per_inch": 96, "position": map[string]float64{"left": 0, "top": 0, "width": width, "height": height}, "elements": elements, "inherited_layers": layers, "limitations": []string{"Native geometry and cascading text properties, not raster-measured glyph bounds.", "Theme tokens and paint XML are retained; renderer font substitution, theme paint effects and group transforms are not resolved.", "Inherited records describe source layers, including placeholders; they are not a second set of visible slide objects."}})
+		reports = append(reports, map[string]any{"schema": "paperworks.slide-layout/v1", "slide": i + 1, "part": part, "units": "px", "pixels_per_inch": 96, "position": map[string]float64{"left": 0, "top": 0, "width": width, "height": height}, "elements": elements, "inherited_layers": layers, "limitations": []string{"Native geometry and cascading text properties, not raster-measured glyph bounds.", "Theme tokens and paint XML are retained; renderer font substitution, unsupported paint effects are not resolved. Group records include slide bounds and local edit coordinates.", "Inherited records describe source layers, including placeholders; they are not a second set of visible slide objects."}})
 	}
 	return reports, nil
 }
