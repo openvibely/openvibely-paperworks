@@ -116,7 +116,7 @@ func editConnector(root, shape *etree.Element, c *Connector) error {
 				return fmt.Errorf("side selection requires preset geometry")
 			}
 			switch geom.SelectAttrValue("prst", "") {
-			case "rect", "roundRect", "diamond":
+			case "rect", "roundRect", "diamond", "ellipse":
 			default:
 				return fmt.Errorf("side selection for this geometry requires explicit site")
 			}
@@ -124,6 +124,11 @@ func editConnector(root, shape *etree.Element, c *Connector) error {
 			site, ok = map[string]int{"top": 0, "left": 1, "bottom": 2, "right": 3}[side]
 			if !ok {
 				return fmt.Errorf("invalid connector side %q", side)
+			}
+			// DrawingML ellipse has eight sites: cardinal points are 0,2,4,6.
+			// See Apache POI presetShapeDefinitions.xml, ellipse/cxnLst.
+			if geom.SelectAttrValue("prst", "") == "ellipse" {
+				site *= 2
 			}
 		}
 		if site < 0 || site > 255 {
