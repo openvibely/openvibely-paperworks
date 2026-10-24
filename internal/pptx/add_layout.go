@@ -53,17 +53,21 @@ func stylePartDocument(base string, e DeckEdit, master bool) (*etree.Document, e
 			return nil, err
 		}
 		tree := office.Child(office.Child(d.Root(), pns, "cSld"), pns, "spTree")
-		seen := map[int]bool{}
+		seen := map[string]bool{}
 		for i, p := range e.Placeholders {
 			switch p.Type {
 			case "title", "ctrTitle", "subTitle", "body", "obj", "pic", "chart", "tbl", "dt", "ftr", "sldNum":
 			default:
 				return nil, fmt.Errorf("unsupported placeholder type")
 			}
-			if p.Index < 0 || seen[p.Index] {
+			key := strconv.Itoa(p.Index)
+			if p.Type == "title" || p.Type == "ctrTitle" {
+				key = "title"
+			}
+			if p.Index < 0 || seen[key] {
 				return nil, fmt.Errorf("placeholder indices must be unique and nonnegative")
 			}
-			seen[p.Index] = true
+			seen[key] = true
 			if !finite(p.X) || !finite(p.Y) || !finite(p.W) || !finite(p.H) || p.X < 0 || p.Y < 0 || p.W <= 0 || p.H <= 0 || p.X+p.W > 1000 || p.Y+p.H > 1000 {
 				return nil, fmt.Errorf("invalid placeholder geometry")
 			}

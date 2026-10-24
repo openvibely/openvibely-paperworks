@@ -1082,3 +1082,20 @@ layout list is replaced by the registered blank layout. Its color map, backgroun
 and shape content are retained. Generated placeholders use inch coordinates and
 unique nonnegative `index` values, with type `title`, `ctrTitle`, `subTitle`,
 `body`, `obj`, `pic`, `chart`, `tbl`, `dt`, `ftr`, or `sldNum`.
+
+### Populate slide placeholders from its layout
+
+In builds after RC5, `deck-edit` operation `populate-placeholders` with `slide`
+creates missing content placeholders from that slide's assigned layout. Assign
+with `set-layout` first when needed. Repeating population preserves existing
+slots and content; it does not duplicate placeholders. Title/centered-title
+share a title slot, and other content slots match by `idx` (default zero).
+Duplicate slot definitions fail. Date, footer, header and slide-number furniture
+remain inherited. Copied placeholders retain layout geometry/formatting and
+relationships; prompt text is cleared. The layout/master remains unchanged.
+Inspect the result for shape IDs, then use `slide-edit` text edits to fill text.
+Use `deck-edit` `replace-element` for a picture/chart/table, supplying the original
+placeholder type and index on supported authored element types where applicable.
+New text/shape/image/chart/table elements accept `placeholder` and `placeholder_index`.
+Render and check every affected slide. This operation does not infer missing
+layout definitions from master furniture or resize existing slide content.

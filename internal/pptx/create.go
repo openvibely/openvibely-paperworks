@@ -111,6 +111,7 @@ type Element struct {
 	Connector         *Connector     `json:"connector,omitempty"`
 	Commands          []PathCommand  `json:"commands,omitempty"`
 	InheritFormatting bool           `json:"inherit_formatting,omitempty"`
+	PlaceholderIndex  *uint32        `json:"placeholder_index,omitempty"`
 	Placeholder       string         `json:"placeholder"`
 	Anchor            *ImageAnchor   `json:"anchor"`
 	Fit               string         `json:"fit"`
@@ -165,7 +166,11 @@ func xfrm(e Element, prefix string) string {
 func nv(id int, e Element, kind string) string {
 	properties := `<p:nvPr/>`
 	if e.Placeholder != "" {
-		properties = `<p:nvPr><p:ph type="` + esc(e.Placeholder) + `"/></p:nvPr>`
+		index := ""
+		if e.PlaceholderIndex != nil {
+			index = fmt.Sprintf(` idx="%d"`, *e.PlaceholderIndex)
+		}
+		properties = `<p:nvPr><p:ph type="` + esc(e.Placeholder) + `"` + index + `/></p:nvPr>`
 	}
 	return fmt.Sprintf(`<p:nv%sPr><p:cNvPr id="%d" name="%s" descr="%s"/><p:cNv%sPr/>%s</p:nv%sPr>`, kind, id, esc(e.Name), esc(e.Description), kind, properties, kind)
 }
@@ -416,8 +421,18 @@ func createWithClock(ctx context.Context, s Spec, base, output string, clock fun
 			if !finite(e.X) || !finite(e.Y) || !finite(e.W) || !finite(e.H) || e.X < 0 || e.Y < 0 || e.W <= 0 || e.H <= 0 || e.X+e.W > s.Width+0.00001 || e.Y+e.H > s.Height+0.00001 {
 				return fmt.Errorf("slide %d element %d: invalid or off-slide geometry", n, j+1)
 			}
-			if e.Placeholder != "" && (e.Type != "text" || (e.Placeholder != "title" && e.Placeholder != "ctrTitle")) {
-				return fmt.Errorf("placeholder must be title or ctrTitle on a text element")
+			if e.PlaceholderIndex != nil && e.Placeholder == "" {
+				return fmt.Errorf("placeholder_index requires placeholder")
+			}
+			if e.Placeholder != "" {
+				if e.Type != "text" && e.Type != "shape" && e.Type != "image" && e.Type != "chart" && e.Type != "table" {
+					return fmt.Errorf("placeholder requires text, shape, image, chart or table")
+				}
+				switch e.Placeholder {
+				case "title", "ctrTitle", "subTitle", "body", "obj", "pic", "chart", "tbl", "media", "dgm", "dt", "ftr", "hdr", "sldNum":
+				default:
+					return fmt.Errorf("unsupported placeholder type")
+				}
 			}
 			if e.Type != "image" && (e.Fit != "" || e.Crop != nil || e.Anchor != nil) {
 				return fmt.Errorf("fit, crop and anchor apply only to images")
