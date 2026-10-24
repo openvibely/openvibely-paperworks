@@ -11,7 +11,7 @@ func applyStructuredRunProperties(pkg *opc.Package, part string, body *etree.Ele
 	ps := office.Children(body, ans, "p")
 	for pi, para := range paragraphs {
 		for ri, run := range para.Runs {
-			if run.Hyperlink == "" && run.TextPaint == nil {
+			if run.Hyperlink == "" && run.Link == nil && run.TextPaint == nil {
 				continue
 			}
 			if pi >= len(ps) {
@@ -29,6 +29,14 @@ func applyStructuredRunProperties(pkg *opc.Package, part string, body *etree.Ele
 			ensureDrawingPrefix(pr, runs[ri])
 			if run.TextPaint != nil {
 				if err := paintTextProperties(pr, run.TextPaint); err != nil {
+					return err
+				}
+			}
+			if run.Link != nil {
+				if run.Hyperlink != "" {
+					return fmt.Errorf("link and hyperlink are mutually exclusive")
+				}
+				if err := setTextLink(pkg, part, pr, run.Link); err != nil {
 					return err
 				}
 			}

@@ -1040,3 +1040,20 @@ To change an existing connector without replacing it:
 Omitted endpoints retain their attachments; omitted kind retains its geometry.
 Use `geometry` separately to update its bounds. Verify the saved attachments
 and render the result. These additions require a build newer than RC5.
+
+## Internal presentation links
+
+In builds after RC5, structured text runs and `run-format` accept `link` instead
+of the existing external-only `hyperlink` string:
+```json
+{"edits":[{"operation":"run-format","slide":1,"shape_id":"2","paragraph":0,"run":0,
+ "link":{"uri":"ppt/slides/slide2.xml","is_external":false}}]}
+```
+Use an exact inspected slide part; it must exist. The saved relationship is
+internal with `ppaction://hlinksldjump`. For external URLs, set
+`is_external:true` and use HTTP, HTTPS or mailto. Do not supply both link fields.
+An empty `link:{}` clears the link. Navigation without a target accepts
+`action:"ppaction://hlinkshowjump?jump=nextslide"`; other supported jumps are
+`previousslide`, `firstslide`, `lastslide`, `endshow`, and `lastslideviewed`.
+Programs/macros and other action schemes are rejected. Inspect relationships;
+verify interactive behavior in PowerPoint, since rendered images cannot test links.
