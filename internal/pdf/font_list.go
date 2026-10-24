@@ -14,9 +14,11 @@ import (
 // PDFFont describes font metadata used by page text objects, including nested
 // Form XObjects. It does not enumerate unused resources or annotation appearances.
 type PDFFont struct {
-	Name     string `json:"name"`
-	Embedded bool   `json:"embedded"`
-	Pages    []int  `json:"pages"`
+	Name            string `json:"name"`
+	NameUnavailable bool   `json:"name_unavailable,omitempty"`
+	TextObject      int    `json:"text_object,omitempty"`
+	Embedded        bool   `json:"embedded"`
+	Pages           []int  `json:"pages"`
 }
 
 func ListFonts(ctx context.Context, data []byte) ([]PDFFont, error) {
@@ -107,6 +109,13 @@ func ListFonts(ctx context.Context, data []byte) ([]PDFFont, error) {
 					if e != nil {
 						return e
 					}
+					// PDFium's Go wrapper creates a new font handle for each lookup,
+					// so it cannot establish identity for unnamed fonts. Keep each
+					// use separate rather than merging unrelated font programs.
+					if strings.TrimSpace(name.BaseFontName) == "" {
+						out = append(out, PDFFont{Name: "unavailable", NameUnavailable: true, TextObject: visited, Embedded: embedded.IsEmbedded, Pages: []int{p + 1}})
+						continue
+					}
 					k := key{name.BaseFontName, embedded.IsEmbedded}
 					idx, ok := seen[k]
 					if !ok {
@@ -130,7 +139,7 @@ func ListFonts(ctx context.Context, data []byte) ([]PDFFont, error) {
 			return c
 		}
 		if a.Embedded == b.Embedded {
-			return 0
+			return a.TextObject - b.TextObject
 		}
 		if a.Embedded {
 			return 1
