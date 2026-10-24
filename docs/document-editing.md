@@ -1149,8 +1149,8 @@ Table cells also expose `formatting`: paragraph/run properties (with local
 text defaults applied), font declarations, fills, borders, body properties and
 cell margins. Native properties retain OOXML units (font size in hundredths of
 a point, margins in EMUs). Table style IDs and table properties are reported
-separately. Conditional table-style regions and renderer defaults are not
-materialized into effective cell formatting.
+separately. Embedded conditional table-style regions are resolved as described below;
+renderer defaults and absent application-provided styles remain unresolved.
 
 Layout paint resolves ordered tint/shade, alpha set/modulation/offset, RGB
 channel set/modulation/offset, hue/saturation/luminance set/modulation/offset,
@@ -1175,3 +1175,10 @@ row/column and corner-region fills, text defaults and explicit outer/diagonal
 borders. Direct cell/run formatting wins. The report identifies the style ID
 and whether its definition was found. Application-provided styles absent from
 the package, style references and renderer defaults are not synthesized.
+
+
+Layout `effects` resolves inherited and theme-referenced effect lists, including
+shadow/glow colors and native blur, soft-edge and reflection parameters.
+An explicit empty effect list suppresses inherited effects. Units are reported;
+these parameters do not expand geometry into raster-effect bounds. Effect
+graphs, 3D rendering and unsupported effects remain explicitly unresolved.
