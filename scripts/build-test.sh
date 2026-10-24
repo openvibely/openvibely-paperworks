@@ -22,6 +22,7 @@ case "$1" in
     printf '%s\n' "$MOCK_GOVERSION"
     ;;
   build)
+    printf "%s/%s\n" "$GOOS" "$GOARCH" >> "$MOCK_TARGET_LOG"
     [[ "${GOTOOLCHAIN:-}" == "$MOCK_EXPECTED_TOOLCHAIN" ]] || {
       echo "unexpected build GOTOOLCHAIN: ${GOTOOLCHAIN:-unset}" >&2
       exit 1
@@ -44,6 +45,7 @@ module_go_version() {
 run_build() {
   local installed_version="$1" expected_version="$2" output
   if ! output="$(cd "$tmp" && PATH="$tmp/bin:$PATH" \
+      MOCK_TARGET_LOG="$tmp/targets" \
       MOCK_GOVERSION="$installed_version" \
       MOCK_EXPECTED_TOOLCHAIN="go${expected_version}" \
       bash scripts/build.sh 2>&1)"; then
@@ -58,6 +60,8 @@ fail() {
 
 version="$(module_go_version)"
 run_build "go${version}" "$version" || fail 'Matching toolchain should pass.'
+printf '%s\n' darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 windows/amd64 windows/arm64 > "$tmp/expected-targets"
+diff -u "$tmp/expected-targets" "$tmp/targets" || fail 'Release build matrix differs.'
 
 if output="$(cd "$tmp" && PATH="$tmp/bin:$PATH" \
     MOCK_GOVERSION=go9.9.9 \
