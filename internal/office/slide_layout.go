@@ -226,6 +226,7 @@ func PresentationLayouts(p *opc.Package) ([]map[string]any, error) {
 						paras = append(paras, map[string]any{"text": paraText(par), "runs": runs, "paragraph_xml": layoutXML(pp)})
 					}
 					record["fill"] = palette.shapeFill(chain)
+					record["effects"] = palette.shapeEffects(chain)
 					record["text"] = strings.Join(text, "\n")
 					record["paragraphs"] = paras
 					for _, candidate := range chain {
