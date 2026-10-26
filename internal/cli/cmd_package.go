@@ -11,9 +11,10 @@ import (
 
 func init() {
 	register(&Command{
-		Name:    "inspect",
-		Summary: "Read-only structure report for PDF/DOCX/XLS/XLSX/PPTX (forms, formulas, comments, notes, geometry).",
-		Usage:   "paperworks inspect INPUT",
+		Name:      "inspect",
+		ValueOpts: []string{},
+		Summary:   "Read-only structure report for PDF/DOCX/XLS/XLSX/PPTX (forms, formulas, comments, notes, geometry).",
+		Usage:     "paperworks inspect INPUT",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, err := input(a, 1)
 			if err != nil {
@@ -32,9 +33,10 @@ func init() {
 		},
 	})
 	register(&Command{
-		Name:    "repair-notes",
-		Summary: "Restore a missing PPTX notes-master reference into a new file, preserving other parts.",
-		Usage:   "paperworks repair-notes INPUT.pptx --output NEW.pptx",
+		Name:      "repair-notes",
+		ValueOpts: []string{"output"},
+		Summary:   "Restore a missing PPTX notes-master reference into a new file, preserving other parts.",
+		Usage:     "paperworks repair-notes INPUT.pptx --output NEW.pptx",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, err := input(a, 1)
 			if err != nil {
@@ -48,9 +50,10 @@ func init() {
 		},
 	})
 	register(&Command{
-		Name:    "verify-preservation",
-		Summary: "Fail unless only explicitly allowed package parts changed between two Office files.",
-		Usage:   "paperworks verify-preservation BEFORE --against AFTER --requirements contract.json\n  contract.json: {\"allow_changed\":[\"word/document.xml\"]}",
+		Name:      "verify-preservation",
+		ValueOpts: []string{"against", "requirements"},
+		Summary:   "Fail unless only explicitly allowed package parts changed between two Office files.",
+		Usage:     "paperworks verify-preservation BEFORE --against AFTER --requirements contract.json\n  contract.json: {\"allow_changed\":[\"word/document.xml\"]}",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, err := input(a, 1)
 			if err != nil {

@@ -143,11 +143,12 @@ func absPath(p string) string {
 }
 
 type Command struct {
-	Name     string
-	Summary  string
-	Usage    string
-	BoolOpts []string
-	Run      func(ctx context.Context, a Args) (any, error)
+	Name      string
+	Summary   string
+	Usage     string
+	ValueOpts []string
+	BoolOpts  []string
+	Run       func(ctx context.Context, a Args) (any, error)
 }
 
 var commands = map[string]*Command{}
@@ -160,6 +161,10 @@ func parse(c *Command, raw []string) (Args, error) {
 	for _, b := range c.BoolOpts {
 		isBool[b] = true
 	}
+	isValue := map[string]bool{}
+	for _, name := range c.ValueOpts {
+		isValue[name] = true
+	}
 	for i := 0; i < len(raw); i++ {
 		s := raw[i]
 		if s == "--" {
@@ -168,6 +173,9 @@ func parse(c *Command, raw []string) (Args, error) {
 		}
 		if strings.HasPrefix(s, "--") && len(s) > 2 {
 			name, val, hasVal := strings.Cut(s[2:], "=")
+			if !isBool[name] && !isValue[name] {
+				return a, usagef("unknown option --%s", name)
+			}
 			if isBool[name] {
 				if hasVal {
 					b, err := strconv.ParseBool(val)

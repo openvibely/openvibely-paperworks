@@ -39,7 +39,7 @@ const (
 )
 
 func init() {
-	register(&Command{Name: "preview-export", Summary: "Export document previews as PNG/JPEG/WebP and an optional contact sheet.", Usage: "paperworks preview-export INPUT --output NEW_DIR [--format png|jpeg|webp] [--columns 3] [--dpi N | --max-pixels N] [--sheet NAME --range A1:D20]", Run: func(ctx context.Context, a Args) (any, error) {
+	register(&Command{Name: "preview-export", ValueOpts: []string{"output", "format", "columns", "max-pixels", "dpi", "sheet", "range"}, Summary: "Export document previews as PNG/JPEG/WebP and an optional contact sheet.", Usage: "paperworks preview-export INPUT --output NEW_DIR [--format png|jpeg|webp] [--columns 3] [--dpi N | --max-pixels N] [--sheet NAME --range A1:D20]", Run: func(ctx context.Context, a Args) (any, error) {
 		return runPreviewExport(ctx, a, convert.RenderFile)
 	}})
 }

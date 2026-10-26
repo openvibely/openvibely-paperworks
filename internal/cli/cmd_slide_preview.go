@@ -17,7 +17,7 @@ import (
 )
 
 func init() {
-	register(&Command{Name: "slide-preview", Summary: "Render PPTX slides with paired native layout JSON reports.", Usage: "paperworks slide-preview INPUT.pptx --output DIR [--slides 1,3] [--dpi N | --max-pixels N]", Run: func(ctx context.Context, a Args) (any, error) {
+	register(&Command{Name: "slide-preview", ValueOpts: []string{"output", "slides", "dpi", "max-pixels"}, Summary: "Render PPTX slides with paired native layout JSON reports.", Usage: "paperworks slide-preview INPUT.pptx --output DIR [--slides 1,3] [--dpi N | --max-pixels N]", Run: func(ctx context.Context, a Args) (any, error) {
 		return runSlidePreview(ctx, a, convert.RenderFile)
 	}})
 }

@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	register(&Command{Name: "slide-comments", Summary: "List or edit native modern PowerPoint comments, text anchors, replies, resolution and reactions.", Usage: "paperworks slide-comments INPUT.pptx [--requirements COMMENT.json --output NEW.pptx]", Run: func(ctx context.Context, a Args) (any, error) {
+	register(&Command{Name: "slide-comments", ValueOpts: []string{"requirements", "output"}, Summary: "List or edit native modern PowerPoint comments, text anchors, replies, resolution and reactions.", Usage: "paperworks slide-comments INPUT.pptx [--requirements COMMENT.json --output NEW.pptx]", Run: func(ctx context.Context, a Args) (any, error) {
 		file, r, err := listOrEdit(ctx, a, "slide-comments", "PPTX", office.SlideCommentSpec{},
 			func(s office.SlideCommentSpec) string { return s.Action }, office.SlideComments)
 		if err != nil {

@@ -11,9 +11,10 @@ import (
 
 func init() {
 	register(&Command{
-		Name:    "word-edit",
-		Summary: "Apply one Word edit operation (redline, comment, toc, merge, redact, ...) from a JSON spec into a new DOCX.",
-		Usage:   "paperworks word-edit INPUT.docx --output NEW.docx --spec OPERATION.json\n  operations: " + strings.Join(wordedit.Operations, ", "),
+		Name:      "word-edit",
+		ValueOpts: []string{"output", "spec"},
+		Summary:   "Apply one Word edit operation (redline, comment, toc, merge, redact, ...) from a JSON spec into a new DOCX.",
+		Usage:     "paperworks word-edit INPUT.docx --output NEW.docx --spec OPERATION.json\n  operations: " + strings.Join(wordedit.Operations, ", "),
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, err := input(a, 1)
 			if err != nil {
@@ -34,9 +35,10 @@ func init() {
 		},
 	})
 	register(&Command{
-		Name:    "create-docx",
-		Summary: "Author a new DOCX from a JSON document spec (headings, runs, lists, tables, images, TOC, equations).",
-		Usage:   "paperworks create-docx --spec DOC.json --output NEW.docx",
+		Name:      "create-docx",
+		ValueOpts: []string{"output", "spec"},
+		Summary:   "Author a new DOCX from a JSON document spec (headings, runs, lists, tables, images, TOC, equations).",
+		Usage:     "paperworks create-docx --spec DOC.json --output NEW.docx",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			if len(a.Pos) != 0 {
 				return nil, usagef("create-docx takes no positional arguments")

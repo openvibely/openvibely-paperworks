@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	register(&Command{Name: "create-pptx", Summary: "Create native slides, text, tables, charts, images and speaker notes from JSON.", Usage: "paperworks create-pptx --spec DECK.json --output NEW.pptx", Run: func(ctx context.Context, a Args) (any, error) {
+	register(&Command{Name: "create-pptx", ValueOpts: []string{"spec", "output"}, Summary: "Create native slides, text, tables, charts, images and speaker notes from JSON.", Usage: "paperworks create-pptx --spec DECK.json --output NEW.pptx", Run: func(ctx context.Context, a Args) (any, error) {
 		if len(a.Pos) != 0 {
 			return nil, usagef("create-pptx takes no positional arguments")
 		}
@@ -27,7 +27,7 @@ func init() {
 }
 
 func init() {
-	register(&Command{Name: "slide-edit", Summary: "Edit PPTX text, formatting, geometry, images, fills and notes while preserving unrelated parts.", Usage: "paperworks slide-edit INPUT.pptx --spec EDITS.json --output NEW.pptx", Run: func(ctx context.Context, a Args) (any, error) {
+	register(&Command{Name: "slide-edit", ValueOpts: []string{"spec", "output"}, Summary: "Edit PPTX text, formatting, geometry, images, fills and notes while preserving unrelated parts.", Usage: "paperworks slide-edit INPUT.pptx --spec EDITS.json --output NEW.pptx", Run: func(ctx context.Context, a Args) (any, error) {
 		in, out, err := oneInOut(a)
 		if err != nil {
 			return nil, err

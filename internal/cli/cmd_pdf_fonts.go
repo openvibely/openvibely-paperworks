@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	register(&Command{Name: "pdf-fonts", Summary: "List font names, embedding status and pages used by PDF text objects, including nested forms.", Usage: "paperworks pdf-fonts INPUT.pdf", Run: func(ctx context.Context, a Args) (any, error) {
+	register(&Command{Name: "pdf-fonts", ValueOpts: []string{}, Summary: "List font names, embedding status and pages used by PDF text objects, including nested forms.", Usage: "paperworks pdf-fonts INPUT.pdf", Run: func(ctx context.Context, a Args) (any, error) {
 		in, err := input(a, 1)
 		if err != nil {
 			return nil, err
