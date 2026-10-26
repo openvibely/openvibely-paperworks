@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -520,15 +521,15 @@ func TestArrayListSelectionAndFlatten(t *testing.T) {
 			if err := sd.Decode(); err != nil {
 				t.Fatal(err)
 			}
-			wantHighlights := 0
-			joined := strings.Join(selected, "")
-			for _, label := range []string{"Alpha", "Beta", "AlphaBeta"} {
-				if strings.Contains(joined, label) {
-					wantHighlights++
-				}
+			selectedIndices := map[int]bool{}
+			for i, option := range []string{"Alpha", "Beta", "AlphaBeta"} {
+				selectedIndices[i] = slices.Contains(selected, option)
 			}
-			if got := strings.Count(string(sd.Content), "0.5 0.5 0.5 rg s"); got != wantHighlights {
-				t.Fatalf("reference selection outlines = %d, want %d", got, wantHighlights)
+			for i, y := range []string{"24.692", "10.82", "-3.052"} {
+				outline := fmt.Sprintf("1 %s 178 14 re 0.5 0.5 0.5 rg s", y)
+				if got := strings.Contains(string(sd.Content), outline); got != selectedIndices[i] {
+					t.Errorf("option %q highlight = %v, want %v; appearance: %s", []string{"Alpha", "Beta", "AlphaBeta"}[i], got, selectedIndices[i], sd.Content)
+				}
 			}
 			if _, err := Fill(ctx, filled, flat, nil, true); err != nil {
 				t.Fatal(err)
@@ -553,6 +554,104 @@ func TestArrayListSelectionAndFlatten(t *testing.T) {
 		if _, err := os.Stat(output); !os.IsNotExist(err) {
 			t.Fatal("invalid request created output")
 		}
+	}
+}
+
+func TestArrayListSelectionAndFlattenPairedOptions(t *testing.T) {
+	for _, tc := range []struct {
+		name     string
+		selected []string
+		indices  []int
+		labels   []string
+	}{
+		{"combined export", []string{"combined-id"}, []int{2}, []string{"AlphaBeta"}},
+		{"separate exports", []string{"alpha-id", "beta-id"}, []int{0, 1}, []string{"Alpha", "Beta"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			objs := formObjs()
+			objs[14] = strings.Replace(objs[14], "/Ff 131072", "/Ff 2097152", 1)
+			objs[15] = strings.Replace(objs[15], "220 220", "220 260", 1)
+			objs[27] = strings.Replace(objs[27], "/BBox [0 0 180 20]", "/BBox [0 0 180 60]", 1)
+			objs[14] = strings.Replace(objs[14], "/Opt [(Alpha) (Beta)]", "/Opt [[(alpha-id) (Alpha)] [(beta-id) (Beta)] [(combined-id) (AlphaBeta)]]", 1)
+			source := writeTemp(t, "paired-list.pdf", rawPDF(objs))
+			filled, flat := filepath.Join(t.TempDir(), "filled.pdf"), filepath.Join(t.TempDir(), "flat.pdf")
+			ctx := context.Background()
+			if _, err := FillValues(ctx, source, filled, map[string]any{"choice": tc.selected, "name": "Ada"}, false); err != nil {
+				t.Fatal(err)
+			}
+			c, _, err := LoadFile(ctx, filled)
+			if err != nil {
+				t.Fatal(err)
+			}
+			fields, _, err := fieldTree(c.XRefTable)
+			if err != nil {
+				t.Fatal(err)
+			}
+			f := fields["choice"]
+			exports, displayLabels := choiceOptions(c.XRefTable, f.D)
+			values, ok := entryArray(c.XRefTable, f.D["V"])
+			if !ok || len(values) != len(tc.selected) {
+				t.Fatalf("selection values = %v", f.D["V"])
+			}
+			for i, item := range values {
+				got, ok := textOf(item)
+				if !ok || got != tc.selected[i] {
+					t.Fatalf("selection value %d = %q, want export value %q", i, got, tc.selected[i])
+				}
+			}
+			indices, ok := entryArray(c.XRefTable, f.D["I"])
+			if !ok || len(indices) != len(tc.indices) {
+				t.Fatalf("selection indices = %v, want %v", f.D["I"], tc.indices)
+			}
+			for i, want := range tc.indices {
+				if got := int(indices[i].(types.Integer)); got != want {
+					t.Fatalf("selection indices = %v, want %v", indices, tc.indices)
+				}
+			}
+			for i, export := range tc.selected {
+				optionIndex := slices.Index(exports, export)
+				if optionIndex < 0 {
+					t.Fatalf("missing export value %q in %v", export, exports)
+				}
+				if got := displayLabels[optionIndex]; got != tc.labels[i] {
+					t.Fatalf("export value %q maps to display label %q, want %q", export, got, tc.labels[i])
+				}
+			}
+			ap := dictOf(c.XRefTable, f.Widgets[0]["AP"]).d
+			sd, _ := streamOf(c.XRefTable, ap["N"])
+			if sd == nil {
+				t.Fatal("missing list appearance")
+			}
+			if err := sd.Decode(); err != nil {
+				t.Fatal(err)
+			}
+			appearance := string(sd.Content)
+			for _, label := range []string{"Alpha", "Beta", "AlphaBeta"} {
+				if !strings.Contains(appearance, "("+label+") Tj") {
+					t.Errorf("appearance is missing display label %q: %s", label, appearance)
+				}
+			}
+			for i, y := range []string{"46.13", "32.26", "18.38"} {
+				highlight := fmt.Sprintf("0.60 0.76 0.85 rg 1 %s 178.00 13.87 re f", y)
+				if got, want := strings.Contains(appearance, highlight), slices.Contains(tc.indices, i); got != want {
+					t.Errorf("option %d highlight = %v, want %v; appearance: %s", i, got, want, appearance)
+				}
+			}
+			if _, err := Fill(ctx, filled, flat, nil, true); err != nil {
+				t.Fatal(err)
+			}
+			editableBytes, err := os.ReadFile(filled)
+			if err != nil {
+				t.Fatal(err)
+			}
+			flattenedBytes, err := os.ReadFile(flat)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !bytes.Equal(images(t, editableBytes)[1].Pix, images(t, flattenedBytes)[1].Pix) {
+				t.Fatal("flatten changed paired list selection appearance")
+			}
+		})
 	}
 }
 
