@@ -4,65 +4,67 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/openvibely/openvibely-paperworks/internal/convert"
-	"github.com/openvibely/openvibely-paperworks/internal/office"
-	"github.com/openvibely/openvibely-paperworks/internal/opc"
 	"image/png"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/openvibely/openvibely-paperworks/internal/convert"
+	"github.com/openvibely/openvibely-paperworks/internal/office"
+	"github.com/openvibely/openvibely-paperworks/internal/opc"
 )
 
 func init() {
 	register(&Command{Name: "slide-preview", Summary: "Render PPTX slides with paired native layout JSON reports.", Usage: "paperworks slide-preview INPUT.pptx --output DIR [--slides 1,3] [--dpi N | --max-pixels N]", Run: func(ctx context.Context, a Args) (any, error) {
-		in, err := input(a, 1)
-		if err != nil {
-			return nil, err
-		}
-		if ext(in[0]) != ".pptx" {
-			return nil, usagef("slide-preview requires PPTX")
-		}
-		if err = a.Require("output"); err != nil {
-			return nil, err
-		}
-		opt, err := renderOptions(a)
-		if err != nil {
-			return nil, err
-		}
-		out := a.Path("output")
-		pkg, err := opc.Open(in[0])
-		if err != nil {
-			return nil, err
-		}
-		reports, err := office.PresentationLayouts(pkg)
-		if err != nil {
-			return nil, err
-		}
-		selected, err := previewSelection(a.Str("slides"), len(reports))
-		if err != nil {
-			return nil, err
-		}
-		if err = os.MkdirAll(filepath.Dir(out), 0755); err != nil {
-			return nil, err
-		}
-		stage, err := os.MkdirTemp(filepath.Dir(out), ".paperworks-slide-preview-")
-		if err != nil {
-			return nil, err
-		}
-		defer os.RemoveAll(stage)
-		// Render the same source snapshot used for metadata, even if the input changes.
-		snapshot := filepath.Join(stage, "source.pptx")
-		if err = pkg.SaveNew(snapshot); err != nil {
-			return nil, err
-		}
-		pages, err := convert.RenderFile(ctx, snapshot, filepath.Join(stage, "rendered"), "", "", opt)
-		if err != nil {
-			return nil, officeErr(err)
-		}
-		return publishSelectedSlidePreview(ctx, stage, out, pages, reports, selected)
+		return runSlidePreview(ctx, a, convert.RenderFile)
 	}})
+}
+
+func runSlidePreview(ctx context.Context, a Args, render previewFileRenderer) (any, error) {
+	in, err := input(a, 1)
+	if err != nil {
+		return nil, err
+	}
+	if ext(in[0]) != ".pptx" {
+		return nil, usagef("slide-preview requires PPTX")
+	}
+	if err = a.Require("output"); err != nil {
+		return nil, err
+	}
+	opt, err := renderOptions(a)
+	if err != nil {
+		return nil, err
+	}
+	out := a.Path("output")
+	pkg, err := opc.Open(in[0])
+	if err != nil {
+		return nil, err
+	}
+	reports, err := office.PresentationLayouts(pkg)
+	if err != nil {
+		return nil, err
+	}
+	selected, err := previewSelection(a.Str("slides"), len(reports))
+	if err != nil {
+		return nil, err
+	}
+	stage, cleanup, err := createPreviewStage(out, ".paperworks-slide-preview-")
+	if err != nil {
+		return nil, err
+	}
+	defer cleanup()
+	// Render the same source snapshot used for metadata, even if the input changes.
+	snapshot := filepath.Join(stage, "source.pptx")
+	if err = pkg.SaveNew(snapshot); err != nil {
+		return nil, err
+	}
+	pages, err := render(ctx, snapshot, filepath.Join(stage, "rendered"), "", "", opt)
+	if err != nil {
+		return nil, officeErr(err)
+	}
+	return publishSelectedSlidePreview(ctx, stage, out, pages, reports, selected)
 }
 func publishSlidePreview(ctx context.Context, stage, out string, pages []string, reports []map[string]any) (any, error) {
 	return publishSelectedSlidePreview(ctx, stage, out, pages, reports, nil)
