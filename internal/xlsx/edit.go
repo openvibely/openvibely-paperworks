@@ -21,6 +21,32 @@ import (
 type EditSpec struct {
 	Edits []Edit `json:"edits"`
 }
+
+var editOperations = []string{
+	"add-chart", "add-data-table", "add-picture", "add-sheet", "add-table",
+	"autofit-columns", "autofit-rows", "clear-all", "clear-formats", "clear-values",
+	"column-width", "conditional-format", "copy", "copy-formats", "copy-formulas", "copy-values",
+	"delete-chart", "delete-column", "delete-conditional-format", "delete-name", "delete-note",
+	"delete-row", "delete-sheet", "delete-table", "delete-validation", "fill-formula",
+	"formula", "insert-columns", "insert-rows", "merge", "move-sheet", "note", "panes",
+	"rename-sheet", "replace-chart", "replace-picture", "row-height", "set-name", "set-table",
+	"style", "tab-color", "unmerge", "validation", "value", "view",
+}
+
+// SupportedEditOperations returns the operation names accepted by workbook-edit.
+func SupportedEditOperations() []string {
+	return append([]string(nil), editOperations...)
+}
+
+func supportedEditOperation(operation string) bool {
+	for _, supported := range editOperations {
+		if operation == supported {
+			return true
+		}
+	}
+	return false
+}
+
 type formulaSheetRename struct {
 	from string
 	to   string
@@ -57,6 +83,11 @@ type Edit struct {
 func EditFile(ctx context.Context, input, output, base string, spec EditSpec) error {
 	if len(spec.Edits) == 0 || len(spec.Edits) > 10000 {
 		return fmt.Errorf("edits must contain 1..10000 operations")
+	}
+	for _, edit := range spec.Edits {
+		if !supportedEditOperation(edit.Operation) {
+			return fmt.Errorf("unsupported operation %q", edit.Operation)
+		}
 	}
 	f, err := excelize.OpenFile(input)
 	if err != nil {

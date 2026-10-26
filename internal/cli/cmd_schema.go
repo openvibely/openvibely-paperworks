@@ -28,9 +28,131 @@ func init() {
 		root := g.schema(reflect.TypeOf(value))
 		root["$schema"] = "https://json-schema.org/draft/2020-12/schema"
 		root["$defs"] = g.defs
-		root["description"] = "Field schema derived from the Go input types. Runtime validation enforces operation-specific required fields and constraints. Indices and units are documented in docs/document-editing.md."
+		root["description"] = "Field schema derived from the Go input types. Runtime validation remains authoritative for document-dependent constraints. Indices and units are documented in docs/document-editing.md."
+		if a.Pos[0] == "workbook-edit" {
+			constrainWorkbookEditSchema(root, g.defs)
+		}
 		return root, nil
 	}})
+}
+
+func constrainWorkbookEditSchema(root map[string]any, defs map[string]any) {
+	editSpecName := schemaDefinitionName(reflect.TypeOf(xlsx.EditSpec{}))
+	editSpec := defs[editSpecName].(map[string]any)
+	editSpec["required"] = []string{"edits"}
+	specProperties := editSpec["properties"].(map[string]any)
+	edits := specProperties["edits"].(map[string]any)
+	edits["minItems"] = 1
+	edits["maxItems"] = 10000
+
+	editName := schemaDefinitionName(reflect.TypeOf(xlsx.Edit{}))
+	edit := defs[editName].(map[string]any)
+	edit["required"] = []string{"operation"}
+	properties := edit["properties"].(map[string]any)
+	operation := properties["operation"].(map[string]any)
+	operation["enum"] = xlsx.SupportedEditOperations()
+
+	formulaStyle := properties["formula_style"].(map[string]any)
+	formulaStyle["enum"] = []string{"", "a1", "r1c1"}
+
+	// Runtime checks the count before applying either insertion operation.
+	var allOf []any
+	allOf = append(allOf, map[string]any{
+		"if":   map[string]any{"required": []string{"operation"}, "properties": map[string]any{"operation": map[string]any{"enum": []string{"insert-rows", "insert-columns"}}}},
+		"then": map[string]any{"properties": map[string]any{"count": map[string]any{"minimum": 1}}},
+	})
+	allOf = append(allOf, map[string]any{
+		"if":   map[string]any{"required": []string{"operation"}, "properties": map[string]any{"operation": map[string]any{"enum": []string{"insert-rows", "delete-row", "row-height"}}}},
+		"then": map[string]any{"properties": map[string]any{"index": map[string]any{"minimum": 1}}},
+	})
+	edit["allOf"] = allOf
+
+	requiredByOperation := map[string][]string{
+		"add-chart":                 {"sheet", "cell", "chart"},
+		"add-data-table":            {"sheet", "data_table"},
+		"add-picture":               {"sheet", "cell", "picture"},
+		"add-sheet":                 {"name"},
+		"add-table":                 {"sheet", "table"},
+		"autofit-columns":           {"sheet", "range"},
+		"autofit-rows":              {"sheet", "range"},
+		"clear-all":                 {"sheet", "range"},
+		"clear-formats":             {"sheet", "range"},
+		"clear-values":              {"sheet", "range"},
+		"column-width":              {"sheet", "range", "size"},
+		"conditional-format":        {"sheet", "range", "conditional"},
+		"copy":                      {"sheet", "range", "target"},
+		"copy-formats":              {"sheet", "range", "target"},
+		"copy-formulas":             {"sheet", "range", "target"},
+		"copy-values":               {"sheet", "range", "target"},
+		"delete-chart":              {"sheet", "cell"},
+		"delete-column":             {"sheet", "cell"},
+		"delete-conditional-format": {"sheet", "range"},
+		"delete-name":               {"defined_name"},
+		"delete-note":               {"sheet", "cell"},
+		"delete-row":                {"sheet", "index"},
+		"delete-sheet":              {"sheet"},
+		"delete-table":              {"name"},
+		"delete-validation":         {"sheet", "range"},
+		"fill-formula":              {"sheet", "range", "formula"},
+		"formula":                   {"sheet", "cell", "formula"},
+		"insert-columns":            {"sheet", "cell", "count"},
+		"insert-rows":               {"sheet", "index", "count"},
+		"merge":                     {"sheet", "range"},
+		"move-sheet":                {"sheet", "target"},
+		"note":                      {"sheet", "note"},
+		"panes":                     {"sheet", "panes"},
+		"rename-sheet":              {"sheet", "name"},
+		"replace-chart":             {"sheet", "cell", "chart"},
+		"replace-picture":           {"sheet", "cell", "picture"},
+		"row-height":                {"sheet", "index", "size"},
+		"set-name":                  {"defined_name"},
+		"set-table":                 {"sheet", "name", "table"},
+		"style":                     {"sheet", "range", "style"},
+		"tab-color":                 {"sheet", "color"},
+		"unmerge":                   {"sheet", "range"},
+		"validation":                {"sheet", "validation"},
+		"value":                     {"sheet", "cell", "value"},
+		"view":                      {"sheet", "view"},
+	}
+	groups := make([]map[string]any, 0)
+	groupIndex := map[string]int{}
+	for _, op := range xlsx.SupportedEditOperations() {
+		required, ok := requiredByOperation[op]
+		if !ok || len(required) == 0 {
+			panic("workbook-edit schema is missing required fields for operation " + op)
+		}
+		key := strings.Join(required, "\x00")
+		idx, ok := groupIndex[key]
+		if !ok {
+			idx = len(groups)
+			groupIndex[key] = idx
+			groups = append(groups, map[string]any{"operations": []string{op}, "required": required})
+		} else {
+			ops := groups[idx]["operations"].([]string)
+			groups[idx]["operations"] = append(ops, op)
+		}
+	}
+	for _, group := range groups {
+		condition := map[string]any{
+			"required":   []string{"operation"},
+			"properties": map[string]any{"operation": map[string]any{"enum": group["operations"]}},
+		}
+		allOf = append(allOf, map[string]any{
+			"if":   condition,
+			"then": map[string]any{"required": group["required"]},
+		})
+	}
+	edit["allOf"] = allOf
+
+	dataTableName := schemaDefinitionName(reflect.TypeOf(xlsx.DataTable{}))
+	if dataTable, ok := defs[dataTableName].(map[string]any); ok {
+		dataTable["required"] = []string{"range", "input1"}
+	}
+	root["description"] = "Workbook edit field schema with operation-specific required fields and stable constraints. Runtime validation remains authoritative for document-dependent constraints."
+}
+
+func schemaDefinitionName(t reflect.Type) string {
+	return strings.ReplaceAll(t.PkgPath()+"."+t.Name(), "/", "_")
 }
 
 type schemaBuilder struct{ defs map[string]any }
