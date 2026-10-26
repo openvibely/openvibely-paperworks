@@ -362,21 +362,25 @@ func refreshXLSXWithoutOffice(src, dst string) (bool, error) {
 	if xlsxHasRefreshWork(src) {
 		return false, nil
 	}
+	hasCharts, proven := xlsxChartParts(src)
+	if !proven {
+		return false, nil
+	}
+	if !hasCharts {
+		return true, copyFileExclusive(src, dst)
+	}
 	pkg, err := opc.Open(src)
 	if err != nil {
 		return false, nil
 	}
 	charts, err := office.ChartParts(pkg)
-	if err != nil {
+	if err != nil || len(charts) == 0 {
 		return false, nil
 	}
-	if len(charts) > 0 {
-		if err := office.RefreshWorkbookChartCaches(pkg); err != nil {
-			return false, nil
-		}
-		return true, pkg.SaveNew(dst)
+	if err := office.RefreshWorkbookChartCaches(pkg); err != nil {
+		return false, nil
 	}
-	return true, copyFileExclusive(src, dst)
+	return true, pkg.SaveNew(dst)
 }
 
 // Refresh opens src, recalculates formulas, refreshes fields and indexes and
