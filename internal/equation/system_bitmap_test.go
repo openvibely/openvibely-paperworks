@@ -51,6 +51,37 @@ func bitmapFixture(t *testing.T) []byte {
 	return b
 }
 
+func bitmapTTCFixture(t *testing.T, font []byte, faces int) []byte {
+	return bitmapTTCVersionFixture(t, font, faces, 0x00010000)
+}
+
+func bitmapTTCVersionFixture(t *testing.T, font []byte, faces int, version uint32) []byte {
+	t.Helper()
+	if faces < 1 {
+		t.Fatal("TTC fixture needs at least one face")
+	}
+	headerSize := 12 + 4*faces
+	if version == 0x00020000 {
+		headerSize += 12
+	}
+	b := make([]byte, headerSize+faces*len(font))
+	copy(b, "ttcf")
+	binary.BigEndian.PutUint32(b[4:], version)
+	binary.BigEndian.PutUint32(b[8:], uint32(faces))
+	for face := 0; face < faces; face++ {
+		base := headerSize + face*len(font)
+		binary.BigEndian.PutUint32(b[12+4*face:], uint32(base))
+		copy(b[base:], font)
+		tableCount := int(binary.BigEndian.Uint16(b[base+4:]))
+		for i := 0; i < tableCount; i++ {
+			offset := base + 12 + i*16 + 8
+			fontOffset := binary.BigEndian.Uint32(b[offset:])
+			binary.BigEndian.PutUint32(b[offset:], fontOffset+uint32(base))
+		}
+	}
+	return b
+}
+
 func TestSystemBitmap(t *testing.T) {
 	b := bitmapFixture(t)
 	g, err := loadSystemBitmap(b, 0, 0, 0)
@@ -83,10 +114,46 @@ func TestSystemBitmap(t *testing.T) {
 	if _, e := loadSystemBitmap(cycle, 0, 0, 0); e == nil {
 		t.Fatal("accepted duplicate cycle")
 	}
+	unsupported := bytes.Clone(b)
+	copy(unsupported[82:], "jpg ")
+	if _, e := loadSystemBitmap(unsupported, 0, 0, 0); e == nil {
+		t.Fatal("accepted unsupported sbix glyph data")
+	}
 	invalid := bytes.Clone(b)
 	binary.BigEndian.PutUint32(invalid[70:], 0xffffffff)
 	if _, e := loadSystemBitmap(invalid, 0, 0, 0); e == nil {
 		t.Fatal("accepted out-of-bounds glyph")
+	}
+}
+
+func TestSystemBitmapTTFAndTTC(t *testing.T) {
+	font := bitmapFixture(t)
+	ttc := bitmapTTCFixture(t, font, 2)
+	ttcV2 := bitmapTTCVersionFixture(t, font, 1, 0x00020000)
+	for _, tc := range []struct {
+		name string
+		data []byte
+		face int
+	}{
+		{name: "ttf", data: font},
+		{name: "ttc first face", data: ttc},
+		{name: "ttc second face", data: ttc, face: 1},
+		{name: "ttc version 2", data: ttcV2},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			glyph, err := loadSystemBitmap(tc.data, tc.face, 0, 0)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if glyph.Image.Bounds() != image.Rect(0, 0, 2, 1) {
+				t.Fatalf("unexpected image bounds: %v", glyph.Image.Bounds())
+			}
+		})
+	}
+	for name, collection := range map[string][]byte{"TTC v1": ttc, "TTC v2": ttcV2} {
+		if strike, err := largestSystemStrike(collection); err != nil || strike != 0 {
+			t.Errorf("%s strike selection = %d, %v; want 0, nil", name, strike, err)
+		}
 	}
 }
 
@@ -103,7 +170,8 @@ func TestSystemBitmapReaderAtBounds(t *testing.T) {
 		offset int
 		value  uint32
 	}{
-		{"table offset", 36, 0xffffffff}, {"table length", 40, 0xffffffff},
+		{"maxp table offset", 20, 0xffffffff}, {"maxp table length", 24, 0xffffffff},
+		{"sbix table offset", 36, 0xffffffff}, {"sbix table length", 40, 0xffffffff},
 		{"strike offset", 58, 0xffffffff}, {"glyph offset", 70, 0xffffffff},
 	} {
 		t.Run(c.name, func(t *testing.T) {
@@ -119,17 +187,34 @@ func TestSystemBitmapReaderAtBounds(t *testing.T) {
 			}
 		})
 	}
-	// TTC face directory offsets are absolute and must stay within the file.
-	for _, base := range []uint32{0xfffffff0, uint32(len(data) - 8)} {
-		bad := bytes.Clone(data)
-		copy(bad, "ttcf")
-		binary.BigEndian.PutUint32(bad[8:], 1)
-		binary.BigEndian.PutUint32(bad[12:], base)
-		if _, err := loadSystemBitmapReaderAt(bytes.NewReader(bad), int64(len(bad)), 0, 0, 0); err == nil {
-			t.Fatal("accepted invalid TTC face offset")
-		}
-		if _, err := largestSystemStrikeReaderAt(bytes.NewReader(bad), int64(len(bad))); err == nil {
-			t.Fatal("accepted invalid TTC strike directory")
+	// TTC offsets are absolute and may not point into the collection header or
+	// outside the file. The shared reader also rejects malformed TTC headers.
+	ttc := bitmapTTCFixture(t, data, 1)
+	for _, tc := range []struct {
+		name   string
+		offset int
+		value  uint32
+	}{
+		{"offset outside file", 12, 0xfffffff0},
+		{"offset into header", 12, 12},
+		{"unsupported version", 4, 0x00030000},
+		{"zero face count", 8, 0},
+		{"excessive face count", 8, 65537},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			bad := bytes.Clone(ttc)
+			binary.BigEndian.PutUint32(bad[tc.offset:], tc.value)
+			if _, err := loadSystemBitmapReaderAt(bytes.NewReader(bad), int64(len(bad)), 0, 0, 0); err == nil {
+				t.Fatal("accepted invalid TTC face directory")
+			}
+			if _, err := largestSystemStrikeReaderAt(bytes.NewReader(bad), int64(len(bad))); err == nil {
+				t.Fatal("accepted invalid TTC strike directory")
+			}
+		})
+	}
+	for n := 0; n < 16; n++ {
+		if _, err := largestSystemStrikeReaderAt(bytes.NewReader(ttc[:n]), int64(n)); err == nil {
+			t.Fatalf("accepted truncated TTC header %d", n)
 		}
 	}
 	for n := 0; n < 66; n++ {
