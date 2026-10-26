@@ -40,55 +40,54 @@ const (
 
 func init() {
 	register(&Command{Name: "preview-export", Summary: "Export document previews as PNG/JPEG/WebP and an optional contact sheet.", Usage: "paperworks preview-export INPUT --output NEW_DIR [--format png|jpeg|webp] [--columns 3] [--dpi N | --max-pixels N] [--sheet NAME --range A1:D20]", Run: func(ctx context.Context, a Args) (any, error) {
-		in, err := input(a, 1)
-		if err != nil {
-			return nil, err
-		}
-		if err = a.Require("output"); err != nil {
-			return nil, err
-		}
-		format := a.Str("format")
-		if format == "" {
-			format = "png"
-		}
-		if format != "png" && format != "jpeg" && format != "webp" {
-			return nil, usagef("format must be png, jpeg or webp")
-		}
-		cols, err := a.Int("columns", 0)
-		if err != nil {
-			return nil, err
-		}
-		if cols < 0 || cols > 10 {
-			return nil, usagef("columns must be 0..10; zero disables contact sheet")
-		}
-		opt, err := renderOptions(a)
-		if err != nil {
-			return nil, UsageError{err.Error()}
-		}
-		out := a.Path("output")
-		if _, err = os.Lstat(out); !os.IsNotExist(err) {
-			usage := UsageError{"output must be a new directory"}
-			if err == nil {
-				return nil, previewOutputExistsError{usage}
-			}
-			return nil, usage
-		}
-		// Create only the parents: the final output stays unpublished until the
-		// staged preview is complete and renamed below.
-		if err = os.MkdirAll(filepath.Dir(out), 0o755); err != nil {
-			return nil, err
-		}
-		stage, err := os.MkdirTemp(filepath.Dir(out), ".paperworks-preview-")
-		if err != nil {
-			return nil, err
-		}
-		defer os.RemoveAll(stage)
-		pages, err := convert.RenderFile(ctx, in[0], filepath.Join(stage, "rendered"), a.Str("sheet"), a.Str("range"), opt)
-		if err != nil {
-			return nil, officeErr(err)
-		}
-		return exportRenderedPreviews(ctx, stage, out, pages, format, cols)
+		return runPreviewExport(ctx, a, convert.RenderFile)
 	}})
+}
+
+func runPreviewExport(ctx context.Context, a Args, render previewFileRenderer) (any, error) {
+	in, err := input(a, 1)
+	if err != nil {
+		return nil, err
+	}
+	if err = a.Require("output"); err != nil {
+		return nil, err
+	}
+	format := a.Str("format")
+	if format == "" {
+		format = "png"
+	}
+	if format != "png" && format != "jpeg" && format != "webp" {
+		return nil, usagef("format must be png, jpeg or webp")
+	}
+	cols, err := a.Int("columns", 0)
+	if err != nil {
+		return nil, err
+	}
+	if cols < 0 || cols > 10 {
+		return nil, usagef("columns must be 0..10; zero disables contact sheet")
+	}
+	opt, err := renderOptions(a)
+	if err != nil {
+		return nil, UsageError{err.Error()}
+	}
+	out := a.Path("output")
+	if _, err = os.Lstat(out); !os.IsNotExist(err) {
+		usage := UsageError{"output must be a new directory"}
+		if err == nil {
+			return nil, previewOutputExistsError{usage}
+		}
+		return nil, usage
+	}
+	stage, cleanup, err := createPreviewStage(out, ".paperworks-preview-")
+	if err != nil {
+		return nil, err
+	}
+	defer cleanup()
+	pages, err := render(ctx, in[0], filepath.Join(stage, "rendered"), a.Str("sheet"), a.Str("range"), opt)
+	if err != nil {
+		return nil, officeErr(err)
+	}
+	return exportRenderedPreviews(ctx, stage, out, pages, format, cols)
 }
 
 // exportRenderedPreviews consumes renderer output in its returned page order.
