@@ -297,16 +297,16 @@ func init() {
 			if err := newFile(out, in[0]); err != nil {
 				return nil, err
 			}
-			pages, err := pagesFlag(ctx, a, in[0])
-			if err != nil {
-				return nil, err
-			}
 			data, err := os.ReadFile(in[0])
 			if err != nil {
 				return nil, err
 			}
-			res, err := pdf.SelectPages(ctx, data, pages)
+			res, pages, err := pdf.SelectPagesBySpec(ctx, data, a.Str("pages"))
 			if err != nil {
+				var selectionErr pdf.PageSelectionError
+				if errors.As(err, &selectionErr) {
+					return nil, UsageError{selectionErr.Error()}
+				}
 				return nil, err
 			}
 			return map[string]any{"output": out, "pages": pages}, writeExclusive(out, res)
