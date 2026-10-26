@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	register(&Command{Name: "schema", Summary: "Print JSON input field schemas for document authoring and editing commands.", Usage: "paperworks schema COMMAND", Run: func(ctx context.Context, a Args) (any, error) {
+	register(&Command{Name: "schema", ValueOpts: []string{}, Summary: "Print JSON input field schemas for document authoring and editing commands.", Usage: "paperworks schema COMMAND", Run: func(ctx context.Context, a Args) (any, error) {
 		if len(a.Pos) != 1 {
 			return nil, usagef("one command name required")
 		}

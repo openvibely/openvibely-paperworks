@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	register(&Command{Name: "create-pdf", Summary: "Create a flowing report or fixed-layout PDF with text, tables, images and forms.", Usage: "paperworks create-pdf --spec DOCUMENT.json --output NEW.pdf", Run: func(ctx context.Context, a Args) (any, error) {
+	register(&Command{Name: "create-pdf", ValueOpts: []string{"spec", "output"}, Summary: "Create a flowing report or fixed-layout PDF with text, tables, images and forms.", Usage: "paperworks create-pdf --spec DOCUMENT.json --output NEW.pdf", Run: func(ctx context.Context, a Args) (any, error) {
 		if len(a.Pos) != 0 {
 			return nil, usagef("create-pdf takes no positional arguments")
 		}

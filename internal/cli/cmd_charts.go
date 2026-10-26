@@ -29,9 +29,10 @@ func oneInOut(a Args) (string, string, error) {
 
 func init() {
 	register(&Command{
-		Name:    "verify-slides",
-		Summary: "Check a PPTX against explicit requirements (slide count/size, native tables/charts, fonts, table sums, chart caches).",
-		Usage:   "paperworks verify-slides INPUT.pptx --requirements SPEC.json",
+		Name:      "verify-slides",
+		ValueOpts: []string{"requirements"},
+		Summary:   "Check a PPTX against explicit requirements (slide count/size, native tables/charts, fonts, table sums, chart caches).",
+		Usage:     "paperworks verify-slides INPUT.pptx --requirements SPEC.json",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, err := input(a, 1)
 			if err != nil {
@@ -87,9 +88,10 @@ func init() {
 		},
 	})
 	register(&Command{
-		Name:    "table-exchange",
-		Summary: "Convert one table: XLSX range → new DOCX table, or DOCX table → CSV.",
-		Usage:   "paperworks table-exchange SOURCE.xlsx --sheet NAME --range A1:D12 --output NEW.docx | SOURCE.docx [--table-index N] --output NEW.csv",
+		Name:      "table-exchange",
+		ValueOpts: []string{"output", "sheet", "range", "table-index"},
+		Summary:   "Convert one table: XLSX range → new DOCX table, or DOCX table → CSV.",
+		Usage:     "paperworks table-exchange SOURCE.xlsx --sheet NAME --range A1:D12 --output NEW.docx | SOURCE.docx [--table-index N] --output NEW.csv",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, out, err := oneInOut(a)
 			if err != nil {
@@ -103,9 +105,10 @@ func init() {
 		},
 	})
 	register(&Command{
-		Name:    "workbook-inputs",
-		Summary: "Patch literal XLSX input cells on a new copy, keeping formulas, caches and extensions.",
-		Usage:   `paperworks workbook-inputs INPUT.xlsx --requirements SPEC.json --output NEW.xlsx   (SPEC: {"sheet":"Data","cells":{"B2":120}})`,
+		Name:      "workbook-inputs",
+		ValueOpts: []string{"requirements", "output"},
+		Summary:   "Patch literal XLSX input cells on a new copy, keeping formulas, caches and extensions.",
+		Usage:     `paperworks workbook-inputs INPUT.xlsx --requirements SPEC.json --output NEW.xlsx   (SPEC: {"sheet":"Data","cells":{"B2":120}})`,
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, out, err := oneInOut(a)
 			if err != nil {
@@ -119,9 +122,10 @@ func init() {
 		},
 	})
 	register(&Command{
-		Name:    "chart-inputs",
-		Summary: "Edit a chart's embedded-workbook inputs, recalculate with LibreOffice and refresh dependent chart caches.",
-		Usage:   `paperworks chart-inputs INPUT.pptx --requirements SPEC.json --output NEW.pptx   (SPEC: {"chart":1,"sheet":"Sheet1","cells":{"B2":150}})`,
+		Name:      "chart-inputs",
+		ValueOpts: []string{"requirements", "output"},
+		Summary:   "Edit a chart's embedded-workbook inputs, recalculate with LibreOffice and refresh dependent chart caches.",
+		Usage:     `paperworks chart-inputs INPUT.pptx --requirements SPEC.json --output NEW.pptx   (SPEC: {"chart":1,"sheet":"Sheet1","cells":{"B2":150}})`,
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, out, err := oneInOut(a)
 			if err != nil {
@@ -136,9 +140,10 @@ func init() {
 		},
 	})
 	register(&Command{
-		Name:    "materialize-charts",
-		Summary: "Snapshot literal chart series into new embedded workbooks (never replaces existing lineage).",
-		Usage:   "paperworks materialize-charts INPUT.pptx --output NEW.pptx",
+		Name:      "materialize-charts",
+		ValueOpts: []string{"output"},
+		Summary:   "Snapshot literal chart series into new embedded workbooks (never replaces existing lineage).",
+		Usage:     "paperworks materialize-charts INPUT.pptx --output NEW.pptx",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, out, err := oneInOut(a)
 			if err != nil {
@@ -148,9 +153,10 @@ func init() {
 		},
 	})
 	register(&Command{
-		Name:    "verify-charts",
-		Summary: "Compare every chart cache with its saved embedded workbook values.",
-		Usage:   "paperworks verify-charts INPUT [--target-application powerpoint]",
+		Name:      "verify-charts",
+		ValueOpts: []string{"target-application"},
+		Summary:   "Compare every chart cache with its saved embedded workbook values.",
+		Usage:     "paperworks verify-charts INPUT [--target-application powerpoint]",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, err := input(a, 1)
 			if err != nil {
@@ -168,9 +174,10 @@ func init() {
 		},
 	})
 	register(&Command{
-		Name:    "sparklines",
-		Summary: "Set, delete or clear native XLSX sparklines on one worksheet.",
-		Usage:   `paperworks sparklines INPUT.xlsx --requirements SPEC.json --output NEW.xlsx   (SPEC: {"sheet":"Data","action":"set","sparklines":[{"cell":"F2","range":"Data!B2:E2"}],"options":{"type":"line"}})`,
+		Name:      "sparklines",
+		ValueOpts: []string{"requirements", "output"},
+		Summary:   "Set, delete or clear native XLSX sparklines on one worksheet.",
+		Usage:     `paperworks sparklines INPUT.xlsx --requirements SPEC.json --output NEW.xlsx   (SPEC: {"sheet":"Data","action":"set","sparklines":[{"cell":"F2","range":"Data!B2:E2"}],"options":{"type":"line"}})`,
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, out, err := oneInOut(a)
 			if err != nil {

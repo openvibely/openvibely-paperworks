@@ -13,7 +13,7 @@ import (
 )
 
 func init() {
-	register(&Command{Name: "inspect-select", Summary: "Select a JSON pointer from an inspection report, or search bounded matching values.", Usage: "paperworks inspect-select INPUT [--path /slides/0] [--sheet NAME --range A1:D20] [--search TEXT] [--max-items 100] [--max-chars 20000]", Run: func(ctx context.Context, a Args) (any, error) {
+	register(&Command{Name: "inspect-select", ValueOpts: []string{"path", "sheet", "range", "search", "max-items", "max-chars"}, Summary: "Select a JSON pointer from an inspection report, or search bounded matching values.", Usage: "paperworks inspect-select INPUT [--path /slides/0] [--sheet NAME --range A1:D20] [--search TEXT] [--max-items 100] [--max-chars 20000]", Run: func(ctx context.Context, a Args) (any, error) {
 		hasSheet, hasRange := a.Str("sheet") != "", a.Str("range") != ""
 		pointer := a.Str("path")
 		segments, err := decodeJSONPointer(pointer)

@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	register(&Command{Name: "trace", Summary: "Trace bounded XLSX formula precedents without calculation or modification.", Usage: "paperworks trace INPUT.xlsx --sheet NAME --cell A1 [--max-nodes 200 --max-depth 20]", Run: func(ctx context.Context, a Args) (any, error) {
+	register(&Command{Name: "trace", ValueOpts: []string{"sheet", "cell", "max-nodes", "max-depth"}, Summary: "Trace bounded XLSX formula precedents without calculation or modification.", Usage: "paperworks trace INPUT.xlsx --sheet NAME --cell A1 [--max-nodes 200 --max-depth 20]", Run: func(ctx context.Context, a Args) (any, error) {
 		in, e := input(a, 1)
 		if e != nil {
 			return nil, e

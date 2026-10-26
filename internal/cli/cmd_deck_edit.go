@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	register(&Command{Name: "deck-edit", Summary: "Add, duplicate, reorder or remove slides, or add native objects to an existing deck.", Usage: "paperworks deck-edit INPUT.pptx --spec EDITS.json --output NEW.pptx", Run: func(ctx context.Context, a Args) (any, error) {
+	register(&Command{Name: "deck-edit", ValueOpts: []string{"spec", "output"}, Summary: "Add, duplicate, reorder or remove slides, or add native objects to an existing deck.", Usage: "paperworks deck-edit INPUT.pptx --spec EDITS.json --output NEW.pptx", Run: func(ctx context.Context, a Args) (any, error) {
 		in, out, err := oneInOut(a)
 		if err != nil {
 			return nil, err

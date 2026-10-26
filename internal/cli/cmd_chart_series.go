@@ -14,7 +14,7 @@ type ChartSeriesSpec struct {
 }
 
 func init() {
-	register(&Command{Name: "chart-series-replace", Summary: "Replace a single-series column chart's categories and embedded workbook; preserves the chart's placement and formatting.", Usage: "paperworks chart-series-replace INPUT --spec DATA.json --output NEW_FILE", Run: func(ctx context.Context, a Args) (any, error) {
+	register(&Command{Name: "chart-series-replace", ValueOpts: []string{"spec", "output"}, Summary: "Replace a single-series column chart's categories and embedded workbook; preserves the chart's placement and formatting.", Usage: "paperworks chart-series-replace INPUT --spec DATA.json --output NEW_FILE", Run: func(ctx context.Context, a Args) (any, error) {
 		in, out, err := oneInOut(a)
 		if err != nil {
 			return nil, err

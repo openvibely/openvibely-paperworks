@@ -11,13 +11,13 @@ import (
 )
 
 func init() {
-	register(&Command{Name: "equation-fonts", Summary: "List embedded equation fonts and their complete redistribution license.", Usage: "paperworks equation-fonts", Run: func(ctx context.Context, a Args) (any, error) {
+	register(&Command{Name: "equation-fonts", ValueOpts: []string{}, Summary: "List embedded equation fonts and their complete redistribution license.", Usage: "paperworks equation-fonts", Run: func(ctx context.Context, a Args) (any, error) {
 		if len(a.Pos) != 0 {
 			return nil, usagef("equation-fonts takes no arguments")
 		}
 		return map[string]any{"fonts": fonts.Names(), "license": fonts.License, "provenance": "KaTeX v0.16.22 (unmodified)"}, nil
 	}})
-	register(&Command{Name: "equation", Summary: "Render local TeX to a transparent PNG using embedded fonts (compatibility work in progress).", Usage: "paperworks equation EXPRESSION.txt NEW.png [--inline] [--font-size 24] [--dpi 300] [--scale 1] [--padding 3.6]", BoolOpts: []string{"inline"}, Run: func(ctx context.Context, a Args) (any, error) {
+	register(&Command{Name: "equation", ValueOpts: []string{"font-size", "dpi", "scale", "padding"}, Summary: "Render local TeX to a transparent PNG using embedded fonts (compatibility work in progress).", Usage: "paperworks equation EXPRESSION.txt NEW.png [--inline] [--font-size 24] [--dpi 300] [--scale 1] [--padding 3.6]", BoolOpts: []string{"inline"}, Run: func(ctx context.Context, a Args) (any, error) {
 		in, err := input(a, 2)
 		if err != nil {
 			return nil, err

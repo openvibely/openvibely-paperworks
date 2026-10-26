@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	register(&Command{Name: "workbook-edit", Summary: "Apply ordered edits to an existing workbook; write a new file. Recalculate before using formula results.", Usage: "paperworks workbook-edit INPUT.xlsx --spec EDITS.json --output NEW.xlsx\n  sizing operations: autofit-columns, autofit-rows (cell range), column-width, row-height", Run: func(ctx context.Context, a Args) (any, error) {
+	register(&Command{Name: "workbook-edit", ValueOpts: []string{"spec", "output"}, Summary: "Apply ordered edits to an existing workbook; write a new file. Recalculate before using formula results.", Usage: "paperworks workbook-edit INPUT.xlsx --spec EDITS.json --output NEW.xlsx\n  sizing operations: autofit-columns, autofit-rows (cell range), column-width, row-height", Run: func(ctx context.Context, a Args) (any, error) {
 		if len(a.Pos) != 1 {
 			return nil, usagef("one input workbook required")
 		}
@@ -22,7 +22,7 @@ func init() {
 		err := xlsx.EditFile(ctx, a.Pos[0], out, filepath.Dir(a.Path("spec")), s)
 		return map[string]any{"output": out, "recalculated": false, "visual_review_required": true}, err
 	}})
-	register(&Command{Name: "import-csv", Summary: "Import CSV/TSV fields as literal workbook values.", Usage: "paperworks import-csv INPUT.csv --output NEW.xlsx [--sheet NAME] [--delimiter tab]", Run: func(ctx context.Context, a Args) (any, error) {
+	register(&Command{Name: "import-csv", ValueOpts: []string{"output", "sheet", "delimiter"}, Summary: "Import CSV/TSV fields as literal workbook values.", Usage: "paperworks import-csv INPUT.csv --output NEW.xlsx [--sheet NAME] [--delimiter tab]", Run: func(ctx context.Context, a Args) (any, error) {
 		if len(a.Pos) != 1 {
 			return nil, usagef("one input file required")
 		}

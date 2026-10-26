@@ -44,9 +44,10 @@ func officeErr(err error) error {
 
 func init() {
 	register(&Command{
-		Name:    "render",
-		Summary: "Render PDF/DOCX/XLSX/PPTX pages to PNG; reuse output directories and overwrite matching pages (Office files via LibreOffice).",
-		Usage:   "paperworks render INPUT --output NEW_DIR [--dpi N | --max-pixels N] [--sheet NAME [--range A1:D20]]",
+		Name:      "render",
+		ValueOpts: []string{"output", "dpi", "max-pixels", "sheet", "range"},
+		Summary:   "Render PDF/DOCX/XLSX/PPTX pages to PNG; reuse output directories and overwrite matching pages (Office files via LibreOffice).",
+		Usage:     "paperworks render INPUT --output NEW_DIR [--dpi N | --max-pixels N] [--sheet NAME [--range A1:D20]]",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, err := input(a, 1)
 			if err != nil {
@@ -70,9 +71,10 @@ func init() {
 		},
 	})
 	register(&Command{
-		Name:    "convert",
-		Summary: "Export DOCX/XLSX/PPTX to PDF with LibreOffice in a new directory (spreadsheets are recalculated first).",
-		Usage:   "paperworks convert INPUT --output NEW_DIR [--sheet NAME [--range A1:D20]]",
+		Name:      "convert",
+		ValueOpts: []string{"output", "sheet", "range"},
+		Summary:   "Export DOCX/XLSX/PPTX to PDF with LibreOffice in a new directory (spreadsheets are recalculated first).",
+		Usage:     "paperworks convert INPUT --output NEW_DIR [--sheet NAME [--range A1:D20]]",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, err := input(a, 1)
 			if err != nil {
@@ -89,9 +91,10 @@ func init() {
 		},
 	})
 	register(&Command{
-		Name:    "recalculate",
-		Summary: "Recalculate XLSX formulas with LibreOffice into a new directory; only cached results change.",
-		Usage:   "paperworks recalculate INPUT.xlsx --output NEW_DIR",
+		Name:      "recalculate",
+		ValueOpts: []string{"output"},
+		Summary:   "Recalculate XLSX formulas with LibreOffice into a new directory; only cached results change.",
+		Usage:     "paperworks recalculate INPUT.xlsx --output NEW_DIR",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, err := input(a, 1)
 			if err != nil {
@@ -111,9 +114,10 @@ func init() {
 		},
 	})
 	register(&Command{
-		Name:    "refresh",
-		Summary: "Refresh DOCX fields/TOC or XLSX formulas via LibreOffice into a new directory (re-saved by LibreOffice).",
-		Usage:   "paperworks refresh INPUT.docx|INPUT.xlsx --output NEW_DIR",
+		Name:      "refresh",
+		ValueOpts: []string{"output"},
+		Summary:   "Refresh DOCX fields/TOC or XLSX formulas via LibreOffice into a new directory (re-saved by LibreOffice).",
+		Usage:     "paperworks refresh INPUT.docx|INPUT.xlsx --output NEW_DIR",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, err := input(a, 1)
 			if err != nil {
@@ -133,10 +137,11 @@ func init() {
 		},
 	})
 	register(&Command{
-		Name:     "compare",
-		Summary:  "Render two documents and write per-page pixel diffs (plus a text diff for DOCX pairs).",
-		Usage:    "paperworks compare BEFORE --against AFTER --output NEW_DIR [--dpi N | --max-pixels N]",
-		BoolOpts: nil,
+		Name:      "compare",
+		ValueOpts: []string{"against", "output", "dpi", "max-pixels"},
+		Summary:   "Render two documents and write per-page pixel diffs (plus a text diff for DOCX pairs).",
+		Usage:     "paperworks compare BEFORE --against AFTER --output NEW_DIR [--dpi N | --max-pixels N]",
+		BoolOpts:  nil,
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, err := input(a, 1)
 			if err != nil {
@@ -159,17 +164,19 @@ func init() {
 		},
 	})
 	register(&Command{
-		Name:    "version",
-		Summary: "Print the paperworks version.",
-		Usage:   "paperworks version",
+		Name:      "version",
+		ValueOpts: []string{},
+		Summary:   "Print the paperworks version.",
+		Usage:     "paperworks version",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			return map[string]any{"version": Version, "os": runtime.GOOS, "arch": runtime.GOARCH, "go": runtime.Version()}, nil
 		},
 	})
 	register(&Command{
-		Name:    "capabilities",
-		Summary: "Report built-in engines and optional external dependencies (LibreOffice).",
-		Usage:   "paperworks capabilities",
+		Name:      "capabilities",
+		ValueOpts: []string{},
+		Summary:   "Report built-in engines and optional external dependencies (LibreOffice).",
+		Usage:     "paperworks capabilities",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			office := map[string]any{"available": false}
 			if exe, err := lo.Find(); err == nil {
@@ -225,10 +232,11 @@ func pagesFlag(ctx context.Context, a Args, path string) ([]int, error) {
 
 func init() {
 	register(&Command{
-		Name:     "fill",
-		Summary:  "Fill PDF AcroForm fields into a new PDF (optionally flattened).",
-		Usage:    "paperworks fill INPUT.pdf --values values.json --output NEW.pdf [--flatten] [--strict-choices]\n  --strict-choices: Reject unmatched choice export values before writing (editable combos allow custom text).\n  Default: preserve unmatched values and return structured warnings. Empty strings/arrays clear selections.\n  values.json: {\"Field name\": \"value\", \"Checkbox\": \"/Yes\", \"Multi-select list\": [\"Alpha\", \"Beta\"]}",
-		BoolOpts: []string{"flatten", "strict-choices"},
+		Name:      "fill",
+		ValueOpts: []string{"values", "output"},
+		Summary:   "Fill PDF AcroForm fields into a new PDF (optionally flattened).",
+		Usage:     "paperworks fill INPUT.pdf --values values.json --output NEW.pdf [--flatten] [--strict-choices]\n  --strict-choices: Reject unmatched choice export values before writing (editable combos allow custom text).\n  Default: preserve unmatched values and return structured warnings. Empty strings/arrays clear selections.\n  values.json: {\"Field name\": \"value\", \"Checkbox\": \"/Yes\", \"Multi-select list\": [\"Alpha\", \"Beta\"]}",
+		BoolOpts:  []string{"flatten", "strict-choices"},
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, err := input(a, 1)
 			if err != nil {
@@ -255,9 +263,10 @@ func init() {
 		},
 	})
 	register(&Command{
-		Name:    "pdf-merge",
-		Summary: "Concatenate PDFs into a new PDF.",
-		Usage:   "paperworks pdf-merge A.pdf B.pdf [...] --output NEW.pdf",
+		Name:      "pdf-merge",
+		ValueOpts: []string{"output"},
+		Summary:   "Concatenate PDFs into a new PDF.",
+		Usage:     "paperworks pdf-merge A.pdf B.pdf [...] --output NEW.pdf",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			if len(a.Pos) < 2 {
 				return nil, usagef("pdf-merge needs at least two input PDFs")
@@ -282,9 +291,10 @@ func init() {
 		},
 	})
 	register(&Command{
-		Name:    "pdf-select",
-		Summary: "Write selected/reordered pages of a PDF to a new PDF.",
-		Usage:   "paperworks pdf-select INPUT.pdf --pages 3,1-2 --output NEW.pdf",
+		Name:      "pdf-select",
+		ValueOpts: []string{"pages", "output"},
+		Summary:   "Write selected/reordered pages of a PDF to a new PDF.",
+		Usage:     "paperworks pdf-select INPUT.pdf --pages 3,1-2 --output NEW.pdf",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, err := input(a, 1)
 			if err != nil {
@@ -313,9 +323,10 @@ func init() {
 		},
 	})
 	register(&Command{
-		Name:    "pdf-split",
-		Summary: "Split a PDF into one file per page, or per --ranges group, in a new directory.",
-		Usage:   "paperworks pdf-split INPUT.pdf --output NEW_DIR [--ranges \"1-2;3;4-6\"]",
+		Name:      "pdf-split",
+		ValueOpts: []string{"ranges", "output"},
+		Summary:   "Split a PDF into one file per page, or per --ranges group, in a new directory.",
+		Usage:     "paperworks pdf-split INPUT.pdf --output NEW_DIR [--ranges \"1-2;3;4-6\"]",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, err := input(a, 1)
 			if err != nil {
@@ -352,9 +363,10 @@ func init() {
 		},
 	})
 	register(&Command{
-		Name:    "pdf-rotate",
-		Summary: "Rotate PDF pages by a multiple of 90 degrees into a new PDF.",
-		Usage:   "paperworks pdf-rotate INPUT.pdf --degrees 90 [--pages 1,3] --output NEW.pdf",
+		Name:      "pdf-rotate",
+		ValueOpts: []string{"degrees", "pages", "output"},
+		Summary:   "Rotate PDF pages by a multiple of 90 degrees into a new PDF.",
+		Usage:     "paperworks pdf-rotate INPUT.pdf --degrees 90 [--pages 1,3] --output NEW.pdf",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, err := input(a, 1)
 			if err != nil {
@@ -376,9 +388,10 @@ func init() {
 		},
 	})
 	register(&Command{
-		Name:    "pdf-watermark",
-		Summary: "Stamp a text watermark onto PDF pages into a new PDF.",
-		Usage:   "paperworks pdf-watermark INPUT.pdf --text DRAFT [--style \"rot:45, op:0.25, scale:0.6 rel\"] [--pages 1-2] --output NEW.pdf",
+		Name:      "pdf-watermark",
+		ValueOpts: []string{"text", "style", "pages", "output"},
+		Summary:   "Stamp a text watermark onto PDF pages into a new PDF.",
+		Usage:     "paperworks pdf-watermark INPUT.pdf --text DRAFT [--style \"rot:45, op:0.25, scale:0.6 rel\"] [--pages 1-2] --output NEW.pdf",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, err := input(a, 1)
 			if err != nil {
@@ -399,9 +412,10 @@ func init() {
 		},
 	})
 	register(&Command{
-		Name:    "pdf-text",
-		Summary: "Extract page text; pypdf mode supports a bounded subset and rejects unsupported pages.",
-		Usage:   "paperworks pdf-text INPUT.pdf [--engine pdfium|pypdf] [--output NEW.txt]",
+		Name:      "pdf-text",
+		ValueOpts: []string{"engine", "output"},
+		Summary:   "Extract page text; pypdf mode supports a bounded subset and rejects unsupported pages.",
+		Usage:     "paperworks pdf-text INPUT.pdf [--engine pdfium|pypdf] [--output NEW.txt]",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, err := input(a, 1)
 			if err != nil {
