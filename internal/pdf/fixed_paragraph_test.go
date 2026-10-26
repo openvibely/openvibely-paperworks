@@ -6,10 +6,11 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
-	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/types"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/types"
 )
 
 func TestReportLabFixedParagraphs(t *testing.T) {
@@ -43,6 +44,43 @@ func TestReportLabFixedParagraphs(t *testing.T) {
 		})
 	}
 }
+func TestFixedParagraphWithFixedTableUsesReportStream(t *testing.T) {
+	ctx := context.Background()
+	spec := CreateSpec{Pages: []CreatePage{{
+		Size:            &[2]float64{300, 400},
+		FixedParagraphs: []FixedParagraph{{Position: [2]float64{20, 350}, Width: 220, Text: "Report paragraph", Font: "Helvetica", FontSize: 12, Leading: 14}},
+		FixedTables:     []FixedTable{sampleFixedTable()},
+	}}}
+	out := filepath.Join(t.TempDir(), "paragraph-table.pdf")
+	if err := Create(ctx, spec, "", out); err != nil {
+		t.Fatal(err)
+	}
+	raw, err := os.ReadFile(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	c, err := Load(ctx, raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	pd, _, err := pageDict(ctx, c, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	sd, _ := streamOf(c.XRefTable, pd["Contents"])
+	if sd == nil {
+		t.Fatal("expected standalone report stream")
+	}
+	if err := sd.Decode(); err != nil {
+		t.Fatal(err)
+	}
+	for _, text := range []string{"Report paragraph", "Label", "Value", `a\(b\)\\c`} {
+		if !bytes.Contains(sd.Content, []byte(text)) {
+			t.Fatalf("stream lost %q", text)
+		}
+	}
+}
+
 func TestFixedParagraphRejectsUnsupportedLayout(t *testing.T) {
 	p := FixedParagraph{Text: "hello world", Font: "Helvetica", FontSize: 12, Leading: 14, Width: 200}
 	for _, mutate := range []func(*FixedParagraph){func(p *FixedParagraph) { p.Width = 1 }, func(p *FixedParagraph) { p.Text = "two\nlines" }, func(p *FixedParagraph) { p.Align = "justify" }, func(p *FixedParagraph) { p.Text = "two  spaces" }, func(p *FixedParagraph) { p.Font = "custom" }} {
