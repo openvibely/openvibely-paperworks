@@ -23,6 +23,13 @@ func config() *model.Configuration {
 
 // Load parses and validates a PDF held in memory.
 func Load(ctx context.Context, data []byte) (*model.Context, error) {
+	return load(ctx, data, nil)
+}
+
+func load(ctx context.Context, data []byte, onPrepare func()) (*model.Context, error) {
+	if onPrepare != nil {
+		onPrepare()
+	}
 	c, err := api.ReadAndValidate(ctx, bytes.NewReader(data), config())
 	if err != nil {
 		return nil, fmt.Errorf("read PDF: %w", err)

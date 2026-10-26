@@ -19,7 +19,11 @@ import (
 
 // PageCount returns the number of pages in a PDF.
 func PageCount(ctx context.Context, data []byte) (int, error) {
-	c, err := Load(ctx, data)
+	return pageCount(ctx, data, nil)
+}
+
+func pageCount(ctx context.Context, data []byte, onPrepare func()) (int, error) {
+	c, err := load(ctx, data, onPrepare)
 	if err != nil {
 		return 0, err
 	}
@@ -33,6 +37,12 @@ func pageSpec(pages []int) []string {
 	}
 	return sel
 }
+
+// PageSelectionError reports a syntactically invalid selection or a page outside the source.
+type PageSelectionError struct{ Err error }
+
+func (e PageSelectionError) Error() string { return e.Err.Error() }
+func (e PageSelectionError) Unwrap() error { return e.Err }
 
 // ParsePages expands "1,3-5" style selections against a page count, in order.
 func ParsePages(spec string, count int) ([]int, error) {
@@ -73,14 +83,52 @@ func writeNew(path string, data []byte) error {
 
 // SelectPages writes the given 1-based pages of data, in order, to dest.
 func SelectPages(ctx context.Context, data []byte, pages []int) ([]byte, error) {
+	return selectPages(ctx, data, pages, nil)
+}
+
+func selectPages(ctx context.Context, data []byte, pages []int, onPrepare func()) ([]byte, error) {
 	if len(pages) == 0 {
 		return nil, errors.New("no pages selected")
+	}
+	if onPrepare != nil {
+		onPrepare()
 	}
 	var out bytes.Buffer
 	if err := api.Collect(ctx, bytes.NewReader(data), &out, pageSpec(pages), config()); err != nil {
 		return nil, fmt.Errorf("select pages: %w", err)
 	}
 	return out.Bytes(), nil
+}
+
+// SelectPagesBySpec validates data once, resolves a page selection against its
+// prepared page tree, and returns the selected PDF and its 1-based page list.
+func SelectPagesBySpec(ctx context.Context, data []byte, spec string) ([]byte, []int, error) {
+	return selectPagesBySpec(ctx, data, spec, nil)
+}
+
+func selectPagesBySpec(ctx context.Context, data []byte, spec string, onPrepare func()) ([]byte, []int, error) {
+	conf := config()
+	conf.Cmd = model.COLLECT
+	if onPrepare != nil {
+		onPrepare()
+	}
+	prepared, err := api.ReadValidateAndOptimize(ctx, bytes.NewReader(data), conf, nil)
+	if err != nil {
+		return nil, nil, fmt.Errorf("read PDF: %w", err)
+	}
+	pages, err := ParsePages(spec, prepared.PageCount)
+	if err != nil {
+		return nil, nil, PageSelectionError{Err: err}
+	}
+	output, err := pdfcpu.ExtractPages(ctx, prepared, pages, false)
+	if err != nil {
+		return nil, nil, fmt.Errorf("select pages: collect: extract pages: %w", err)
+	}
+	var out bytes.Buffer
+	if err := api.Write(ctx, output, &out, conf); err != nil {
+		return nil, nil, fmt.Errorf("select pages: collect: write output: %w", err)
+	}
+	return out.Bytes(), pages, nil
 }
 
 // KeepPages rewrites path in place with only the given 1-based pages.
