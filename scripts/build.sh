@@ -2,6 +2,7 @@
 # Build-only dependencies: the Go version in go.mod and bash; no runtime package installation.
 set -euo pipefail
 cd "$(dirname "$0")/.."
+source scripts/runtime-targets.sh
 go_version="$(awk '$1 == "go" { print $2; exit }' go.mod)"
 if [[ ! "$go_version" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?$ ]]; then
   echo 'Could not read a valid Go version from go.mod' >&2
@@ -23,7 +24,7 @@ if [[ ! "$version" =~ ^[a-zA-Z0-9.+_-]+$ ]]; then
 fi
 export CGO_ENABLED=0 GOTOOLCHAIN="$expected_toolchain"
 mkdir -p dist
-for target in darwin/amd64 darwin/arm64 linux/amd64 linux/arm64 windows/amd64 windows/arm64; do
+for target in "${PAPERWORKS_RUNTIME_TARGETS[@]}"; do
   export GOOS="${target%/*}" GOARCH="${target#*/}"
   output="dist/paperworks-${GOOS}-${GOARCH}"
   if [[ "$GOOS" == windows ]]; then output="${output}.exe"; fi
