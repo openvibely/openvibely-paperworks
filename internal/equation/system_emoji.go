@@ -117,40 +117,12 @@ func largestSystemStrikeReaderAt(reader io.ReaderAt, size int64) (int, error) {
 		return 0, bad
 	}
 	data := fontRange{reader, 0, uint64(size)}
-	head, ok := data.read(0, 12)
+	tables, ok := readSFNTDirectory(data, 0)
 	if !ok {
 		return 0, bad
 	}
 	u32 := func(b []byte) uint64 { return uint64(binary.BigEndian.Uint32(b)) }
-	base := uint64(0)
-	if string(head[:4]) == "ttcf" {
-		if u32(head[8:]) == 0 || u32(head[8:]) > 65536 {
-			return 0, bad
-		}
-		p, ok := data.read(12, 4)
-		if !ok {
-			return 0, bad
-		}
-		base = u32(p)
-	}
-	head, ok = data.read(base, 12)
-	if !ok {
-		return 0, bad
-	}
-	n := uint64(binary.BigEndian.Uint16(head[4:]))
-	records, ok := data.read(base+12, 16*n)
-	if !ok {
-		return 0, bad
-	}
-	for pos := uint64(0); pos < 16*n; pos += 16 {
-		r := records[pos:]
-		if string(r[:4]) != "sbix" {
-			continue
-		}
-		sb, ok := data.section(u32(r[8:]), u32(r[12:]))
-		if !ok {
-			return 0, bad
-		}
+	if sb, exists := tables["sbix"]; exists {
 		head, ok := sb.read(0, 8)
 		if !ok {
 			return 0, bad

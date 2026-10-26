@@ -56,51 +56,12 @@ func loadSystemBitmapReaderAt(reader io.ReaderAt, size int64, face, glyph, strik
 		return bad()
 	}
 	data := fontRange{reader, 0, uint64(size)}
-	header, ok := data.read(0, 12)
+	tables, ok := readSFNTDirectory(data, face)
 	if !ok {
 		return bad()
 	}
 	u16 := func(b []byte) uint16 { return binary.BigEndian.Uint16(b) }
 	u32 := func(b []byte) uint64 { return uint64(binary.BigEndian.Uint32(b)) }
-	base := uint64(0)
-	if string(header[:4]) == "ttcf" {
-		n := u32(header[8:])
-		if uint64(face) >= n || n > 65536 {
-			return bad()
-		}
-		p, ok := data.read(12+4*uint64(face), 4)
-		if !ok {
-			return bad()
-		}
-		base = u32(p)
-	} else if face != 0 {
-		return bad()
-	}
-	head, ok := data.read(base, 12)
-	if !ok {
-		return bad()
-	}
-	n := uint64(u16(head[4:]))
-	records, ok := data.read(base+12, n*16)
-	if !ok {
-		return bad()
-	}
-	tables := map[string]fontRange{}
-	for i := uint64(0); i < n; i++ {
-		r := records[i*16:]
-		tag := string(r[:4])
-		if tag != "maxp" && tag != "sbix" {
-			continue
-		}
-		if _, exists := tables[tag]; exists {
-			return bad()
-		}
-		b, ok := data.section(u32(r[8:]), u32(r[12:]))
-		if !ok {
-			return bad()
-		}
-		tables[tag] = b
-	}
 	maxp, ok := tables["maxp"].read(0, 6)
 	sb := tables["sbix"]
 	sbhead, sbOK := sb.read(0, 8)
