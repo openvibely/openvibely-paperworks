@@ -60,10 +60,21 @@ func Open(file string) (*Package, error) {
 	if err != nil {
 		return nil, err
 	}
-	return Read(raw)
+	return readOwned(raw)
 }
 
 func Read(raw []byte) (*Package, error) {
+	return readPackage(raw, false)
+}
+
+// readOwned parses an archive buffer whose ownership belongs to this package.
+func readOwned(raw []byte) (*Package, error) {
+	return readPackage(raw, true)
+}
+
+// readPackage retains raw directly only when ownsInput is true. Otherwise it
+// clones the archive after validating its ZIP structure to isolate Read's input.
+func readPackage(raw []byte, ownsInput bool) (*Package, error) {
 	zr, err := zip.NewReader(bytes.NewReader(raw), int64(len(raw)))
 	if err != nil {
 		return nil, fmt.Errorf("not a valid Office package (zip): %w", err)
@@ -71,8 +82,10 @@ func Read(raw []byte) (*Package, error) {
 	if err := validateZipStructure(zr.File); err != nil {
 		return nil, err
 	}
-	// Private copy so later caller mutations of raw cannot leak into Bytes.
-	retained := bytes.Clone(raw)
+	retained := raw
+	if !ownsInput {
+		retained = bytes.Clone(raw)
+	}
 	p := &Package{index: map[string]*Part{}}
 	for _, f := range zr.File {
 		if strings.HasSuffix(f.Name, "/") {
