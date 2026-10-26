@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/primitives"
+	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/types"
 )
 
 func sampleFixedTable() FixedTable {
@@ -18,7 +19,7 @@ func sampleFixedTable() FixedTable {
 func TestFixedTablePrecisionAndText(t *testing.T) {
 	ctx := context.Background()
 	out := filepath.Join(t.TempDir(), "table.pdf")
-	spec := CreateSpec{Pages: []CreatePage{{Size: &[2]float64{300.125, 400.625}, Text: []*primitives.TextBox{{Value: "Existing text", Position: [2]float64{20, 200}, Font: &primitives.FormFont{Name: "Helvetica-Bold", Size: 12}}}, FixedTables: []FixedTable{sampleFixedTable()}}}}
+	spec := CreateSpec{Pages: []CreatePage{{Size: &[2]float64{300.125, 400.625}, Text: []*primitives.TextBox{{Value: "Existing text", Position: [2]float64{20, 200}, Font: &primitives.FormFont{Name: "Helvetica-Bold", Size: 12}}}, FixedParagraphs: []FixedParagraph{{Position: [2]float64{20, 250}, Width: 220, Text: "Fixed paragraph", Font: "Helvetica", FontSize: 12, Leading: 14}}, FixedTables: []FixedTable{sampleFixedTable()}}}}
 	if e := Create(ctx, spec, "", out); e != nil {
 		t.Fatal(e)
 	}
@@ -29,6 +30,26 @@ func TestFixedTablePrecisionAndText(t *testing.T) {
 	c, e := Load(ctx, b)
 	if e != nil {
 		t.Fatal(e)
+	}
+	pd, _, e := pageDict(ctx, c, 1)
+	if e != nil {
+		t.Fatal(e)
+	}
+	contents, ok := pd["Contents"].(types.Array)
+	if !ok || len(contents) != 3 {
+		t.Fatalf("mixed page contents = %T %v, want q/original/Q stream array", pd["Contents"], pd["Contents"])
+	}
+	for i, want := range []string{"q\n", "Existing text", "\nQ\n"} {
+		sd, _ := streamOf(c.XRefTable, contents[i])
+		if sd == nil {
+			t.Fatalf("contents stream %d missing", i)
+		}
+		if err := sd.Decode(); err != nil {
+			t.Fatal(err)
+		}
+		if !strings.Contains(string(sd.Content), want) {
+			t.Fatalf("contents stream %d = %q, want marker %q", i, sd.Content, want)
+		}
 	}
 	_, inh, e := pageDict(ctx, c, 1)
 	if e != nil {
@@ -41,7 +62,7 @@ func TestFixedTablePrecisionAndText(t *testing.T) {
 	if e != nil {
 		t.Fatal(e)
 	}
-	for _, s := range []string{"Existing text", "Label", "Value", `a(b)\c`, "12"} {
+	for _, s := range []string{"Existing text", "Fixed paragraph", "Label", "Value", `a(b)\c`, "12"} {
 		if !strings.Contains(strings.Join(text, "\n"), s) {
 			t.Fatalf("lost text %q in %v", s, text)
 		}
