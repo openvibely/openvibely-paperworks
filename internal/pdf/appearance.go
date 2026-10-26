@@ -149,24 +149,29 @@ var fixedFontSize = regexp.MustCompile(`/[^ ]+ ([0-9.]+) Tf`)
 // with standard quadding. Fixed-size Helvetica combs center glyphs in cells.
 // Single-line ASCII Helvetica also supports automatic sizing.
 // Other layouts keep their existing generator until their metrics and wrapping are independently checked.
-func alignSingleLineAppearance(x *model.XRefTable, w types.Dict, f *field, value string, da *string) error {
+func alignSingleLineAppearance(x *model.XRefTable, w types.Dict, f *field, value string, da *string, selectedOptionIndices types.Array) error {
 	listbox := f.FT == "Ch" && f.Ff&ffCombo == 0
-	selected := value
+	selectedOptions := map[int]struct{}{}
 	if listbox {
-		// The reference rebuilds the saved appearance from all options even
-		// when TI is present. Preserve TI for the viewer without offsetting
-		// this appearance or falling back to the generator's older layout.
-		opts, ok := entryArray(x, resolvedChoiceOptions(x, f.D))
+		// Rebuild the appearance from all options even when TI is present.
+		// Keep the selected indexes separate from display text so overlapping
+		// labels cannot accidentally select each other.
+		options, ok := entryArray(x, resolvedChoiceOptions(x, f.D))
 		if !ok {
 			return nil
 		}
-		for _, opt := range opts {
-			if _, paired := entryArray(x, opt); paired {
+		for _, option := range options {
+			if _, paired := entryArray(x, option); paired {
 				return nil
 			}
 		}
 		_, labels := choiceOptions(x, f.D)
 		value = strings.Join(labels, "\n")
+		for _, selectedIndex := range selectedOptionIndices {
+			if index, ok := selectedIndex.(types.Integer); ok {
+				selectedOptions[int(index)] = struct{}{}
+			}
+		}
 	}
 	comb := f.FT == "Tx" && f.Ff&(1<<24) != 0
 	multiline := f.FT == "Tx" && f.Ff&(1<<12) != 0
@@ -460,7 +465,8 @@ func alignSingleLineAppearance(x *model.XRefTable, w types.Dict, f *field, value
 					yPos = box[3]/2 - ascent*points/2000
 				}
 			}
-			if listbox && selected != "" && strings.Contains(selected, line) {
+			_, selected := selectedOptions[i]
+			if listbox && selected {
 				y := box[3]/2 - ascent*points/2000 - float64(i)*points*leading/1000 - 1
 				fmt.Fprintf(&b, "1 %g %g %g re 0.5 0.5 0.5 rg s %s", math.Round(y*1000)/1000, box[2]-2, points+2, strings.TrimPrefix(fontOperators, "BT "))
 			}

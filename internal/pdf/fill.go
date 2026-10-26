@@ -519,7 +519,7 @@ func applyValuesWithFontRefresh(ctx context.Context, c *model.Context, fields ma
 				if err := primitives.EnsureTextFieldAP(ctx, c, w, v, multi, comb, maxLen, da, fonts); err != nil {
 					return fmt.Errorf("text appearance for %s: %w", name, err)
 				}
-				if err := alignSingleLineAppearance(x, w, f, v, da); err != nil {
+				if err := alignSingleLineAppearance(x, w, f, v, da, nil); err != nil {
 					return err
 				}
 				if err := restoreWidgetDecoration(x, w); err != nil {
@@ -566,9 +566,6 @@ func applyValuesWithFontRefresh(ctx context.Context, c *model.Context, fields ma
 						}
 						f.D["I"] = savedIndices
 					}
-					// The reference concatenates selections for appearance matching,
-					// even when a label spans adjacent selected values. V stays typed.
-					v = strings.Join(selected, "")
 				}
 			}
 			for _, w := range f.Widgets {
@@ -590,7 +587,7 @@ func applyValuesWithFontRefresh(ctx context.Context, c *model.Context, fields ma
 				if err != nil {
 					return fmt.Errorf("choice appearance for %s: %w", name, err)
 				}
-				if err := alignSingleLineAppearance(x, w, f, v, da); err != nil {
+				if err := alignSingleLineAppearance(x, w, f, v, da, ind); err != nil {
 					return err
 				}
 				if err := restoreWidgetDecoration(x, w); err != nil {
