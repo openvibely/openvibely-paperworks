@@ -149,16 +149,11 @@ func Merge(ctx context.Context, inputs []string, dest string) (int, error) {
 	if len(inputs) < 2 {
 		return 0, errors.New("merge needs at least two inputs")
 	}
-	readers := make([]io.ReadSeeker, len(inputs))
-	for i, in := range inputs {
-		data, err := os.ReadFile(in)
-		if err != nil {
-			return 0, err
-		}
-		readers[i] = bytes.NewReader(data)
-	}
+	conf := config()
+	conf.CreateBookmarks = true
+	conf.MergeBookmarkMode = model.MergeBookmarkModePreserve
 	var out bytes.Buffer
-	if err := api.MergeRaw(ctx, readers, &out, false, config()); err != nil {
+	if err := api.Merge(ctx, "", inputs, &out, conf, false); err != nil {
 		return 0, fmt.Errorf("merge: %w", err)
 	}
 	n, err := PageCount(ctx, out.Bytes())
