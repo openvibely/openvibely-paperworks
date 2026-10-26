@@ -111,6 +111,63 @@ func TestPreviewExportNestedOutput(t *testing.T) {
 	}
 }
 
+func TestPreviewExportRenderOptionValidation(t *testing.T) {
+	source := "../../testdata/fixtures/libreoffice-unsupported-treemap.pdf"
+	usage := commands["preview-export"].Usage
+	for _, tc := range []struct {
+		name, flag, value, message string
+	}{
+		{name: "max-pixels", flag: "--max-pixels", value: "10", message: "max_pixels must be between 100 and 10000"},
+		{name: "dpi", flag: "--dpi", value: "35", message: "DPI must be between 36 and 600"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			root := t.TempDir()
+			out := filepath.Join(root, "output")
+			args := []string{"preview-export", source, "--output", out, tc.flag, tc.value}
+			var stdout, stderr bytes.Buffer
+			if code := Main(args, &stdout, &stderr); code != ExitUsage {
+				t.Fatalf("exit=%d, want %d; stderr=%q", code, ExitUsage, stderr.String())
+			}
+			wantErr := "paperworks preview-export: " + tc.message + "\n\n" + usage + "\n"
+			if stderr.String() != wantErr {
+				t.Fatalf("stderr=%q, want %q", stderr.String(), wantErr)
+			}
+			if stdout.Len() != 0 {
+				t.Fatalf("unexpected stdout: %q", stdout.String())
+			}
+			if _, err := os.Stat(out); !os.IsNotExist(err) {
+				t.Fatalf("invalid options created output: %v", err)
+			}
+			stages, err := filepath.Glob(filepath.Join(root, ".paperworks-preview-*"))
+			if err != nil || len(stages) != 0 {
+				t.Fatalf("invalid options left staging artifacts: %v, %v", stages, err)
+			}
+			entries, err := os.ReadDir(root)
+			if err != nil || len(entries) != 0 {
+				t.Fatalf("invalid options created artifacts: %v, %v", entries, err)
+			}
+		})
+	}
+
+	t.Run("valid max-pixels", func(t *testing.T) {
+		root := t.TempDir()
+		out := filepath.Join(root, "output")
+		var stdout, stderr bytes.Buffer
+		args := []string{"preview-export", source, "--output", out, "--max-pixels", "100"}
+		if code := Main(args, &stdout, &stderr); code != ExitOK {
+			t.Fatalf("exit=%d, want %d; stderr=%q", code, ExitOK, stderr.String())
+		}
+		entries, err := os.ReadDir(out)
+		if err != nil || len(entries) == 0 {
+			t.Fatalf("valid options did not publish rendered previews: %v, %v", entries, err)
+		}
+		stages, err := filepath.Glob(filepath.Join(root, ".paperworks-preview-*"))
+		if err != nil || len(stages) != 0 {
+			t.Fatalf("valid export left staging artifacts: %v, %v", stages, err)
+		}
+	})
+}
+
 func TestPreviewExportFailureDoesNotPublish(t *testing.T) {
 	for _, nested := range []bool{false, true} {
 		t.Run(map[bool]string{false: "existing-parent", true: "missing-parents"}[nested], func(t *testing.T) {
