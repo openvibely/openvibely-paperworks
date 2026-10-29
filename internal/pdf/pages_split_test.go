@@ -145,7 +145,7 @@ func requireTextPages(t *testing.T, got []byte, expected ...string) {
 func TestSplitKeepsPageOrderDuplicatesAndSharedResources(t *testing.T) {
 	src := writeTemp(t, "shared.pdf", splitTextFixture(5))
 	outDir := t.TempDir()
-	ranges := [][]int{{3, 1, 3}, {2, 3}, {2, 5}, {5, 2, 5}, {3}, {-1}}
+	ranges := [][]int{{3, 1, 3}, {2, 3}, {2, 5}, {5, 2, 5}, {3}}
 	files, err := Split(context.Background(), src, outDir, ranges)
 	if err != nil {
 		t.Fatal(err)
@@ -156,12 +156,11 @@ func TestSplitKeepsPageOrderDuplicatesAndSharedResources(t *testing.T) {
 		filepath.Join(outDir, "shared-003.pdf"),
 		filepath.Join(outDir, "shared-004.pdf"),
 		filepath.Join(outDir, "shared-005.pdf"),
-		filepath.Join(outDir, "shared-006.pdf"),
 	}
 	if !reflect.DeepEqual(files, wantNames) {
 		t.Fatalf("files = %#v, want %#v", files, wantNames)
 	}
-	for i, expected := range [][]string{{"Page 003", "Page 001", "Page 003"}, {"Page 002", "Page 003"}, {"Page 002", "Page 005"}, {"Page 005", "Page 002", "Page 005"}, {"Page 003"}, {"Page 001"}} {
+	for i, expected := range [][]string{{"Page 003", "Page 001", "Page 003"}, {"Page 002", "Page 003"}, {"Page 002", "Page 005"}, {"Page 005", "Page 002", "Page 005"}, {"Page 003"}} {
 		requireTextPages(t, outputPDFs(t, []string{files[i]})[0], expected...)
 	}
 }
@@ -304,6 +303,22 @@ func TestSplitDestinationStateIsIsolatedBetweenGroups(t *testing.T) {
 }
 
 func TestSplitErrorsCancellationAndPartialResults(t *testing.T) {
+	t.Run("negative selection in first group is rejected without output", func(t *testing.T) {
+		src := writeTemp(t, "input.pdf", splitTextFixture(2))
+		outDir := t.TempDir()
+		files, err := Split(context.Background(), src, outDir, [][]int{{-1}, {1}})
+		if err == nil || len(files) != 0 {
+			t.Fatalf("files=%v err=%v, want rejection before any output", files, err)
+		}
+		entries, err := os.ReadDir(outDir)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(entries) != 0 {
+			t.Fatalf("output directory contains files after invalid selection: %v", entries)
+		}
+	})
+
 	t.Run("invalid selection after earlier output", func(t *testing.T) {
 		src := writeTemp(t, "input.pdf", splitTextFixture(2))
 		for _, tc := range []struct {
