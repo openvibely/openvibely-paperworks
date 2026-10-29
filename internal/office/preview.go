@@ -141,63 +141,88 @@ func NeedsOfficePreview(source string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	charts, err := ChartParts(p)
+	scan, err := detectOfficePreview(p, e)
+	return scan != nil && scan.needs, err
+}
+
+type officePreviewScan struct {
+	needs  bool
+	charts []string
+	parsed map[string]*etree.Document
+	edited map[string]*etree.Document
+}
+
+// detectOfficePreview operates on an already-open package and retains parsed
+// chart documents so the fallback copy can edit them without reparsing XML.
+func detectOfficePreview(p *opc.Package, extension string) (*officePreviewScan, error) {
+	charts, chartDocs, err := chartPartDocuments(p)
 	if err != nil {
-		return false, err
+		return nil, err
+	}
+	scan := &officePreviewScan{
+		charts: charts,
+		parsed: chartDocs,
+		edited: map[string]*etree.Document{},
 	}
 	for _, n := range charts {
-		doc, err := p.XML(n)
-		if err != nil {
-			return false, err
-		}
-		if StandardChartPreview(doc.Root()) {
-			return true, nil
+		doc := chartDocs[n]
+		if Is(doc.Root(), NSC, "chartSpace") && StandardChartPreview(doc.Root()) {
+			scan.needs = true
+			scan.edited[n] = doc
 		}
 	}
-	if e == ".xlsx" {
+	if scan.needs {
+		return scan, nil
+	}
+	if extension == ".xlsx" {
 		for _, n := range p.Names() {
 			if !strings.HasPrefix(n, "xl/worksheets/") || !strings.HasSuffix(n, ".xml") {
 				continue
 			}
 			doc, err := p.XML(n)
 			if err != nil {
-				return false, err
+				return nil, err
 			}
+			scan.parsed[n] = doc
 			for _, g := range All(doc.Root(), NSX14, "sparklineGroup") {
 				if g.SelectAttrValue("type", "line") == "line" {
-					return true, nil
+					scan.needs = true
+					return scan, nil
 				}
 			}
 		}
-		return false, nil
+		return scan, nil
 	}
 	slides, err := PresentationSlides(p)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	for _, s := range slides {
 		doc, err := p.XML(s)
 		if err != nil {
-			return false, err
+			return nil, err
 		}
+		scan.parsed[s] = doc
 		if v := doc.Root().SelectAttrValue("show", ""); v == "0" || v == "false" {
-			return true, nil
+			scan.needs = true
+			return scan, nil
 		}
 	}
 	for _, n := range charts {
-		doc, _ := p.XML(n)
-		for _, s := range All(doc.Root(), NSCX, "series") {
+		for _, s := range All(scan.parsed[n].Root(), NSCX, "series") {
 			switch s.SelectAttrValue("layoutId", "") {
 			case "treemap", "sunburst", "waterfall", "funnel":
-				return true, nil
+				scan.needs = true
+				return scan, nil
 			case "clusteredColumn":
 				if Child(Child(s, NSCX, "layoutPr"), NSCX, "binning") != nil {
-					return true, nil
+					scan.needs = true
+					return scan, nil
 				}
 			}
 		}
 	}
-	return false, nil
+	return scan, nil
 }
 
 // RelTarget resolves an internal relationship of owner by ID.
@@ -236,15 +261,33 @@ func PresentationSlides(p *opc.Package) ([]string, error) {
 
 // editSet caches parsed parts so several edits to one part are coherent.
 type editSet struct {
-	p    *opc.Package
-	docs map[string]*etree.Document
+	p     *opc.Package
+	docs  map[string]*etree.Document
+	cache map[string]*etree.Document
 }
 
+// read returns a parsed document without marking the part for serialization.
+func (s *editSet) read(part string) (*etree.Document, error) {
+	if d := s.docs[part]; d != nil {
+		return d, nil
+	}
+	if d := s.cache[part]; d != nil {
+		return d, nil
+	}
+	d, err := s.p.XML(part)
+	if err != nil {
+		return nil, err
+	}
+	s.cache[part] = d
+	return d, nil
+}
+
+// get returns a parsed document and marks it for serialization after edits.
 func (s *editSet) get(part string) (*etree.Document, error) {
 	if d := s.docs[part]; d != nil {
 		return d, nil
 	}
-	d, err := s.p.XML(part)
+	d, err := s.read(part)
 	if err != nil {
 		return nil, err
 	}
@@ -265,35 +308,26 @@ func (s *editSet) flush() error {
 // vector drawings for native features LibreOffice cannot print. It returns
 // false without writing when no fallback is needed.
 func OfficePreviewCopy(source, destination string) (bool, error) {
-	need, err := NeedsOfficePreview(source)
-	if err != nil || !need {
-		return false, err
+	extension := strings.ToLower(path.Ext(source))
+	if extension != ".xlsx" && extension != ".pptx" {
+		return false, nil
 	}
 	p, err := opc.Open(source)
 	if err != nil {
 		return false, err
 	}
-	set := &editSet{p: p, docs: map[string]*etree.Document{}}
-	charts, err := ChartParts(p)
-	if err != nil {
+	scan, err := detectOfficePreview(p, extension)
+	if err != nil || !scan.needs {
 		return false, err
 	}
-	for _, n := range charts {
-		doc, err := set.get(n)
-		if err != nil {
-			return false, err
-		}
-		if !Is(doc.Root(), NSC, "chartSpace") || !StandardChartPreview(doc.Root()) {
-			delete(set.docs, n)
-		}
-	}
-	switch strings.ToLower(path.Ext(source)) {
+	set := &editSet{p: p, docs: scan.edited, cache: scan.parsed}
+	switch extension {
 	case ".xlsx":
 		if err := sparklinePreview(set); err != nil {
 			return false, err
 		}
 	case ".pptx":
-		if err := chartExPreview(set, charts); err != nil {
+		if err := chartExPreview(set, scan.charts); err != nil {
 			return false, err
 		}
 	}
