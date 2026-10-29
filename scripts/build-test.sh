@@ -87,15 +87,19 @@ printf '%s\n' \
   dist/paperworks-windows-amd64.exe \
   dist/paperworks-windows-arm64.exe > "$tmp/expected-outputs"
 diff -u "$tmp/expected-outputs" "$tmp/outputs" || fail 'Build output names differ.'
-while IFS= read -r target; do
-  os="${target%/*}"
-  arch="${target#*/}"
-  name="paperworks-$os-$arch"
-  [[ "$os" != windows ]] || name="$name.exe"
+cat > "$tmp/expected-executables" <<'EOF'
+darwin/amd64|paperworks-darwin-amd64
+darwin/arm64|paperworks-darwin-arm64
+linux/amd64|paperworks-linux-amd64
+linux/arm64|paperworks-linux-arm64
+windows/amd64|paperworks-windows-amd64.exe
+windows/arm64|paperworks-windows-arm64.exe
+EOF
+while IFS='|' read -r target name; do
   [[ -s "$tmp/dist/$name" ]] || fail "Missing built binary: $name"
   [[ -s "$tmp/dist/$name.buildinfo.txt" ]] || fail "Missing build info: $name.buildinfo.txt"
   grep -q "build info $target" "$tmp/dist/$name.buildinfo.txt" || fail "Incorrect build info: $name.buildinfo.txt"
-done < "$tmp/expected-targets"
+done < "$tmp/expected-executables"
 grep -Fq -- '-mod=readonly -trimpath -buildvcs=false' "$tmp/build-args" || fail 'Reproducible build flags were not passed.'
 grep -Fq -- "-ldflags=-s -w -buildid= -X github.com/openvibely/openvibely-paperworks/internal/cli.Version=0.1.0-dev" "$tmp/build-args" || fail 'Version build flags were not passed.'
 

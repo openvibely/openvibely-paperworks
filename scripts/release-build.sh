@@ -32,18 +32,12 @@ for helper in sign-windows.sh verify-windows.sh; do
   [[ -x "$helpers/$helper" ]] || { echo "Missing helper: $helpers/$helper" >&2; exit 1; }
 done
 for target in "${PAPERWORKS_RUNTIME_TARGETS[@]}"; do
-  os="${target%/*}"
-  arch="${target#*/}"
-  name="paperworks-$os-$arch"
-  [[ "$os" != windows ]] || name="$name.exe"
+  name="$(paperworks_runtime_executable_name "$target")"
   rm -f "dist/$name" "dist/$name.buildinfo.txt"
 done
 PAPERWORKS_VERSION="$version" bash scripts/build.sh
 for target in "${PAPERWORKS_RUNTIME_TARGETS[@]}"; do
-  os="${target%/*}"
-  arch="${target#*/}"
-  name="paperworks-$os-$arch"
-  [[ "$os" != windows ]] || name="$name.exe"
+  name="$(paperworks_runtime_executable_name "$target")"
   binary="$PWD/dist/$name"
   [[ -s "$binary" ]] || { echo "Missing or empty built binary for $target: $binary" >&2; exit 1; }
   [[ -s "$binary.buildinfo.txt" ]] || { echo "Missing or empty build info for $target: $binary.buildinfo.txt" >&2; exit 1; }
@@ -53,8 +47,7 @@ git rev-parse HEAD > "$out/BUILD_COMMIT"
 for target in "${PAPERWORKS_RUNTIME_TARGETS[@]}"; do
   os="${target%/*}"
   arch="${target#*/}"
-  name="paperworks-$os-$arch"
-  [[ "$os" != windows ]] || name="$name.exe"
+  name="$(paperworks_runtime_executable_name "$target")"
   binary="$PWD/dist/$name"
   case "$os" in
     darwin)

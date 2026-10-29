@@ -8,3 +8,14 @@ PAPERWORKS_RUNTIME_TARGETS=(
   windows/amd64
   windows/arm64
 )
+
+paperworks_runtime_executable_name() {
+  local target="${1:?runtime target is required}"
+  local os="${target%/*}"
+  local arch="${target#*/}"
+  local name="paperworks-${os}-${arch}"
+  if [[ "$os" == windows ]]; then
+    name="${name}.exe"
+  fi
+  printf '%s\n' "$name"
+}
