@@ -37,11 +37,11 @@ func tableStructure(table *etree.Element, s map[string]any) error {
 		if !ok || row < 0 || row >= len(rows) {
 			return fmt.Errorf("row out of range")
 		}
-		cells := office.Children(rows[row], nsW, "tc")
-		if col >= len(cells) {
-			return fmt.Errorf("cell index out of range")
+		cell, cellIndex, gridStart, err := resolveTableGridColumn(table, rows[row], col)
+		if err != nil {
+			return err
 		}
-		cell := cells[col]
+		cells := office.Children(rows[row], nsW, "tc")
 		if len(all(rows[row], "vMerge")) > 0 {
 			return fmt.Errorf("vertical merges require explicit OOXML editing")
 		}
@@ -51,7 +51,7 @@ func tableStructure(table *etree.Element, s map[string]any) error {
 				return fmt.Errorf("cell is not horizontally merged")
 			}
 			n, err := strconv.Atoi(getW(span, "val"))
-			if err != nil || n < 2 || n > len(cols) {
+			if err != nil || n < 2 || n > len(cols)-gridStart {
 				return fmt.Errorf("invalid grid span")
 			}
 			remove(span)
@@ -61,7 +61,14 @@ func tableStructure(table *etree.Element, s map[string]any) error {
 			return nil
 		}
 		end, ok := intArg(s["end_column"])
-		if !ok || end <= col || end >= len(cells) {
+		if !ok || end <= col {
+			return fmt.Errorf("end_column must follow column")
+		}
+		endCell, endCellIndex, _, err := resolveTableGridColumn(table, rows[row], end)
+		if err != nil {
+			return err
+		}
+		if endCell == cell || endCellIndex <= cellIndex {
 			return fmt.Errorf("end_column must follow column")
 		}
 		if len(all(rows[row], "gridSpan")) > 0 {
@@ -69,9 +76,9 @@ func tableStructure(table *etree.Element, s map[string]any) error {
 		}
 		pr := property(cell, "tcPr")
 		span := W("gridSpan")
-		setW(span, "val", strconv.Itoa(end-col+1))
+		setW(span, "val", strconv.Itoa(endCellIndex-cellIndex+1))
 		insertWordProperty(pr, span)
-		for i := col + 1; i <= end; i++ {
+		for i := cellIndex + 1; i <= endCellIndex; i++ {
 			for _, c := range cells[i].ChildElements() {
 				if !is(c, "tcPr") {
 					cell.AddChild(c.Copy())
@@ -84,7 +91,7 @@ func tableStructure(table *etree.Element, s map[string]any) error {
 	// Inserting or deleting a physical grid column in merged tables requires
 	// restructuring the spans; fail rather than silently corrupting the grid.
 	for _, r := range rows {
-		if len(office.Children(r, nsW, "tc")) != len(cols) || len(all(r, "gridSpan"))+len(all(r, "vMerge")) > 0 {
+		if !rowIsRectangularUnmerged(r, len(cols)) {
 			return fmt.Errorf("column structure edits require an unmerged rectangular table")
 		}
 	}
