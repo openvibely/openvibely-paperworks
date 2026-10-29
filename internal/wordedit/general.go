@@ -448,12 +448,14 @@ func editTable(root *etree.Element, s map[string]any) error {
 		remove(r)
 		return nil
 	}
-	cells := office.Children(r, nsW, "tc")
 	col, ok := intArg(s["column"])
-	if !ok || col < 0 || col >= len(cells) {
+	if !ok || col < 0 {
 		return fmt.Errorf("column index out of range")
 	}
-	cell := cells[col]
+	cell, _, _, err := resolveTableGridColumn(table, r, col)
+	if err != nil {
+		return err
+	}
 	switch op {
 	case "table-cell-text":
 		text, ok := s["text"].(string)
