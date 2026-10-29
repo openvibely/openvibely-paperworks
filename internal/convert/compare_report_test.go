@@ -17,6 +17,7 @@ func TestReferencePageComparisonReports(t *testing.T) {
 		{PageChange{Page: 1, Status: "changed", Bounds: []int{0, 1, 2, 3}, Image: "diff-0001.png"}, `{"page":1,"status":"changed","bounds":[0,1,2,3],"image":"diff-0001.png"}`},
 		{PageChange{Page: 2, Status: "added"}, `{"page":2,"status":"added"}`},
 		{PageChange{Page: 2, Status: "removed"}, `{"page":2,"status":"removed"}`},
+		{PageChange{Page: 3, Status: "changed", BeforePage: 2, AfterPage: 3, Image: "diff-0003.png"}, `{"page":3,"status":"changed","before_page":2,"after_page":3,"bounds":null,"image":"diff-0003.png"}`},
 	} {
 		t.Run(tc.page.Status, func(t *testing.T) {
 			raw, err := json.Marshal(tc.page)
