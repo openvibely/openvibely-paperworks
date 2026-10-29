@@ -1,7 +1,6 @@
 package pdf
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -12,7 +11,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/pdfcpu/pdfcpu/pkg/api"
 	pdffont "github.com/pdfcpu/pdfcpu/pkg/pdfcpu/font"
 	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/model"
 	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu/primitives"
@@ -313,47 +311,39 @@ func fill(ctx context.Context, path, dest string, values map[string]string, arra
 	if form := dictOf(x, cat["AcroForm"]).d; form != nil {
 		form["NeedAppearances"] = types.Boolean(false)
 	}
-	// Preserve both document information and its absence through both writes.
+	// Preserve the distinction between absent and empty document information.
 	withoutInfo := c.Info == nil
-	data, err := serializeFilled(ctx, c, withoutInfo)
-	if err != nil {
-		return nil, err
-	}
-	rep, err := ReportBytes(ctx, data)
-	if err != nil {
-		return nil, err
-	}
-	for name, v := range filled {
-		if got := rep.Fields[name]; got == nil || *got != v {
-			if !(v == "" && got == nil) {
-				return nil, fmt.Errorf("saved PDF values do not match requested values (%s)", name)
-			}
-		}
-	}
-	if len(rep.Issues) > 0 {
-		return nil, fmt.Errorf("filled PDF failed form validation: %s", strings.Join(rep.Issues, "; "))
-	}
 	if flatten {
-		c, err = api.ReadAndValidate(ctx, bytes.NewReader(data), c.Configuration)
+		// Validate values and widget appearances against the updated graph before
+		// flattening removes the form tree. This avoids serializing and reparsing
+		// an intermediate filled PDF just to obtain a report and flattening context.
+		rep, err := formReport(ctx, c)
 		if err != nil {
 			return nil, err
 		}
-		if err := c.EnsurePageCount(); err != nil {
+		if err := validateFilledReport(rep, filled); err != nil {
 			return nil, err
 		}
 		if err := flattenForm(ctx, c); err != nil {
 			return nil, err
 		}
-		if data, err = serializeFilled(ctx, c, withoutInfo); err != nil {
-			return nil, err
-		}
-		rep, err = ReportBytes(ctx, data)
-		if err != nil {
-			return nil, err
-		}
+	}
+	data, err := serializeFilled(ctx, c, withoutInfo)
+	if err != nil {
+		return nil, err
+	}
+	// Always reparse the final bytes so the published output is validated. For
+	// editable fills this report also verifies saved values and appearances.
+	rep, err := ReportBytes(ctx, data)
+	if err != nil {
+		return nil, err
+	}
+	if flatten {
 		if len(rep.Widgets) > 0 || rep.HasFormTree {
 			return nil, errors.New("flattening left editable fields")
 		}
+	} else if err := validateFilledReport(rep, filled); err != nil {
+		return nil, err
 	}
 	if err := opc.WriteNew(dest, data); err != nil {
 		return nil, err
@@ -364,6 +354,20 @@ func fill(ctx context.Context, path, dest string, values map[string]string, arra
 	}
 	sort.Strings(names)
 	return &FillResult{Output: dest, FieldsFilled: names, Flattened: flatten, Warnings: warnings}, nil
+}
+
+func validateFilledReport(rep *FormReport, filled map[string]string) error {
+	for name, value := range filled {
+		if got := rep.Fields[name]; got == nil || *got != value {
+			if !(value == "" && got == nil) {
+				return fmt.Errorf("saved PDF values do not match requested values (%s)", name)
+			}
+		}
+	}
+	if len(rep.Issues) > 0 {
+		return fmt.Errorf("filled PDF failed form validation: %s", strings.Join(rep.Issues, "; "))
+	}
+	return nil
 }
 
 func fillFonts(ctx context.Context, x *model.XRefTable, replaceUnicodeFont bool) error {

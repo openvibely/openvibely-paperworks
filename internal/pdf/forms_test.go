@@ -88,6 +88,17 @@ func equalBools(a, b []bool) bool {
 	return true
 }
 
+func TestFillRejectsMalformedInput(t *testing.T) {
+	src := writeTemp(t, "malformed.pdf", []byte("not a PDF"))
+	out := filepath.Join(t.TempDir(), "filled.pdf")
+	if _, err := Fill(context.Background(), src, out, nil, false); err == nil {
+		t.Fatal("malformed input unexpectedly filled")
+	}
+	if _, err := os.Stat(out); err == nil {
+		t.Fatal("output published for malformed input")
+	}
+}
+
 func TestFillRejectsUnknownInvalidAndExistingOutput(t *testing.T) {
 	src := writeTemp(t, "source.pdf", formPDF())
 	dir := t.TempDir()
