@@ -312,8 +312,15 @@ var chartMimes = []string{"application/vnd.openxmlformats-officedocument.drawing
 
 const NSCX = "http://schemas.microsoft.com/office/drawing/2014/chartex"
 
-// ChartParts discovers chart parts by content type and relationships.
+// ChartParts discovers and validates chart parts by content type and relationships.
 func ChartParts(p *opc.Package) ([]string, error) {
+	parts, _, err := chartPartDocuments(p)
+	return parts, err
+}
+
+// chartPartDocuments parses each discovered chart once. Preview creation reuses
+// these documents for both fallback detection and edits.
+func chartPartDocuments(p *opc.Package) ([]string, map[string]*etree.Document, error) {
 	found := map[string]bool{}
 	for _, n := range p.Names() {
 		if slices.Contains(chartMimes, p.ContentType(n)) {
@@ -325,7 +332,7 @@ func ChartParts(p *opc.Package) ([]string, error) {
 		owner := opc.SourceOf(n)
 		rels, err := p.Rels(owner)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		for _, r := range rels {
 			last := r.Type[strings.LastIndex(r.Type, "/")+1:]
@@ -333,27 +340,31 @@ func ChartParts(p *opc.Package) ([]string, error) {
 				continue
 			}
 			if r.TargetMode == "External" {
-				return nil, errors.New("external chart part is unsupported")
+				return nil, nil, errors.New("external chart part is unsupported")
 			}
 			found[opc.Resolve(owner, r.Target)] = true
 		}
 	}
-	var out []string
+	out := make([]string, 0, len(found))
 	for n := range found {
 		if !p.Has(n) {
-			return nil, errors.New("Missing chart part: " + n)
-		}
-		doc, err := p.XML(n)
-		if err != nil {
-			return nil, err
-		}
-		if !Is(doc.Root(), NSC, "chartSpace") && !Is(doc.Root(), NSCX, "chartSpace") {
-			return nil, errors.New("invalid chart part: " + n)
+			return nil, nil, errors.New("Missing chart part: " + n)
 		}
 		out = append(out, n)
 	}
 	slices.SortFunc(out, naturalCompare)
-	return out, nil
+	docs := make(map[string]*etree.Document, len(out))
+	for _, n := range out {
+		doc, err := p.XML(n)
+		if err != nil {
+			return nil, nil, err
+		}
+		if !Is(doc.Root(), NSC, "chartSpace") && !Is(doc.Root(), NSCX, "chartSpace") {
+			return nil, nil, errors.New("invalid chart part: " + n)
+		}
+		docs[n] = doc
+	}
+	return out, docs, nil
 }
 
 var digitsRe = regexp.MustCompile(`\d+|\D+`)

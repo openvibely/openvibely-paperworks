@@ -312,7 +312,7 @@ func chartExPreview(set *editSet, charts []string) error {
 	p := set.p
 	reports := map[string]*ChartExReport{}
 	for _, n := range charts {
-		doc, err := p.XML(n)
+		doc, err := set.read(n)
 		if err != nil {
 			return err
 		}
@@ -366,7 +366,7 @@ func chartExPreview(set *editSet, charts []string) error {
 			if len(report.Series) != 1 {
 				return errors.New("extended chart preview needs one series")
 			}
-			chartDoc, err := p.XML(cp)
+			chartDoc, err := set.read(cp)
 			if err != nil {
 				return err
 			}
