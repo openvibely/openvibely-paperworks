@@ -225,26 +225,19 @@ func (pp *chartExPainter) saved(e *etree.Element, def string) string {
 	if !hex6.MatchString(v) {
 		return def
 	}
-	ch := make([]float64, 3)
-	for i := range ch {
-		n, _ := strconv.ParseUint(v[i*2:i*2+2], 16, 8)
-		ch[i] = float64(n) / 255
-	}
-	for _, t := range colour.ChildElements() {
-		amount, _ := strconv.Atoi(t.SelectAttrValue("val", "0"))
-		a := float64(amount) / 100000
-		for i := range ch {
-			switch {
-			case Is(t, NSA, "tint"):
-				ch[i] = ch[i] + (1-ch[i])*a
-			case Is(t, NSA, "shade"), Is(t, NSA, "lumMod"):
-				ch[i] *= a
-			case Is(t, NSA, "lumOff"):
-				ch[i] += a
-			}
+	var rgb [3]float64
+	for i := range rgb {
+		n, err := strconv.ParseUint(v[i*2:i*2+2], 16, 8)
+		if err != nil {
+			return def
 		}
+		rgb[i] = float64(n) / 255
 	}
-	return fmt.Sprintf("%02X%02X%02X", int(math.Round(math.Min(1, math.Max(0, ch[0]))*255)), int(math.Round(math.Min(1, math.Max(0, ch[1]))*255)), int(math.Round(math.Min(1, math.Max(0, ch[2]))*255)))
+	rgb, _, ok := drawingMLColorTransforms(rgb, colour.ChildElements())
+	if !ok {
+		return def
+	}
+	return fmt.Sprintf("%02X%02X%02X", int(math.Round(clampColorChannel(rgb[0])*255)), int(math.Round(clampColorChannel(rgb[1])*255)), int(math.Round(clampColorChannel(rgb[2])*255)))
 }
 
 // label mirrors label_box: tiny boxes are skipped and saved run properties win.
