@@ -98,10 +98,15 @@ func exportRenderedPreviews(ctx context.Context, stage, out string, pages []stri
 		return nil, usagef("contact sheet supports at most 200 pages; select a smaller document")
 	}
 	results := []string{}
-	thumbs := []image.Image{}
+	var sheet *image.RGBA
 	for i, p := range pages {
 		if err = ctx.Err(); err != nil {
 			return nil, err
+		}
+		if cols > 0 && sheet == nil {
+			rows := (len(pages) + cols - 1) / cols
+			sheet = image.NewRGBA(image.Rect(0, 0, cols*previewCellWidth, rows*previewCellHeight))
+			draw.Draw(sheet, sheet.Bounds(), &image.Uniform{color.White}, image.Point{}, draw.Src)
 		}
 		var im image.Image
 		if format != "png" || cols > 0 {
@@ -134,8 +139,9 @@ func exportRenderedPreviews(ctx context.Context, stage, out string, pages []stri
 		}
 		results = append(results, filepath.Join(out, name))
 		if cols > 0 {
-			thumb := image.NewRGBA(image.Rect(0, 0, previewCellWidth, previewCellHeight))
-			draw.Draw(thumb, thumb.Bounds(), &image.Uniform{color.White}, image.Point{}, draw.Src)
+			cellX, cellY := i%cols*previewCellWidth, i/cols*previewCellHeight
+			cellBounds := image.Rect(cellX, cellY, cellX+previewCellWidth, cellY+previewCellHeight)
+			cell := sheet.SubImage(cellBounds).(*image.RGBA)
 			bounds := im.Bounds()
 			w, h := previewThumbnailWidth, previewThumbnailHeight
 			if bounds.Dx()*h > bounds.Dy()*w {
@@ -143,23 +149,15 @@ func exportRenderedPreviews(ctx context.Context, stage, out string, pages []stri
 			} else {
 				w = bounds.Dx() * h / bounds.Dy()
 			}
-			x := (previewCellWidth - w) / 2
-			y := previewLabelBandHeight + previewThumbnailTopGap + (previewThumbnailHeight-h)/2
+			x := cellX + (previewCellWidth-w)/2
+			y := cellY + previewLabelBandHeight + previewThumbnailTopGap + (previewThumbnailHeight-h)/2
 			r := image.Rect(x, y, x+w, y+h)
-			xdraw.CatmullRom.Scale(thumb, r, im, bounds, draw.Over, nil)
-			drawPreviewPageLabel(thumb, name)
-			thumbs = append(thumbs, thumb)
+			xdraw.CatmullRom.Scale(sheet, r, im, bounds, draw.Over, nil)
+			drawPreviewPageLabel(cell, name)
 		}
 	}
 	contact := ""
-	if cols > 0 && len(thumbs) > 0 {
-		rows := (len(thumbs) + cols - 1) / cols
-		sheet := image.NewRGBA(image.Rect(0, 0, cols*previewCellWidth, rows*previewCellHeight))
-		draw.Draw(sheet, sheet.Bounds(), &image.Uniform{color.White}, image.Point{}, draw.Src)
-		for i, im := range thumbs {
-			r := image.Rect(i%cols*previewCellWidth, i/cols*previewCellHeight, (i%cols+1)*previewCellWidth, (i/cols+1)*previewCellHeight)
-			draw.Draw(sheet, r, im, image.Point{}, draw.Src)
-		}
+	if sheet != nil {
 		if err = writePreview(filepath.Join(stage, "contact-sheet.png"), sheet, "png"); err != nil {
 			return nil, err
 		}
@@ -178,13 +176,14 @@ func exportRenderedPreviews(ctx context.Context, stage, out string, pages []stri
 }
 
 func drawPreviewPageLabel(cell *image.RGBA, label string) {
-	band := image.Rect(0, 0, previewCellWidth, previewLabelBandHeight)
+	origin := cell.Bounds().Min
+	band := image.Rect(origin.X, origin.Y, origin.X+previewCellWidth, origin.Y+previewLabelBandHeight)
 	draw.Draw(cell, band, &image.Uniform{color.RGBA{R: 32, G: 40, B: 50, A: 255}}, image.Point{}, draw.Src)
 	drawer := font.Drawer{
 		Dst:  cell,
 		Src:  image.NewUniform(color.White),
 		Face: basicfont.Face7x13,
-		Dot:  fixed.P(previewLabelLeftPadding, previewLabelBaseline),
+		Dot:  fixed.P(cell.Bounds().Min.X+previewLabelLeftPadding, cell.Bounds().Min.Y+previewLabelBaseline),
 	}
 	drawer.DrawString(label)
 }

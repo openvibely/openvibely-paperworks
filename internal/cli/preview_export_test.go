@@ -36,7 +36,7 @@ func readPreviewPNG(t *testing.T, path string) image.Image {
 
 func TestPreviewPNGReuse(t *testing.T) {
 	for _, cols := range []int{0, 1, 3, 10} {
-		counts := []int{1, 11}
+		counts := []int{1, 11, 200}
 		if cols == 0 {
 			counts = []int{1, 3}
 		}
@@ -131,11 +131,33 @@ func TestPreviewPNGReuse(t *testing.T) {
 				if err != nil || info.Mode().Perm() != 0600 {
 					t.Fatal("contact sheet permissions", err)
 				}
-				im := readPreviewPNG(t, sheetPath)
 				rows := (count + cols - 1) / cols
 				wantBounds := image.Rect(0, 0, cols*previewCellWidth, rows*previewCellHeight)
-				if im.Bounds() != wantBounds {
-					t.Fatalf("contact sheet dimensions: got %v, want %v", im.Bounds(), wantBounds)
+				var im image.Image
+				var gotBounds image.Rectangle
+				if count == 200 {
+					f, err := os.Open(sheetPath)
+					if err != nil {
+						t.Fatal(err)
+					}
+					config, err := png.DecodeConfig(f)
+					closeErr := f.Close()
+					if err != nil {
+						t.Fatal(err)
+					}
+					if closeErr != nil {
+						t.Fatal(closeErr)
+					}
+					gotBounds = image.Rect(0, 0, config.Width, config.Height)
+				} else {
+					im = readPreviewPNG(t, sheetPath)
+					gotBounds = im.Bounds()
+				}
+				if gotBounds != wantBounds {
+					t.Fatalf("contact sheet dimensions: got %v, want %v", gotBounds, wantBounds)
+				}
+				if count == 200 {
+					return
 				}
 				for i := 0; i < count; i++ {
 					cellX, cellY := i%cols*previewCellWidth, i/cols*previewCellHeight
@@ -381,12 +403,12 @@ func TestPreviewExportCancellationBeforePublication(t *testing.T) {
 		t.Fatal(err)
 	}
 	p := filepath.Join(stage, "source.png")
-	if err := os.WriteFile(p, []byte("opaque renderer output"), 0644); err != nil {
+	if err := writePreview(p, image.NewRGBA(image.Rect(0, 0, 40, 60)), "png"); err != nil {
 		t.Fatal(err)
 	}
 	ctx := &previewCancelBeforePublish{Context: context.Background()}
 	out := filepath.Join(root, "out")
-	if _, err := exportRenderedPreviews(ctx, stage, out, []string{p}, "png", 0); err != context.Canceled {
+	if _, err := exportRenderedPreviews(ctx, stage, out, []string{p}, "png", 3); err != context.Canceled {
 		t.Fatal(err)
 	}
 	if _, err := os.Stat(out); !os.IsNotExist(err) {
@@ -394,6 +416,9 @@ func TestPreviewExportCancellationBeforePublication(t *testing.T) {
 	}
 	if _, err := os.Stat(filepath.Join(stage, "page-0001.png")); err != nil {
 		t.Fatal("test did not reach publication", err)
+	}
+	if _, err := os.Stat(filepath.Join(stage, "contact-sheet.png")); err != nil {
+		t.Fatal("test did not encode the staged contact sheet", err)
 	}
 }
 
