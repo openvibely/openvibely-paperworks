@@ -38,6 +38,15 @@ func pageSpec(pages []int) []string {
 	return sel
 }
 
+func validatePageNumbers(pages []int, pageCount int) error {
+	for _, page := range pages {
+		if page < 1 || page > pageCount {
+			return PageSelectionError{Err: fmt.Errorf("invalid page selection %d for %d pages", page, pageCount)}
+		}
+	}
+	return nil
+}
+
 // PageSelectionError reports a syntactically invalid selection or a page outside the source.
 type PageSelectionError struct{ Err error }
 
@@ -93,9 +102,26 @@ func selectPages(ctx context.Context, data []byte, pages []int, onPrepare func()
 	if onPrepare != nil {
 		onPrepare()
 	}
-	var out bytes.Buffer
-	if err := api.Collect(ctx, bytes.NewReader(data), &out, pageSpec(pages), config()); err != nil {
+	conf := config()
+	conf.Cmd = model.COLLECT
+	prepared, err := api.ReadValidateAndOptimize(ctx, bytes.NewReader(data), conf, nil)
+	if err != nil {
 		return nil, fmt.Errorf("select pages: %w", err)
+	}
+	if err := validatePageNumbers(pages, prepared.PageCount); err != nil {
+		return nil, err
+	}
+	selected, err := api.PagesForPageCollection(prepared.PageCount, pageSpec(pages))
+	if err != nil {
+		return nil, fmt.Errorf("select pages: collect: parse page selection: %w", err)
+	}
+	output, err := pdfcpu.ExtractPages(ctx, prepared, selected, false)
+	if err != nil {
+		return nil, fmt.Errorf("select pages: collect: extract pages: %w", err)
+	}
+	var out bytes.Buffer
+	if err := api.Write(ctx, output, &out, conf); err != nil {
+		return nil, fmt.Errorf("select pages: collect: write output: %w", err)
 	}
 	return out.Bytes(), nil
 }
@@ -278,6 +304,9 @@ func splitWithOutputWriter(ctx context.Context, src, outDir string, ranges [][]i
 	for i, pages := range ranges {
 		if len(pages) == 0 {
 			return files, errors.New("select pages: no pages selected")
+		}
+		if err := validatePageNumbers(pages, pageCount); err != nil {
+			return files, fmt.Errorf("select pages: %w", err)
 		}
 		selected, err := api.PagesForPageCollection(pageCount, pageSpec(pages))
 		if err != nil {

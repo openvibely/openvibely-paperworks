@@ -61,6 +61,17 @@ func TestSelectPagesBySpecMatchesCollectAndPreservesOrder(t *testing.T) {
 	}
 }
 
+func TestSelectPagesRejectsInvalidPageNumbers(t *testing.T) {
+	input := splitTextFixture(2)
+	for _, page := range []int{-1, -2, 0, 3} {
+		t.Run(fmt.Sprintf("page_%d", page), func(t *testing.T) {
+			if _, err := SelectPages(context.Background(), input, []int{page}); err == nil {
+				t.Fatalf("SelectPages(%d) unexpectedly succeeded", page)
+			}
+		})
+	}
+}
+
 func TestSelectPagesBySpecRejectsEmptyAndOutOfRangeSelections(t *testing.T) {
 	input := splitTextFixture(2)
 	for _, spec := range []string{"", "0", "3", "2-1", "x"} {
