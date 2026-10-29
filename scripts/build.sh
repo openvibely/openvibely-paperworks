@@ -26,8 +26,7 @@ export CGO_ENABLED=0 GOTOOLCHAIN="$expected_toolchain"
 mkdir -p dist
 for target in "${PAPERWORKS_RUNTIME_TARGETS[@]}"; do
   export GOOS="${target%/*}" GOARCH="${target#*/}"
-  output="dist/paperworks-${GOOS}-${GOARCH}"
-  if [[ "$GOOS" == windows ]]; then output="${output}.exe"; fi
+  output="dist/$(paperworks_runtime_executable_name "$target")"
   echo "Building $target" >&2
   go build -mod=readonly -trimpath -buildvcs=false -ldflags="-s -w -buildid= -X github.com/openvibely/openvibely-paperworks/internal/cli.Version=$version" -o "$output" ./cmd/paperworks
   go version -m "$output" > "${output}.buildinfo.txt"

@@ -82,11 +82,17 @@ printf '%s\n' \
 find "$out" -name '*.zip' -exec basename {} \; | sort > "$tmp/actual-archives"
 sort "$tmp/expected-archives" -o "$tmp/expected-archives"
 diff -u "$tmp/expected-archives" "$tmp/actual-archives" || { echo 'Release archive names differ.' >&2; exit 1; }
-while IFS= read -r target; do
+cat > "$tmp/expected-executables" <<'EOF'
+darwin/amd64|paperworks-darwin-amd64
+darwin/arm64|paperworks-darwin-arm64
+linux/amd64|paperworks-linux-amd64
+linux/arm64|paperworks-linux-arm64
+windows/amd64|paperworks-windows-amd64.exe
+windows/arm64|paperworks-windows-arm64.exe
+EOF
+while IFS='|' read -r target name; do
   os="${target%/*}"
   arch="${target#*/}"
-  name="paperworks-$os-$arch"
-  [[ "$os" != windows ]] || name="$name.exe"
   archive="$out/paperworks-$os-$arch.zip"
   [[ "$(unzip -Z1 "$archive")" == "$name" ]] || { echo "Unexpected archive entry for $target" >&2; exit 1; }
   grep -q "buildinfo $target" "$out/$name.buildinfo.txt" || { echo "Missing or incorrect packaged build info for $target" >&2; exit 1; }
@@ -95,7 +101,7 @@ while IFS= read -r target; do
   else
     unzip -p "$archive" | grep -q signed || { echo "Signed archive content missing for $target" >&2; exit 1; }
   fi
-done < "$tmp/expected-targets"
+done < "$tmp/expected-executables"
 [[ "$(find "$out" -maxdepth 1 -name '*.buildinfo.txt' | wc -l | tr -d ' ')" == 6 ]] || { echo 'Expected six packaged build-info files.' >&2; exit 1; }
 (cd "$out" && shasum -a 256 -c SHA256SUMS >/dev/null)
 if bash "$tmp/repo/scripts/release-build.sh" 0.0.1 >/dev/null 2>&1; then
@@ -109,9 +115,13 @@ if MOCK_BUILD_FAIL_TARGET=linux/arm64 bash "$tmp/repo/scripts/release-build.sh" 
   echo 'A build failure must stop release packaging.' >&2; exit 1
 fi
 [[ ! -e "$tmp/repo/dist/0.0.3" ]] || { echo 'A failed build must not create a partial release directory.' >&2; exit 1; }
-if MOCK_MISSING_TARGET=windows/arm64 bash "$tmp/repo/scripts/release-build.sh" 0.0.4 >/dev/null 2>&1; then
+if output="$(MOCK_MISSING_TARGET=windows/arm64 bash "$tmp/repo/scripts/release-build.sh" 0.0.4 2>&1)"; then
   echo 'A missing built binary must stop release packaging.' >&2; exit 1
 fi
+case "$output" in
+  *'Missing or empty built binary for windows/arm64:'*'paperworks-windows-arm64.exe'*) ;;
+  *) echo "Missing Windows executable should report the expected .exe path: $output" >&2; exit 1 ;;
+esac
 [[ ! -e "$tmp/repo/dist/0.0.4" ]] || { echo 'A missing binary must not create a partial release directory.' >&2; exit 1; }
 if MOCK_MISSING_BUILDINFO_TARGET=linux/arm64 bash "$tmp/repo/scripts/release-build.sh" 0.0.5 >/dev/null 2>&1; then
   echo 'Missing build info must stop release packaging.' >&2; exit 1
