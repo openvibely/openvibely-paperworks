@@ -109,14 +109,22 @@ func RenderFile(ctx context.Context, path, output, sheet, cellRange string, opt 
 }
 
 type PageChange struct {
-	Page   int    `json:"page"`
-	Status string `json:"status"`
-	Bounds []int  `json:"bounds,omitempty"`
-	Image  string `json:"image,omitempty"`
+	Page       int    `json:"page"`
+	Status     string `json:"status"`
+	BeforePage int    `json:"before_page,omitempty"`
+	AfterPage  int    `json:"after_page,omitempty"`
+	Bounds     []int  `json:"bounds,omitempty"`
+	Image      string `json:"image,omitempty"`
 }
 
 func (p PageChange) MarshalJSON() ([]byte, error) {
 	fields := map[string]any{"page": p.Page, "status": p.Status}
+	if p.BeforePage != 0 {
+		fields["before_page"] = p.BeforePage
+	}
+	if p.AfterPage != 0 {
+		fields["after_page"] = p.AfterPage
+	}
 	if p.Image != "" {
 		fields["image"] = p.Image
 		fields["bounds"] = p.Bounds
@@ -176,6 +184,137 @@ func diffImages(a, b image.Image) (*image.RGBA, []int) {
 		return out, nil
 	}
 	return out, []int{minX, minY, maxX + 1, maxY + 1}
+}
+
+const pageFeatureGrid = 48
+const pageFeatureSamples = 4
+
+type pageFeature [pageFeatureGrid * pageFeatureGrid * 3]uint8
+
+type pageAlignment struct {
+	before int
+	after  int
+	kind   byte
+}
+
+const (
+	pageMatch byte = iota + 1
+	pageRemoved
+	pageAdded
+)
+
+// pageImageFeature downsamples each page to a fixed grid for inexpensive,
+// deterministic similarity comparisons. Small sample blocks retain the page's
+// broad text and shape layout without requiring exact pixel identity.
+func pageImageFeature(img image.Image) pageFeature {
+	var feature pageFeature
+	bounds := img.Bounds()
+	width, height := bounds.Dx(), bounds.Dy()
+	if width == 0 || height == 0 {
+		return feature
+	}
+	for gy := 0; gy < pageFeatureGrid; gy++ {
+		for gx := 0; gx < pageFeatureGrid; gx++ {
+			var sums [3]uint32
+			for sy := 0; sy < pageFeatureSamples; sy++ {
+				for sx := 0; sx < pageFeatureSamples; sx++ {
+					x := bounds.Min.X + ((gx*pageFeatureSamples+sx)*width+width/2)/(pageFeatureGrid*pageFeatureSamples)
+					y := bounds.Min.Y + ((gy*pageFeatureSamples+sy)*height+height/2)/(pageFeatureGrid*pageFeatureSamples)
+					c := color.RGBAModel.Convert(img.At(x, y)).(color.RGBA)
+					alpha := uint32(c.A)
+					sums[0] += (uint32(c.R)*alpha + 255*(255-alpha)) / 255
+					sums[1] += (uint32(c.G)*alpha + 255*(255-alpha)) / 255
+					sums[2] += (uint32(c.B)*alpha + 255*(255-alpha)) / 255
+				}
+			}
+			i := (gy*pageFeatureGrid + gx) * 3
+			for channel := range sums {
+				feature[i+channel] = uint8(sums[channel] / (pageFeatureSamples * pageFeatureSamples))
+			}
+		}
+	}
+	return feature
+}
+
+func pageFeatureDistance(a, b pageFeature) float64 {
+	var total uint64
+	for i := range a {
+		x, y := int(a[i]), int(b[i])
+		if x > y {
+			total += uint64(x - y)
+		} else {
+			total += uint64(y - x)
+		}
+	}
+	return float64(total) / float64(len(a)*255)
+}
+
+// alignPages uses global sequence alignment with image distance as the match
+// cost and a fixed cost for inserted or removed pages. Ties prefer matching
+// earlier pages, which makes runs of identical pages stable across comparisons.
+func alignPages(before, after []image.Image) []pageAlignment {
+	const gapCost = 0.55
+	n, m := len(before), len(after)
+	beforeFeatures := make([]pageFeature, n)
+	afterFeatures := make([]pageFeature, m)
+	for i, page := range before {
+		beforeFeatures[i] = pageImageFeature(page)
+	}
+	for i, page := range after {
+		afterFeatures[i] = pageImageFeature(page)
+	}
+
+	cost := make([][]float64, n+1)
+	next := make([][]byte, n+1)
+	for i := range cost {
+		cost[i] = make([]float64, m+1)
+		next[i] = make([]byte, m+1)
+	}
+	for i := n; i >= 0; i-- {
+		for j := m; j >= 0; j-- {
+			if i == n && j == m {
+				continue
+			}
+			best := 1e9
+			var step byte
+			if i < n && j < m {
+				best = pageFeatureDistance(beforeFeatures[i], afterFeatures[j]) + cost[i+1][j+1]
+				step = pageMatch
+			}
+			if i < n {
+				candidate := gapCost + cost[i+1][j]
+				if candidate < best {
+					best, step = candidate, pageRemoved
+				}
+			}
+			if j < m {
+				candidate := gapCost + cost[i][j+1]
+				if candidate < best {
+					best, step = candidate, pageAdded
+				}
+			}
+			cost[i][j], next[i][j] = best, step
+		}
+	}
+
+	alignment := make([]pageAlignment, 0, max(n, m))
+	for i, j := 0, 0; i < n || j < m; {
+		switch next[i][j] {
+		case pageMatch:
+			alignment = append(alignment, pageAlignment{before: i, after: j, kind: pageMatch})
+			i++
+			j++
+		case pageRemoved:
+			alignment = append(alignment, pageAlignment{before: i, kind: pageRemoved})
+			i++
+		case pageAdded:
+			alignment = append(alignment, pageAlignment{after: j, kind: pageAdded})
+			j++
+		default:
+			return nil
+		}
+	}
+	return alignment
 }
 
 var docxTextPart = regexp.MustCompile(`^word/(document|header\d+|footer\d+|footnotes|endnotes|comments)\.xml$`)
@@ -263,26 +402,35 @@ func Compare(ctx context.Context, before, after, output string, opt pdf.RenderOp
 	if err != nil {
 		return nil, err
 	}
+	beforePages := make([]image.Image, len(left))
+	for i, path := range left {
+		beforePages[i], err = loadPNG(path)
+		if err != nil {
+			return nil, err
+		}
+	}
+	afterPages := make([]image.Image, len(right))
+	for i, path := range right {
+		afterPages[i], err = loadPNG(path)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	var changes []PageChange
-	for i := 0; i < max(len(left), len(right)); i++ {
-		if i >= min(len(left), len(right)) {
-			st := "removed"
-			if i >= len(left) {
-				st = "added"
-			}
-			changes = append(changes, PageChange{Page: i + 1, Status: st})
+	for _, pair := range alignPages(beforePages, afterPages) {
+		switch pair.kind {
+		case pageRemoved:
+			changes = append(changes, PageChange{Page: pair.before + 1, Status: "removed"})
+			continue
+		case pageAdded:
+			changes = append(changes, PageChange{Page: pair.after + 1, Status: "added"})
 			continue
 		}
-		a, err := loadPNG(left[i])
-		if err != nil {
-			return nil, err
-		}
-		b, err := loadPNG(right[i])
-		if err != nil {
-			return nil, err
-		}
+
+		a, b := beforePages[pair.before], afterPages[pair.after]
 		diff, bounds := diffImages(a, b)
-		name := filepath.Join(output, fmt.Sprintf("diff-%04d.png", i+1))
+		name := filepath.Join(output, fmt.Sprintf("diff-%04d.png", pair.after+1))
 		f, err := os.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o644)
 		if err != nil {
 			return nil, err
@@ -296,7 +444,12 @@ func Compare(ctx context.Context, before, after, output string, opt pdf.RenderOp
 		if bounds != nil || a.Bounds().Size() != b.Bounds().Size() {
 			st = "changed"
 		}
-		changes = append(changes, PageChange{Page: i + 1, Status: st, Bounds: bounds, Image: name})
+		change := PageChange{Page: pair.after + 1, Status: st, Bounds: bounds, Image: name}
+		if pair.before != pair.after {
+			change.BeforePage = pair.before + 1
+			change.AfterPage = pair.after + 1
+		}
+		changes = append(changes, change)
 	}
 	result := map[string]any{"pages": changes, "visually_inspected": false}
 	if ext(before) == ".docx" && ext(after) == ".docx" {
