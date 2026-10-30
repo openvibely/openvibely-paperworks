@@ -78,16 +78,10 @@ func ParsePages(spec string, count int) ([]int, error) {
 }
 
 func writeNew(path string, data []byte) error {
-	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o644)
-	if err != nil {
+	return writeNewWithCloser(path, func(w io.Writer) error {
+		_, err := w.Write(data)
 		return err
-	}
-	if _, err := f.Write(data); err != nil {
-		f.Close()
-		os.Remove(path)
-		return err
-	}
-	return f.Close()
+	}, (*os.File).Close)
 }
 
 // SelectPages writes the given 1-based pages of data, in order, to dest.
@@ -210,16 +204,26 @@ func Rotate(ctx context.Context, src, dest string, degrees int, pages []int) err
 }
 
 func writeNewWith(path string, write func(io.Writer) error) error {
+	return writeNewWithCloser(path, write, (*os.File).Close)
+}
+
+func writeNewWithCloser(path string, write func(io.Writer) error, closeFile func(*os.File) error) error {
 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o644)
 	if err != nil {
 		return err
 	}
 	if err := write(f); err != nil {
-		f.Close()
+		closeFile(f)
 		os.Remove(path)
 		return err
 	}
-	return f.Close()
+	if err := closeFile(f); err != nil {
+		if removeErr := os.Remove(path); removeErr != nil && !os.IsNotExist(removeErr) {
+			return errors.Join(err, fmt.Errorf("remove partial output: %w", removeErr))
+		}
+		return err
+	}
+	return nil
 }
 
 // Split writes one PDF per page range into a new directory. Each element of
