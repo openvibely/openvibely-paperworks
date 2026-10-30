@@ -76,20 +76,41 @@ func Version(ctx context.Context) string {
 	if err != nil {
 		return ""
 	}
-	tmp, err := os.MkdirTemp("", "paperworks-lo-")
+	return versionForExecutable(ctx, exe, 60*time.Second)
+}
+
+func versionForExecutable(ctx context.Context, exe string, timeout time.Duration) string {
+	version, err := runVersionCommand(ctx, exe, timeout, false)
 	if err != nil {
 		return ""
 	}
+	return version
+}
+
+// runVersionCommand executes soffice --version with an isolated temporary
+// profile and environment. The profile is removed even when the command fails
+// or its context expires.
+func runVersionCommand(ctx context.Context, exe string, timeout time.Duration, headless bool) (string, error) {
+	tmp, err := os.MkdirTemp("", "paperworks-lo-version-")
+	if err != nil {
+		return "", err
+	}
 	defer os.RemoveAll(tmp)
-	ctx, cancel := context.WithTimeout(ctx, 60*time.Second)
+
+	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
-	cmd := exec.CommandContext(ctx, exe, "-env:UserInstallation="+FileURL(filepath.Join(tmp, "profile")), "--version")
+	args := []string{"-env:UserInstallation=" + FileURL(filepath.Join(tmp, "profile"))}
+	if headless {
+		args = append(args, "--headless")
+	}
+	args = append(args, "--version")
+	cmd := exec.CommandContext(ctx, exe, args...)
 	cmd.Env = isolatedEnv(tmp)
 	out, err := cmd.Output()
 	if err != nil {
-		return ""
+		return "", err
 	}
-	return strings.TrimSpace(string(out))
+	return strings.TrimSpace(string(out)), nil
 }
 
 // FileURL converts a local path to a file:// URL accepted by LibreOffice.
