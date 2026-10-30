@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -88,15 +87,6 @@ func findCachedOffice(cache, platform, arch string, probe func(string) bool) (st
 }
 
 func probeCachedOffice(exe string) bool {
-	tmp, err := os.MkdirTemp("", "paperworks-lo-discovery-")
-	if err != nil {
-		return false
-	}
-	defer os.RemoveAll(tmp)
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	cmd := exec.CommandContext(ctx, exe, "-env:UserInstallation="+FileURL(filepath.Join(tmp, "profile")), "--headless", "--version")
-	cmd.Env = isolatedEnv(tmp)
-	out, err := cmd.Output()
-	return err == nil && strings.HasPrefix(strings.TrimSpace(string(out)), "LibreOffice ")
+	out, err := runVersionCommand(context.Background(), exe, 5*time.Second, true)
+	return err == nil && strings.HasPrefix(out, "LibreOffice ")
 }

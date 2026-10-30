@@ -66,15 +66,22 @@ func TestCachedOfficeProbeAndOverride(t *testing.T) {
 	}
 	dir := t.TempDir()
 	exe := filepath.Join(dir, "soffice")
+	profileMarker := filepath.Join(dir, "profile-path")
+	argsMarker := filepath.Join(dir, "args")
+	t.Setenv("LO_PROFILE_MARKER", profileMarker)
+	t.Setenv("LO_ARGS_MARKER", argsMarker)
 	for _, tc := range []struct {
 		body string
 		want bool
 	}{{"echo 'LibreOffice 26.8.1'", true}, {"echo 'other tool'", false}, {"exit 1", false}} {
-		if err := os.WriteFile(exe, []byte("#!/bin/sh\n"+tc.body+"\n"), 0700); err != nil {
-			t.Fatal(err)
-		}
+		writeVersionScript(t, exe, "printf '%s\\n' \"${XDG_CACHE_HOME%/*}\" > \"$LO_PROFILE_MARKER\"\nprintf '%s\\n' \"$*\" > \"$LO_ARGS_MARKER\"\n"+tc.body)
 		if got := probeCachedOffice(exe); got != tc.want {
 			t.Fatalf("%q: %v", tc.body, got)
+		}
+		assertVersionProfileCleaned(t, profileMarker)
+		args, err := os.ReadFile(argsMarker)
+		if err != nil || !strings.Contains(string(args), "--headless --version") {
+			t.Fatalf("probe args = %q, err = %v", args, err)
 		}
 	}
 	t.Setenv("DOCUMENT_SOFFICE", exe)
