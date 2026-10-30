@@ -424,7 +424,7 @@ func isPageImageName(name string) bool {
 		}
 	}
 	page, err := strconv.Atoi(number)
-	return err == nil && page > 0
+	return err == nil && page > 0 && fmt.Sprintf("page-%04d.png", page) == name
 }
 
 // PageText returns the plain text of every page in order.
