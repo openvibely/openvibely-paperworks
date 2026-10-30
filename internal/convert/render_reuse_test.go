@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"testing"
 
 	"github.com/openvibely/openvibely-paperworks/internal/pdf"
@@ -74,6 +75,10 @@ func TestRenderFileRerenderReplacesPageImageSet(t *testing.T) {
 			if err := os.WriteFile(unrelated, []byte("keep this file"), 0600); err != nil {
 				t.Fatal(err)
 			}
+			noncanonicalPageName := filepath.Join(out, "page-00001.png")
+			if err := os.WriteFile(noncanonicalPageName, []byte("keep this too"), 0600); err != nil {
+				t.Fatal(err)
+			}
 			input := shortPDF
 			ctx := context.Background()
 			if office {
@@ -102,6 +107,9 @@ func TestRenderFileRerenderReplacesPageImageSet(t *testing.T) {
 				assertRenderPageSet(t, out, pages, count)
 				if got := string(contents(t, unrelated)); got != "keep this file" {
 					t.Fatalf("unrelated file changed: %q", got)
+				}
+				if got := string(contents(t, noncanonicalPageName)); got != "keep this too" {
+					t.Fatalf("noncanonical page-like file changed: %q", got)
 				}
 			}
 		})
@@ -179,12 +187,12 @@ func isPageImageNameForTest(name string) bool {
 	if len(name) < len("page-0001.png") || name[:5] != "page-" || filepath.Ext(name) != ".png" {
 		return false
 	}
-	for _, digit := range name[5 : len(name)-4] {
-		if digit < '0' || digit > '9' {
-			return false
-		}
+	number := name[5 : len(name)-4]
+	if len(number) < 4 {
+		return false
 	}
-	return true
+	page, err := strconv.Atoi(number)
+	return err == nil && page > 0 && fmt.Sprintf("page-%04d.png", page) == name
 }
 
 func TestRenderReplacesLinksWithoutChangingTargets(t *testing.T) {
