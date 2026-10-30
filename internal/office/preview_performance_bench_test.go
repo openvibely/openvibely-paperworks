@@ -8,7 +8,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/beevik/etree"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
+	"github.com/xuri/excelize/v2"
 )
 
 func previewBenchmarkChartXML() string {
@@ -208,4 +210,90 @@ func benchmarkOfficePreview(b *testing.B, copyPreview bool) {
 			})
 		}
 	}
+}
+
+func BenchmarkOfficePreviewCopySparklineColumnRanges(b *testing.B) {
+	for _, ranges := range []int{1, 32, 128} {
+		b.Run(fmt.Sprintf("ranges-%03d/points-10000", ranges), func(b *testing.B) {
+			dir := b.TempDir()
+			source, err := sparklineColumnBenchmarkBook(dir, 10000, ranges)
+			if err != nil {
+				b.Fatal(err)
+			}
+			output := filepath.Join(dir, "preview.xlsx")
+			b.ReportAllocs()
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				changed, err := OfficePreviewCopy(source, output)
+				if err != nil || !changed {
+					b.Fatalf("OfficePreviewCopy = %v, %v; want changed", changed, err)
+				}
+				b.StopTimer()
+				if err := os.Remove(output); err != nil {
+					b.Fatal(err)
+				}
+				b.StartTimer()
+			}
+		})
+	}
+}
+
+func sparklineColumnBenchmarkBook(dir string, points, ranges int) (string, error) {
+	book := excelize.NewFile()
+	defer book.Close()
+	row := make([]interface{}, points)
+	for i := range row {
+		row[i] = i + 1
+	}
+	if err := book.SetSheetRow("Sheet1", "A1", &row); err != nil {
+		return "", err
+	}
+	buffer, err := book.WriteToBuffer()
+	if err != nil {
+		return "", err
+	}
+	p, err := opc.Read(buffer.Bytes())
+	if err != nil {
+		return "", err
+	}
+	item := SparklineItem{Cell: "A2", Range: "Sheet1!A1:" + ColumnName(points) + "1"}
+	if _, err := EditSparklines(p, SparklineSpec{Sheet: "Sheet1", Sparklines: []SparklineItem{item}}); err != nil {
+		return "", err
+	}
+	_, _, byName, err := WorkbookSheets(p)
+	if err != nil {
+		return "", err
+	}
+	part := byName["Sheet1"]
+	doc, err := p.XML(part)
+	if err != nil {
+		return "", err
+	}
+	root := doc.Root()
+	if existing := Child(root, NSS, "cols"); existing != nil {
+		root.RemoveChild(existing)
+	}
+	cols := etree.NewElement("cols")
+	for i := 0; i < ranges; i++ {
+		lo := i*points/ranges + 1
+		hi := (i + 1) * points / ranges
+		col := cols.CreateElement("col")
+		col.CreateAttr("min", fmt.Sprint(lo))
+		col.CreateAttr("max", fmt.Sprint(hi))
+		col.CreateAttr("width", fmt.Sprint(8.43+float64(i%3)/10))
+		col.CreateAttr("customWidth", "1")
+	}
+	if sheetData := Child(root, NSS, "sheetData"); sheetData != nil {
+		root.InsertChildAt(sheetData.Index(), cols)
+	} else {
+		root.AddChild(cols)
+	}
+	if err := p.SetXML(part, doc); err != nil {
+		return "", err
+	}
+	path := filepath.Join(dir, "sparkline-columns.xlsx")
+	if err := p.SaveNew(path); err != nil {
+		return "", err
+	}
+	return path, nil
 }
