@@ -108,6 +108,101 @@ func TestReplaceLinkedImageRemovesExternalRelationship(t *testing.T) {
 	}
 }
 
+func TestReplaceLinkedImagePreservesSharedExternalRelationship(t *testing.T) {
+	dir := t.TempDir()
+	makePNG := func(c color.Color) []byte {
+		t.Helper()
+		im := image.NewRGBA(image.Rect(0, 0, 10, 10))
+		for y := 0; y < 10; y++ {
+			for x := 0; x < 10; x++ {
+				im.Set(x, y, c)
+			}
+		}
+		var data bytes.Buffer
+		if err := png.Encode(&data, im); err != nil {
+			t.Fatal(err)
+		}
+		return data.Bytes()
+	}
+	originalData := makePNG(color.RGBA{R: 255, A: 255})
+	replacementData := makePNG(color.RGBA{B: 255, A: 255})
+	replacementPath := filepath.Join(dir, "replacement.png")
+	if err := os.WriteFile(replacementPath, replacementData, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	picture := `<w:r><w:drawing><wp:inline xmlns:a="` + nsA + `" xmlns:pic="` + nsPic + `"><a:graphic><a:graphicData uri="` + nsPic + `"><pic:pic><pic:blipFill><a:blip r:embed="old-embed" r:link="old-link"/></pic:blipFill></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>`
+	src := mk(t, "shared-linked-images", `<w:p>`+picture+`</w:p><w:p>`+picture+`</w:p>`, nil)
+	var oldEmbedID, oldLinkID string
+	src = referenceRewrite(t, src, func(p *opc.Package) {
+		p.Set("word/media/original.png", originalData)
+		if err := p.EnsureContentType(".png", "image/png"); err != nil {
+			t.Fatal(err)
+		}
+		embedID, err := p.AddRel("word/document.xml", relBase+"image", "media/original.png", false)
+		if err != nil {
+			t.Fatal(err)
+		}
+		oldEmbedID = embedID
+		linkID, err := p.AddRel("word/document.xml", relBase+"image", "https://example.test/shared.png", true)
+		if err != nil {
+			t.Fatal(err)
+		}
+		oldLinkID = linkID
+		referenceSetXML(t, p, "word/document.xml", func(root *etree.Element) {
+			for _, blip := range office.All(root, nsA, "blip") {
+				blip.CreateAttr("r:embed", embedID)
+				blip.CreateAttr("r:link", linkID)
+			}
+		})
+	})
+
+	out := filepath.Join(dir, "out.docx")
+	if _, err := Edit(src, out, map[string]any{"operation": "image-replace", "image": float64(0), "path": replacementPath}, dir); err != nil {
+		t.Fatal(err)
+	}
+	p, err := opc.Open(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	doc, err := p.XML("word/document.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	blips := office.All(doc.Root(), nsA, "blip")
+	if len(blips) != 2 {
+		t.Fatalf("got %d blips, want 2", len(blips))
+	}
+	if got := blips[0].SelectAttrValue("r:link", ""); got != "" {
+		t.Fatalf("replaced picture retains external link %q", got)
+	}
+	newEmbedID := blips[0].SelectAttrValue("r:embed", "")
+	if newEmbedID == "" || newEmbedID == oldEmbedID {
+		t.Fatalf("replacement embed not set: %q", newEmbedID)
+	}
+	if got := blips[1].SelectAttrValue("r:link", ""); got != oldLinkID {
+		t.Fatalf("unreplaced picture lost shared external link: %q", got)
+	}
+	rels, err := p.Rels("word/document.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var foundLink, foundReplacement bool
+	for _, rel := range rels {
+		if rel.ID == oldLinkID && rel.Target == "https://example.test/shared.png" && rel.TargetMode == "External" {
+			foundLink = true
+		}
+		if rel.ID == newEmbedID && bytes.Equal(p.Get(opc.Resolve("word/document.xml", rel.Target)), replacementData) {
+			foundReplacement = true
+		}
+	}
+	if !foundLink {
+		t.Fatal("shared external image relationship was removed")
+	}
+	if !foundReplacement {
+		t.Fatal("replacement media missing or does not match input")
+	}
+}
+
 func TestInsertReplaceResizeImagePreservesText(t *testing.T) {
 	dir := t.TempDir()
 	pic := filepath.Join(dir, "pic.png")

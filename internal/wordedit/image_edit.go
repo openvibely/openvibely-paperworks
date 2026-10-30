@@ -85,8 +85,18 @@ func imageEdit(d *Doc, part string, root *etree.Element, s map[string]any) error
 			linkID := blips[0].SelectAttrValue("r:link", "")
 			if linkID != "" {
 				blips[0].RemoveAttr("r:link")
-				if err := d.dropRel(part, linkID); err != nil {
-					return err
+				linkStillUsed := false
+				office.Iter(root, func(e *etree.Element) bool {
+					if e.SelectAttrValue("r:link", "") == linkID {
+						linkStillUsed = true
+						return false
+					}
+					return true
+				})
+				if !linkStillUsed {
+					if err := d.dropRel(part, linkID); err != nil {
+						return err
+					}
 				}
 			}
 			blips[0].CreateAttr("r:embed", rid)
