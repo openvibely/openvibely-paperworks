@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"runtime"
 	"runtime/debug"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -376,7 +377,54 @@ func RenderPages(ctx context.Context, pdfPath, outDir string, opt RenderOptions)
 	if len(files) == 0 {
 		return nil, fmt.Errorf("renderer produced no page images")
 	}
+	if err := removeStalePageImages(outDir, files); err != nil {
+		return nil, err
+	}
 	return files, nil
+}
+
+// removeStalePageImages removes only numbered PNGs owned by RenderPages, and is
+// called after the full render succeeds so a failed render cannot prune previews.
+func removeStalePageImages(outDir string, current []string) error {
+	keep := make(map[string]struct{}, len(current))
+	for _, path := range current {
+		keep[filepath.Base(path)] = struct{}{}
+	}
+	entries, err := os.ReadDir(outDir)
+	if err != nil {
+		return fmt.Errorf("list rendered page images: %w", err)
+	}
+	for _, entry := range entries {
+		name := entry.Name()
+		if entry.IsDir() || !isPageImageName(name) {
+			continue
+		}
+		if _, ok := keep[name]; ok {
+			continue
+		}
+		if err := os.Remove(filepath.Join(outDir, name)); err != nil {
+			return fmt.Errorf("remove stale page image %q: %w", name, err)
+		}
+	}
+	return nil
+}
+
+func isPageImageName(name string) bool {
+	const prefix, suffix = "page-", ".png"
+	if !strings.HasPrefix(name, prefix) || !strings.HasSuffix(name, suffix) {
+		return false
+	}
+	number := strings.TrimSuffix(strings.TrimPrefix(name, prefix), suffix)
+	if len(number) < 4 {
+		return false
+	}
+	for _, digit := range number {
+		if digit < '0' || digit > '9' {
+			return false
+		}
+	}
+	page, err := strconv.Atoi(number)
+	return err == nil && page > 0
 }
 
 // PageText returns the plain text of every page in order.
