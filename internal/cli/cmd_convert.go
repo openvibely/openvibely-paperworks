@@ -426,7 +426,7 @@ func init() {
 				return nil, err
 			}
 			var selected []int
-			if spec := a.Str("pages"); spec != "" {
+			if spec, supplied := a.Flags["pages"]; supplied {
 				count, err := pdf.PageCount(ctx, data)
 				if err != nil {
 					return nil, err
