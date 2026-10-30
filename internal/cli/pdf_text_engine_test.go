@@ -111,13 +111,24 @@ func TestPDFTextPageSelectionAndOutput(t *testing.T) {
 
 func TestPDFTextMalformedOrOutOfRangeSelectionDoesNotPublish(t *testing.T) {
 	src := writePDFTextFixture(t, false)
-	for _, selector := range []string{"2,,3", "4"} {
-		t.Run(selector, func(t *testing.T) {
+	cases := []struct {
+		name string
+		args []string
+	}{
+		{name: "malformed", args: []string{"--pages", "2,,3"}},
+		{name: "out of range", args: []string{"--pages", "4"}},
+		{name: "empty separate value", args: []string{"--pages", ""}},
+		{name: "empty equals value", args: []string{"--pages="}},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
 			output := filepath.Join(t.TempDir(), "must-not-exist.txt")
+			args := append([]string{"pdf-text", src, "--engine", "pdfium"}, tc.args...)
+			args = append(args, "--output", output)
 			var stdout, stderr bytes.Buffer
-			code := Main([]string{"pdf-text", src, "--engine", "pdfium", "--pages", selector, "--output", output}, &stdout, &stderr)
+			code := Main(args, &stdout, &stderr)
 			if code == 0 {
-				t.Fatalf("selection %q succeeded: %s", selector, stdout.String())
+				t.Fatalf("selection %v succeeded: %s", tc.args, stdout.String())
 			}
 			if !strings.Contains(stderr.String(), "invalid page selection") {
 				t.Fatalf("selection error is unclear: %s", stderr.String())
