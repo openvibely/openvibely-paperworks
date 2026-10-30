@@ -1,11 +1,13 @@
 package office
 
 import (
+	"container/heap"
 	"errors"
 	"fmt"
 	"math"
 	"path"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -346,6 +348,31 @@ type sheetGeometry struct {
 	defaultCol float64
 	defaultRow float64
 	rows       map[int]*etree.Element
+	cols       []columnInterval
+}
+
+type columnInterval struct {
+	lo, hi int
+	col    *etree.Element
+}
+
+type columnIntervalEvent struct {
+	at       int64
+	interval int
+	start    bool
+}
+
+type columnIntervalHeap []int
+
+func (h columnIntervalHeap) Len() int           { return len(h) }
+func (h columnIntervalHeap) Less(i, j int) bool { return h[i] < h[j] }
+func (h columnIntervalHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+func (h *columnIntervalHeap) Push(value any)    { *h = append(*h, value.(int)) }
+func (h *columnIntervalHeap) Pop() any {
+	old := *h
+	last := old[len(old)-1]
+	*h = old[:len(old)-1]
+	return last
 }
 
 func newGeometry(root *etree.Element) *sheetGeometry {
@@ -362,16 +389,67 @@ func newGeometry(root *etree.Element) *sheetGeometry {
 		n, _ := strconv.Atoi(r.SelectAttrValue("r", ""))
 		g.rows[n] = r
 	}
+	g.cols = indexColumnIntervals(Child(root, NSS, "cols"))
 	return g
 }
 
-func (g *sheetGeometry) col(index int) *etree.Element {
-	for _, c := range All(Child(g.root, NSS, "cols"), NSS, "col") {
+// indexColumnIntervals resolves overlapping definitions once, retaining the
+// first matching <col> in document order for every column in its range.
+func indexColumnIntervals(cols *etree.Element) []columnInterval {
+	definitions := All(cols, NSS, "col")
+	events := make([]columnIntervalEvent, 0, len(definitions)*2)
+	intervals := make([]columnInterval, len(definitions))
+	for i, c := range definitions {
 		lo, _ := strconv.Atoi(c.SelectAttrValue("min", "0"))
 		hi, _ := strconv.Atoi(c.SelectAttrValue("max", "0"))
-		if lo <= index && index <= hi {
-			return c
+		intervals[i] = columnInterval{lo: lo, hi: hi, col: c}
+		if lo > hi {
+			continue
 		}
+		events = append(events,
+			columnIntervalEvent{at: int64(lo), interval: i, start: true},
+			columnIntervalEvent{at: int64(hi) + 1, interval: i},
+		)
+	}
+	if len(events) == 0 {
+		return nil
+	}
+	sort.Slice(events, func(i, j int) bool { return events[i].at < events[j].at })
+	active := make([]bool, len(intervals))
+	var precedence columnIntervalHeap
+	out := make([]columnInterval, 0, len(intervals))
+	for i := 0; i < len(events); {
+		at := events[i].at
+		j := i
+		for j < len(events) && events[j].at == at {
+			event := events[j]
+			active[event.interval] = event.start
+			if event.start {
+				heap.Push(&precedence, event.interval)
+			}
+			j++
+		}
+		for len(precedence) > 0 && !active[precedence[0]] {
+			heap.Pop(&precedence)
+		}
+		if j < len(events) && len(precedence) > 0 && events[j].at > at {
+			winner := precedence[0]
+			lo, hi := int(at), int(events[j].at-1)
+			if n := len(out); n > 0 && out[n-1].hi+1 == lo && out[n-1].col == intervals[winner].col {
+				out[n-1].hi = hi
+			} else {
+				out = append(out, columnInterval{lo: lo, hi: hi, col: intervals[winner].col})
+			}
+		}
+		i = j
+	}
+	return out
+}
+
+func (g *sheetGeometry) col(index int) *etree.Element {
+	i := sort.Search(len(g.cols), func(i int) bool { return g.cols[i].hi >= index })
+	if i < len(g.cols) && g.cols[i].lo <= index {
+		return g.cols[i].col
 	}
 	return nil
 }

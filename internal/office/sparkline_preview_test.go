@@ -226,6 +226,167 @@ func TestSparklineRowPixelRounding(t *testing.T) {
 	}
 }
 
+func TestSparklineColumnGeometryIndex(t *testing.T) {
+	doc := etree.NewDocument()
+	if err := doc.ReadFromString(`<worksheet xmlns="` + NSS + `"><sheetFormatPr defaultColWidth="12.5"/><cols><col min="2" max="4" width="10"/><col min="3" max="5" width="20" hidden="1"/><col min="5" max="6" width="30" hidden="0"/></cols></worksheet>`); err != nil {
+		t.Fatal(err)
+	}
+	g := newGeometry(doc.Root())
+	for _, tc := range []struct {
+		column int
+		pixels float64
+		hidden bool
+	}{
+		{2, 70, false},
+		{3, 70, false}, // The first range wins over the overlapping hidden range.
+		{4, 70, false},
+		{5, 0, true}, // The second range wins over the third at column 5.
+		{6, 210, false},
+		{7, 87, false}, // Unspecified columns use defaultColWidth.
+	} {
+		if got := g.colPixels(tc.column); got != tc.pixels {
+			t.Errorf("column %d pixels=%v want %v", tc.column, got, tc.pixels)
+		}
+		if got := g.colHidden(tc.column); got != tc.hidden {
+			t.Errorf("column %d hidden=%v want %v", tc.column, got, tc.hidden)
+		}
+	}
+}
+
+func TestSparklineColumnGeometryWithoutCols(t *testing.T) {
+	doc := etree.NewDocument()
+	if err := doc.ReadFromString(`<worksheet xmlns="` + NSS + `"/>`); err != nil {
+		t.Fatal(err)
+	}
+	g := newGeometry(doc.Root())
+	if got := g.colPixels(16384); got != 59 {
+		t.Fatalf("default column pixels=%v want 59", got)
+	}
+	if g.colHidden(16384) {
+		t.Fatal("unspecified column should not be hidden")
+	}
+}
+
+func TestSparklinePreviewColumnGeometryBySheetAndSourceOrientation(t *testing.T) {
+	book := excelize.NewFile()
+	defer book.Close()
+	if _, err := book.NewSheet("Second"); err != nil {
+		t.Fatal(err)
+	}
+	if err := book.SetSheetRow("Sheet1", "A1", &[]interface{}{1, 2, 3, 4}); err != nil {
+		t.Fatal(err)
+	}
+	for row := 1; row <= 4; row++ {
+		if err := book.SetCellValue("Second", "A"+strconv.Itoa(row), row); err != nil {
+			t.Fatal(err)
+		}
+	}
+	buffer, err := book.WriteToBuffer()
+	if err != nil {
+		t.Fatal(err)
+	}
+	p, err := opc.Read(buffer.Bytes())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := EditSparklines(p, SparklineSpec{Sheet: "Sheet1", Sparklines: []SparklineItem{
+		{Cell: "F1", Range: "Sheet1!A1:D1"},
+		{Cell: "F2", Range: "Second!A1:A4"},
+	}}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := EditSparklines(p, SparklineSpec{Sheet: "Second", Sparklines: []SparklineItem{
+		{Cell: "C1", Range: "Second!A1:A4"},
+	}}); err != nil {
+		t.Fatal(err)
+	}
+	setSparklineTestColumns(t, p, "Sheet1", []sparklineTestColumn{
+		{min: 1, max: 2, width: "10"},
+		{min: 3, max: 4, width: "12", hidden: "1"},
+		{min: 6, max: 6, width: "20"},
+	})
+	setSparklineTestColumns(t, p, "Second", []sparklineTestColumn{
+		{min: 1, max: 1, width: "11"},
+		{min: 3, max: 3, width: "30"},
+	})
+	source := filepath.Join(t.TempDir(), "two-sheets.xlsx")
+	if err := p.SaveNew(source); err != nil {
+		t.Fatal(err)
+	}
+	output := filepath.Join(t.TempDir(), "two-sheets-preview.xlsx")
+	if changed, err := OfficePreviewCopy(source, output); err != nil || !changed {
+		t.Fatalf("OfficePreviewCopy changed=%v err=%v", changed, err)
+	}
+	preview := previewOpen(t, output)
+	for _, tc := range []struct {
+		drawing string
+		counts  []int
+		widths  []int
+	}{
+		{"xl/drawings/preview1.xml", []int{2, 4}, []int{140 * emuPerPixel, 140 * emuPerPixel}},
+		{"xl/drawings/preview2.xml", []int{4}, []int{210 * emuPerPixel}},
+	} {
+		drawing := previewXML(t, preview, tc.drawing)
+		shapes := All(drawing, NSXDR, "sp")
+		if len(shapes) != len(tc.counts) {
+			t.Fatalf("%s shapes=%d want %d", tc.drawing, len(shapes), len(tc.counts))
+		}
+		for i, shape := range shapes {
+			if points := len(All(shape, NSA, "pt")); points != tc.counts[i] {
+				t.Errorf("%s shape %d points=%d want %d", tc.drawing, i, points, tc.counts[i])
+			}
+			ext := Child(shape.Parent(), NSXDR, "ext")
+			width, err := strconv.Atoi(ext.SelectAttrValue("cx", ""))
+			if err != nil || width != tc.widths[i] {
+				t.Errorf("%s shape %d width=%d err=%v want %d", tc.drawing, i, width, err, tc.widths[i])
+			}
+		}
+	}
+}
+
+type sparklineTestColumn struct {
+	min, max int
+	width    string
+	hidden   string
+}
+
+func setSparklineTestColumns(t *testing.T, p *opc.Package, sheet string, definitions []sparklineTestColumn) {
+	t.Helper()
+	_, _, byName, err := WorkbookSheets(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	part := byName[sheet]
+	doc, err := p.XML(part)
+	if err != nil {
+		t.Fatal(err)
+	}
+	root := doc.Root()
+	if existing := Child(root, NSS, "cols"); existing != nil {
+		root.RemoveChild(existing)
+	}
+	cols := newNS(root, NSS, "cols")
+	for _, definition := range definitions {
+		col := newNS(cols, NSS, "col")
+		col.CreateAttr("min", strconv.Itoa(definition.min))
+		col.CreateAttr("max", strconv.Itoa(definition.max))
+		col.CreateAttr("width", definition.width)
+		col.CreateAttr("customWidth", "1")
+		if definition.hidden != "" {
+			col.CreateAttr("hidden", definition.hidden)
+		}
+		cols.AddChild(col)
+	}
+	if sheetData := Child(root, NSS, "sheetData"); sheetData != nil {
+		root.InsertChildAt(sheetData.Index(), cols)
+	} else {
+		root.AddChild(cols)
+	}
+	if err := p.SetXML(part, doc); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestSparklineEMUTiesToEven(t *testing.T) {
 	for _, c := range []struct {
 		v    float64
