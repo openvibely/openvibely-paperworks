@@ -1,6 +1,8 @@
 package wordedit
 
 import (
+	"bytes"
+	"github.com/beevik/etree"
 	"github.com/openvibely/openvibely-paperworks/internal/office"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 	"image"
@@ -10,6 +12,101 @@ import (
 	"path/filepath"
 	"testing"
 )
+
+func TestReplaceLinkedImageRemovesExternalRelationship(t *testing.T) {
+	dir := t.TempDir()
+	makePNG := func(t *testing.T, name string, c color.Color) (string, []byte) {
+		t.Helper()
+		im := image.NewRGBA(image.Rect(0, 0, 10, 10))
+		for y := 0; y < 10; y++ {
+			for x := 0; x < 10; x++ {
+				im.Set(x, y, c)
+			}
+		}
+		var data bytes.Buffer
+		if err := png.Encode(&data, im); err != nil {
+			t.Fatal(err)
+		}
+		file := filepath.Join(dir, name)
+		if err := os.WriteFile(file, data.Bytes(), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		return file, data.Bytes()
+	}
+	_, originalData := makePNG(t, "original.png", color.RGBA{R: 255, A: 255})
+	replacementPath, replacementData := makePNG(t, "replacement.png", color.RGBA{B: 255, A: 255})
+	body := `<w:p><w:r><w:drawing><wp:inline xmlns:a="` + nsA + `" xmlns:pic="` + nsPic + `"><a:graphic><a:graphicData uri="` + nsPic + `"><pic:pic><pic:blipFill><a:blip r:embed="old-embed" r:link="old-link"/></pic:blipFill></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>`
+	src := mk(t, "linked-image", body, nil)
+	var oldEmbedID, oldLinkID string
+	src = referenceRewrite(t, src, func(p *opc.Package) {
+		p.Set("word/media/original.png", originalData)
+		if err := p.EnsureContentType(".png", "image/png"); err != nil {
+			t.Fatal(err)
+		}
+		embedID, err := p.AddRel("word/document.xml", relBase+"image", "media/original.png", false)
+		if err != nil {
+			t.Fatal(err)
+		}
+		oldEmbedID = embedID
+		linkID, err := p.AddRel("word/document.xml", relBase+"image", "https://example.test/original.png", true)
+		if err != nil {
+			t.Fatal(err)
+		}
+		oldLinkID = linkID
+		referenceSetXML(t, p, "word/document.xml", func(root *etree.Element) {
+			blips := office.All(root, nsA, "blip")
+			if len(blips) != 1 {
+				t.Fatalf("got %d blips, want 1", len(blips))
+			}
+			blips[0].CreateAttr("r:embed", embedID)
+			blips[0].CreateAttr("r:link", linkID)
+		})
+	})
+
+	out := filepath.Join(dir, "out.docx")
+	if _, err := Edit(src, out, map[string]any{"operation": "image-replace", "image": float64(0), "path": replacementPath}, dir); err != nil {
+		t.Fatal(err)
+	}
+	p, err := opc.Open(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	doc, err := p.XML("word/document.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	blips := office.All(doc.Root(), nsA, "blip")
+	if len(blips) != 1 {
+		t.Fatalf("got %d blips, want 1", len(blips))
+	}
+	if got := blips[0].SelectAttrValue("r:link", ""); got != "" {
+		t.Fatalf("external link remains: %q", got)
+	}
+	embedID := blips[0].SelectAttrValue("r:embed", "")
+	if embedID == "" || embedID == oldEmbedID {
+		t.Fatalf("replacement embed not set: %q", embedID)
+	}
+	rels, err := p.Rels("word/document.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var mediaPart string
+	for _, rel := range rels {
+		if rel.ID == oldLinkID || rel.Target == "https://example.test/original.png" {
+			t.Fatalf("obsolete external image relationship remains: %+v", rel)
+		}
+		if rel.ID == embedID {
+			mediaPart = opc.Resolve("word/document.xml", rel.Target)
+		}
+	}
+	if mediaPart == "" {
+		t.Fatalf("replacement relationship %q missing", embedID)
+	}
+	got := p.Get(mediaPart)
+	if !p.Has(mediaPart) || !bytes.Equal(got, replacementData) {
+		t.Fatal("replacement media missing or does not match input")
+	}
+}
 
 func TestInsertReplaceResizeImagePreservesText(t *testing.T) {
 	dir := t.TempDir()
