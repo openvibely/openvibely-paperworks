@@ -465,8 +465,12 @@ func build(spec Spec, baseDir string, clock func() time.Time) ([]byte, error) {
 	doc.WriteSettings.CanonicalText = true
 	body := doc.Root().FindElement("w:body")
 	section := body.FindElement("w:sectPr")
+	sectionProperties, err := b.sectPr()
+	if err != nil {
+		return nil, err
+	}
 	generated := etree.NewDocument()
-	if err := generated.ReadFromString("<body>" + b.body.String() + b.sectPr() + "</body>"); err != nil {
+	if err := generated.ReadFromString("<body>" + b.body.String() + sectionProperties + "</body>"); err != nil {
 		return nil, err
 	}
 	generated.Root().FindElement("w:sectPr").Attr = append([]etree.Attr(nil), section.Attr...)
@@ -544,7 +548,7 @@ func build(spec Spec, baseDir string, clock func() time.Time) ([]byte, error) {
 	return pkg.DocumentBytes(clock)
 }
 
-func (b *builder) sectPr() string {
+func (b *builder) sectPr() (string, error) {
 	pg := b.spec.Page
 	w, h := int(pg.WidthIn*1440), int(pg.HeightIn*1440)
 	orient := ""
@@ -555,10 +559,12 @@ func (b *builder) sectPr() string {
 	m := int(pg.MarginIn * 1440)
 	var refs strings.Builder
 	if b.spec.Header != "" {
-		id := b.rel("header", "header1.xml", false)
-		b.pkg.Set("word/header1.xml", []byte(hfXML("hdr", para("Header", "", "", runXML(Run{Text: b.spec.Header})))))
-		b.pkg.EnsureContentType("/word/header1.xml", "application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml")
-		fmt.Fprintf(&refs, `<w:headerReference w:type="default" r:id="%s"/>`, id)
+		content := para("Header", "", "", runXML(Run{Text: b.spec.Header}))
+		reference, err := b.addSectionPartReference("header", "hdr", content)
+		if err != nil {
+			return "", err
+		}
+		refs.WriteString(reference)
 	}
 	if b.spec.Footer != "" || b.spec.PageNumbers {
 		content := ""
@@ -571,12 +577,25 @@ func (b *builder) sectPr() string {
 			}
 			content += `<w:r><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:instrText xml:space="preserve"> PAGE </w:instrText></w:r><w:r><w:fldChar w:fldCharType="separate"/></w:r><w:r><w:t>1</w:t></w:r><w:r><w:fldChar w:fldCharType="end"/></w:r>`
 		}
-		id := b.rel("footer", "footer1.xml", false)
-		b.pkg.Set("word/footer1.xml", []byte(hfXML("ftr", para("Footer", "", "", content))))
-		b.pkg.EnsureContentType("/word/footer1.xml", "application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml")
-		fmt.Fprintf(&refs, `<w:footerReference w:type="default" r:id="%s"/>`, id)
+		reference, err := b.addSectionPartReference("footer", "ftr", para("Footer", "", "", content))
+		if err != nil {
+			return "", err
+		}
+		refs.WriteString(reference)
 	}
-	return fmt.Sprintf(`<w:sectPr>%s<w:pgSz w:w="%d" w:h="%d"%s/><w:pgMar w:top="%d" w:right="%d" w:bottom="%d" w:left="%d" w:header="720" w:footer="720" w:gutter="0"/><w:cols w:space="720"/><w:docGrid w:linePitch="360"/></w:sectPr>`, refs.String(), w, h, orient, m, m, m, m)
+	return fmt.Sprintf(`<w:sectPr>%s<w:pgSz w:w="%d" w:h="%d"%s/><w:pgMar w:top="%d" w:right="%d" w:bottom="%d" w:left="%d" w:header="720" w:footer="720" w:gutter="0"/><w:cols w:space="720"/><w:docGrid w:linePitch="360"/></w:sectPr>`, refs.String(), w, h, orient, m, m, m, m), nil
+}
+
+func (b *builder) addSectionPartReference(kind, tag, content string) (string, error) {
+	partName := kind + "1.xml"
+	relationshipID := b.rel(kind, partName, false)
+	b.pkg.Set("word/"+partName, []byte(hfXML(tag, content)))
+
+	contentType := "application/vnd.openxmlformats-officedocument.wordprocessingml." + kind + "+xml"
+	if err := b.pkg.EnsureContentType("/word/"+partName, contentType); err != nil {
+		return "", err
+	}
+	return fmt.Sprintf(`<w:%sReference w:type="default" r:id="%s"/>`, kind, relationshipID), nil
 }
 
 func hfXML(tag, content string) string {
