@@ -587,6 +587,13 @@ func compatibleTextUnicode(raw []byte) (map[int]string, bool) {
 // state are accepted. Unsupported pages fail the entire document with no partial
 // strings and no PDFium fallback. This is not general pypdf compatibility.
 func PypdfPageText(ctx context.Context, data []byte) ([]string, error) {
+	return PypdfPageTextSelected(ctx, data, nil)
+}
+
+// PypdfPageTextSelected reconstructs text from selected 1-based pages, in request
+// order. A nil selection returns every page in document order. Unsupported pages
+// outside the selection are not inspected.
+func PypdfPageTextSelected(ctx context.Context, data []byte, pages []int) ([]string, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
@@ -594,12 +601,22 @@ func PypdfPageText(ctx context.Context, data []byte) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	out := make([]string, c.PageCount)
-	for i := range out {
-		out[i], err = compatibleTextPageText(ctx, c, i)
-		if err != nil {
-			return nil, fmt.Errorf("pypdf text page %d: %w", i+1, err)
+	if pages == nil {
+		pages = make([]int, c.PageCount)
+		for i := range pages {
+			pages[i] = i + 1
 		}
+	}
+	if err := validatePageNumbers(pages, c.PageCount); err != nil {
+		return nil, err
+	}
+	out := make([]string, 0, len(pages))
+	for _, page := range pages {
+		text, err := compatibleTextPageText(ctx, c, page-1)
+		if err != nil {
+			return nil, fmt.Errorf("pypdf text page %d: %w", page, err)
+		}
+		out = append(out, text)
 	}
 	return out, nil
 }

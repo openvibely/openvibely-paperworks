@@ -413,9 +413,9 @@ func init() {
 	})
 	register(&Command{
 		Name:      "pdf-text",
-		ValueOpts: []string{"engine", "output"},
-		Summary:   "Extract page text; pypdf mode supports a bounded subset and rejects unsupported pages.",
-		Usage:     "paperworks pdf-text INPUT.pdf [--engine pdfium|pypdf] [--output NEW.txt]",
+		ValueOpts: []string{"engine", "pages", "output"},
+		Summary:   "Extract text from all or selected PDF pages; pypdf mode supports a bounded subset and rejects unsupported selected pages.",
+		Usage:     "paperworks pdf-text INPUT.pdf [--engine pdfium|pypdf] [--pages 2,5-6] [--output NEW.txt]",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			in, err := input(a, 1)
 			if err != nil {
@@ -425,25 +425,43 @@ func init() {
 			if err != nil {
 				return nil, err
 			}
+			var selected []int
+			if spec := a.Str("pages"); spec != "" {
+				count, err := pdf.PageCount(ctx, data)
+				if err != nil {
+					return nil, err
+				}
+				selected, err = pdf.ParsePages(spec, count)
+				if err != nil {
+					return nil, UsageError{err.Error()}
+				}
+			}
 			var pages []string
 			switch a.Str("engine") {
 			case "", "pdfium":
-				pages, err = pdf.PageText(ctx, data)
+				pages, err = pdf.PageTextSelected(ctx, data, selected)
 			case "pypdf":
-				pages, err = pdf.PypdfPageText(ctx, data)
+				pages, err = pdf.PypdfPageTextSelected(ctx, data, selected)
 			default:
 				return nil, UsageError{"engine must be pdfium or pypdf"}
 			}
 			if err != nil {
 				return nil, err
 			}
+			pageNumbers := selected
+			if pageNumbers == nil {
+				pageNumbers = make([]int, len(pages))
+				for i := range pageNumbers {
+					pageNumbers[i] = i + 1
+				}
+			}
 			if out := a.Path("output"); out != "" {
 				if err := newFile(out, in[0]); err != nil {
 					return nil, err
 				}
-				return map[string]any{"output": out, "pages": len(pages)}, writeExclusive(out, []byte(strings.Join(pages, "\f")))
+				return map[string]any{"output": out, "pages": len(pages), "page_numbers": pageNumbers}, writeExclusive(out, []byte(strings.Join(pages, "\f")))
 			}
-			return map[string]any{"pages": pages}, nil
+			return map[string]any{"pages": pages, "page_numbers": pageNumbers}, nil
 		},
 	})
 }
