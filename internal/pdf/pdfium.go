@@ -429,6 +429,12 @@ func isPageImageName(name string) bool {
 
 // PageText returns the plain text of every page in order.
 func PageText(ctx context.Context, data []byte) ([]string, error) {
+	return PageTextSelected(ctx, data, nil)
+}
+
+// PageTextSelected returns text from the 1-based selected pages in request order.
+// A nil selection returns every page in document order.
+func PageTextSelected(ctx context.Context, data []byte, pages []int) ([]string, error) {
 	inst, done, err := engine(ctx)
 	if err != nil {
 		return nil, err
@@ -443,9 +449,18 @@ func PageText(ctx context.Context, data []byte) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	out := make([]string, 0, count.PageCount)
-	for i := 0; i < count.PageCount; i++ {
-		t, err := inst.GetPageText(&requests.GetPageText{Page: requests.Page{ByIndex: &requests.PageByIndex{Document: doc.Document, Index: i}}})
+	if pages == nil {
+		pages = make([]int, count.PageCount)
+		for i := range pages {
+			pages[i] = i + 1
+		}
+	}
+	if err := validatePageNumbers(pages, count.PageCount); err != nil {
+		return nil, err
+	}
+	out := make([]string, 0, len(pages))
+	for _, page := range pages {
+		t, err := inst.GetPageText(&requests.GetPageText{Page: requests.Page{ByIndex: &requests.PageByIndex{Document: doc.Document, Index: page - 1}}})
 		if err != nil {
 			return nil, err
 		}
