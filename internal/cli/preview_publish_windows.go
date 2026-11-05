@@ -8,5 +8,9 @@ import "os"
 // destination already exists, so this preserves exclusive publication without
 // the replace behavior of MoveFileEx with MOVEFILE_REPLACE_EXISTING.
 func renamePreviewExclusive(stage, out string) error {
+	return renamePreviewExclusiveAtBoundary(stage, out, nil)
+}
+
+func renamePreviewExclusiveNative(stage, out string) error {
 	return os.Rename(stage, out)
 }
