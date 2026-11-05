@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"math"
 	"os"
+	"strconv"
 	"testing"
 
 	"github.com/xuri/excelize/v2"
@@ -310,6 +311,33 @@ func TestTraceSerialDateEpochBoundaries(t *testing.T) {
 						t.Fatal(err)
 					}
 				})
+				// Excelize applies Excel's 15-significant-digit input limit when writing
+				// floats. Store the exact boundary value in the in-memory fixture so this
+				// test measures the trace reader's millisecond conversion independently.
+				doc, err := p.XML("xl/worksheets/sheet1.xml")
+				if err != nil {
+					t.Fatal(err)
+				}
+				found := false
+				for _, row := range Children(Child(doc.Root(), NSS, "sheetData"), NSS, "row") {
+					for _, cell := range Children(row, NSS, "c") {
+						if AttrV(cell, "", "r") != "D1" {
+							continue
+						}
+						value := Child(cell, NSS, "v")
+						if value == nil {
+							t.Fatal("date fixture has no numeric value")
+						}
+						value.SetText(strconv.FormatFloat(c.value, 'f', -1, 64))
+						found = true
+					}
+				}
+				if !found {
+					t.Fatal("date fixture is missing Inputs!D1")
+				}
+				if err = p.SetXML("xl/worksheets/sheet1.xml", doc); err != nil {
+					t.Fatal(err)
+				}
 				before, err := os.ReadFile(file)
 				if err != nil {
 					t.Fatal(err)
