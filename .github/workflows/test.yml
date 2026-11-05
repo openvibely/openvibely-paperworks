@@ -54,13 +54,9 @@ jobs:
           sudo chown _apt:root "$apt_archives/partial"
           sudo chmod 700 "$apt_archives/partial"
           sudo apt-get -o "Dir::Cache::archives=$apt_archives/" update
+          source scripts/office-test-packages.sh
           sudo apt-get -o "Dir::Cache::archives=$apt_archives/" -o APT::Keep-Downloaded-Packages=true install -y --no-install-recommends \
-            libreoffice-writer \
-            libreoffice-calc \
-            libreoffice-impress \
-            fonts-liberation \
-            fonts-dejavu-core \
-            fonts-noto-core
+            "${office_test_packages[@]}"
           sudo apt-get -o "Dir::Cache::archives=$apt_archives/" autoclean
           bash scripts/verify-office-deps.sh
 
