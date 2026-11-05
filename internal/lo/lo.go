@@ -33,6 +33,8 @@ var ErrMissing = errors.New("LibreOffice (soffice) not found: install it or set 
 
 const runTimeout = 180 * time.Second
 
+var userCacheDir = os.UserCacheDir
+
 // Find locates soffice via DOCUMENT_SOFFICE, PATH, standard installs, then OV cache.
 func Find() (string, error) {
 	if p := os.Getenv("DOCUMENT_SOFFICE"); p != "" {
@@ -64,13 +66,17 @@ func Find() (string, error) {
 			return c, nil
 		}
 	}
-	if root, err := os.UserCacheDir(); err == nil {
-		return findCachedOffice(root, runtime.GOOS, runtime.GOARCH, probeCachedOffice)
+	if root, err := userCacheDir(); err == nil {
+		// The package layout and executable file checks are enough for discovery.
+		// Do not start LibreOffice just to report whether it is installed.
+		return findCachedOffice(root, runtime.GOOS, runtime.GOARCH, func(string) bool { return true })
 	}
 	return "", ErrMissing
 }
 
-// Version returns the `soffice --version` line, or "" when unavailable.
+// Version returns the `soffice --version` line, or "" when unavailable. A
+// successful version probe is cached against the executable's path, content,
+// and modification time.
 func Version(ctx context.Context) string {
 	exe, err := Find()
 	if err != nil {
@@ -80,9 +86,27 @@ func Version(ctx context.Context) string {
 }
 
 func versionForExecutable(ctx context.Context, exe string, timeout time.Duration) string {
+	cacheRoot, _ := userCacheDir()
+	return versionForExecutableWithCache(ctx, exe, timeout, cacheRoot)
+}
+
+func versionForExecutableWithCache(ctx context.Context, exe string, timeout time.Duration, cacheRoot string) string {
+	if cacheRoot != "" {
+		if identity, err := identifyExecutable(exe); err == nil {
+			if version, ok := readVersionCache(cacheRoot, identity); ok {
+				return version
+			}
+		}
+	}
+
 	version, err := runVersionCommand(ctx, exe, timeout, false)
-	if err != nil {
+	if err != nil || version == "" {
 		return ""
+	}
+	if cacheRoot != "" {
+		if identity, err := identifyExecutable(exe); err == nil {
+			writeVersionCache(cacheRoot, identity, version)
+		}
 	}
 	return version
 }

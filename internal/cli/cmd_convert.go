@@ -175,12 +175,16 @@ func init() {
 	register(&Command{
 		Name:      "capabilities",
 		ValueOpts: []string{},
+		BoolOpts:  []string{"version"},
 		Summary:   "Report built-in engines and optional external dependencies (LibreOffice).",
-		Usage:     "paperworks capabilities",
+		Usage:     "paperworks capabilities [--version]",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			office := map[string]any{"available": false}
 			if exe, err := lo.Find(); err == nil {
-				office = map[string]any{"available": true, "path": exe, "version": lo.Version(ctx)}
+				office = map[string]any{"available": true, "path": exe}
+				if a.Bools["version"] {
+					office["version"] = lo.Version(ctx)
+				}
 			}
 			names := make([]string, 0, len(commands))
 			for n := range commands {

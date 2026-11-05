@@ -94,6 +94,37 @@ func TestCachedOfficeProbeAndOverride(t *testing.T) {
 	}
 }
 
+func TestFindCachedOfficeDoesNotLaunchLibreOffice(t *testing.T) {
+	if runtime.GOOS != "darwin" && runtime.GOOS != "linux" {
+		t.Skip("supported cached-office platform fixture")
+	}
+	root := t.TempDir()
+	cache := filepath.Join(root, "cache")
+	oldUserCacheDir := userCacheDir
+	userCacheDir = func() (string, error) { return cache, nil }
+	t.Cleanup(func() { userCacheDir = oldUserCacheDir })
+	path := cachedFixture(t, cache, "26.8.1", runtime.GOOS, runtime.GOARCH, strings.Repeat("c", 64),
+		map[string]string{"darwin": "LibreOffice.app/Contents/MacOS/soffice", "linux": "program/soffice"}[runtime.GOOS])
+	marker := filepath.Join(root, "launched")
+	if err := os.WriteFile(path, []byte("#!/bin/sh\nprintf x > \""+marker+"\"\n"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	emptyPath := filepath.Join(root, "empty-path")
+	if err := os.Mkdir(emptyPath, 0700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", emptyPath)
+	t.Setenv("DOCUMENT_SOFFICE", "")
+
+	got, err := Find()
+	if err != nil || got != path {
+		t.Fatalf("Find() = %q, %v; want cached executable %q", got, err, path)
+	}
+	if _, err := os.Stat(marker); !os.IsNotExist(err) {
+		t.Fatalf("Find() launched cached LibreOffice; marker stat error = %v", err)
+	}
+}
+
 func TestCachedOfficePreservedDEBLayout(t *testing.T) {
 	for _, arch := range []string{"amd64", "arm64"} {
 		root := t.TempDir()

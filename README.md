@@ -43,6 +43,9 @@ paperworks capabilities
 ```
 
 `capabilities` reports the available engines and whether LibreOffice was found.
+It checks LibreOffice availability and its path without starting it. Add
+`--version` to include the exact `soffice --version` result; successful probes
+are cached and rechecked when the executable changes.
 
 ### LibreOffice
 
