@@ -3,6 +3,7 @@ package xlsx
 import (
 	"fmt"
 	"math"
+	"sort"
 
 	"github.com/openvibely/openvibely-paperworks/internal/office"
 	"github.com/xuri/excelize/v2"
@@ -37,6 +38,101 @@ func autofitRows(f *excelize.File, e Edit) error {
 	return autofitRowsWithSourceCache(f, e, nil, nil, "", nil)
 }
 
+type autofitMergeInterval struct {
+	left, right, order, prefixMaxRight int
+}
+
+// autofitMergeRow stores sorted intervals for one row. prefixMaxRight lets
+// containing skip earlier intervals that cannot cover the queried column.
+type autofitMergeRow struct {
+	intervals []autofitMergeInterval
+}
+
+type autofitMergeValidation struct {
+	order    int
+	vertical bool
+}
+
+type autofitMergeValidations map[int]map[int]autofitMergeValidation
+
+func (row autofitMergeRow) containing(col int) (autofitMergeInterval, bool) {
+	limit := sort.Search(len(row.intervals), func(i int) bool {
+		return row.intervals[i].left > col
+	}) - 1
+	found := -1
+	for i := limit; i >= 0 && row.intervals[i].prefixMaxRight >= col; i-- {
+		candidate := row.intervals[i]
+		if candidate.right >= col && (found < 0 || candidate.order < row.intervals[found].order) {
+			found = i
+		}
+	}
+	if found < 0 {
+		return autofitMergeInterval{}, false
+	}
+	return row.intervals[found], true
+}
+
+// indexAutofitMerges parses each merge once, retaining only ranges that
+// intersect the autofit selection. Validation is recorded at the first cell
+// the original row-major walk would encounter it.
+func indexAutofitMerges(merges []excelize.MergeCell, x1, y1, x2, y2 int) (map[int]autofitMergeRow, autofitMergeValidations) {
+	if len(merges) == 0 {
+		return nil, nil
+	}
+	byRow := make(map[int][]autofitMergeInterval)
+	var validations autofitMergeValidations
+	for order, merge := range merges {
+		left, top, err := excelize.CellNameToCoordinates(merge.GetStartAxis())
+		if err != nil {
+			continue
+		}
+		right, bottom, err := excelize.CellNameToCoordinates(merge.GetEndAxis())
+		if err != nil || left > x2 || right < x1 || top > y2 || bottom < y1 {
+			continue
+		}
+		vertical := top != bottom
+		partial := left < x1 || right > x2
+		if vertical || partial {
+			row, col := max(top, y1), max(left, x1)
+			if validations == nil {
+				validations = make(autofitMergeValidations)
+			}
+			columns := validations[row]
+			if columns == nil {
+				columns = make(map[int]autofitMergeValidation)
+				validations[row] = columns
+			}
+			if existing, ok := columns[col]; !ok || order < existing.order {
+				columns[col] = autofitMergeValidation{order: order, vertical: vertical}
+			}
+			continue
+		}
+		byRow[top] = append(byRow[top], autofitMergeInterval{left: left, right: right, order: order})
+	}
+	if len(byRow) == 0 {
+		return nil, validations
+	}
+
+	rows := make(map[int]autofitMergeRow, len(byRow))
+	for row, intervals := range byRow {
+		sort.Slice(intervals, func(i, j int) bool {
+			if intervals[i].left == intervals[j].left {
+				return intervals[i].order < intervals[j].order
+			}
+			return intervals[i].left < intervals[j].left
+		})
+		indexed := autofitMergeRow{intervals: intervals}
+		for i := range indexed.intervals {
+			indexed.intervals[i].prefixMaxRight = indexed.intervals[i].right
+			if i > 0 && indexed.intervals[i-1].prefixMaxRight > indexed.intervals[i].prefixMaxRight {
+				indexed.intervals[i].prefixMaxRight = indexed.intervals[i-1].prefixMaxRight
+			}
+		}
+		rows[row] = indexed
+	}
+	return rows, validations
+}
+
 func autofitRowsWithSourceCache(f *excelize.File, e Edit, source *office.Workbook, formulas *excelize.File, sourceSheet string, renames []formulaSheetRename) error {
 	a, b, err := bounds(e.Range)
 	if err != nil {
@@ -68,30 +164,34 @@ func autofitRowsWithSourceCache(f *excelize.File, e Edit, source *office.Workboo
 	if err != nil {
 		return err
 	}
+	mergeRows, mergeValidations := indexAutofitMerges(merges, x1, y1, x2, y2)
 	heights := map[int]float64{}
 	height := defaultSize*1.2 + 3
+	var rowMerges autofitMergeRow
+	var rowValidations map[int]autofitMergeValidation
 	err = walkCoordinates(x1, y1, x2, y2, func(col, row int) error {
 		if col == x1 {
 			height = defaultSize*1.2 + 3
+			rowMerges = mergeRows[row]
+			rowValidations = mergeValidations[row]
+		}
+		if len(rowValidations) > 0 {
+			if validation, ok := rowValidations[col]; ok {
+				if validation.vertical {
+					return fmt.Errorf("autofit does not resize vertically merged rows")
+				}
+				return fmt.Errorf("autofit range must include complete merged cells")
+			}
 		}
 		cell, _ := excelize.CoordinatesToCellName(col, row)
 		start, end := col, col
 		covered := false
-		for _, m := range merges {
-			mx, my, _ := excelize.CellNameToCoordinates(m.GetStartAxis())
-			ex, ey, _ := excelize.CellNameToCoordinates(m.GetEndAxis())
-			if col >= mx && col <= ex && row >= my && row <= ey {
-				if my != ey {
-					return fmt.Errorf("autofit does not resize vertically merged rows")
-				}
-				if mx < x1 || ex > x2 {
-					return fmt.Errorf("autofit range must include complete merged cells")
-				}
-				if col != mx {
+		if len(rowMerges.intervals) > 0 {
+			if merge, ok := rowMerges.containing(col); ok {
+				if col != merge.left {
 					covered = true
 				}
-				start, end = mx, ex
-				break
+				start, end = merge.left, merge.right
 			}
 		}
 		if !covered {

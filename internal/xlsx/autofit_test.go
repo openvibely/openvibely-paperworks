@@ -351,6 +351,114 @@ func TestAutofitHorizontalMergeUsesCombinedWidth(t *testing.T) {
 	}
 }
 
+func TestAutofitRowsPreservesBaselineHeightsForCoveredCells(t *testing.T) {
+	f := excelize.NewFile()
+	defer f.Close()
+	if err := f.SetDefaultFont("Go"); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SetColWidth("Sheet1", "A", "J", 12); err != nil {
+		t.Fatal(err)
+	}
+	style, err := f.NewStyle(&excelize.Style{Font: &excelize.Font{Family: "Go", Size: 11}, Alignment: &excelize.Alignment{WrapText: true}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SetCellStyle("Sheet1", "A1", "J4", style); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SetCellValue("Sheet1", "A1", "This unmerged row wraps across its narrow column width."); err != nil {
+		t.Fatal(err)
+	}
+	for _, merge := range []struct{ start, end, value string }{
+		{"A2", "C2", "This horizontal merge has enough text to wrap onto another line."},
+		{"D3", "F3", "A second merged row with wrapped text."},
+		{"A4", "J4", "short"},
+	} {
+		if err := f.MergeCell("Sheet1", merge.start, merge.end); err != nil {
+			t.Fatal(err)
+		}
+		if err := f.SetCellValue("Sheet1", merge.start, merge.value); err != nil {
+			t.Fatal(err)
+		}
+	}
+	coveredStyle, err := f.NewStyle(&excelize.Style{Font: &excelize.Font{Family: "Go", Size: 72}, Alignment: &excelize.Alignment{WrapText: true}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SetCellStyle("Sheet1", "E3", "E3", coveredStyle); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SetCellValue("Sheet1", "E3", "Covered cell content must not change the merge height."); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SetRowHeight("Sheet1", 5, 42); err != nil {
+		t.Fatal(err)
+	}
+	if err := autofitRows(f, Edit{Sheet: "Sheet1", Range: "A1:J4"}); err != nil {
+		t.Fatal(err)
+	}
+	want := []float64{69, 29.4, 29.4, 16.2, 42}
+	for row, expected := range want {
+		got, err := f.GetRowHeight("Sheet1", row+1)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got < expected-0.01 || got > expected+0.01 {
+			t.Fatalf("row %d height = %.2f, want baseline %.2f", row+1, got, expected)
+		}
+	}
+}
+
+func TestAutofitRowsHandlesManyHorizontalMerges(t *testing.T) {
+	f := excelize.NewFile()
+	defer f.Close()
+	if err := f.SetDefaultFont("Go"); err != nil {
+		t.Fatal(err)
+	}
+	style, err := f.NewStyle(&excelize.Style{Font: &excelize.Font{Family: "Go", Size: 11}, Alignment: &excelize.Alignment{WrapText: true}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SetCellStyle("Sheet1", "A1", "J1000", style); err != nil {
+		t.Fatal(err)
+	}
+	for row := 1; row <= 1000; row++ {
+		start, _ := excelize.CoordinatesToCellName(1, row)
+		end, _ := excelize.CoordinatesToCellName(10, row)
+		if err := f.MergeCell("Sheet1", start, end); err != nil {
+			t.Fatal(err)
+		}
+		if err := f.SetCellValue("Sheet1", start, strings.Repeat("wrapped merge text ", 8)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := f.SetRowHeight("Sheet1", 1001, 42); err != nil {
+		t.Fatal(err)
+	}
+	if err := autofitRows(f, Edit{Sheet: "Sheet1", Range: "A1:J1000"}); err != nil {
+		t.Fatal(err)
+	}
+	first, err := f.GetRowHeight("Sheet1", 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	last, err := f.GetRowHeight("Sheet1", 1000)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if first < 16.2 || last != first {
+		t.Fatalf("merged row heights = %.2f and %.2f, want consistent fitted heights", first, last)
+	}
+	untouched, err := f.GetRowHeight("Sheet1", 1001)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if untouched != 42 {
+		t.Fatalf("untouched row height = %.2f, want 42", untouched)
+	}
+}
+
 func TestAutofitVisitsSingleCellAndAllRectangleCorners(t *testing.T) {
 	cases := []struct {
 		name, r, cell string
@@ -385,5 +493,43 @@ func TestAutofitRejectsRangesOverItsCellLimit(t *testing.T) {
 	err := autofitRows(f, Edit{Sheet: "Sheet1", Range: "A1:J1001"})
 	if err == nil || !strings.Contains(err.Error(), "autofit range exceeds 10000 cells") {
 		t.Fatalf("got %v, want autofit range limit error", err)
+	}
+}
+
+func BenchmarkAutofitRowsMergeLookup(b *testing.B) {
+	for _, tc := range []struct {
+		name   string
+		merges int
+	}{
+		{name: "none"},
+		{name: "small", merges: 10},
+		{name: "heavy_10k_cells_1k_merges", merges: 1000},
+	} {
+		b.Run(tc.name, func(b *testing.B) {
+			f := excelize.NewFile()
+			defer f.Close()
+			if err := f.SetDefaultFont("Go"); err != nil {
+				b.Fatal(err)
+			}
+			for i := 0; i < tc.merges; i++ {
+				row := i + 1
+				start, _ := excelize.CoordinatesToCellName(1, row)
+				end, _ := excelize.CoordinatesToCellName(10, row)
+				if err := f.MergeCell("Sheet1", start, end); err != nil {
+					b.Fatal(err)
+				}
+				if err := f.SetCellValue("Sheet1", start, "A long value in a merged row"); err != nil {
+					b.Fatal(err)
+				}
+			}
+			edit := Edit{Sheet: "Sheet1", Range: "A1:J1000"}
+			b.ReportAllocs()
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				if err := autofitRows(f, edit); err != nil {
+					b.Fatal(err)
+				}
+			}
+		})
 	}
 }
