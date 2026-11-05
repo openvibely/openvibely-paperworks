@@ -52,8 +52,8 @@ func TestInstalledWorksheetReferenceBytes(t *testing.T) {
 }
 
 func TestNormalizeWorksheetXMLPreservesCellContents(t *testing.T) {
-	raw := []byte(`<worksheet><!-- <c x="<v/>"/>; <c r="comment"/> --><sheetData><row r="1"><c r="A1" s="2"/><c r="B1" s="3"><v/></c><c r="C1" t="str"><f>1+2</f><v>3</v></c></row></sheetData></worksheet>`)
-	want := `<worksheet><!-- <c x="<v></v>"/>; <c r="comment"/> --><sheetData><row r="1"><c r="A1" s="2"></c><c r="B1" s="3"><v></v></c><c r="C1" t="str"><f>1+2</f><v>3</v></c></row></sheetData></worksheet>`
+	raw := []byte(`<worksheet><!-- <c x="<v/>"/>; <c r="comment"/> --><![CDATA[<c x="<v/>"/>; <c r="cdata"/>]]><sheetData><row r="1"><c r="A1" s="2"/><c r="B1" s="3"><v/></c><c r="C1" t="str"><f>1+2</f><v>3</v></c></row></sheetData></worksheet>`)
+	want := `<worksheet><!-- <c x="<v></v>"/>; <c r="comment"/> --><![CDATA[<c x="<v></v>"/>; <c r="cdata"/>]]><sheetData><row r="1"><c r="A1" s="2"></c><c r="B1" s="3"><v></v></c><c r="C1" t="str"><f>1+2</f><v>3</v></c></row></sheetData></worksheet>`
 	if got := string(normalizeWorksheetXML(raw)); got != want {
 		t.Fatalf("normalized worksheet XML mismatch\n got: %s\nwant: %s", got, want)
 	}

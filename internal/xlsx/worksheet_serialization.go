@@ -205,24 +205,11 @@ func normalizeWorksheetXML(raw []byte) []byte {
 			continue
 		}
 		if i+4 <= len(raw) && raw[i+1] == '!' && raw[i+2] == '-' && raw[i+3] == '-' {
-			i += 4
-			for i < len(raw) {
-				if i+3 <= len(raw) && raw[i] == '-' && raw[i+1] == '-' && raw[i+2] == '>' {
-					i += 3
-					break
-				}
-				if i+4 <= len(raw) && raw[i] == '<' && raw[i+1] == 'v' && raw[i+2] == '/' && raw[i+3] == '>' {
-					if normalized == nil {
-						normalized = make([]byte, 0, len(raw)+len(raw)/4)
-					}
-					normalized = append(normalized, raw[last:i]...)
-					normalized = append(normalized, "<v></v>"...)
-					i += 4
-					last = i
-					continue
-				}
-				i++
-			}
+			normalized, i = normalizeWorksheetMarkupText(raw, i+4, "-->", normalized, &last)
+			continue
+		}
+		if i+9 <= len(raw) && raw[i+1] == '!' && raw[i+2] == '[' && raw[i+3] == 'C' && raw[i+4] == 'D' && raw[i+5] == 'A' && raw[i+6] == 'T' && raw[i+7] == 'A' && raw[i+8] == '[' {
+			normalized, i = normalizeWorksheetMarkupText(raw, i+9, "]]>", normalized, &last)
 			continue
 		}
 		if i+4 <= len(raw) && raw[i+1] == 'v' && raw[i+2] == '/' && raw[i+3] == '>' {
@@ -262,6 +249,26 @@ func normalizeWorksheetXML(raw []byte) []byte {
 		return raw
 	}
 	return append(normalized, raw[last:]...)
+}
+
+func normalizeWorksheetMarkupText(raw []byte, start int, end string, normalized []byte, last *int) ([]byte, int) {
+	for i := start; i < len(raw); {
+		if i+3 <= len(raw) && raw[i] == end[0] && raw[i+1] == end[1] && raw[i+2] == end[2] {
+			return normalized, i + 3
+		}
+		if i+4 <= len(raw) && raw[i] == '<' && raw[i+1] == 'v' && raw[i+2] == '/' && raw[i+3] == '>' {
+			if normalized == nil {
+				normalized = make([]byte, 0, len(raw)+len(raw)/4)
+			}
+			normalized = append(normalized, raw[*last:i]...)
+			normalized = append(normalized, "<v></v>"...)
+			i += 4
+			*last = i
+			continue
+		}
+		i++
+	}
+	return normalized, len(raw)
 }
 
 func orderAttributes(e *etree.Element, names ...string) {
