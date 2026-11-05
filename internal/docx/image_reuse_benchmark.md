@@ -26,3 +26,11 @@ On the same Apple M5 Pro / Go 1.27.3 environment, these are medians from three o
 | --- | ---: | ---: | ---: | ---: |
 | 100 repeated images | 44.46 ms | 20.14 ms | 54.7% faster | 130,333,600 → 25,586,720 (104,746,880 B / 99.9 MiB lower) |
 | 100 distinct images | 1.409 s | 1.404 s | 0.4% faster | 1,281,728,976 → 1,281,747,584 |
+
+The historical 1.270 s optimized distinct-image median above is not comparable to the latest host performance: the pre-cache control itself measured 1.409 s in one required 1x run and 1.474 s in a later paired 1x run (16.1% above the historical result in the latter). In that later 1x pair, the path-cache median was 1.547 s (4.96% slower, within the 5% limit). A longer paired run (`-benchtime=2x -count=3`) gave pre-cache 1.529 s and path-cache 1.556 s (1.8% slower). These control runs show that the historical absolute gap is present before the cache change; the paired comparisons remain within the acceptance limit.
+
+Paired 2x samples (pre-cache / path-cache, ns/op):
+
+- Repeated: 54,347,334 / 22,335,646; 68,987,000 / 22,460,708; 60,787,375 / 23,508,917.
+- Distinct: 1,528,689,230 / 1,543,498,354; 1,533,379,916 / 1,555,904,875; 1,472,243,292 / 1,576,044,104.
+- Distinct B/op medians: 1,281,734,912 / 1,281,735,568.
