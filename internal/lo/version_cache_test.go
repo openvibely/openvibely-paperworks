@@ -138,8 +138,30 @@ printf '%s\n' 'LibreOffice 26.9.0'`)
 		t.Fatalf("FindAndVersion() = %q, %q, %v; want older working release", exe, got, err)
 	}
 	probes, err = os.ReadFile(marker)
-	if err != nil || string(probes) != "newest\nolder\nnewest\n" {
-		t.Fatalf("cached version probe sequence = %q, err = %v", probes, err)
+	if err != nil || string(probes) != "newest\nolder\n" {
+		t.Fatalf("cached fallback re-probed a known-broken executable: probes = %q, err = %v", probes, err)
+	}
+
+	brokenIdentity, err := identifyExecutable(newest)
+	if err != nil {
+		t.Fatal(err)
+	}
+	writeVersionScript(t, newest, `printf '%s\n' recovered >> "$LO_CACHED_VERSION_MARKER"
+printf '%s\n' 'LibreOffice 26.10.0'`)
+	recoveredIdentity, err := identifyExecutable(newest)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if recoveredIdentity == brokenIdentity {
+		t.Fatal("replacement executable did not invalidate the failed-probe cache")
+	}
+	exe, got, err = FindAndVersion(context.Background())
+	if err != nil || exe != newest || got != "LibreOffice 26.10.0" {
+		t.Fatalf("FindAndVersion() after cached executable replacement = %q, %q, %v; want replacement version", exe, got, err)
+	}
+	probes, err = os.ReadFile(marker)
+	if err != nil || string(probes) != "newest\nolder\nrecovered\n" {
+		t.Fatalf("probe sequence after executable replacement = %q, err = %v", probes, err)
 	}
 }
 

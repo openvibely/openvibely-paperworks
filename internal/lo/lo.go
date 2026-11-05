@@ -31,7 +31,10 @@ var refreshMacro string
 // ErrMissing reports that LibreOffice could not be located.
 var ErrMissing = errors.New("LibreOffice (soffice) not found: install it or set DOCUMENT_SOFFICE")
 
-const runTimeout = 180 * time.Second
+const (
+	runTimeout             = 180 * time.Second
+	versionProbeFailureTTL = time.Minute
+)
 
 var userCacheDir = os.UserCacheDir
 
@@ -134,22 +137,35 @@ func VersionForExecutable(ctx context.Context, exe string) string {
 
 func versionForCachedOffice(ctx context.Context, exe string, timeout time.Duration) (string, bool) {
 	cacheRoot, _ := userCacheDir()
+	var identity executableIdentity
+	identityKnown := false
 	if cacheRoot != "" {
-		if identity, err := identifyExecutable(exe); err == nil {
+		if current, err := identifyExecutable(exe); err == nil {
+			identity = current
+			identityKnown = true
 			if version, ok := readVersionCache(cacheRoot, identity); ok && strings.HasPrefix(version, "LibreOffice ") {
 				return version, true
+			}
+			if readVersionProbeFailure(cacheRoot, identity, time.Now(), versionProbeFailureTTL) {
+				return "", false
 			}
 		}
 	}
 
-	version, err := runVersionCommand(ctx, exe, timeout, false)
-	if err != nil || !strings.HasPrefix(version, "LibreOffice ") {
-		return "", false
-	}
-	if cacheRoot != "" {
-		if identity, err := identifyExecutable(exe); err == nil {
-			writeVersionCache(cacheRoot, identity, version)
+	version, probeErr := runVersionCommand(ctx, exe, timeout, false)
+	validVersion := probeErr == nil && strings.HasPrefix(version, "LibreOffice ")
+	cacheFailure := !validVersion && ctx.Err() == nil
+	if cacheRoot != "" && identityKnown && (validVersion || cacheFailure) {
+		if current, err := identifyExecutable(exe); err == nil && current == identity {
+			if validVersion {
+				writeVersionCache(cacheRoot, identity, version)
+			} else {
+				writeVersionProbeFailure(cacheRoot, identity, time.Now())
+			}
 		}
+	}
+	if !validVersion {
+		return "", false
 	}
 	return version, true
 }

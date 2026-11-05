@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"strings"
+	"time"
 )
 
 type executableIdentity struct {
@@ -24,6 +25,11 @@ type executableIdentity struct {
 type versionCacheEntry struct {
 	Executable executableIdentity `json:"executable"`
 	Version    string             `json:"version"`
+}
+
+type versionProbeFailureEntry struct {
+	Executable executableIdentity `json:"executable"`
+	FailedAt   time.Time          `json:"failed_at"`
 }
 
 func identifyExecutable(exe string) (executableIdentity, error) {
@@ -93,8 +99,16 @@ func nativeFileIdentity(info os.FileInfo) string {
 }
 
 func versionCachePath(root, executable string) string {
+	return filepath.Join(root, "openvibely", "paperworks", "soffice-version", versionCacheKey(executable)+".json")
+}
+
+func versionProbeFailurePath(root, executable string) string {
+	return filepath.Join(root, "openvibely", "paperworks", "soffice-version", versionCacheKey(executable)+".failure.json")
+}
+
+func versionCacheKey(executable string) string {
 	key := sha256.Sum256([]byte(executable))
-	return filepath.Join(root, "openvibely", "paperworks", "soffice-version", hex.EncodeToString(key[:])+".json")
+	return hex.EncodeToString(key[:])
 }
 
 func readVersionCache(root string, identity executableIdentity) (string, bool) {
@@ -113,16 +127,39 @@ func readVersionCache(root string, identity executableIdentity) (string, bool) {
 	return version, true
 }
 
+func readVersionProbeFailure(root string, identity executableIdentity, now time.Time, ttl time.Duration) bool {
+	if ttl <= 0 {
+		return false
+	}
+	data, err := os.ReadFile(versionProbeFailurePath(root, identity.Path))
+	if err != nil {
+		return false
+	}
+	var entry versionProbeFailureEntry
+	if json.Unmarshal(data, &entry) != nil || entry.Executable != identity || entry.FailedAt.IsZero() {
+		return false
+	}
+	age := now.Sub(entry.FailedAt)
+	return age >= 0 && age < ttl
+}
+
 func writeVersionCache(root string, identity executableIdentity, version string) {
 	version = strings.TrimSpace(version)
 	if version == "" {
 		return
 	}
-	path := versionCachePath(root, identity.Path)
+	writeJSONCache(versionCachePath(root, identity.Path), versionCacheEntry{Executable: identity, Version: version})
+}
+
+func writeVersionProbeFailure(root string, identity executableIdentity, failedAt time.Time) {
+	writeJSONCache(versionProbeFailurePath(root, identity.Path), versionProbeFailureEntry{Executable: identity, FailedAt: failedAt})
+}
+
+func writeJSONCache(path string, entry any) {
 	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
 		return
 	}
-	data, err := json.Marshal(versionCacheEntry{Executable: identity, Version: version})
+	data, err := json.Marshal(entry)
 	if err != nil {
 		return
 	}

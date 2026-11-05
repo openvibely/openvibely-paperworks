@@ -116,6 +116,16 @@ printf '%s\n' 'LibreOffice 26.9.0'`)
 	if err != nil || string(probes) != "newest\nolder\n" {
 		t.Fatalf("capability version probe sequence = %q, err = %v", probes, err)
 	}
+
+	repeated := runCLI(t, "capabilities", "--version")
+	repeatedOffice := repeated["libreoffice"].(map[string]any)
+	if repeatedOffice["available"] != true || repeatedOffice["path"] != older || repeatedOffice["version"] != "LibreOffice 26.9.0" {
+		t.Fatalf("repeated exact capability report changed: %#v", repeatedOffice)
+	}
+	probes, err = os.ReadFile(marker)
+	if err != nil || string(probes) != "newest\nolder\n" {
+		t.Fatalf("repeated capability lookup re-probed cached executables: %q, err = %v", probes, err)
+	}
 }
 
 func standardLibreOfficePaths() []string {
