@@ -49,6 +49,13 @@ func (e VerifyError) Error() string { return e.Msg }
 
 func usagef(format string, a ...any) error { return UsageError{fmt.Sprintf(format, a...)} }
 
+func withPartialOutputs(err error, outDir string, files []string) error {
+	if err == nil || len(files) == 0 {
+		return err
+	}
+	return fmt.Errorf("%w\npartial output directory: %s\ncompleted files:\n  %s", err, outDir, strings.Join(files, "\n  "))
+}
+
 type Args struct {
 	Pos   []string
 	Flags map[string]string

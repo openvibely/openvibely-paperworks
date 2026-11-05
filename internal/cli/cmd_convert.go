@@ -14,6 +14,8 @@ import (
 	"github.com/openvibely/openvibely-paperworks/internal/pdf"
 )
 
+var splitPDF = pdf.Split
+
 func renderOptions(a Args) (pdf.RenderOptions, error) {
 	var o pdf.RenderOptions
 	if v, ok, err := a.Float("dpi"); err != nil {
@@ -363,8 +365,11 @@ func init() {
 			if err := newDir(out); err != nil {
 				return nil, err
 			}
-			files, err := pdf.Split(ctx, in[0], out, groups)
-			return map[string]any{"files": files}, err
+			files, err := splitPDF(ctx, in[0], out, groups)
+			if err != nil {
+				return nil, withPartialOutputs(err, out, files)
+			}
+			return map[string]any{"files": files}, nil
 		},
 	})
 	register(&Command{

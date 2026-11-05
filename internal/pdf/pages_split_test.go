@@ -333,6 +333,7 @@ func TestSplitErrorsCancellationAndPartialResults(t *testing.T) {
 				if _, statErr := os.Stat(files[0]); statErr != nil {
 					t.Fatalf("first output missing after later selection error: %v", statErr)
 				}
+				requireTextPages(t, outputPDFs(t, files)[0], "Page 001")
 			})
 		}
 	})
@@ -384,6 +385,7 @@ func TestSplitErrorsCancellationAndPartialResults(t *testing.T) {
 		if _, statErr := os.Stat(files[0]); statErr != nil {
 			t.Fatalf("earlier output missing: %v", statErr)
 		}
+		requireTextPages(t, outputPDFs(t, files)[0], "Page 001")
 	})
 
 	t.Run("write failure after earlier output", func(t *testing.T) {
@@ -405,6 +407,7 @@ func TestSplitErrorsCancellationAndPartialResults(t *testing.T) {
 		if _, statErr := os.Stat(files[0]); statErr != nil {
 			t.Fatalf("earlier output missing: %v", statErr)
 		}
+		requireTextPages(t, outputPDFs(t, files)[0], "Page 001")
 		if _, statErr := os.Stat(second); !os.IsNotExist(statErr) {
 			t.Fatalf("partial second output remains after write failure: stat err=%v", statErr)
 		}
@@ -432,6 +435,7 @@ func TestSplitErrorsCancellationAndPartialResults(t *testing.T) {
 		if _, statErr := os.Stat(files[0]); statErr != nil {
 			t.Fatalf("completed output missing after cancellation: %v", statErr)
 		}
+		requireTextPages(t, outputPDFs(t, files)[0], "Page 001")
 	})
 }
 
