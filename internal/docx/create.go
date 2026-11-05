@@ -123,6 +123,8 @@ type builder struct {
 	imgN             int
 	mediaN           int
 	images           map[uint32][]imageAsset
+	imagePaths       map[string]imageAsset
+	readImageFile    func(string) ([]byte, error)
 	numbered         bool
 	bulleted         bool
 	orderedListCount int
@@ -371,36 +373,53 @@ func (b *builder) image(blk Block, align string) error {
 	if !filepath.IsAbs(p) && b.base != "" {
 		p = filepath.Join(b.base, p)
 	}
-	raw, err := os.ReadFile(p)
+	pathKey, err := filepath.Abs(filepath.Clean(p))
 	if err != nil {
 		return err
 	}
-	digest := crc32.Checksum(raw, imageDigestTable)
-	var asset *imageAsset
-	for i := range b.images[digest] {
-		candidate := &b.images[digest][i]
-		if bytes.Equal(candidate.raw, raw) {
-			asset = candidate
-			break
-		}
+	if b.imagePaths == nil {
+		b.imagePaths = make(map[string]imageAsset)
 	}
-	if asset == nil {
-		cfg, format, err := image.DecodeConfig(bytes.NewReader(raw))
+	var asset *imageAsset
+	if cached, ok := b.imagePaths[pathKey]; ok {
+		asset = &cached
+	} else {
+		var raw []byte
+		if b.readImageFile != nil {
+			raw, err = b.readImageFile(p)
+		} else {
+			raw, err = os.ReadFile(p)
+		}
 		if err != nil {
-			return fmt.Errorf("image %s: %w", blk.Path, err)
-		}
-		if format == "jpeg" {
-			format = "jpg"
-		}
-		b.mediaN++
-		name := fmt.Sprintf("media/image%d.%s", b.mediaN, format)
-		b.pkg.Set("word/"+name, raw)
-		contentType := map[string]string{"png": "image/png", "jpg": "image/jpeg", "gif": "image/gif"}[format]
-		if err := b.pkg.EnsureContentType("."+format, contentType); err != nil {
 			return err
 		}
-		asset = &imageAsset{raw: raw, cfg: cfg, relID: b.rel("image", name, false)}
-		b.images[digest] = append(b.images[digest], *asset)
+		digest := crc32.Checksum(raw, imageDigestTable)
+		for i := range b.images[digest] {
+			candidate := &b.images[digest][i]
+			if bytes.Equal(candidate.raw, raw) {
+				asset = candidate
+				break
+			}
+		}
+		if asset == nil {
+			cfg, format, err := image.DecodeConfig(bytes.NewReader(raw))
+			if err != nil {
+				return fmt.Errorf("image %s: %w", blk.Path, err)
+			}
+			if format == "jpeg" {
+				format = "jpg"
+			}
+			b.mediaN++
+			name := fmt.Sprintf("media/image%d.%s", b.mediaN, format)
+			b.pkg.Set("word/"+name, raw)
+			contentType := map[string]string{"png": "image/png", "jpg": "image/jpeg", "gif": "image/gif"}[format]
+			if err := b.pkg.EnsureContentType("."+format, contentType); err != nil {
+				return err
+			}
+			asset = &imageAsset{raw: raw, cfg: cfg, relID: b.rel("image", name, false)}
+			b.images[digest] = append(b.images[digest], *asset)
+		}
+		b.imagePaths[pathKey] = *asset
 	}
 	width := blk.WidthIn
 	if width <= 0 {

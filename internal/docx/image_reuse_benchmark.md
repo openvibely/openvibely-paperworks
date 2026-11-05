@@ -15,3 +15,14 @@ Raw `ns/op` samples (baseline / optimized):
 
 - Repeated: 1,241,595,541 / 35,737,708; 1,529,562,167 / 35,715,166; 1,304,884,166 / 34,985,542.
 - Distinct: 1,573,093,542 / 1,301,495,000; 1,560,102,125 / 1,259,630,834; 1,513,406,792 / 1,270,051,583.
+
+## Per-build path cache
+
+Command: `go test ./internal/docx -run '^$' -bench '^BenchmarkBuildImageReuse$' -benchtime=1x -count=3`.
+
+On the same Apple M5 Pro / Go 1.27.3 environment, these are medians from three one-build samples comparing the pre-cache content-dedup implementation at HEAD with the normalized-path cache:
+
+| Case | Pre-cache median | Path-cache median | Time change | Pre-cache → path-cache B/op |
+| --- | ---: | ---: | ---: | ---: |
+| 100 repeated images | 44.46 ms | 20.14 ms | 54.7% faster | 130,333,600 → 25,586,720 (104,746,880 B / 99.9 MiB lower) |
+| 100 distinct images | 1.409 s | 1.404 s | 0.4% faster | 1,281,728,976 → 1,281,747,584 |

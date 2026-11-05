@@ -17,6 +17,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/openvibely/openvibely-paperworks/internal/docxtemplate"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 )
 
@@ -248,6 +249,53 @@ func assertImagePlacements(t *testing.T, spec Spec, baseDir string, inputs [][]b
 	}
 }
 
+func TestBuilderImageCacheReadsNormalizedPathOnce(t *testing.T) {
+	dir := t.TempDir()
+	imagePath := writeTestImage(t, filepath.Join(dir, "same.png"), testImageBytes(t, "png", 1))
+	if err := os.MkdirAll(filepath.Join(dir, "nested"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	pkg, err := docxtemplate.Open()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	reads := 0
+	b := &builder{
+		spec:   Spec{Page: Page{WidthIn: 8.5, HeightIn: 11, MarginIn: 1}},
+		pkg:    pkg,
+		base:   dir,
+		images: make(map[uint32][]imageAsset),
+		readImageFile: func(path string) ([]byte, error) {
+			reads++
+			return os.ReadFile(path)
+		},
+	}
+	blocks := []Block{
+		{Type: "image", Path: "same.png", WidthIn: 1, Description: "relative"},
+		{Type: "image", Path: imagePath, WidthIn: 2, Description: "absolute"},
+		{Type: "image", Path: filepath.Join(dir, "nested", "..", "same.png"), WidthIn: 3, Description: "cleaned"},
+	}
+	for _, block := range blocks {
+		if err := b.image(block, ""); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	if reads != 1 {
+		t.Errorf("image file read %d times, want once", reads)
+	}
+	if len(b.imagePaths) != 1 {
+		t.Errorf("normalized path cache has %d entries, want 1", len(b.imagePaths))
+	}
+	if b.mediaN != 1 || len(b.docRels) != 1 {
+		t.Errorf("cached placements created %d media parts and %d image relationships, want one each", b.mediaN, len(b.docRels))
+	}
+	if b.imgN != len(blocks) {
+		t.Errorf("got %d drawing placements, want %d", b.imgN, len(blocks))
+	}
+}
+
 func TestBuildReusesIdenticalImageContent(t *testing.T) {
 	dir := t.TempDir()
 	pngData := testImageBytes(t, "png", 1)
@@ -255,9 +303,12 @@ func TestBuildReusesIdenticalImageContent(t *testing.T) {
 	gifData := testImageBytes(t, "gif", 3)
 	otherPNG := testImageBytes(t, "png", 100)
 
-	t.Run("repeated relative path", func(t *testing.T) {
-		writeTestImage(t, filepath.Join(dir, "relative", "same.png"), pngData)
-		paths := []string{"same.png", "same.png", "same.png"}
+	t.Run("normalized relative and absolute paths", func(t *testing.T) {
+		imagePath := writeTestImage(t, filepath.Join(dir, "relative", "same.png"), pngData)
+		if err := os.MkdirAll(filepath.Join(dir, "relative", "nested"), 0o700); err != nil {
+			t.Fatal(err)
+		}
+		paths := []string{"same.png", imagePath, filepath.Join(dir, "relative", "nested", "..", "same.png")}
 		blocks, inputs := placementBlocks(paths, pngData, pngData, pngData)
 		assertImagePlacements(t, Spec{Blocks: blocks}, filepath.Join(dir, "relative"), inputs, 1)
 	})
@@ -401,11 +452,18 @@ func placementBlocks(paths []string, data ...[]byte) ([]Block, [][]byte) {
 func TestBuildImageErrorsRemainErrors(t *testing.T) {
 	dir := t.TempDir()
 	invalid := writeTestImage(t, filepath.Join(dir, "invalid.png"), []byte("not an image"))
-	for _, path := range []string{invalid, filepath.Join(dir, "missing.png")} {
+	missing := filepath.Join(dir, "missing.png")
+	for _, path := range []string{invalid, missing} {
 		t.Run(filepath.Base(path), func(t *testing.T) {
 			_, err := Build(Spec{Blocks: []Block{{Type: "image", Path: path}}}, "")
 			if err == nil {
 				t.Fatalf("Build unexpectedly accepted %q", path)
+			}
+			if !strings.Contains(err.Error(), path) {
+				t.Errorf("error %q does not identify image path %q", err, path)
+			}
+			if path == missing && !errors.Is(err, os.ErrNotExist) {
+				t.Errorf("missing image error %v does not preserve os.ErrNotExist", err)
 			}
 		})
 	}
