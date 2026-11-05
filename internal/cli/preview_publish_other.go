@@ -1,15 +1,12 @@
-//go:build !darwin && !linux
+//go:build !darwin && !linux && !windows
 
 package cli
 
-import "os"
+import "errors"
 
+// On platforms without an atomic no-replace rename primitive, refusing to
+// publish is safer than checking the destination and then possibly replacing
+// a directory created by another process.
 func renamePreviewExclusive(stage, out string) error {
-	if _, err := os.Lstat(out); !os.IsNotExist(err) {
-		if err == nil {
-			return os.ErrExist
-		}
-		return err
-	}
-	return os.Rename(stage, out)
+	return errors.New("atomic no-replace preview publication is unsupported on this platform")
 }
