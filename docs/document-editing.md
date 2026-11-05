@@ -200,6 +200,16 @@ it does not infer omitted settings from the old chart.
 
 ## PDF
 
+`paperworks inspect input.pdf` reports the existing `fields` values and `widgets`
+array, plus additive `field_details` keyed by fully qualified AcroForm field name.
+Each detail includes the PDF `/FT` type as `type` (`Btn`, `Tx`, `Ch`, or `Sig`).
+Choice fields also include `choice_type` (`dropdown` or `list`), explicit
+`editable` and `multi_select` flags, and an `options` array. Each option keeps the
+export value used for selection separate from its display label; a plain string
+option reports the same text for both. Inherited `/Opt` values are included, while
+an explicitly present local `/Opt`, including an empty array, takes precedence.
+Non-choice field details omit choice properties.
+
 `create-pdf` retains fixed/flow/forms authoring. For embedded Unicode fonts and
 vector drawing, use its mutually exclusive `canvas` format:
 

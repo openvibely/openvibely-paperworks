@@ -19,6 +19,7 @@ const (
 	ffRadio         = 1 << 15
 	ffPushbutton    = 1 << 16
 	ffCombo         = 1 << 17
+	ffEdit          = 1 << 18
 	ffMultiSelect   = 1 << 21
 )
 
@@ -35,6 +36,34 @@ type field struct {
 
 func (f *field) button() bool { return f.FT == "Btn" && f.Ff&ffPushbutton == 0 }
 func (f *field) radio() bool  { return f.button() && f.Ff&ffRadio != 0 }
+
+func fieldDetails(x *model.XRefTable, fields map[string]*field) map[string]FieldDetail {
+	details := make(map[string]FieldDetail, len(fields))
+	for name, f := range fields {
+		detail := FieldDetail{Name: name, Type: f.FT}
+		if f.FT == "Ch" {
+			combo := f.Ff&ffCombo != 0
+			if combo {
+				detail.ChoiceType = "dropdown"
+			} else {
+				detail.ChoiceType = "list"
+			}
+			editable := combo && f.Ff&ffEdit != 0
+			multiSelect := !combo && f.Ff&ffMultiSelect != 0
+			detail.Editable = &editable
+			detail.MultiSelect = &multiSelect
+
+			exports, labels := choiceOptions(x, f.D)
+			options := make([]ChoiceOption, 0, len(exports))
+			for i := 0; i < len(exports) && i < len(labels); i++ {
+				options = append(options, ChoiceOption{ExportValue: exports[i], DisplayLabel: labels[i]})
+			}
+			detail.Options = &options
+		}
+		details[name] = detail
+	}
+	return details
+}
 
 // fieldTree mirrors the AcroForm hierarchy keyed by fully qualified name.
 func fieldTree(x *model.XRefTable) (map[string]*field, bool, error) {
@@ -137,13 +166,28 @@ type Widget struct {
 	owner            int
 }
 
+type ChoiceOption struct {
+	ExportValue  string `json:"export_value"`
+	DisplayLabel string `json:"display_label"`
+}
+
+type FieldDetail struct {
+	Name        string          `json:"name"`
+	Type        string          `json:"type"`
+	ChoiceType  string          `json:"choice_type,omitempty"`
+	Editable    *bool           `json:"editable,omitempty"`
+	MultiSelect *bool           `json:"multi_select,omitempty"`
+	Options     *[]ChoiceOption `json:"options,omitempty"`
+}
+
 type FormReport struct {
-	Pages       int                `json:"pages"`
-	HasFormTree bool               `json:"has_form_tree"`
-	Fields      map[string]*string `json:"fields"`
-	Widgets     []Widget           `json:"widgets"`
-	Issues      []string           `json:"issues"`
-	fields      map[string]*field
+	Pages        int                    `json:"pages"`
+	HasFormTree  bool                   `json:"has_form_tree"`
+	Fields       map[string]*string     `json:"fields"`
+	FieldDetails map[string]FieldDetail `json:"field_details"`
+	Widgets      []Widget               `json:"widgets"`
+	Issues       []string               `json:"issues"`
+	fields       map[string]*field
 }
 
 // widgetName walks /Parent links and returns the qualified name, the first
@@ -199,7 +243,7 @@ func formReport(ctx context.Context, c *model.Context) (*FormReport, error) {
 	if err != nil {
 		return nil, err
 	}
-	rep := &FormReport{Pages: x.PageCount, HasFormTree: hasForm, Fields: map[string]*string{}, Widgets: []Widget{}, Issues: []string{}, fields: fields}
+	rep := &FormReport{Pages: x.PageCount, HasFormTree: hasForm, Fields: map[string]*string{}, FieldDetails: fieldDetails(x, fields), Widgets: []Widget{}, Issues: []string{}, fields: fields}
 	for name, f := range fields {
 		rep.Fields[name] = display(x, f.D["V"])
 	}
