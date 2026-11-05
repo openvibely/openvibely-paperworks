@@ -180,11 +180,12 @@ func init() {
 		Usage:     "paperworks capabilities [--version]",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			office := map[string]any{"available": false}
-			if exe, err := lo.FindFast(); err == nil {
-				office = map[string]any{"available": true, "path": exe}
-				if a.Bools["version"] {
-					office["version"] = lo.VersionForExecutable(ctx, exe)
+			if a.Bools["version"] {
+				if exe, version, err := lo.FindAndVersion(ctx); err == nil {
+					office = map[string]any{"available": true, "path": exe, "version": version}
 				}
+			} else if exe, err := lo.FindFast(); err == nil {
+				office = map[string]any{"available": true, "path": exe}
 			}
 			names := make([]string, 0, len(commands))
 			for n := range commands {

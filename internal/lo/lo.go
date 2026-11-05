@@ -86,19 +86,72 @@ func findOffice(cachedCandidate func(string) bool) (string, error) {
 
 // Version returns the `soffice --version` line, or "" when unavailable. A
 // successful version probe is cached against the executable's path, content,
-// and modification time.
+// and modification time. Cached installations are tried in release order so a
+// broken newer copy does not hide an older working one.
 func Version(ctx context.Context) string {
-	exe, err := FindFast()
+	_, version, err := FindAndVersion(ctx)
 	if err != nil {
 		return ""
 	}
-	return VersionForExecutable(ctx, exe)
+	return version
+}
+
+// FindAndVersion locates LibreOffice and returns its exact version. Cached
+// version details avoid starting LibreOffice; otherwise cached releases are
+// probed in order and unusable candidates are skipped. For non-cached paths,
+// lookup priority matches Find and version probing follows the selected path.
+func FindAndVersion(ctx context.Context) (string, string, error) {
+	version := ""
+	exe, err := findOffice(func(candidate string) bool {
+		candidateVersion, ok := versionForCachedOffice(ctx, candidate, 60*time.Second)
+		if !ok {
+			return false
+		}
+		version = candidateVersion
+		return true
+	})
+	if err != nil {
+		if errors.Is(err, ErrMissing) {
+			// Keep filesystem availability/path reporting when cached files exist
+			// but none can provide an exact version.
+			if fastExe, fastErr := FindFast(); fastErr == nil {
+				return fastExe, "", nil
+			}
+		}
+		return "", "", err
+	}
+	if version != "" {
+		return exe, version, nil
+	}
+	return exe, VersionForExecutable(ctx, exe), nil
 }
 
 // VersionForExecutable returns the version for a path already selected by the
 // caller, using the executable-specific cache when available.
 func VersionForExecutable(ctx context.Context, exe string) string {
 	return versionForExecutable(ctx, exe, 60*time.Second)
+}
+
+func versionForCachedOffice(ctx context.Context, exe string, timeout time.Duration) (string, bool) {
+	cacheRoot, _ := userCacheDir()
+	if cacheRoot != "" {
+		if identity, err := identifyExecutable(exe); err == nil {
+			if version, ok := readVersionCache(cacheRoot, identity); ok && strings.HasPrefix(version, "LibreOffice ") {
+				return version, true
+			}
+		}
+	}
+
+	version, err := runVersionCommand(ctx, exe, timeout, false)
+	if err != nil || !strings.HasPrefix(version, "LibreOffice ") {
+		return "", false
+	}
+	if cacheRoot != "" {
+		if identity, err := identifyExecutable(exe); err == nil {
+			writeVersionCache(cacheRoot, identity, version)
+		}
+	}
+	return version, true
 }
 
 func versionForExecutable(ctx context.Context, exe string, timeout time.Duration) string {

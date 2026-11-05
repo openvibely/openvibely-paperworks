@@ -98,6 +98,51 @@ func TestVersionCacheAvoidsProbeAndTracksExecutableReplacement(t *testing.T) {
 	}
 }
 
+func TestVersionFallsBackFromUnusableCachedOffice(t *testing.T) {
+	if runtime.GOOS != "darwin" && runtime.GOOS != "linux" {
+		t.Skip("supported cached-office platform fixture")
+	}
+	skipIfStandardOfficeInstalled(t)
+
+	root := t.TempDir()
+	cache := filepath.Join(root, "cache")
+	oldUserCacheDir := userCacheDir
+	userCacheDir = func() (string, error) { return cache, nil }
+	t.Cleanup(func() { userCacheDir = oldUserCacheDir })
+	platformPath := map[string]string{"darwin": "LibreOffice.app/Contents/MacOS/soffice", "linux": "program/soffice"}[runtime.GOOS]
+	newest := cachedFixture(t, cache, "26.10.0", runtime.GOOS, runtime.GOARCH, strings.Repeat("f", 64), platformPath)
+	older := cachedFixture(t, cache, "26.9.0", runtime.GOOS, runtime.GOARCH, strings.Repeat("0", 64), platformPath)
+	marker := filepath.Join(root, "probes")
+	t.Setenv("LO_CACHED_VERSION_MARKER", marker)
+	writeVersionScript(t, newest, `printf '%s\n' newest >> "$LO_CACHED_VERSION_MARKER"
+printf '%s\n' 'not LibreOffice'`)
+	writeVersionScript(t, older, `printf '%s\n' older >> "$LO_CACHED_VERSION_MARKER"
+printf '%s\n' 'LibreOffice 26.9.0'`)
+	emptyPath := filepath.Join(root, "empty-path")
+	if err := os.Mkdir(emptyPath, 0700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", emptyPath)
+	t.Setenv("DOCUMENT_SOFFICE", "")
+
+	if got := Version(context.Background()); got != "LibreOffice 26.9.0" {
+		t.Fatalf("Version() = %q, want older working release version", got)
+	}
+	probes, err := os.ReadFile(marker)
+	if err != nil || string(probes) != "newest\nolder\n" {
+		t.Fatalf("version probe sequence = %q, err = %v", probes, err)
+	}
+
+	exe, got, err := FindAndVersion(context.Background())
+	if err != nil || exe != older || got != "LibreOffice 26.9.0" {
+		t.Fatalf("FindAndVersion() = %q, %q, %v; want older working release", exe, got, err)
+	}
+	probes, err = os.ReadFile(marker)
+	if err != nil || string(probes) != "newest\nolder\nnewest\n" {
+		t.Fatalf("cached version probe sequence = %q, err = %v", probes, err)
+	}
+}
+
 func TestVersionProbeFailureIsNotCached(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("POSIX fixture")
