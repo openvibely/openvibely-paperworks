@@ -9,8 +9,31 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/openvibely/openvibely-paperworks/internal/docx"
 	"github.com/openvibely/openvibely-paperworks/internal/xlsx"
 )
+
+func TestCreateDOCXSchemaDocumentsIndependentPageDefaults(t *testing.T) {
+	schema := runCLI(t, "schema", "create-docx")
+	defs := schema["$defs"].(map[string]any)
+	page := defs[schemaDefinitionName(reflect.TypeOf(docx.Page{}))].(map[string]any)
+	properties := page["properties"].(map[string]any)
+	for _, tc := range []struct {
+		field       string
+		wantDefault float64
+	}{
+		{field: "width_in", wantDefault: 8.5},
+		{field: "height_in", wantDefault: 11},
+	} {
+		field := properties[tc.field].(map[string]any)
+		if got, ok := field["default"].(float64); !ok || got != tc.wantDefault {
+			t.Errorf("%s schema default = %v, want %g", tc.field, field["default"], tc.wantDefault)
+		}
+		if field["description"] == "" {
+			t.Errorf("%s schema description omits the independent default", tc.field)
+		}
+	}
+}
 
 func TestWorkbookEditSchemaValidation(t *testing.T) {
 	schema := runCLI(t, "schema", "workbook-edit")

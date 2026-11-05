@@ -34,6 +34,7 @@ func init() {
 		}
 		if a.Pos[0] == "create-docx" {
 			describeCreateDOCXSchema(root, g.defs)
+			constrainCreateDocxSchema(g.defs)
 		}
 		return root, nil
 	}})
@@ -56,6 +57,20 @@ func describeCreateDOCXSchema(root map[string]any, defs map[string]any) {
 		"then": map[string]any{"required": []string{"mathml"}},
 	}}
 	root["description"] = "DOCX authoring schema. Equation blocks use a bounded MathML subset and are emitted as native Word equations (OMML); see the block mathml property description for supported elements and limits. Runtime validation remains authoritative."
+}
+
+func constrainCreateDocxSchema(defs map[string]any) {
+	specName := schemaDefinitionName(reflect.TypeOf(docx.Spec{}))
+	spec := defs[specName].(map[string]any)
+	specProperties := spec["properties"].(map[string]any)
+	pageRef := specProperties["page"].(map[string]any)["$ref"].(string)
+	pageName := strings.TrimPrefix(pageRef, "#/$defs/")
+	page := defs[pageName].(map[string]any)
+	pageProperties := page["properties"].(map[string]any)
+	pageProperties["width_in"].(map[string]any)["default"] = 8.5
+	pageProperties["width_in"].(map[string]any)["description"] = "Page width in inches; defaults independently to 8.5 when omitted or zero."
+	pageProperties["height_in"].(map[string]any)["default"] = 11
+	pageProperties["height_in"].(map[string]any)["description"] = "Page height in inches; defaults independently to 11 when omitted or zero."
 }
 
 func constrainWorkbookEditSchema(root map[string]any, defs map[string]any) {

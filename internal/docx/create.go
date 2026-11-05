@@ -56,6 +56,8 @@ type Block struct {
 	MathML      string     `json:"mathml,omitempty"`
 }
 
+// Page defines the DOCX page size. WidthIn and HeightIn default independently
+// to 8.5 and 11 inches when zero or omitted.
 type Page struct {
 	WidthIn   float64 `json:"width_in"`
 	HeightIn  float64 `json:"height_in"`
@@ -428,9 +430,6 @@ func (b *builder) image(blk Block, align string) error {
 
 // Create writes a new DOCX described by spec; baseDir resolves image paths.
 func Create(spec Spec, baseDir, output string) error {
-	if spec.Page.WidthIn == 0 {
-		spec.Page.WidthIn, spec.Page.HeightIn = 8.5, 11
-	}
 	if spec.Page.MarginIn == 0 {
 		spec.Page.MarginIn = 1
 	}
@@ -453,6 +452,12 @@ func Build(spec Spec, baseDir string) ([]byte, error) {
 }
 
 func build(spec Spec, baseDir string, clock func() time.Time) ([]byte, error) {
+	if spec.Page.WidthIn == 0 {
+		spec.Page.WidthIn = 8.5
+	}
+	if spec.Page.HeightIn == 0 {
+		spec.Page.HeightIn = 11
+	}
 	if spec.StylesFile != "" && spec.StylesOverlayFile != "" {
 		return nil, errors.New("styles_file and styles_overlay_file are mutually exclusive")
 	}

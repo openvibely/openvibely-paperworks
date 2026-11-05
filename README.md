@@ -102,6 +102,11 @@ paperworks create-docx --spec report.json --output report.docx
 paperworks convert report.docx --output exported
 ```
 
+DOCX pages default to 8.5 × 11 inches (US Letter). Width and height default
+independently, so specifying only `height_in` keeps that height and uses the
+default width; specifying only `width_in` keeps that width and uses the default
+height. The same defaults apply when both dimensions are omitted.
+
 The conversion step requires LibreOffice.
 
 ### Edit and review
