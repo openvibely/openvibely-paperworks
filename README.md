@@ -113,8 +113,17 @@ paperworks render final.docx --output preview
 paperworks compare draft.docx --against final.docx --output comparison
 ```
 
-Open the generated previews to check the result. Word paragraph indices are
-zero-based; see the editing reference for how paragraphs are counted.
+Open the generated previews to check the result. DOCX comparisons also write a
+text diff. PPTX comparisons write `text-before.txt`, `text-after.txt`, and
+`text-diff.txt`, with structured `text_changes` in the JSON report. Text is
+combined across runs, so formatting-only edits remain in the visual diff.
+
+PPTX slide matching uses unique combined-text fingerprints first, then unique
+presentation slide IDs. Remaining slides pair by order only in corresponding
+gaps with equal slide counts and no known reordering; otherwise they are
+reported as added or removed. Shapes match by unique ID, name, or combined text,
+then by order when a missing shape ID leaves equal unmatched counts. The JSON
+report includes the matching rules used for interpreting slide changes.
 
 ### Combine PDFs
 

@@ -139,7 +139,7 @@ func init() {
 	register(&Command{
 		Name:      "compare",
 		ValueOpts: []string{"against", "output", "dpi", "max-pixels"},
-		Summary:   "Render two documents and write per-page pixel diffs (plus a text diff for DOCX pairs).",
+		Summary:   "Render two documents and write per-page pixel diffs (plus text diffs for DOCX and PPTX pairs).",
 		Usage:     "paperworks compare BEFORE --against AFTER --output NEW_DIR [--dpi N | --max-pixels N]",
 		BoolOpts:  nil,
 		Run: func(ctx context.Context, a Args) (any, error) {

@@ -388,8 +388,8 @@ func appendDocxDiffLines(lines *[]string, text string) {
 	}
 }
 
-// Compare renders both files and writes per-page pixel diffs, plus a text
-// diff for DOCX pairs.
+// Compare renders both files and writes per-page pixel diffs, plus text diffs
+// for DOCX and PPTX pairs.
 func Compare(ctx context.Context, before, after, output string, opt pdf.RenderOptions) (map[string]any, error) {
 	if err := NewOutputDir(output); err != nil {
 		return nil, err
@@ -473,6 +473,32 @@ func Compare(ctx context.Context, before, after, output string, opt pdf.RenderOp
 		}
 		result["text_changed"] = diff != ""
 		result["text_diff"] = dest
+	} else if ext(before) == ".pptx" && ext(after) == ".pptx" {
+		firstSlides, err := pptxTextSlides(before)
+		if err != nil {
+			return nil, err
+		}
+		secondSlides, err := pptxTextSlides(after)
+		if err != nil {
+			return nil, err
+		}
+		first, second := pptxTextArtifacts(firstSlides), pptxTextArtifacts(secondSlides)
+		if err := os.WriteFile(filepath.Join(output, "text-before.txt"), []byte(strings.Join(first, "")), 0o644); err != nil {
+			return nil, err
+		}
+		if err := os.WriteFile(filepath.Join(output, "text-after.txt"), []byte(strings.Join(second, "")), 0o644); err != nil {
+			return nil, err
+		}
+		changes := pptxChanges(firstSlides, secondSlides)
+		diff := pptxTextDiff(before, after, changes)
+		dest := filepath.Join(output, "text-diff.txt")
+		if err := os.WriteFile(dest, []byte(diff), 0o644); err != nil {
+			return nil, err
+		}
+		result["text_changed"] = len(changes) != 0
+		result["text_diff"] = dest
+		result["text_changes"] = changes
+		result["slide_matching"] = pptxSlideMatchingDescription
 	}
 	return result, nil
 }
