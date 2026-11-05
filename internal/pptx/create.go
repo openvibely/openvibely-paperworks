@@ -5,7 +5,6 @@ import (
 	"archive/zip"
 	"bytes"
 	"context"
-	"encoding/xml"
 	"fmt"
 	_ "image/jpeg"
 	_ "image/png"
@@ -19,6 +18,7 @@ import (
 	"github.com/beevik/etree"
 	"github.com/openvibely/openvibely-paperworks/internal/office"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
+	"github.com/openvibely/openvibely-paperworks/internal/xmltext"
 	"github.com/xuri/excelize/v2"
 )
 
@@ -136,7 +136,9 @@ type Element struct {
 	Chart             *Chart         `json:"chart"`
 }
 
-func esc(s string) string { var b bytes.Buffer; xml.EscapeText(&b, []byte(s)); return b.String() }
+func esc(s string) string {
+	return xmltext.Escape(s, xmltext.Options{EscapeWhitespace: true, ReplaceInvalidXML: true})
+}
 
 // Match reference presentation library Inches: multiply the floating-point value, then truncate.
 // Rounding changes serialized slide and shape dimensions by one EMU.

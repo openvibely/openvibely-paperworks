@@ -21,6 +21,7 @@ import (
 	"github.com/openvibely/openvibely-paperworks/internal/mathml"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 	"github.com/openvibely/openvibely-paperworks/internal/xmlresource"
+	"github.com/openvibely/openvibely-paperworks/internal/xmltext"
 )
 
 type Run struct {
@@ -84,25 +85,14 @@ const (
 )
 
 func esc(s string) string {
-	var b bytes.Buffer
+	var filtered strings.Builder
 	for _, r := range s {
-		switch r {
-		case '&':
-			b.WriteString("&amp;")
-		case '<':
-			b.WriteString("&lt;")
-		case '>':
-			b.WriteString("&gt;")
-		case '"':
-			b.WriteString("&quot;")
-		default:
-			if r < 0x20 && r != '\t' && r != '\n' && r != '\r' {
-				continue
-			}
-			b.WriteRune(r)
+		if r < 0x20 && r != '\t' && r != '\n' && r != '\r' {
+			continue
 		}
+		filtered.WriteRune(r)
 	}
-	return b.String()
+	return xmltext.Escape(filtered.String(), xmltext.Options{Quotes: xmltext.NamedDoubleQuote})
 }
 
 // imageDigestTable is a fast lookup key; bytes.Equal confirms every match.
