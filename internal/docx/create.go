@@ -10,6 +10,7 @@ import (
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
+	"math"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -57,7 +58,8 @@ type Block struct {
 }
 
 // Page defines the DOCX page size. WidthIn and HeightIn default independently
-// to 8.5 and 11 inches when zero or omitted.
+// to 8.5 and 11 inches when zero or omitted. Positive dimensions smaller than
+// one twip (1/1440 inch) serialize as one twip.
 type Page struct {
 	WidthIn   float64 `json:"width_in"`
 	HeightIn  float64 `json:"height_in"`
@@ -589,9 +591,31 @@ func build(spec Spec, baseDir string, clock func() time.Time) ([]byte, error) {
 	return pkg.DocumentBytes(clock)
 }
 
+func pageDimensionTwips(inches float64, field string) (int, error) {
+	if math.IsNaN(inches) || math.IsInf(inches, 0) || inches <= 0 {
+		return 0, fmt.Errorf("page %s must be finite and positive", field)
+	}
+	twips := inches * 1440
+	maxInt := int(^uint(0) >> 1)
+	if math.IsInf(twips, 0) || twips >= float64(maxInt) {
+		return 0, fmt.Errorf("page %s is too large", field)
+	}
+	if twips < 1 {
+		return 1, nil
+	}
+	return int(twips), nil
+}
+
 func (b *builder) sectPr() (string, error) {
 	pg := b.spec.Page
-	w, h := int(pg.WidthIn*1440), int(pg.HeightIn*1440)
+	w, err := pageDimensionTwips(pg.WidthIn, "width_in")
+	if err != nil {
+		return "", err
+	}
+	h, err := pageDimensionTwips(pg.HeightIn, "height_in")
+	if err != nil {
+		return "", err
+	}
 	orient := ""
 	if pg.Landscape {
 		w, h = h, w

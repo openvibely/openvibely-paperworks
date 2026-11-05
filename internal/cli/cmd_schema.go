@@ -68,9 +68,9 @@ func constrainCreateDocxSchema(defs map[string]any) {
 	page := defs[pageName].(map[string]any)
 	pageProperties := page["properties"].(map[string]any)
 	pageProperties["width_in"].(map[string]any)["default"] = 8.5
-	pageProperties["width_in"].(map[string]any)["description"] = "Page width in inches; defaults independently to 8.5 when omitted or zero."
+	pageProperties["width_in"].(map[string]any)["description"] = "Page width in inches; defaults independently to 8.5 when omitted or zero. Positive values below 1/1440 inch serialize as one twip."
 	pageProperties["height_in"].(map[string]any)["default"] = 11
-	pageProperties["height_in"].(map[string]any)["description"] = "Page height in inches; defaults independently to 11 when omitted or zero."
+	pageProperties["height_in"].(map[string]any)["description"] = "Page height in inches; defaults independently to 11 when omitted or zero. Positive values below 1/1440 inch serialize as one twip."
 }
 
 func constrainWorkbookEditSchema(root map[string]any, defs map[string]any) {

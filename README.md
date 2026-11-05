@@ -105,7 +105,9 @@ paperworks convert report.docx --output exported
 DOCX pages default to 8.5 × 11 inches (US Letter). Width and height default
 independently, so specifying only `height_in` keeps that height and uses the
 default width; specifying only `width_in` keeps that width and uses the default
-height. The same defaults apply when both dimensions are omitted.
+height. The same defaults apply when both dimensions are omitted. Positive sizes
+below one twip (1/1440 inch) serialize as one twip, the smallest nonzero page
+size.
 
 The conversion step requires LibreOffice.
 
