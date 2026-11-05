@@ -185,7 +185,7 @@ func (g *schemaBuilder) schema(t reflect.Type) map[string]any {
 	}
 	switch t.Kind() {
 	case reflect.Struct:
-		name := strings.ReplaceAll(t.PkgPath()+"."+t.Name(), "/", "_")
+		name := schemaDefinitionName(t)
 		if _, ok := g.defs[name]; !ok {
 			g.defs[name] = map[string]any{}
 			props := map[string]any{}

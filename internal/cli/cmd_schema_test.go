@@ -15,7 +15,25 @@ import (
 func TestWorkbookEditSchemaValidation(t *testing.T) {
 	schema := runCLI(t, "schema", "workbook-edit")
 	defs := schema["$defs"].(map[string]any)
-	editDef := defs[schemaDefinitionName(reflect.TypeOf(xlsx.Edit{}))].(map[string]any)
+	editSpec, ok := defs[schemaDefinitionName(reflect.TypeOf(xlsx.EditSpec{}))].(map[string]any)
+	if !ok {
+		t.Fatal("workbook edit schema omitted the EditSpec definition")
+	}
+	if got := schemaStringList(editSpec["required"]); !reflect.DeepEqual(got, []string{"edits"}) {
+		t.Fatalf("EditSpec required fields = %v, want [edits]", got)
+	}
+	editList := editSpec["properties"].(map[string]any)["edits"].(map[string]any)
+	if got, _ := schemaNumber(editList["minItems"]); got != 1 {
+		t.Fatalf("EditSpec edits minItems = %v, want 1", editList["minItems"])
+	}
+	if got, _ := schemaNumber(editList["maxItems"]); got != 10000 {
+		t.Fatalf("EditSpec edits maxItems = %v, want 10000", editList["maxItems"])
+	}
+
+	editDef, ok := defs[schemaDefinitionName(reflect.TypeOf(xlsx.Edit{}))].(map[string]any)
+	if !ok {
+		t.Fatal("workbook edit schema omitted the Edit definition")
+	}
 	editProperties := editDef["properties"].(map[string]any)
 	if ref, ok := editProperties["style"].(map[string]any)["$ref"]; !ok || ref == "" {
 		t.Fatal("workbook edit schema omitted nested Excel style options")
@@ -53,6 +71,24 @@ func TestWorkbookEditSchemaValidation(t *testing.T) {
 				t.Fatalf("invalid workbook edit accepted: %#v", tc.document)
 			}
 		})
+	}
+}
+
+func TestCreateXLSXSchemaDefinitionKeyAndOutput(t *testing.T) {
+	schema := runCLI(t, "schema", "create-xlsx")
+	const specDefinitionName = "github.com_openvibely_openvibely-paperworks_internal_xlsx.Spec"
+	if got, want := schema["$ref"], "#/$defs/"+specDefinitionName; got != want {
+		t.Fatalf("create-xlsx root ref = %v, want %q", got, want)
+	}
+	defs := schema["$defs"].(map[string]any)
+	spec, ok := defs[specDefinitionName].(map[string]any)
+	if !ok {
+		t.Fatalf("create-xlsx schema omitted definition %q", specDefinitionName)
+	}
+	properties := spec["properties"].(map[string]any)
+	sheets, ok := properties["sheets"].(map[string]any)
+	if !ok || sheets["type"] != "array" {
+		t.Fatalf("create-xlsx sheets output = %#v, want an array schema", properties["sheets"])
 	}
 }
 
