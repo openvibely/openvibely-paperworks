@@ -622,8 +622,9 @@ func appendDocxDiffLines(lines *[]string, text string) {
 	}
 }
 
-// Compare renders both files and writes per-page pixel diffs, plus text diffs
-// for DOCX and PPTX pairs.
+// Compare renders both files and writes per-page pixel diffs, XLSX cell-content
+// changes, and text diffs for DOCX and PPTX pairs. XLSX cell content is read as
+// stored; formulas and cached results are reported separately without recalculation.
 func Compare(ctx context.Context, before, after, output string, opt pdf.RenderOptions) (map[string]any, error) {
 	if err := NewOutputDir(output); err != nil {
 		return nil, err
@@ -686,6 +687,13 @@ func Compare(ctx context.Context, before, after, output string, opt pdf.RenderOp
 		changes = append(changes, change)
 	}
 	result := map[string]any{"pages": changes, "visually_inspected": false}
+	if ext(before) == ".xlsx" && ext(after) == ".xlsx" {
+		cells, err := compareXLSXContents(before, after)
+		if err != nil {
+			return nil, err
+		}
+		result["cell_changes"] = cells
+	}
 	if ext(before) == ".docx" && ext(after) == ".docx" {
 		first, err := docxLines(before)
 		if err != nil {
