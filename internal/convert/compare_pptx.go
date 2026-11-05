@@ -52,7 +52,7 @@ type pptxShapePair struct {
 	after  int
 }
 
-const pptxSlideMatchingDescription = "Slides pair first by a unique fingerprint of their combined text (which supports reordering), then by a unique persistent presentation slide ID. Remaining slides pair in presentation order only within corresponding gaps when the gap counts agree, known matches are not reordered, and at least one slide ID is missing in each fallback pair. Unmatched slides with different available IDs are reported as removed or added. Shapes pair by unique ID, then unique name, then unique identical combined text, then presentation order for unmatched shapes with a missing ID when the remaining gap counts agree. Text is concatenated in XML reading order, with paragraph and explicit line-break boundaries retained."
+const pptxSlideMatchingDescription = "Slides pair first by a unique fingerprint of their combined text (which supports reordering), then by a unique persistent presentation slide ID. Remaining slides pair in presentation order only within corresponding gaps when the gap counts agree, known matches are not reordered, and at least one slide ID is missing in each fallback pair. Unmatched slides with different available IDs are reported as removed or added. Shapes pair by unique ID, then unique name or identical combined text when the candidates do not have different available IDs, then presentation order for unmatched shapes with a missing ID when the remaining gap counts agree. Text is concatenated in XML reading order, with paragraph and explicit line-break boundaries retained."
 
 func pptxPresentationPart(pkg *opc.Package) (string, error) {
 	rels, err := pkg.Rels("")
@@ -366,6 +366,12 @@ func matchPPTXShapes(before, after []pptxTextShape) ([]pptxShapePair, []int, []i
 		for value, bi := range beforeKeys {
 			ai := afterKeys[value]
 			if value == "" || len(bi) != 1 || len(ai) != 1 {
+				continue
+			}
+			beforeShape, afterShape := before[bi[0]], after[ai[0]]
+			// A differing available ID identifies a replacement, even when its
+			// name or text happens to match the removed shape.
+			if beforeShape.ID != "" && afterShape.ID != "" && beforeShape.ID != afterShape.ID {
 				continue
 			}
 			pair(bi[0], ai[0])

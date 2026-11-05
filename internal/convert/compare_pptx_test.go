@@ -168,6 +168,49 @@ func TestComparePPTXAddedAndRemovedShapes(t *testing.T) {
 	}
 }
 
+func TestComparePPTXDifferentShapeIDsAreReportedAsReplacement(t *testing.T) {
+	cases := []struct {
+		name   string
+		before comparePPTXShape
+		after  comparePPTXShape
+	}{
+		{
+			name:   "same text with different IDs",
+			before: comparePPTXShape{id: "3", name: "Old", runs: []string{"same text"}},
+			after:  comparePPTXShape{id: "4", name: "New", runs: []string{"same text"}},
+		},
+		{
+			name:   "same name with different IDs and changed text",
+			before: comparePPTXShape{id: "3", name: "Shared", runs: []string{"before"}},
+			after:  comparePPTXShape{id: "4", name: "Shared", runs: []string{"after"}},
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			before := []comparePPTXSlide{{id: "256", shapes: []comparePPTXShape{tc.before}}}
+			after := []comparePPTXSlide{{id: "256", shapes: []comparePPTXShape{tc.after}}}
+			changes, diff := comparePPTXText(t, before, after)
+			if len(changes) != 2 {
+				t.Fatalf("replacement should produce removal and addition: %#v", changes)
+			}
+			removed, added := false, false
+			for _, change := range changes {
+				switch change.Status {
+				case "removed":
+					removed = change.BeforeShapeID == tc.before.id && change.Before == strings.Join(tc.before.runs, "") && change.AfterShapeID == ""
+				case "added":
+					added = change.AfterShapeID == tc.after.id && change.After == strings.Join(tc.after.runs, "") && change.BeforeShapeID == ""
+				case "changed":
+					t.Errorf("different-ID shapes were paired as a text edit: %#v", change)
+				}
+			}
+			if !removed || !added || !strings.Contains(diff, "removed shape id="+tc.before.id) || !strings.Contains(diff, "added shape id="+tc.after.id) {
+				t.Fatalf("replacement was not reported as removal plus addition: %#v diff=%q", changes, diff)
+			}
+		})
+	}
+}
+
 func TestComparePPTXIdenticalAndStyleOnlyChanges(t *testing.T) {
 	base := []comparePPTXSlide{{id: "256", shapes: []comparePPTXShape{{id: "2", name: "Title", runs: []string{"same text"}}}}}
 	for _, tc := range []struct {
