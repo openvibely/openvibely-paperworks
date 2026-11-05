@@ -1,13 +1,19 @@
 package office
 
 import (
+	"bytes"
 	"fmt"
+	"math"
+	"path"
+	"strconv"
+	"strings"
+
 	"github.com/beevik/etree"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 	"github.com/xuri/excelize/v2"
-	"math"
-	"strconv"
 )
+
+const embeddedWorkbookContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 // ReplaceCategorySeries replaces the data and entire embedded workbook of a
 // single-series column chart. Unlike WorkbookInputs, it deliberately discards
@@ -50,6 +56,11 @@ func ReplaceCategorySeries(p *opc.Package, part, name string, categories []strin
 	if err != nil {
 		return err
 	}
+	shared, err := chartWorkbookIsShared(p, part, target)
+	if err != nil {
+		return err
+	}
+
 	f := excelize.NewFile()
 	defer f.Close()
 	if err = f.SetCellValue("Sheet1", "B1", name); err != nil {
@@ -115,9 +126,138 @@ func ReplaceCategorySeries(p *opc.Package, part, name string, categories []strin
 			s.AddChild(e)
 		}
 	}
-	if err = p.SetXML(part, d); err != nil {
+
+	chartXML, err := replacementXMLBytes(d)
+	if err != nil {
 		return err
 	}
-	p.Set(target, raw.Bytes())
+	newTarget := target
+	var relsXML, contentTypesXML []byte
+	if shared {
+		newTarget = unusedWorkbookPart(p, target)
+		relsXML, err = chartWorkbookRelationshipBytes(p, part, d.Root(), target, newTarget)
+		if err != nil {
+			return err
+		}
+		contentTypesXML, err = workbookContentTypeBytes(p, newTarget)
+		if err != nil {
+			return err
+		}
+	}
+
+	// All fallible parsing and serialization is complete. Apply the staged changes
+	// together so an isolation error cannot leave a partially edited package.
+	p.Set(part, chartXML)
+	if shared {
+		p.Set(opc.RelsName(part), relsXML)
+		if contentTypesXML != nil {
+			p.Set("[Content_Types].xml", contentTypesXML)
+		}
+	}
+	p.Set(newTarget, raw.Bytes())
 	return nil
+}
+
+func chartWorkbookIsShared(p *opc.Package, editedPart, target string) (bool, error) {
+	parts, err := ChartParts(p)
+	if err != nil {
+		return false, fmt.Errorf("cannot determine whether embedded workbook %s is shared: %w", target, err)
+	}
+	for _, part := range parts {
+		if part == editedPart {
+			continue
+		}
+		doc, err := p.XML(part)
+		if err != nil {
+			return false, fmt.Errorf("cannot determine whether embedded workbook %s is shared: %w", target, err)
+		}
+		root := doc.Root()
+		if Is(root, NSCX, "chartSpace") {
+			if Child(Child(root, NSCX, "chartData"), NSCX, "externalData") == nil {
+				continue
+			}
+		} else if Child(root, NSC, "externalData") == nil {
+			continue
+		}
+		otherTarget, err := ChartWorkbookTarget(p, part, root)
+		if err != nil {
+			return false, fmt.Errorf("cannot determine whether embedded workbook %s is shared: %w", target, err)
+		}
+		if otherTarget == target {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+func unusedWorkbookPart(p *opc.Package, target string) string {
+	ext := path.Ext(target)
+	base := strings.TrimSuffix(path.Base(target), ext)
+	return p.UnusedName(path.Join(path.Dir(target), base+"-"), ext)
+}
+
+func chartWorkbookRelationshipBytes(p *opc.Package, part string, root *etree.Element, oldTarget, newTarget string) ([]byte, error) {
+	ext := Child(root, NSC, "externalData")
+	if ext == nil {
+		return nil, fmt.Errorf("cannot isolate shared embedded workbook: chart has no externalData relationship")
+	}
+	relID := AttrV(ext, NSR, "id")
+	relsName := opc.RelsName(part)
+	doc, err := p.XML(relsName)
+	if err != nil {
+		return nil, fmt.Errorf("cannot isolate shared embedded workbook: %w", err)
+	}
+	var match *etree.Element
+	for _, rel := range doc.Root().ChildElements() {
+		if rel.SelectAttrValue("Id", "") != relID {
+			continue
+		}
+		if match != nil {
+			return nil, fmt.Errorf("cannot isolate shared embedded workbook: relationship %s is ambiguous", relID)
+		}
+		match = rel
+	}
+	if match == nil || match.SelectAttrValue("TargetMode", "") == "External" || !strings.HasSuffix(match.SelectAttrValue("Type", ""), "/package") {
+		return nil, fmt.Errorf("cannot isolate shared embedded workbook: package relationship %s is unavailable", relID)
+	}
+	if got := opc.Resolve(part, match.SelectAttrValue("Target", "")); got != oldTarget {
+		return nil, fmt.Errorf("cannot isolate shared embedded workbook: relationship %s no longer targets %s", relID, oldTarget)
+	}
+	if attr := match.SelectAttr("Target"); attr != nil {
+		attr.Value = opc.Relative(part, newTarget)
+	} else {
+		match.CreateAttr("Target", opc.Relative(part, newTarget))
+	}
+	return replacementXMLBytes(doc)
+}
+
+func workbookContentTypeBytes(p *opc.Package, target string) ([]byte, error) {
+	if p.ContentType(target) == embeddedWorkbookContentType {
+		return nil, nil
+	}
+	doc, err := p.XML("[Content_Types].xml")
+	if err != nil {
+		return nil, fmt.Errorf("cannot register isolated embedded workbook: %w", err)
+	}
+	override := doc.Root().CreateElement("Override")
+	override.CreateAttr("PartName", "/"+strings.TrimPrefix(target, "/"))
+	override.CreateAttr("ContentType", embeddedWorkbookContentType)
+	data, err := replacementXMLBytes(doc)
+	if err != nil {
+		return nil, fmt.Errorf("cannot register isolated embedded workbook: %w", err)
+	}
+	return data, nil
+}
+
+func replacementXMLBytes(doc *etree.Document) ([]byte, error) {
+	doc.WriteSettings.CanonicalEndTags = false
+	data, err := doc.WriteToBytes()
+	if err != nil {
+		return nil, err
+	}
+	data = bytes.TrimPrefix(data, []byte{0xef, 0xbb, 0xbf})
+	if !bytes.HasPrefix(data, []byte("<?xml")) {
+		data = append([]byte(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>`+"\n"), data...)
+	}
+	return data, nil
 }
