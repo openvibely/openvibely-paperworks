@@ -16,6 +16,13 @@ func PresentationLayouts(p *opc.Package) ([]map[string]any, error) {
 	if err != nil {
 		return nil, err
 	}
+	return PresentationLayoutsForSlides(p, slides, nil)
+}
+
+// PresentationLayoutsForSlides builds layout reports only for selected original
+// 1-based slide numbers. slides must be in presentation order; report slide
+// numbers retain their positions in that original order.
+func PresentationLayoutsForSlides(p *opc.Package, slides []string, selected map[int]bool) ([]map[string]any, error) {
 	main := ""
 	rels, err := p.Rels("")
 	if err != nil {
@@ -40,6 +47,9 @@ func PresentationLayouts(p *opc.Package) ([]map[string]any, error) {
 	}
 	var reports []map[string]any
 	for i, part := range slides {
+		if selected != nil && !selected[i+1] {
+			continue
+		}
 		owners := []string{part}
 		scopes := []string{"slide"}
 		for _, kind := range []string{"slideLayout", "slideMaster"} {

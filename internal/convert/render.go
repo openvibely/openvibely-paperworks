@@ -30,33 +30,27 @@ func VerifyOfficeChartPreview(ctx context.Context, source, pdfPath string) error
 	if err != nil {
 		return err
 	}
-	charts, err := office.ChartParts(p)
+	slides, err := office.PresentationSlides(p)
 	if err != nil {
 		return err
 	}
-	extended := false
-	for _, n := range charts {
-		doc, err := p.XML(n)
-		if err != nil {
-			return err
-		}
-		extended = extended || office.Is(doc.Root(), office.NSCX, "chartSpace")
+	extended, err := presentationHasExtendedChart(p, slides)
+	if err != nil {
+		return err
 	}
 	if !extended {
 		return nil
 	}
 	var src strings.Builder
-	for _, n := range p.Names() {
-		if strings.HasPrefix(n, "ppt/slides/") && strings.HasSuffix(n, ".xml") && !strings.Contains(n, "/_rels/") {
-			doc, err := p.XML(n)
-			if err != nil {
-				return err
-			}
-			office.Iter(doc.Root(), func(e *etree.Element) bool {
-				src.WriteString(" " + e.Text())
-				return true
-			})
+	for _, n := range slides {
+		doc, err := p.XML(n)
+		if err != nil {
+			return err
 		}
+		office.Iter(doc.Root(), func(e *etree.Element) bool {
+			src.WriteString(" " + e.Text())
+			return true
+		})
 	}
 	// A deck discussing this error can legitimately contain these words.
 	if strings.Contains(strings.ToLower(src.String()), unsupportedChartMarker) {
@@ -75,6 +69,43 @@ func VerifyOfficeChartPreview(ctx context.Context, source, pdfPath string) error
 		return errors.New("LibreOffice could not render an extended chart. The native PPTX is intact; use a renderer supporting this chart type. No verified preview was produced")
 	}
 	return nil
+}
+
+func presentationHasExtendedChart(p *opc.Package, slides []string) (bool, error) {
+	seen := map[string]bool{}
+	extended := false
+	for _, slide := range slides {
+		rels, err := p.Rels(slide)
+		if err != nil {
+			return false, err
+		}
+		for _, rel := range rels {
+			kind := rel.Type[strings.LastIndex(rel.Type, "/")+1:]
+			if kind != "chart" && kind != "chartEx" {
+				continue
+			}
+			if rel.TargetMode == "External" {
+				return false, errors.New("external chart part is unsupported")
+			}
+			part := opc.Resolve(slide, rel.Target)
+			if !p.Has(part) {
+				return false, fmt.Errorf("Missing chart part: %s", part)
+			}
+			if seen[part] {
+				continue
+			}
+			seen[part] = true
+			doc, err := p.XML(part)
+			if err != nil {
+				return false, err
+			}
+			if !office.Is(doc.Root(), office.NSC, "chartSpace") && !office.Is(doc.Root(), office.NSCX, "chartSpace") {
+				return false, fmt.Errorf("invalid chart part: %s", part)
+			}
+			extended = extended || office.Is(doc.Root(), office.NSCX, "chartSpace")
+		}
+	}
+	return extended, nil
 }
 
 // RenderFile renders a PDF or Office file to PNG pages, reusing an existing output directory if present.

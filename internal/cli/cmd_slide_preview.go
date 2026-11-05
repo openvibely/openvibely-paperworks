@@ -42,11 +42,15 @@ func runSlidePreview(ctx context.Context, a Args, render previewFileRenderer) (a
 	if err != nil {
 		return nil, err
 	}
-	reports, err := office.PresentationLayouts(pkg)
+	slides, err := office.PresentationSlides(pkg)
 	if err != nil {
 		return nil, err
 	}
-	selected, err := previewSelection(a.Str("slides"), len(reports))
+	selected, err := previewSelection(a.Str("slides"), len(slides))
+	if err != nil {
+		return nil, err
+	}
+	reports, err := office.PresentationLayoutsForSlides(pkg, slides, selected)
 	if err != nil {
 		return nil, err
 	}
@@ -56,6 +60,11 @@ func runSlidePreview(ctx context.Context, a Args, render previewFileRenderer) (a
 	}
 	defer cleanup()
 	// Render the same source snapshot used for metadata, even if the input changes.
+	// A selected preview contains only those slide IDs in presentation order while
+	// retaining the original slide parts and their chart/layout/master relations.
+	if err = office.RestrictPresentationSlides(pkg, selected); err != nil {
+		return nil, err
+	}
 	snapshot := filepath.Join(stage, "source.pptx")
 	if err = pkg.SaveNew(snapshot); err != nil {
 		return nil, err
@@ -116,7 +125,11 @@ func publishSelectedSlidePreview(ctx context.Context, stage, out string, pages [
 	}
 	pairs := []map[string]string{}
 	for i, page := range pages {
-		if selected != nil && !selected[i+1] {
+		slideNumber := i + 1
+		if number, ok := reports[i]["slide"].(int); ok {
+			slideNumber = number
+		}
+		if selected != nil && !selected[slideNumber] {
 			continue
 		}
 		if err := ctx.Err(); err != nil {
@@ -131,7 +144,7 @@ func publishSelectedSlidePreview(ctx context.Context, stage, out string, pages [
 		if err != nil {
 			return nil, err
 		}
-		stem := fmt.Sprintf("slide-%d", i+1)
+		stem := fmt.Sprintf("slide-%d", slideNumber)
 		imagePath := stem + ".png"
 		jsonPath := stem + ".layout.json"
 		reports[i]["preview"] = map[string]any{"file": imagePath, "width": size.Width, "height": size.Height}

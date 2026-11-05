@@ -261,6 +261,42 @@ func PresentationSlides(p *opc.Package) ([]string, error) {
 	return out, nil
 }
 
+// RestrictPresentationSlides keeps only selected original 1-based slide numbers
+// in the presentation list. Slide parts and their relationships are retained.
+func RestrictPresentationSlides(p *opc.Package, selected map[int]bool) error {
+	if selected == nil {
+		return nil
+	}
+	doc, err := p.XML("ppt/presentation.xml")
+	if err != nil {
+		return err
+	}
+	list := Child(doc.Root(), NSP, "sldIdLst")
+	if list == nil {
+		return fmt.Errorf("missing presentation slide list")
+	}
+	ids := Children(list, NSP, "sldId")
+	selectedCount := 0
+	for number, keep := range selected {
+		if !keep {
+			continue
+		}
+		if number < 1 || number > len(ids) {
+			return fmt.Errorf("selected slide %d is outside the presentation", number)
+		}
+		selectedCount++
+	}
+	if selectedCount == 0 {
+		return fmt.Errorf("slide selection is empty")
+	}
+	for i, id := range ids {
+		if !selected[i+1] {
+			list.RemoveChild(id)
+		}
+	}
+	return p.SetXML("ppt/presentation.xml", doc)
+}
+
 // editSet caches parsed parts so several edits to one part are coherent.
 type editSet struct {
 	p     *opc.Package
