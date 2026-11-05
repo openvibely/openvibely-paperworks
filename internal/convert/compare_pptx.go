@@ -24,8 +24,8 @@ type PPTXTextChange struct {
 	ShapeID       string `json:"shape_id,omitempty"`
 	BeforeShapeID string `json:"before_shape_id,omitempty"`
 	AfterShapeID  string `json:"after_shape_id,omitempty"`
-	Before        string `json:"before,omitempty"`
-	After         string `json:"after,omitempty"`
+	Before        string `json:"before"`
+	After         string `json:"after"`
 }
 
 type pptxTextShape struct {
@@ -180,7 +180,8 @@ func collectPPTXTextShapes(root *etree.Element, shapes *[]pptxTextShape) {
 				shape.Name = office.AttrV(props[0], "", "name")
 			}
 			shape.Text = pptxShapeText(child)
-			if shape.Text != "" {
+			hasTextBody := len(office.All(child, office.NSP, "txBody")) != 0 || len(office.All(child, office.NSA, "txBody")) != 0
+			if shape.Text != "" || hasTextBody {
 				*shapes = append(*shapes, shape)
 			}
 		}
@@ -470,22 +471,30 @@ func pptxChanges(before, after []pptxTextSlide) []PPTXTextChange {
 			}
 		}
 		for _, shapeIndex := range removedShapes {
-			appendShapeChange(bSlide, nil, &bSlide.Shapes[shapeIndex], nil, "removed")
+			if bSlide.Shapes[shapeIndex].Text != "" {
+				appendShapeChange(bSlide, nil, &bSlide.Shapes[shapeIndex], nil, "removed")
+			}
 		}
 		for _, shapeIndex := range addedShapes {
-			appendShapeChange(nil, aSlide, nil, &aSlide.Shapes[shapeIndex], "added")
+			if aSlide.Shapes[shapeIndex].Text != "" {
+				appendShapeChange(nil, aSlide, nil, &aSlide.Shapes[shapeIndex], "added")
+			}
 		}
 	}
 	for _, slideIndex := range removedSlides {
 		slide := &before[slideIndex]
 		for i := range slide.Shapes {
-			appendShapeChange(slide, nil, &slide.Shapes[i], nil, "removed")
+			if slide.Shapes[i].Text != "" {
+				appendShapeChange(slide, nil, &slide.Shapes[i], nil, "removed")
+			}
 		}
 	}
 	for _, slideIndex := range addedSlides {
 		slide := &after[slideIndex]
 		for i := range slide.Shapes {
-			appendShapeChange(nil, slide, nil, &slide.Shapes[i], "added")
+			if slide.Shapes[i].Text != "" {
+				appendShapeChange(nil, slide, nil, &slide.Shapes[i], "added")
+			}
 		}
 	}
 	return changes
@@ -496,6 +505,9 @@ func pptxTextArtifacts(slides []pptxTextSlide) []string {
 	for _, slide := range slides {
 		lines = append(lines, fmt.Sprintf("[slide %d id=%s part=%s]\n", slide.Number, slide.ID, slide.Part))
 		for _, shape := range slide.Shapes {
+			if shape.Text == "" {
+				continue
+			}
 			lines = append(lines, fmt.Sprintf("[shape id=%s name=%q]\n", shape.ID, shape.Name))
 			appendDocxDiffLines(&lines, shape.Text+"\n")
 		}
@@ -522,10 +534,10 @@ func pptxTextDiff(beforeName, afterName string, changes []PPTXTextChange) string
 			detail += " shape id=" + shapeID
 		}
 		lines = append(lines, "["+detail+"]\n")
-		if change.Before != "" {
+		if change.Before != "" || change.Status == "changed" {
 			appendDocxDiffLines(&lines, "-"+change.Before+"\n")
 		}
-		if change.After != "" {
+		if change.After != "" || change.Status == "changed" {
 			appendDocxDiffLines(&lines, "+"+change.After+"\n")
 		}
 	}

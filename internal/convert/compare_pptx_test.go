@@ -2,6 +2,7 @@ package convert
 
 import (
 	"context"
+	"encoding/json"
 	"image"
 	"image/color"
 	"image/draw"
@@ -256,6 +257,47 @@ func TestComparePPTXReorderedSlidesPreferTextIdentityOverSlideIDs(t *testing.T) 
 	changes, _ := comparePPTXText(t, before, after)
 	if len(changes) != 0 {
 		t.Fatalf("reordered text-identical slides were misattributed: %#v", changes)
+	}
+}
+
+func TestComparePPTXTextClearedOrAddedWithinExistingShape(t *testing.T) {
+	cases := []struct {
+		name   string
+		before []string
+		after  []string
+		old    string
+		new    string
+	}{
+		{name: "cleared", before: []string{"Existing text"}, old: "Existing text"},
+		{name: "added", after: []string{"New text"}, new: "New text"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			before := []comparePPTXSlide{{id: "256", shapes: []comparePPTXShape{{id: "2", name: "Text box", runs: tc.before}}}}
+			after := []comparePPTXSlide{{id: "256", shapes: []comparePPTXShape{{id: "2", name: "Text box", runs: tc.after}}}}
+			changes, diff := comparePPTXText(t, before, after)
+			if len(changes) != 1 {
+				t.Fatalf("got %d changes: %#v", len(changes), changes)
+			}
+			change := changes[0]
+			if change.Status != "changed" || change.ShapeID != "2" || change.Before != tc.old || change.After != tc.new {
+				t.Fatalf("text transition lost shape identity or empty side: %#v", change)
+			}
+			encoded, err := json.Marshal(change)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var report map[string]any
+			if err := json.Unmarshal(encoded, &report); err != nil {
+				t.Fatal(err)
+			}
+			if report["before"] != tc.old || report["after"] != tc.new {
+				t.Fatalf("JSON report omitted an empty before/after value: %s", encoded)
+			}
+			if !strings.Contains(diff, "-"+tc.old+"\n") || !strings.Contains(diff, "+"+tc.new+"\n") {
+				t.Fatalf("text diff omitted an empty-side marker: %q", diff)
+			}
+		})
 	}
 }
 
