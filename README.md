@@ -78,10 +78,22 @@ Save this as `report.json`:
 ```json
 {
   "blocks": [
-    {"type": "paragraph", "text": "A document created with Paperworks."}
+    {"type": "paragraph", "text": "A native Word equation follows:"},
+    {"type": "equation", "mathml": "<math><mi>x</mi><mo>=</mo><mfrac><mi>a</mi><mi>b</mi></mfrac><mo>+</mo><msup><mi>c</mi><mn>2</mn></msup></math>"},
+    {"type": "paragraph", "text": "Equation blocks can be mixed with regular document blocks."}
   ]
 }
 ```
+
+Equation blocks use a MathML string and are written as native Word equations
+(OMML). The supported subset includes `math`/`mrow`, token elements `mi`,
+`mn`, `mo`, and `mtext`, fractions (`mfrac`), subscript and superscript
+scripts (`msub`, `msup`, `msubsup`), fences (`mfenced`), roots (`msqrt`,
+`mroot`), and rectangular matrices (`mtable`/`mtr`/`mtd`). This is not a full
+MathML implementation: unsupported elements or child counts return an error;
+fence delimiters and separators are limited to one character, and matrix rows
+must have equal nonzero width. Presentation styling and layout attributes are
+not generally applied. See `paperworks schema create-docx` for the input schema.
 
 Then create the document and export it to PDF:
 

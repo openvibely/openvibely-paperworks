@@ -32,8 +32,30 @@ func init() {
 		if a.Pos[0] == "workbook-edit" {
 			constrainWorkbookEditSchema(root, g.defs)
 		}
+		if a.Pos[0] == "create-docx" {
+			describeCreateDOCXSchema(root, g.defs)
+		}
 		return root, nil
 	}})
+}
+
+func describeCreateDOCXSchema(root map[string]any, defs map[string]any) {
+	blockName := schemaDefinitionName(reflect.TypeOf(docx.Block{}))
+	block, ok := defs[blockName].(map[string]any)
+	if !ok {
+		panic("create-docx schema is missing its block definition")
+	}
+	properties := block["properties"].(map[string]any)
+	properties["type"].(map[string]any)["description"] = "Block type: paragraph (also the default when omitted), heading, list, page_break, table, image, or equation."
+	properties["mathml"].(map[string]any)["description"] = "For equation blocks, a MathML expression converted to native Word OMML. Supports math, mrow, mi, mn, mo, mtext, mfrac, msup, msub, msubsup, mfenced, msqrt, mroot, and rectangular mtable/mtr/mtd matrices. Fence delimiters and separators must be single characters; matrix rows must have equal nonzero width. Unsupported elements or arities return an error; presentation styling and layout attributes are not generally applied."
+	block["allOf"] = []any{map[string]any{
+		"if": map[string]any{
+			"required":   []string{"type"},
+			"properties": map[string]any{"type": map[string]any{"const": "equation"}},
+		},
+		"then": map[string]any{"required": []string{"mathml"}},
+	}}
+	root["description"] = "DOCX authoring schema. Equation blocks use a bounded MathML subset and are emitted as native Word equations (OMML); see the block mathml property description for supported elements and limits. Runtime validation remains authoritative."
 }
 
 func constrainWorkbookEditSchema(root map[string]any, defs map[string]any) {

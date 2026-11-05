@@ -37,8 +37,8 @@ func init() {
 	register(&Command{
 		Name:      "create-docx",
 		ValueOpts: []string{"output", "spec"},
-		Summary:   "Author a new DOCX from a JSON document spec (headings, runs, lists, tables, images, TOC, equations).",
-		Usage:     "paperworks create-docx --spec DOC.json --output NEW.docx",
+		Summary:   "Author a new DOCX from JSON, including native Word equations from a supported MathML subset.",
+		Usage:     "paperworks create-docx --spec DOC.json --output NEW.docx\n  equation blocks use {\"type\":\"equation\",\"mathml\":\"<math><mi>x</mi><mo>=</mo><msup><mi>y</mi><mn>2</mn></msup></math>\"}\n  supports token expressions, fractions, sub/superscripts, single-character fences, roots and rectangular matrices; other MathML is rejected (paperworks schema create-docx)",
 		Run: func(ctx context.Context, a Args) (any, error) {
 			if len(a.Pos) != 0 {
 				return nil, usagef("create-docx takes no positional arguments")

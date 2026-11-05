@@ -18,6 +18,7 @@ import (
 
 	"github.com/beevik/etree"
 	"github.com/openvibely/openvibely-paperworks/internal/docxtemplate"
+	"github.com/openvibely/openvibely-paperworks/internal/mathml"
 	"github.com/openvibely/openvibely-paperworks/internal/opc"
 	"github.com/openvibely/openvibely-paperworks/internal/xmlresource"
 )
@@ -51,6 +52,7 @@ type Block struct {
 	Path        string     `json:"path,omitempty"`
 	WidthIn     float64    `json:"width_in,omitempty"`
 	Description string     `json:"description,omitempty"`
+	MathML      string     `json:"mathml,omitempty"`
 }
 
 type Page struct {
@@ -261,9 +263,33 @@ func (b *builder) block(blk Block) error {
 		return b.table(blk)
 	case "image":
 		return b.image(blk, align)
+	case "equation":
+		return b.equation(blk, align)
 	default:
 		return fmt.Errorf("unsupported block type %q", blk.Type)
 	}
+	return nil
+}
+
+func (b *builder) equation(blk Block, align string) error {
+	if strings.TrimSpace(blk.MathML) == "" {
+		return errors.New("mathml is required for equation blocks")
+	}
+	x, err := opc.ParseXML([]byte(blk.MathML))
+	if err != nil {
+		return fmt.Errorf("invalid MathML: %w", err)
+	}
+	om, err := mathml.ToOMML(x.Root())
+	if err != nil {
+		return err
+	}
+	doc := etree.NewDocument()
+	doc.SetRoot(om)
+	omml, err := doc.WriteToBytes()
+	if err != nil {
+		return fmt.Errorf("serialize OMML equation: %w", err)
+	}
+	b.body.WriteString(para("", align, "", string(omml)))
 	return nil
 }
 
