@@ -82,9 +82,6 @@ func translateSharedFormula(formula string, dx, dy int) (string, error) {
 	}
 	for i := range tokens {
 		token := &tokens[i]
-		if token.TType == efp.TokenTypeOperand && token.TSubType == efp.TokenSubTypeText {
-			token.TValue = strings.ReplaceAll(token.TValue, `"`, `""`)
-		}
 		if token.TType != efp.TokenTypeOperand || token.TSubType != efp.TokenSubTypeRange {
 			continue
 		}
