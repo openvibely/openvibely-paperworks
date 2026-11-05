@@ -36,11 +36,24 @@ Sub Main
     Next i
     If HasUnoInterfaces(doc, "com.sun.star.text.XTextFieldsSupplier") Then doc.getTextFields().refresh()
   End If
+  Dim pageRange As String
+  pageRange = ""
+  If Environ("PW_VISIBLE_SHEETS") <> "" Then pageRange = VisiblePageRange(doc, Environ("PW_VISIBLE_SHEETS"))
   If Environ("PW_WHOLE_SHEETS") = "1" Then WholeSheets(doc)
-  Dim opts(1) As New com.sun.star.beans.PropertyValue
-  opts(0) = P("FilterName", Environ("PW_FILTER"))
-  opts(1) = P("Overwrite", False)
-  doc.storeToURL(Environ("PW_OUT"), opts())
+  If pageRange <> "" Then
+    Dim filterData(0) As New com.sun.star.beans.PropertyValue
+    Dim exportOptions(2) As New com.sun.star.beans.PropertyValue
+    filterData(0) = P("PageRange", pageRange)
+    exportOptions(0) = P("FilterName", Environ("PW_FILTER"))
+    exportOptions(1) = P("Overwrite", False)
+    exportOptions(2) = P("FilterData", filterData())
+    doc.storeToURL(Environ("PW_OUT"), exportOptions())
+  Else
+    Dim exportOptionsWithoutRange(1) As New com.sun.star.beans.PropertyValue
+    exportOptionsWithoutRange(0) = P("FilterName", Environ("PW_FILTER"))
+    exportOptionsWithoutRange(1) = P("Overwrite", False)
+    doc.storeToURL(Environ("PW_OUT"), exportOptionsWithoutRange())
+  End If
   Dim f As Integer
   f = FreeFile
   Open Environ("PW_STATUS") For Output As #f
@@ -54,6 +67,59 @@ Done:
   If Not IsNull(doc) And Not IsEmpty(doc) Then doc.close(True)
   StarDesktop.terminate()
 End Sub
+
+' Select exported PDF pages by their source worksheet. Calc can include
+' OOXML-hidden sheets in PDF output, so filter by the sheet index carried by
+' each renderer SourceRange instead of relying on visibility alone.
+Function VisiblePageRange(doc As Object, indexes As String) As String
+  Dim sheets As Object, sheetCount As Long, allowed() As Boolean, parts As Variant
+  Dim i As Long, j As Long, idx As Long, selected As Long, pageCount As Long
+  Dim rendererOptions(0) As New com.sun.star.beans.PropertyValue
+  Dim renderData As Variant, sourceRange As Variant, found As Boolean
+  Dim pageRange As String, firstPage As Long, lastPage As Long
+  sheets = doc.getSheets()
+  sheetCount = sheets.getCount()
+  If sheetCount = 0 Then Error 1002
+  ReDim allowed(sheetCount - 1)
+  parts = Split(indexes, ",")
+  For i = LBound(parts) To UBound(parts)
+    idx = Val(parts(i))
+    If idx >= 0 And idx < sheetCount Then allowed(idx) = True : selected = selected + 1
+  Next i
+  If selected = 0 Then Error 1003
+  rendererOptions(0) = P("SinglePageSheets", False)
+  pageCount = doc.getRendererCount(doc, rendererOptions())
+  If pageCount = 0 Then Error 1004
+  pageRange = "" : firstPage = -1 : lastPage = -1
+  For i = 0 To pageCount - 1
+    renderData = doc.getRenderer(i, doc, rendererOptions())
+    found = False
+    For j = LBound(renderData) To UBound(renderData)
+      If renderData(j).Name = "SourceRange" Then sourceRange = renderData(j).Value : found = True
+    Next j
+    If Not found Then Error 1005
+    If sourceRange.Sheet < 0 Or sourceRange.Sheet >= sheetCount Then Error 1006
+    If allowed(sourceRange.Sheet) Then
+      If firstPage < 0 Then firstPage = i + 1
+      lastPage = i + 1
+    ElseIf firstPage >= 0 Then
+      pageRange = AppendPageRun(pageRange, firstPage, lastPage)
+      firstPage = -1 : lastPage = -1
+    End If
+  Next i
+  If firstPage >= 0 Then pageRange = AppendPageRun(pageRange, firstPage, lastPage)
+  If pageRange = "" Then Error 1007
+  VisiblePageRange = pageRange
+End Function
+
+Function AppendPageRun(pageRange As String, firstPage As Long, lastPage As Long) As String
+  If pageRange <> "" Then pageRange = pageRange & ","
+  If firstPage = lastPage Then
+    AppendPageRun = pageRange & CStr(firstPage)
+  Else
+    AppendPageRun = pageRange & CStr(firstPage) & "-" & CStr(lastPage)
+  End If
+End Function
 
 ' Size each sheet's page to its content so headings and grids survive
 ' without page breaks; visibility is restored by page selection afterwards.

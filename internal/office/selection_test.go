@@ -180,9 +180,14 @@ func TestReferenceWorkbookPreviewRangeDependencies(t *testing.T) {
 	}
 }
 
-func TestReferenceWholeSheetIgnoresPrintArea(t *testing.T) {
+func TestReferenceWholeSheetPreservesPrintArea(t *testing.T) {
 	source := referenceOriginalWorkbookFixture(t, "worksheet-preview-fixtures.zip", "whole")
 	before := previewRead(t, source)
+	wantAreas := map[string]string{
+		"0": "'Report'!$A$1:$B$2",
+		"1": "'Other'!$A$1:$B$2",
+		"2": "'Hidden'!$A$1:$B$2",
+	}
 	for _, selected := range []string{"Report", ""} {
 		t.Run("sheet="+selected, func(t *testing.T) {
 			out := filepath.Join(t.TempDir(), "preview.xlsx")
@@ -205,10 +210,14 @@ func TestReferenceWholeSheetIgnoresPrintArea(t *testing.T) {
 				}
 			}
 			a, b := previewOpen(t, source), previewOpen(t, out)
+			gotAreas := map[string]string{}
 			for _, n := range All(previewXML(t, b, "xl/workbook.xml"), NSS, "definedName") {
 				if n.SelectAttrValue("name", "") == "_xlnm.Print_Area" {
-					t.Error("print area retained", n.Text())
+					gotAreas[n.SelectAttrValue("localSheetId", "")] = n.Text()
 				}
+			}
+			if !reflect.DeepEqual(gotAreas, wantAreas) {
+				t.Errorf("print areas = %#v, want %#v", gotAreas, wantAreas)
 			}
 			for _, n := range a.Names() {
 				if strings.HasPrefix(n, "xl/worksheets/sheet") && strings.HasSuffix(n, ".xml") {
@@ -233,6 +242,30 @@ func TestReferenceWholeSheetIgnoresPrintArea(t *testing.T) {
 			previewUnchanged(t, source, before)
 		})
 	}
+}
+
+func TestReferenceRangeOverridesOnlySelectedPrintArea(t *testing.T) {
+	source := referenceOriginalWorkbookFixture(t, "worksheet-preview-fixtures.zip", "whole")
+	before := previewRead(t, source)
+	out := filepath.Join(t.TempDir(), "preview.xlsx")
+	if err := WorkbookPreviewCopy(source, out, "Report", "B2:C3"); err != nil {
+		t.Fatal(err)
+	}
+	areas := map[string]string{}
+	for _, name := range All(previewXML(t, previewOpen(t, out), "xl/workbook.xml"), NSS, "definedName") {
+		if name.SelectAttrValue("name", "") == "_xlnm.Print_Area" {
+			areas[name.SelectAttrValue("localSheetId", "")] = name.Text()
+		}
+	}
+	want := map[string]string{
+		"0": "Report!$B$2:$C$3",
+		"1": "'Other'!$A$1:$B$2",
+		"2": "'Hidden'!$A$1:$B$2",
+	}
+	if !reflect.DeepEqual(areas, want) {
+		t.Fatalf("print areas = %#v, want %#v", areas, want)
+	}
+	previewUnchanged(t, source, before)
 }
 
 func TestReferenceWholeSheetUsesViewSettings(t *testing.T) {

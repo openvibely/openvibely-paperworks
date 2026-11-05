@@ -9,10 +9,11 @@ import (
 	"testing"
 
 	"github.com/openvibely/openvibely-paperworks/internal/pdf"
+	"github.com/xuri/excelize/v2"
 )
 
-// Original runtime lines 785-835: print areas must not truncate whole-sheet
-// previews, and hidden/empty sheets must not shift selected sheet indexes.
+// Original runtime lines 785-835: whole-sheet preview sizing disregards print
+// areas, while hidden/empty sheets must not shift selected sheet indexes.
 func TestReferenceStandaloneRuntimeWholeSheetScope(t *testing.T) {
 	referenceRuntimeOffice(t)
 	src := referenceRuntimeOriginalWorkbookFixture(t, "runtime-workflow-fixtures.zip", "whole-sheet")
@@ -46,6 +47,85 @@ func TestReferenceStandaloneRuntimeWholeSheetScope(t *testing.T) {
 				}
 			})
 		})
+	}
+}
+
+func TestReferenceStandaloneRuntimeConvertPreservesPrintAreaSelections(t *testing.T) {
+	referenceRuntimeOffice(t)
+	source := referenceRuntimeOriginalWorkbookFixture(t, "runtime-workflow-fixtures.zip", "whole-sheet")
+	before := contents(t, source)
+	for _, tc := range []struct {
+		name, sheet, cellRange string
+	}{
+		{name: "default"},
+		{name: "sheet-only", sheet: "Report"},
+		{name: "sheet-range-override", sheet: "Report", cellRange: "A1:D20"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			out := filepath.Join(t.TempDir(), "pdf-output")
+			result, err := Convert(context.Background(), source, out, Options{Sheet: tc.sheet, CellRange: tc.cellRange})
+			if err != nil {
+				t.Fatal(err)
+			}
+			pages := referenceRuntimePDFTexts(t, contents(t, result["output"].(string)))
+			text := strings.Join(pages, "\n")
+			if !strings.Contains(text, "PRINTED") {
+				t.Errorf("saved print area content missing: %s", text)
+			}
+			if tc.cellRange == "" {
+				if strings.Contains(text, "OUTSIDE_PRINT_AREA") || strings.Contains(text, "OTHER_OUTSIDE") {
+					t.Errorf("content outside saved print areas was exported: %s", text)
+				}
+			} else if !strings.Contains(text, "OUTSIDE_PRINT_AREA") {
+				t.Errorf("explicit range did not override saved print area: %s", text)
+			}
+			if tc.sheet != "" {
+				if strings.Contains(text, "OTHER_SHEET") || strings.Contains(text, "OTHER_OUTSIDE") {
+					t.Errorf("another worksheet leaked into selected conversion: %s", text)
+				}
+			} else if !strings.Contains(text, "OTHER_SHEET") {
+				t.Errorf("second visible worksheet missing: %s", text)
+			}
+			if !bytes.Equal(before, contents(t, source)) {
+				t.Error("source workbook changed")
+			}
+		})
+	}
+}
+
+func TestReferenceStandaloneRuntimeWorkbookWithoutPrintAreasUsesUsedRange(t *testing.T) {
+	referenceRuntimeOffice(t)
+	dir := t.TempDir()
+	f := excelize.NewFile()
+	t.Cleanup(func() { _ = f.Close() })
+	if err := f.SetCellValue("Sheet1", "A1", "USED_START"); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.SetCellValue("Sheet1", "C8", "USED_END"); err != nil {
+		t.Fatal(err)
+	}
+	source := filepath.Join(dir, "no-print-area.xlsx")
+	if err := f.SaveAs(source); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range f.GetDefinedName() {
+		if name.Name == "_xlnm.Print_Area" {
+			t.Fatal("fixture unexpectedly has a saved print area")
+		}
+	}
+	before := contents(t, source)
+	out := filepath.Join(dir, "pdf-output")
+	result, err := Convert(context.Background(), source, out, Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	pages := referenceRuntimePDFTexts(t, contents(t, result["output"].(string)))
+	text := strings.Join(pages, "\n")
+	if len(pages) == 0 || !strings.Contains(text, "USED_START") || !strings.Contains(text, "USED_END") {
+		t.Fatalf("used range was not exported: %q", text)
+	}
+	if !bytes.Equal(before, contents(t, source)) {
+		t.Fatal("source workbook changed")
 	}
 }
 

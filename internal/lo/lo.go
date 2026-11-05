@@ -18,6 +18,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 
@@ -547,6 +548,18 @@ func Refresh(ctx context.Context, src, dst string, wholeSheets bool) error {
 	env := []string{"PW_IN=" + FileURL(src), "PW_OUT=" + FileURL(staged), "PW_FILTER=" + filter, "PW_STATUS=" + status}
 	if wholeSheets {
 		env = append(env, "PW_WHOLE_SHEETS=1")
+	} else if strings.EqualFold(filepath.Ext(src), ".xlsx") && strings.EqualFold(filepath.Ext(dst), ".pdf") {
+		_, visible, err := office.VisibleSheetIndexes(src)
+		if err == nil {
+			if len(visible) == 0 {
+				return errors.New("no visible worksheet to export")
+			}
+			indexes := make([]string, len(visible))
+			for i, index := range visible {
+				indexes[i] = strconv.Itoa(index)
+			}
+			env = append(env, "PW_VISIBLE_SHEETS="+strings.Join(indexes, ","))
+		}
 	}
 	if err := s.run(ctx, env, "macro:///Standard.Module1.Main"); err != nil {
 		return err

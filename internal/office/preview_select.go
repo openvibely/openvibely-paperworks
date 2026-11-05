@@ -72,9 +72,9 @@ func QuoteSheet(name string) string {
 	return "'" + strings.ReplaceAll(name, "'", "''") + "'"
 }
 
-// WorkbookPreviewCopy prepares a disposable workbook copy whose printable
-// scope is the selected sheet (and optionally an A1 range sized onto custom
-// paper). Cells, formulas and drawings are untouched.
+// WorkbookPreviewCopy prepares a disposable workbook copy for PDF preview.
+// Saved print areas are preserved unless cellRange explicitly overrides the
+// selected sheet's print area. Cells, formulas and drawings are untouched.
 func WorkbookPreviewCopy(src, dst, sheet, cellRange string) error {
 	if cellRange != "" && sheet == "" {
 		return errors.New("spreadsheet preview selection requires XLSX and --sheet")
@@ -112,13 +112,6 @@ func WorkbookPreviewCopy(src, dst, sheet, cellRange string) error {
 		}
 	}
 	names := Child(root, NSS, "definedNames")
-	if names != nil {
-		for _, n := range Children(names, NSS, "definedName") {
-			if n.SelectAttrValue("name", "") == "_xlnm.Print_Area" {
-				names.RemoveChild(n)
-			}
-		}
-	}
 	rels, err := p.Rels("xl/workbook.xml")
 	if err != nil {
 		return err
