@@ -94,10 +94,11 @@ func TestCachedOfficeProbeAndOverride(t *testing.T) {
 	}
 }
 
-func TestFindCachedOfficeDoesNotLaunchLibreOffice(t *testing.T) {
+func TestFindFastCachedOfficeDoesNotLaunchLibreOffice(t *testing.T) {
 	if runtime.GOOS != "darwin" && runtime.GOOS != "linux" {
 		t.Skip("supported cached-office platform fixture")
 	}
+	skipIfStandardOfficeInstalled(t)
 	root := t.TempDir()
 	cache := filepath.Join(root, "cache")
 	oldUserCacheDir := userCacheDir
@@ -116,12 +117,62 @@ func TestFindCachedOfficeDoesNotLaunchLibreOffice(t *testing.T) {
 	t.Setenv("PATH", emptyPath)
 	t.Setenv("DOCUMENT_SOFFICE", "")
 
-	got, err := Find()
+	got, err := FindFast()
 	if err != nil || got != path {
-		t.Fatalf("Find() = %q, %v; want cached executable %q", got, err, path)
+		t.Fatalf("FindFast() = %q, %v; want cached executable %q", got, err, path)
 	}
 	if _, err := os.Stat(marker); !os.IsNotExist(err) {
-		t.Fatalf("Find() launched cached LibreOffice; marker stat error = %v", err)
+		t.Fatalf("FindFast() launched cached LibreOffice; marker stat error = %v", err)
+	}
+}
+
+func TestFindFallsBackFromUnusableCachedOffice(t *testing.T) {
+	if runtime.GOOS != "darwin" && runtime.GOOS != "linux" {
+		t.Skip("supported cached-office platform fixture")
+	}
+	skipIfStandardOfficeInstalled(t)
+
+	root := t.TempDir()
+	cache := filepath.Join(root, "cache")
+	oldUserCacheDir := userCacheDir
+	userCacheDir = func() (string, error) { return cache, nil }
+	t.Cleanup(func() { userCacheDir = oldUserCacheDir })
+	platformPath := map[string]string{"darwin": "LibreOffice.app/Contents/MacOS/soffice", "linux": "program/soffice"}[runtime.GOOS]
+	newest := cachedFixture(t, cache, "26.10.0", runtime.GOOS, runtime.GOARCH, strings.Repeat("d", 64), platformPath)
+	older := cachedFixture(t, cache, "26.9.0", runtime.GOOS, runtime.GOARCH, strings.Repeat("e", 64), platformPath)
+	marker := filepath.Join(root, "probes")
+	t.Setenv("LO_CACHED_PROBE_MARKER", marker)
+	writeVersionScript(t, newest, `printf '%s\n' newest >> "$LO_CACHED_PROBE_MARKER"
+printf '%s\n' 'not LibreOffice'`)
+	writeVersionScript(t, older, `printf '%s\n' older >> "$LO_CACHED_PROBE_MARKER"
+printf '%s\n' 'LibreOffice 26.9.0'`)
+	emptyPath := filepath.Join(root, "empty-path")
+	if err := os.Mkdir(emptyPath, 0700); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PATH", emptyPath)
+	t.Setenv("DOCUMENT_SOFFICE", "")
+
+	got, err := Find()
+	if err != nil || got != older {
+		t.Fatalf("Find() = %q, %v; want older working executable %q", got, err, older)
+	}
+	probes, err := os.ReadFile(marker)
+	if err != nil || string(probes) != "newest\nolder\n" {
+		t.Fatalf("cached candidate probe sequence = %q, err = %v", probes, err)
+	}
+}
+
+func skipIfStandardOfficeInstalled(t *testing.T) {
+	t.Helper()
+	paths := []string{"/Applications/LibreOffice.app/Contents/MacOS/soffice"}
+	if runtime.GOOS == "linux" {
+		paths = []string{"/usr/lib/libreoffice/program/soffice", "/opt/libreoffice/program/soffice", "/usr/bin/soffice"}
+	}
+	for _, path := range paths {
+		if info, err := os.Stat(path); err == nil && !info.IsDir() {
+			t.Skipf("standard LibreOffice installation at %s takes precedence", path)
+		}
 	}
 }
 

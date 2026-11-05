@@ -35,8 +35,20 @@ const runTimeout = 180 * time.Second
 
 var userCacheDir = os.UserCacheDir
 
-// Find locates soffice via DOCUMENT_SOFFICE, PATH, standard installs, then OV cache.
+// Find locates soffice via DOCUMENT_SOFFICE, PATH, standard installs, then OV
+// cache. Cached installations are probed so a broken newest entry does not
+// prevent fallback to an older working release.
 func Find() (string, error) {
+	return findOffice(probeCachedOffice)
+}
+
+// FindFast locates soffice without starting it. Use this for availability and
+// path reporting where executable validation is not required.
+func FindFast() (string, error) {
+	return findOffice(func(string) bool { return true })
+}
+
+func findOffice(cachedCandidate func(string) bool) (string, error) {
 	if p := os.Getenv("DOCUMENT_SOFFICE"); p != "" {
 		if st, err := os.Stat(p); err == nil && !st.IsDir() {
 			return p, nil
@@ -67,9 +79,7 @@ func Find() (string, error) {
 		}
 	}
 	if root, err := userCacheDir(); err == nil {
-		// The package layout and executable file checks are enough for discovery.
-		// Do not start LibreOffice just to report whether it is installed.
-		return findCachedOffice(root, runtime.GOOS, runtime.GOARCH, func(string) bool { return true })
+		return findCachedOffice(root, runtime.GOOS, runtime.GOARCH, cachedCandidate)
 	}
 	return "", ErrMissing
 }
@@ -78,10 +88,16 @@ func Find() (string, error) {
 // successful version probe is cached against the executable's path, content,
 // and modification time.
 func Version(ctx context.Context) string {
-	exe, err := Find()
+	exe, err := FindFast()
 	if err != nil {
 		return ""
 	}
+	return VersionForExecutable(ctx, exe)
+}
+
+// VersionForExecutable returns the version for a path already selected by the
+// caller, using the executable-specific cache when available.
+func VersionForExecutable(ctx context.Context, exe string) string {
 	return versionForExecutable(ctx, exe, 60*time.Second)
 }
 
