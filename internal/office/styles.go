@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/beevik/etree"
 )
 
 // CellStyle is the subset of a cellXfs entry used for value exchange.
@@ -21,26 +23,66 @@ var (
 	dateCodeRe  = regexp.MustCompile(`[dmyhs]`)
 )
 
+type customNumberFormat struct {
+	id    int
+	idErr error
+}
+
+type cellNumberFormat struct {
+	xf         *etree.Element
+	id         int
+	idErr      error
+	customCode string
+	hasCustom  bool
+}
+
+type styleNumberFormatMetadata struct {
+	customFormats []customNumberFormat
+	cellFormats   []cellNumberFormat
+}
+
+// readStyleNumberFormatMetadata reads and connects custom number formats to
+// cellXfs. It retains ID parse errors so callers can apply their own validation.
+func readStyleNumberFormatMetadata(root *etree.Element, includeNestedCustomFormats bool) styleNumberFormatMetadata {
+	metadata := styleNumberFormatMetadata{}
+	customByID := map[int]string{}
+	var customFormats []*etree.Element
+	if includeNestedCustomFormats {
+		customFormats = All(Child(root, NSS, "numFmts"), NSS, "numFmt")
+	} else {
+		customFormats = Children(Child(root, NSS, "numFmts"), NSS, "numFmt")
+	}
+	for _, f := range customFormats {
+		id, err := strconv.Atoi(f.SelectAttrValue("numFmtId", ""))
+		code := f.SelectAttrValue("formatCode", "")
+		metadata.customFormats = append(metadata.customFormats, customNumberFormat{id: id, idErr: err})
+		customByID[id] = code
+	}
+	for _, xf := range Children(Child(root, NSS, "cellXfs"), NSS, "xf") {
+		id, err := strconv.Atoi(xf.SelectAttrValue("numFmtId", "0"))
+		code, hasCustom := customByID[id]
+		metadata.cellFormats = append(metadata.cellFormats, cellNumberFormat{
+			xf: xf, id: id, idErr: err, customCode: code, hasCustom: hasCustom,
+		})
+	}
+	return metadata
+}
+
 // Styles reads cellXfs number-format date flags and horizontal alignment.
 func (wb *Workbook) Styles() []CellStyle {
 	doc, err := wb.Pkg.XML("xl/styles.xml")
 	if err != nil {
 		return nil
 	}
-	custom := map[int]string{}
-	for _, f := range All(Child(doc.Root(), NSS, "numFmts"), NSS, "numFmt") {
-		id, _ := strconv.Atoi(f.SelectAttrValue("numFmtId", ""))
-		custom[id] = f.SelectAttrValue("formatCode", "")
-	}
+	metadata := readStyleNumberFormatMetadata(doc.Root(), true)
 	var out []CellStyle
-	for _, xf := range Children(Child(doc.Root(), NSS, "cellXfs"), NSS, "xf") {
-		id, _ := strconv.Atoi(xf.SelectAttrValue("numFmtId", "0"))
-		date := builtinDateFormats[id]
-		if code, ok := custom[id]; ok {
-			stripped := strings.ToLower(fmtQuotedRe.ReplaceAllString(code, ""))
+	for _, format := range metadata.cellFormats {
+		date := builtinDateFormats[format.id]
+		if format.hasCustom {
+			stripped := strings.ToLower(fmtQuotedRe.ReplaceAllString(format.customCode, ""))
 			date = dateCodeRe.MatchString(stripped)
 		}
-		out = append(out, CellStyle{Date: date, Horizontal: AttrOr(Child(xf, NSS, "alignment"), "horizontal", "")})
+		out = append(out, CellStyle{Date: date, Horizontal: AttrOr(Child(format.xf, NSS, "alignment"), "horizontal", "")})
 	}
 	return out
 }

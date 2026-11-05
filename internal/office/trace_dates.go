@@ -47,23 +47,20 @@ func (wb *Workbook) traceDateStyles() ([]traceDateStyle, error) {
 	if err != nil {
 		return nil, err
 	}
-	custom := map[int]string{}
-	for _, f := range Children(Child(d.Root(), NSS, "numFmts"), NSS, "numFmt") {
-		id, err := strconv.Atoi(f.SelectAttrValue("numFmtId", ""))
-		if err != nil {
+	metadata := readStyleNumberFormatMetadata(d.Root(), false)
+	for _, format := range metadata.customFormats {
+		if format.idErr != nil {
 			return nil, fmt.Errorf("invalid number format ID")
 		}
-		custom[id] = f.SelectAttrValue("formatCode", "")
 	}
 	var out []traceDateStyle
-	for _, xf := range Children(Child(d.Root(), NSS, "cellXfs"), NSS, "xf") {
-		id, err := strconv.Atoi(xf.SelectAttrValue("numFmtId", "0"))
-		if err != nil {
-			return nil, err
+	for _, format := range metadata.cellFormats {
+		if format.idErr != nil {
+			return nil, format.idErr
 		}
-		style := traceDateStyle{date: builtinDateFormats[id], elapsed: id == 46}
-		if code, ok := custom[id]; ok {
-			style = traceCustomDateStyle(code)
+		style := traceDateStyle{date: builtinDateFormats[format.id], elapsed: format.id == 46}
+		if format.hasCustom {
+			style = traceCustomDateStyle(format.customCode)
 		}
 		out = append(out, style)
 	}
