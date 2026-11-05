@@ -111,8 +111,8 @@ func presentationHasExtendedChart(p *opc.Package, slides []string) (bool, error)
 // RenderFile renders a PDF or Office file to PNG pages, reusing an existing output directory if present.
 func RenderFile(ctx context.Context, path, output, sheet, cellRange string, opt pdf.RenderOptions) ([]string, error) {
 	e := ext(path)
-	if (sheet != "" || cellRange != "") && (e != ".xlsx" || sheet == "") {
-		return nil, errors.New("preview selection requires XLSX and --sheet")
+	if err := validatePreviewSelection(e, sheet, cellRange); err != nil {
+		return nil, err
 	}
 	if err := opt.Validate(); err != nil {
 		return nil, err

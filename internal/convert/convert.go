@@ -28,6 +28,13 @@ const Engine = "LibreOffice; compare critical formulas with the target spreadshe
 
 func ext(p string) string { return strings.ToLower(filepath.Ext(p)) }
 
+func validatePreviewSelection(fileExt, sheet, cellRange string) error {
+	if (sheet != "" || cellRange != "") && (fileExt != ".xlsx" || sheet == "") {
+		return errors.New("preview selection requires XLSX and --sheet")
+	}
+	return nil
+}
+
 func stem(p string) string { return strings.TrimSuffix(filepath.Base(p), filepath.Ext(p)) }
 
 func externalResources(report office.Report) bool {
@@ -47,8 +54,11 @@ func Convert(ctx context.Context, path, output string, o Options) (response map[
 	if e != ".docx" && e != ".xlsx" && e != ".pptx" {
 		return nil, errors.New("convert an explicit DOCX/XLSX/PPTX copy; other formats need a separate workflow")
 	}
-	if (o.Sheet != "" || o.CellRange != "") && (e != ".xlsx" || o.Sheet == "" || o.Recalculate || o.Refresh) {
-		return nil, errors.New("preview selection requires XLSX rendering and --sheet")
+	if err := validatePreviewSelection(e, o.Sheet, o.CellRange); err != nil {
+		return nil, err
+	}
+	if (o.Sheet != "" || o.CellRange != "") && (o.Recalculate || o.Refresh) {
+		return nil, errors.New("preview selection cannot be combined with recalculation or refresh")
 	}
 	if o.WholeSheets && (e != ".xlsx" || o.Recalculate || o.Refresh || o.CellRange != "") {
 		return nil, errors.New("whole-sheet sizing requires XLSX preview without a range")
