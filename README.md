@@ -120,10 +120,11 @@ combined across runs, so formatting-only edits remain in the visual diff.
 
 PPTX slide matching uses unique combined-text fingerprints first, then unique
 presentation slide IDs. Remaining slides pair by order only in corresponding
-gaps with equal slide counts and no known reordering; otherwise they are
-reported as added or removed. Shapes match by unique ID, name, or combined text,
-then by order when a missing shape ID leaves equal unmatched counts. The JSON
-report includes the matching rules used for interpreting slide changes.
+gaps with equal counts, no known reordering, and at least one missing slide ID
+per pair. Slides with different available IDs are reported as removed or added.
+Shapes match by unique ID, name, or combined text, then by order when a missing
+shape ID leaves equal unmatched counts. The JSON report includes the matching
+rules used for interpreting slide changes.
 
 ### Combine PDFs
 

@@ -52,7 +52,7 @@ type pptxShapePair struct {
 	after  int
 }
 
-const pptxSlideMatchingDescription = "Slides pair first by a unique fingerprint of their combined text (which supports reordering), then by a unique persistent presentation slide ID. Remaining slides pair in presentation order only within corresponding gaps when the gap counts agree and known matches are not reordered. Otherwise they are reported as removed or added. Shapes pair by unique ID, then unique name, then unique identical combined text, then presentation order for unmatched shapes with a missing ID when the remaining gap counts agree. Text is concatenated in XML reading order, with paragraph and explicit line-break boundaries retained."
+const pptxSlideMatchingDescription = "Slides pair first by a unique fingerprint of their combined text (which supports reordering), then by a unique persistent presentation slide ID. Remaining slides pair in presentation order only within corresponding gaps when the gap counts agree, known matches are not reordered, and at least one slide ID is missing in each fallback pair. Unmatched slides with different available IDs are reported as removed or added. Shapes pair by unique ID, then unique name, then unique identical combined text, then presentation order for unmatched shapes with a missing ID when the remaining gap counts agree. Text is concatenated in XML reading order, with paragraph and explicit line-break boundaries retained."
 
 func pptxPresentationPart(pkg *opc.Package) (string, error) {
 	rels, err := pkg.Rels("")
@@ -310,7 +310,12 @@ func matchPPTXSlides(before, after []pptxTextSlide) ([]pptxSlidePair, []int, []i
 			}
 			if len(beforeGap) == len(afterGap) {
 				for j := range beforeGap {
-					pair(beforeGap[j], afterGap[j])
+					bi, ai := beforeGap[j], afterGap[j]
+					// Different available slide IDs identify separate slides. Positional
+					// fallback is only safe when at least one side lacks an ID.
+					if before[bi].ID == "" || after[ai].ID == "" {
+						pair(bi, ai)
+					}
 				}
 			}
 		}

@@ -215,6 +215,35 @@ func TestComparePPTXSlideInsertionAndReordering(t *testing.T) {
 	}
 }
 
+func TestComparePPTXSameGapReplacementReportsSlideRemovalAndAddition(t *testing.T) {
+	before := []comparePPTXSlide{
+		{id: "256", shapes: []comparePPTXShape{{id: "2", name: "A", runs: []string{"Alpha"}}}},
+		{id: "257", shapes: []comparePPTXShape{{id: "2", name: "B", runs: []string{"Beta"}}}},
+	}
+	after := []comparePPTXSlide{
+		{id: "256", shapes: []comparePPTXShape{{id: "2", name: "A", runs: []string{"Alpha"}}}},
+		{id: "258", shapes: []comparePPTXShape{{id: "2", name: "Replacement", runs: []string{"Xray"}}}},
+	}
+	changes, diff := comparePPTXText(t, before, after)
+	if len(changes) != 2 {
+		t.Fatalf("got %d changes: %#v", len(changes), changes)
+	}
+	removed, added := false, false
+	for _, change := range changes {
+		switch change.Status {
+		case "removed":
+			removed = change.BeforeSlide == 2 && change.BeforeShapeID == "2" && change.Before == "Beta" && change.After == ""
+		case "added":
+			added = change.AfterSlide == 2 && change.AfterShapeID == "2" && change.After == "Xray" && change.Before == ""
+		case "changed":
+			t.Errorf("different-ID slides were paired as a text edit: %#v", change)
+		}
+	}
+	if !removed || !added || !strings.Contains(diff, "slide 2 removed shape id=2") || !strings.Contains(diff, "slide 2 added shape id=2") {
+		t.Fatalf("same-gap replacement was not reported as removal plus addition: %#v diff=%q", changes, diff)
+	}
+}
+
 func TestComparePPTXReorderedSlidesPreferTextIdentityOverSlideIDs(t *testing.T) {
 	before := []comparePPTXSlide{
 		{id: "256", shapes: []comparePPTXShape{{id: "2", runs: []string{"Alpha"}}}},
