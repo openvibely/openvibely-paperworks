@@ -58,7 +58,7 @@ func styleTextBox(shape *etree.Element, style *TextBoxStyle) error {
 			if !finite(*v.value) || *v.value < 0 || *v.value > 1000 {
 				return fmt.Errorf("text insets must be 0..1000 points")
 			}
-			pr.CreateAttr(v.name, strconv.FormatInt(int64(*v.value*12700), 10))
+			pr.CreateAttr(v.name, strconv.FormatInt(pointsToEMU(*v.value, truncatePointEMU), 10))
 		}
 	}
 	if style.AutoFit != "" {

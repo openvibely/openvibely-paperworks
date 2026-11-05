@@ -112,10 +112,10 @@ func formatTable(pkg *opc.Package, part string, shape *etree.Element, s *TableFo
 			return fmt.Errorf("table sizes must cover the complete axis")
 		}
 		for i, v := range axis.values {
-			if !finite(v) || v <= 0 || v > 100000 || math.Round(v*12700) < 1 {
+			if !finite(v) || v <= 0 || v > 100000 || pointsToEMU(v, roundPointEMU) < 1 {
 				return fmt.Errorf("invalid table size in points")
 			}
-			axis.els[i].CreateAttr(axis.attr, strconv.FormatInt(int64(math.Round(v*12700)), 10))
+			axis.els[i].CreateAttr(axis.attr, strconv.FormatInt(pointsToEMU(v, roundPointEMU), 10))
 		}
 	}
 	for _, c := range s.Cells {
@@ -161,7 +161,7 @@ func formatTable(pkg *opc.Package, part string, shape *etree.Element, s *TableFo
 					if !finite(*v.value) || *v.value < 0 || *v.value > 1000 {
 						return fmt.Errorf("invalid cell margin")
 					}
-					pr.CreateAttr(v.key, strconv.FormatInt(int64(*v.value*12700), 10))
+					pr.CreateAttr(v.key, strconv.FormatInt(pointsToEMU(*v.value, truncatePointEMU), 10))
 				}
 			}
 		}

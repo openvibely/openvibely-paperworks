@@ -69,7 +69,7 @@ func paintTextProperties(pr *etree.Element, s *TextPaint) error {
 		}
 		line := etree.NewElement("a:ln")
 		line.CreateAttr("xmlns:a", ans)
-		line.CreateAttr("w", strconv.FormatInt(int64(o.Width*12700), 10))
+		line.CreateAttr("w", strconv.FormatInt(pointsToEMU(o.Width, truncatePointEMU), 10))
 		if o.Width == 0 {
 			line.CreateElement("a:noFill")
 		} else {

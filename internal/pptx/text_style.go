@@ -54,7 +54,7 @@ func styleParagraph(p *etree.Element, s *ParagraphStyle) error {
 			if !finite(*v.value) || *v.value < -1000 || *v.value > 1000 {
 				return fmt.Errorf("invalid indent/margin")
 			}
-			pr.CreateAttr(v.tag, strconv.FormatInt(int64(*v.value*12700), 10))
+			pr.CreateAttr(v.tag, strconv.FormatInt(pointsToEMU(*v.value, truncatePointEMU), 10))
 		}
 	}
 	insert := func(e *etree.Element) {

@@ -115,7 +115,7 @@ func drawingElement(id int, e Element) (string, error) {
 			}
 		}
 		line := pr.CreateElement("a:ln")
-		line.CreateAttr("w", "12700")
+		line.CreateAttr("w", strconv.FormatInt(pointsToEMU(1, truncatePointEMU), 10))
 		line.CreateElement("a:solidFill").CreateElement("a:srgbClr").CreateAttr("val", "000000")
 	} else {
 		if len(e.Commands) == 0 || len(e.Commands) > 10000 {
@@ -287,7 +287,7 @@ func styleDrawing(shape *etree.Element, s *DrawingStyle) error {
 			pr.RemoveChild(old)
 		}
 		line := etree.NewElement("a:ln")
-		line.CreateAttr("w", strconv.FormatInt(int64(l.Width*12700), 10))
+		line.CreateAttr("w", strconv.FormatInt(pointsToEMU(l.Width, truncatePointEMU), 10))
 		if l.Cap != "" {
 			cap := map[string]string{"flat": "flat", "round": "rnd", "square": "sq"}[l.Cap]
 			if cap == "" {
@@ -352,8 +352,8 @@ func styleDrawing(shape *etree.Element, s *DrawingStyle) error {
 		}
 		effects := etree.NewElement("a:effectLst")
 		shadow := effects.CreateElement("a:outerShdw")
-		shadow.CreateAttr("blurRad", strconv.FormatInt(int64(v.Blur*12700), 10))
-		shadow.CreateAttr("dist", strconv.FormatInt(int64(v.Distance*12700), 10))
+		shadow.CreateAttr("blurRad", strconv.FormatInt(pointsToEMU(v.Blur, truncatePointEMU), 10))
+		shadow.CreateAttr("dist", strconv.FormatInt(pointsToEMU(v.Distance, truncatePointEMU), 10))
 		angle := int64(v.Direction*60000) % 21600000
 		if angle < 0 {
 			angle += 21600000
