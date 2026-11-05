@@ -409,7 +409,10 @@ func (p *Package) Rels(part string) ([]Relationship, error) {
 // Relative returns a relative relationship target from source to target.
 // It preserves the supplied target without encoding or normalization.
 func Relative(source, target string) string {
-	fromDir := strings.Split(path.Dir(source), "/")
+	fromDir := []string{}
+	if dir := path.Dir(source); dir != "." {
+		fromDir = strings.Split(dir, "/")
+	}
 	toParts := strings.Split(target, "/")
 	i := 0
 	for i < len(fromDir) && i < len(toParts)-1 && fromDir[i] == toParts[i] {

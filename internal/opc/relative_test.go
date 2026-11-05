@@ -27,13 +27,26 @@ func TestRelative(t *testing.T) {
 	}
 }
 
+func TestRelativeRootLevelRoundTrip(t *testing.T) {
+	const source = "custom.xml"
+	const target = "media/logo.png"
+
+	got := Relative(source, target)
+	if got != target {
+		t.Fatalf("Relative(%q, %q) = %q, want %q", source, target, got, target)
+	}
+	if resolved := Resolve(source, got); resolved != target {
+		t.Fatalf("Resolve(%q, %q) = %q, want %q", source, got, resolved, target)
+	}
+}
+
 func TestRelativePreservesExistingPathBehavior(t *testing.T) {
 	for _, tt := range []struct {
 		source, target, want string
 	}{
-		// Preserve the existing helpers' treatment of path.Dir(source) == ".".
-		{"document.xml", "media/a.png", "../media/a.png"},
-		{"", "word/document.xml", "../word/document.xml"},
+		// Root-level sources have no directory segments.
+		{"document.xml", "media/a.png", "media/a.png"},
+		{"", "word/document.xml", "word/document.xml"},
 		{"word/document.xml", "word/media/a b%20.png", "media/a b%20.png"},
 		{"word/document.xml", "word/media/../a.png", "media/../a.png"},
 	} {
