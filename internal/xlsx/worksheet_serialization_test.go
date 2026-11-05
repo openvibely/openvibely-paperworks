@@ -5,11 +5,15 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
-	"github.com/openvibely/openvibely-paperworks/internal/opc"
-	"github.com/xuri/excelize/v2"
 	"os"
 	"path/filepath"
+	"strconv"
+	"strings"
 	"testing"
+
+	"github.com/beevik/etree"
+	"github.com/openvibely/openvibely-paperworks/internal/opc"
+	"github.com/xuri/excelize/v2"
 )
 
 func TestInstalledWorksheetReferenceBytes(t *testing.T) {
@@ -34,6 +38,25 @@ func TestInstalledWorksheetReferenceBytes(t *testing.T) {
 	if got := fmt.Sprintf("%x", sha256.Sum256(p.Get("xl/worksheets/sheet1.xml"))); got != "720d41cfcd5915abc6b5ea6b9f6a6fddad7362627b002f4fdae324dbd6d0a504" {
 		t.Fatalf("worksheet hash %s", got)
 	}
+	g, e := excelize.OpenFile(out)
+	if e != nil {
+		t.Fatal(e)
+	}
+	defer g.Close()
+	if got, e := g.GetCellValue("Revenue", "A2"); e != nil || got != "Subscriptions" {
+		t.Fatalf("Revenue!A2 = %q: %v", got, e)
+	}
+	if got, e := g.GetCellFormula("Revenue", "D4"); e != nil || got != "SUM(D2:D3)" {
+		t.Fatalf("Revenue!D4 formula = %q: %v", got, e)
+	}
+}
+
+func TestNormalizeWorksheetXMLPreservesCellContents(t *testing.T) {
+	raw := []byte(`<worksheet><sheetData><row r="1"><c r="A1" s="2"/><c r="B1" s="3"><v/></c><c r="C1" t="str"><f>1+2</f><v>3</v></c></row></sheetData></worksheet>`)
+	want := `<worksheet><sheetData><row r="1"><c r="A1" s="2"></c><c r="B1" s="3"><v></v></c><c r="C1" t="str"><f>1+2</f><v>3</v></c></row></sheetData></worksheet>`
+	if got := string(normalizeWorksheetXML(raw)); got != want {
+		t.Fatalf("normalized worksheet XML mismatch\n got: %s\nwant: %s", got, want)
+	}
 }
 
 func TestInlineWorksheetValuesAndFormulas(t *testing.T) {
@@ -42,8 +65,15 @@ func TestInlineWorksheetValuesAndFormulas(t *testing.T) {
 	if _, e := f.NewSheet("Second"); e != nil {
 		t.Fatal(e)
 	}
+	style, e := f.NewStyle(&excelize.Style{Font: &excelize.Font{Bold: true}})
+	if e != nil {
+		t.Fatal(e)
+	}
 	values := []string{"  spaced  ", "α & <β>", "=literal", "duplicate", "duplicate", "line\nbreak"}
 	for _, sheet := range []string{"Sheet1", "Second"} {
+		if e := f.SetCellStyle(sheet, "C2", "C2", style); e != nil {
+			t.Fatal(e)
+		}
 		for i, v := range values {
 			cell, _ := excelize.CoordinatesToCellName(1, i+1)
 			if e := f.SetCellStr(sheet, cell, v); e != nil {
@@ -62,8 +92,33 @@ func TestInlineWorksheetValuesAndFormulas(t *testing.T) {
 	if e != nil {
 		t.Fatal(e)
 	}
+	sheet, e := p.XML("xl/worksheets/sheet1.xml")
+	if e != nil {
+		t.Fatal(e)
+	}
+	var emptyCell *etree.Element
+	for _, cell := range sheet.Root().FindElements("sheetData/row/c") {
+		if cell.SelectAttrValue("r", "") == "C2" {
+			emptyCell = cell
+			break
+		}
+	}
+	if emptyCell == nil {
+		t.Fatal("styled empty cell C2 is missing")
+	}
+	emptyCell.CreateElement("v")
+	if e = p.SetXML("xl/worksheets/sheet1.xml", sheet); e != nil {
+		t.Fatal(e)
+	}
 	if e = serializeWorksheets(p); e != nil {
 		t.Fatal(e)
+	}
+	worksheetXML := string(p.Get("xl/worksheets/sheet1.xml"))
+	if !strings.Contains(worksheetXML, "<v></v>") || strings.Contains(worksheetXML, "<v/>") {
+		t.Fatalf("empty value element was not normalized: %s", worksheetXML)
+	}
+	if !strings.Contains(worksheetXML, `r="C2"`) || !strings.Contains(worksheetXML, "</c>") {
+		t.Fatalf("styled empty cell was not serialized with a closing tag: %s", worksheetXML)
 	}
 	out := filepath.Join(t.TempDir(), "inline.xlsx")
 	if e = p.SaveNew(out); e != nil {
@@ -85,5 +140,55 @@ func TestInlineWorksheetValuesAndFormulas(t *testing.T) {
 		if got, e := g.GetCellFormula(sheet, "B1"); e != nil || got != "1+2" {
 			t.Fatalf("formula %q %v", got, e)
 		}
+		if got, e := g.GetCellValue(sheet, "C2"); e != nil || got != "" {
+			t.Fatalf("styled empty cell %q: %v", got, e)
+		}
 	}
+}
+
+var worksheetXMLBenchmarkSink []byte
+
+func BenchmarkNormalizeWorksheetXML(b *testing.B) {
+	for _, count := range []int{1000, 5000, 10000} {
+		b.Run(fmt.Sprintf("styled_empty/%d", count), func(b *testing.B) {
+			raw := benchmarkWorksheetXML(count, false)
+			b.SetBytes(int64(len(raw)))
+			b.ReportAllocs()
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				worksheetXMLBenchmarkSink = normalizeWorksheetXML(raw)
+			}
+		})
+	}
+	b.Run("populated/10000", func(b *testing.B) {
+		raw := benchmarkWorksheetXML(10000, true)
+		b.SetBytes(int64(len(raw)))
+		b.ReportAllocs()
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			worksheetXMLBenchmarkSink = normalizeWorksheetXML(raw)
+		}
+	})
+}
+
+func benchmarkWorksheetXML(cells int, populated bool) []byte {
+	var xml strings.Builder
+	xml.Grow(cells * 56)
+	xml.WriteString(`<worksheet><sheetData>`)
+	for row := 1; row <= cells; row++ {
+		rowNumber := strconv.Itoa(row)
+		xml.WriteString(`<row r="`)
+		xml.WriteString(rowNumber)
+		xml.WriteString(`"><c r="A`)
+		xml.WriteString(rowNumber)
+		xml.WriteString(`" s="1"`)
+		if populated {
+			xml.WriteString(`><v>123</v></c>`)
+		} else {
+			xml.WriteString(`/>`)
+		}
+		xml.WriteString(`</row>`)
+	}
+	xml.WriteString(`</sheetData></worksheet>`)
+	return []byte(xml.String())
 }

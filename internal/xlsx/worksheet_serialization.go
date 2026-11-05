@@ -173,22 +173,7 @@ func serializeWorksheets(p *opc.Package) error {
 			return e
 		}
 		// lxml's streaming cell/value contexts emit explicit closing tags.
-		text := strings.ReplaceAll(string(raw), "<v/>", "<v></v>")
-		for start := 0; ; {
-			i := strings.Index(text[start:], "<c ")
-			if i < 0 {
-				break
-			}
-			i += start
-			j := strings.IndexByte(text[i:], '>') + i
-			if text[j-1] == '/' {
-				text = text[:j-1] + "></c>" + text[j+1:]
-				start = j + 4
-			} else {
-				start = j + 1
-			}
-		}
-		p.Set(part.Name, []byte(text))
+		p.Set(part.Name, normalizeWorksheetXML(raw))
 	}
 	// All worksheet cells have been expanded; retain no dangling shared-string link.
 	if p.Has("xl/sharedStrings.xml") {
@@ -209,6 +194,53 @@ func serializeWorksheets(p *opc.Package) error {
 		p.Remove("xl/sharedStrings.xml")
 	}
 	return nil
+}
+
+func normalizeWorksheetXML(raw []byte) []byte {
+	var normalized []byte
+	last := 0
+	for i := 0; i < len(raw); {
+		if raw[i] != '<' {
+			i++
+			continue
+		}
+		if i+4 <= len(raw) && raw[i+1] == 'v' && raw[i+2] == '/' && raw[i+3] == '>' {
+			if normalized == nil {
+				normalized = make([]byte, 0, len(raw)+len(raw)/4)
+			}
+			normalized = append(normalized, raw[last:i]...)
+			normalized = append(normalized, "<v></v>"...)
+			i += 4
+			last = i
+			continue
+		}
+		if i+3 <= len(raw) && raw[i+1] == 'c' && raw[i+2] == ' ' {
+			end := i + 3
+			for end < len(raw) && raw[end] != '>' {
+				end++
+			}
+			if end < len(raw) && raw[end-1] == '/' {
+				if normalized == nil {
+					normalized = make([]byte, 0, len(raw)+len(raw)/4)
+				}
+				normalized = append(normalized, raw[last:end-1]...)
+				normalized = append(normalized, "></c>"...)
+				end++
+				last = end
+				i = end
+				continue
+			}
+			if end < len(raw) {
+				i = end + 1
+				continue
+			}
+		}
+		i++
+	}
+	if normalized == nil {
+		return raw
+	}
+	return append(normalized, raw[last:]...)
 }
 
 func orderAttributes(e *etree.Element, names ...string) {
