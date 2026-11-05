@@ -42,7 +42,7 @@ func externalResources(report office.Report) bool {
 
 // Convert exports a DOCX/XLSX/PPTX to PDF (default), a recalculated XLSX, or a
 // refreshed copy in the same format, inside a new output directory.
-func Convert(ctx context.Context, path, output string, o Options) (map[string]any, error) {
+func Convert(ctx context.Context, path, output string, o Options) (response map[string]any, retErr error) {
 	e := ext(path)
 	if e != ".docx" && e != ".xlsx" && e != ".pptx" {
 		return nil, errors.New("convert an explicit DOCX/XLSX/PPTX copy; other formats need a separate workflow")
@@ -60,12 +60,25 @@ func Convert(ctx context.Context, path, output string, o Options) (map[string]an
 	if externalResources(report) {
 		return nil, errors.New("External resources require review/removal on a copy before conversion")
 	}
+	outputSucceeded := false
+	var outputIdentity os.FileInfo
 	if o.reuseOutput {
 		if err := os.MkdirAll(output, 0o755); err != nil {
 			return nil, err
 		}
-	} else if err := NewOutputDir(output); err != nil {
-		return nil, err
+	} else {
+		outputIdentity, err = createOutputDir(output)
+		if err != nil {
+			return nil, err
+		}
+		defer func() {
+			if outputSucceeded {
+				return
+			}
+			if cleanupErr := removeOwnedOutputDir(output, outputIdentity); cleanupErr != nil {
+				retErr = errors.Join(retErr, fmt.Errorf("clean failed conversion output: %w", cleanupErr))
+			}
+		}()
 	}
 	target := "pdf"
 	if o.Refresh {
@@ -160,6 +173,7 @@ func Convert(ctx context.Context, path, output string, o Options) (map[string]an
 		result = destination
 	}
 	if !o.Recalculate {
+		outputSucceeded = true
 		return map[string]any{"output": result, "visually_inspected": false}, nil
 	}
 	final, err := checkRecalculated(path, result, report)
@@ -167,6 +181,7 @@ func Convert(ctx context.Context, path, output string, o Options) (map[string]an
 		os.Remove(result)
 		return nil, err
 	}
+	outputSucceeded = true
 	return final, nil
 }
 
