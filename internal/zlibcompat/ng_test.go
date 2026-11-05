@@ -12,6 +12,93 @@ import (
 	"testing"
 )
 
+func TestZlibNGPageStreamMatchesBatch(t *testing.T) {
+	const rowBytes, rows = 701, 190
+	for _, tc := range []struct {
+		name string
+		fill func([]byte)
+	}{
+		{
+			name: "high-entropy",
+			fill: func(p []byte) {
+				state := uint32(0x12345678)
+				for i := range p {
+					state ^= state << 13
+					state ^= state >> 17
+					state ^= state << 5
+					p[i] = byte(state)
+				}
+			},
+		},
+		{
+			name: "repeated-background",
+			fill: func(p []byte) {
+				for i := range p {
+					p[i] = 0x7f
+				}
+			},
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			input := make([]byte, rowBytes*rows)
+			tc.fill(input)
+			want, err := ZlibNGPage(context.Background(), input, rowBytes)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var got bytes.Buffer
+			stream, err := NewZlibNGPageStream(context.Background(), &got, rowBytes)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for i := 0; i < len(input); i += rowBytes {
+				if err := stream.WriteRow(input[i : i+rowBytes]); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if err := stream.Close(); err != nil {
+				t.Fatal(err)
+			}
+			if !bytes.Equal(got.Bytes(), want) {
+				t.Fatalf("stream differs from batch: lengths %d/%d", got.Len(), len(want))
+			}
+		})
+	}
+}
+
+func TestZlibNGPageStreamShortWriter(t *testing.T) {
+	w := &ngShortWriter{limit: 2}
+	stream, err := NewZlibNGPageStream(context.Background(), w, 4)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i := 0; i < 100 && stream.err == nil; i++ {
+		if err := stream.WriteRow([]byte{1, 2, 3, 4}); err != nil {
+			if err != io.ErrShortWrite {
+				t.Fatal(err)
+			}
+			return
+		}
+	}
+	if err := stream.Close(); err != io.ErrShortWrite {
+		t.Fatalf("Close() = %v, want %v", err, io.ErrShortWrite)
+	}
+}
+
+type ngShortWriter struct {
+	limit int
+	bytes int
+}
+
+func (w *ngShortWriter) Write(p []byte) (int, error) {
+	if w.bytes >= w.limit {
+		return 0, nil
+	}
+	n := min(len(p), w.limit-w.bytes)
+	w.bytes += n
+	return n, nil
+}
+
 func TestPinnedNGRows(t *testing.T) {
 	testPinnedNG(t, "testdata/ng-rows.json", ZlibNGRows)
 }

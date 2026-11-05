@@ -200,6 +200,7 @@ type bitWriter struct {
 	data    []byte
 	pending uint64
 	bits    uint
+	total   int
 }
 
 func (w *bitWriter) put(v, n int) {
@@ -207,6 +208,7 @@ func (w *bitWriter) put(v, n int) {
 	w.bits += uint(n)
 	for w.bits >= 8 {
 		w.data = append(w.data, byte(w.pending))
+		w.total++
 		w.pending >>= 8
 		w.bits -= 8
 	}
@@ -214,6 +216,7 @@ func (w *bitWriter) put(v, n int) {
 func (w *bitWriter) align() {
 	if w.bits > 0 {
 		w.data = append(w.data, byte(w.pending))
+		w.total++
 		w.bits = 0
 		w.pending = 0
 	}
@@ -316,6 +319,7 @@ func writeTokenBlock(w *bitWriter, tokens []Token, input []byte, final bool) {
 		w.put(n, 16)
 		w.put(n^65535, 16)
 		w.data = append(w.data, input...)
+		w.total += len(input)
 		return
 	}
 	if staticBytes <= dynamicBytes {

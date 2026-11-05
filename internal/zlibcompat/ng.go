@@ -8,7 +8,9 @@ import (
 	"context"
 	"encoding/binary"
 	"fmt"
+	"hash"
 	"hash/adler32"
+	"io"
 )
 
 // ZlibNGRows reproduces the level-6/default-strategy/memLevel-8 row input
@@ -35,23 +37,130 @@ func ngRows(ctx context.Context, input []byte, rowBytes, outputSize, tokenLimit 
 	if rowBytes <= 0 || len(input)%rowBytes != 0 || len(input) > 256<<20 {
 		return nil, fmt.Errorf("zlibcompat: invalid row size or input exceeds 256 MiB")
 	}
-	s := &ngState{window: make([]byte, 65536+258), tokens: make([]Token, 0, tokenLimit), tokenLimit: tokenLimit, writer: &bitWriter{}, outputSize: outputSize}
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	s := newNGState(outputSize, tokenLimit, nil)
 	for i := 0; i < len(input); i += rowBytes {
 		if err := ctx.Err(); err != nil {
 			return nil, err
 		}
-		s.run(input[i:i+rowBytes], false)
+		if err := s.run(input[i:i+rowBytes], false); err != nil {
+			return nil, err
+		}
 	}
-	s.run(nil, true)
+	if err := s.run(nil, true); err != nil {
+		return nil, err
+	}
 	s.writer.align()
 	out := append([]byte{0x78, 0x9c}, s.writer.data...)
 	out = binary.BigEndian.AppendUint32(out, adler32.Checksum(input))
 	return out, nil
 }
 
+// ZlibNGPageStream compresses complete filtered rows using the pinned page PNG
+// schedule, writing completed DEFLATE blocks to w as they are produced.
+type ZlibNGPageStream struct {
+	ctx        context.Context
+	writer     io.Writer
+	state      *ngState
+	rowBytes   int
+	inputBytes int64
+	checksum   hash.Hash32
+	err        error
+	closed     bool
+}
+
+// NewZlibNGPageStream creates a streaming Pillow-compatible zlib encoder. The
+// caller must provide the same row boundaries as ZlibNGPage.
+func NewZlibNGPageStream(ctx context.Context, w io.Writer, rowBytes int) (*ZlibNGPageStream, error) {
+	if rowBytes <= 0 || w == nil {
+		return nil, fmt.Errorf("zlibcompat: invalid row size or writer")
+	}
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	if err := writeFull(w, []byte{0x78, 0x9c}); err != nil {
+		return nil, err
+	}
+	return &ZlibNGPageStream{
+		ctx: ctx, writer: w, state: newNGState(65536, 32767, w),
+		rowBytes: rowBytes, checksum: adler32.New(),
+	}, nil
+}
+
+// WriteRow adds one complete filtered row to the zlib stream.
+func (z *ZlibNGPageStream) WriteRow(row []byte) error {
+	if z.closed {
+		return fmt.Errorf("zlibcompat: stream is closed")
+	}
+	if z.err != nil {
+		return z.err
+	}
+	if len(row) != z.rowBytes || z.inputBytes+int64(len(row)) > 256<<20 {
+		z.err = fmt.Errorf("zlibcompat: invalid row size or input exceeds 256 MiB")
+		return z.err
+	}
+	if err := z.ctx.Err(); err != nil {
+		z.err = err
+		return err
+	}
+	_, _ = z.checksum.Write(row)
+	z.inputBytes += int64(len(row))
+	z.err = z.state.run(row, false)
+	return z.err
+}
+
+// Close finishes the DEFLATE stream and writes the Adler-32 trailer.
+func (z *ZlibNGPageStream) Close() error {
+	if z.closed {
+		return z.err
+	}
+	z.closed = true
+	if z.err != nil {
+		return z.err
+	}
+	if err := z.ctx.Err(); err != nil {
+		z.err = err
+		return err
+	}
+	if err := z.state.run(nil, true); err != nil {
+		z.err = err
+		return err
+	}
+	z.state.writer.align()
+	if err := z.state.drain(); err != nil {
+		z.err = err
+		return err
+	}
+	var trailer [4]byte
+	binary.BigEndian.PutUint32(trailer[:], z.checksum.Sum32())
+	z.err = writeFull(z.writer, trailer[:])
+	return z.err
+}
+
+func writeFull(w io.Writer, p []byte) error {
+	n, err := w.Write(p)
+	if err != nil {
+		return err
+	}
+	if n != len(p) {
+		return io.ErrShortWrite
+	}
+	return nil
+}
+
+func newNGState(outputSize, tokenLimit int, sink io.Writer) *ngState {
+	return &ngState{
+		window: make([]byte, 65536+258), tokens: make([]Token, 0, tokenLimit),
+		tokenLimit: tokenLimit, writer: &bitWriter{}, outputSize: outputSize, sink: sink,
+	}
+}
+
 type ngMatch struct{ start, length, pos, original int }
 type ngState struct {
 	outputSize, tokenLimit                          int
+	sink                                            io.Writer
 	window                                          []byte
 	head                                            [65536]int
 	prev                                            [32768]int
@@ -239,7 +348,7 @@ func (s *ngState) fizzle(c, n *ngMatch) {
 		*n = b
 	}
 }
-func (s *ngState) flush(final bool) {
+func (s *ngState) flush(final bool) error {
 	var raw []byte
 	if s.blockStart >= 0 {
 		raw = s.window[s.blockStart:s.pos]
@@ -247,14 +356,27 @@ func (s *ngState) flush(final bool) {
 	writeTokenBlock(s.writer, s.tokens, raw, final)
 	s.tokens = s.tokens[:0]
 	s.blockStart = s.pos
+	return s.drain()
 }
-func (s *ngState) run(in []byte, final bool) {
+
+func (s *ngState) drain() error {
+	if s.sink == nil || len(s.writer.data) == 0 {
+		return nil
+	}
+	if err := writeFull(s.sink, s.writer.data); err != nil {
+		return err
+	}
+	s.writer.data = s.writer.data[:0]
+	return nil
+}
+
+func (s *ngState) run(in []byte, final bool) error {
 	next := ngMatch{}
 	for {
 		if s.look < 262 {
 			s.fill(&in)
 			if s.look < 262 && !final {
-				return
+				return nil
 			}
 			if s.look == 0 {
 				break
@@ -285,13 +407,15 @@ func (s *ngState) run(in []byte, final bool) {
 		s.look -= current.length
 		s.pos += current.length
 		if len(s.tokens) >= s.tokenLimit {
-			before := len(s.writer.data) + 2
-			s.flush(false)
-			if s.outputSize > 0 && (len(s.writer.data)+2)/s.outputSize > before/s.outputSize {
+			before := s.writer.total + 2
+			if err := s.flush(false); err != nil {
+				return err
+			}
+			if s.outputSize > 0 && (s.writer.total+2)/s.outputSize > before/s.outputSize {
 				next = ngMatch{}
 			}
 		}
 	}
 	s.insert = min(s.pos, 2)
-	s.flush(true)
+	return s.flush(true)
 }

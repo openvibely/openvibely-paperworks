@@ -141,6 +141,50 @@ func TestPagePNGWriteBoundaries(t *testing.T) {
 	}
 }
 
+func TestPagePNGLargeHighEntropyPaddedStride(t *testing.T) {
+	const width, height = 1536, 1024
+	parent := image.NewRGBA(image.Rect(0, 0, width+2, height+2))
+	im := parent.SubImage(image.Rect(1, 1, width+1, height+1)).(*image.RGBA)
+	state := uint32(0x9e3779b9)
+	for y := im.Bounds().Min.Y; y < im.Bounds().Max.Y; y++ {
+		for x := im.Bounds().Min.X; x < im.Bounds().Max.X; x++ {
+			state ^= state << 13
+			state ^= state >> 17
+			state ^= state << 5
+			o := im.PixOffset(x, y)
+			im.Pix[o], im.Pix[o+1], im.Pix[o+2], im.Pix[o+3] = byte(state), byte(state>>8), byte(state>>16), 255
+		}
+	}
+
+	var out bytes.Buffer
+	if err := encodePagePNG(&out, im); err != nil {
+		t.Fatal(err)
+	}
+	decoded, err := png.Decode(bytes.NewReader(out.Bytes()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for y := 0; y < height; y += 31 {
+		for x := 0; x < width; x += 29 {
+			if got, want := color.RGBAModel.Convert(decoded.At(x, y)), im.At(x+1, y+1); got != want {
+				t.Fatalf("pixel %d,%d: got %v, want %v", x, y, got, want)
+			}
+		}
+	}
+
+	idatChunks := 0
+	for i := 8; i < out.Len(); {
+		n := int(binary.BigEndian.Uint32(out.Bytes()[i:]))
+		if string(out.Bytes()[i+4:i+8]) == "IDAT" {
+			idatChunks++
+		}
+		i += n + 12
+	}
+	if idatChunks < 2 {
+		t.Fatalf("high-entropy page emitted %d IDAT chunks, want multiple", idatChunks)
+	}
+}
+
 // Complete PNG captured from pinned Pillow 12.3.0, including multiple IDAT
 // chunks. This checks encoding independently of PDF rasterization.
 func TestPagePNGCompletePillow(t *testing.T) {
