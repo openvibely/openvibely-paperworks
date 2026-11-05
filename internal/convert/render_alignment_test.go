@@ -42,6 +42,38 @@ func alignmentPairs(pairs ...int) []image.Image {
 	return pages
 }
 
+func TestRGBAModelSampleMatchesConvert(t *testing.T) {
+	images := []draw.Image{
+		image.NewRGBA(image.Rect(0, 0, 3, 2)),
+		image.NewNRGBA(image.Rect(0, 0, 3, 2)),
+		image.NewGray(image.Rect(0, 0, 3, 2)),
+		image.NewRGBA64(image.Rect(0, 0, 3, 2)),
+		image.NewNRGBA64(image.Rect(0, 0, 3, 2)),
+	}
+	colors := []color.Color{
+		color.RGBA{R: 180, G: 40, B: 12, A: 128},
+		color.NRGBA{R: 240, G: 80, B: 20, A: 90},
+		color.Gray{Y: 80},
+		color.RGBA64{R: 32768, G: 16384, B: 8192, A: 32768},
+		color.NRGBA{R: 8, G: 220, B: 100, A: 0},
+		color.White,
+	}
+	for _, img := range images {
+		for i, c := range colors {
+			img.Set(i%3, i/3, c)
+		}
+		for y := 0; y < 2; y++ {
+			for x := 0; x < 3; x++ {
+				want := color.RGBAModel.Convert(img.At(x, y)).(color.RGBA)
+				r, g, b, a := rgbaModelSample(img, x, y)
+				if got := (color.RGBA{R: uint8(r), G: uint8(g), B: uint8(b), A: uint8(a)}); got != want {
+					t.Fatalf("%T sample (%d,%d) = %#v, want %#v", img, x, y, got, want)
+				}
+			}
+		}
+	}
+}
+
 func matched(before, after int) pageAlignment {
 	return pageAlignment{before: before, after: after, kind: pageMatch}
 }
@@ -85,6 +117,45 @@ func TestAlignPagesRepeatedIdenticalPagesAreDeterministic(t *testing.T) {
 		if got := alignPages(before, after); !reflect.DeepEqual(got, want) {
 			t.Fatalf("run %d alignment = %#v, want %#v", i, got, want)
 		}
+	}
+}
+
+func TestAlignPagesLargeBalancedShift(t *testing.T) {
+	const shift = 20
+	pageForID := func(id int) image.Image {
+		page := image.NewRGBA(image.Rect(0, 0, 48, 48))
+		x := uint32(id) + 0x9e3779b9
+		for y := 0; y < 48; y++ {
+			for px := 0; px < 48; px++ {
+				x ^= x << 13
+				x ^= x >> 17
+				x ^= x << 5
+				v := uint8(255 * (x & 1))
+				page.SetRGBA(px, y, color.RGBA{R: v, G: v, B: v, A: 255})
+			}
+		}
+		return page
+	}
+	before := make([]image.Image, 50)
+	for i := range before {
+		before[i] = pageForID(i + 1)
+	}
+	after := append([]image.Image(nil), before[shift:]...)
+	for i := 0; i < shift; i++ {
+		after = append(after, pageForID(100+i))
+	}
+	want := make([]pageAlignment, 0, len(before)+shift)
+	for i := 0; i < shift; i++ {
+		want = append(want, removed(i))
+	}
+	for i := shift; i < len(before); i++ {
+		want = append(want, matched(i, i-shift))
+	}
+	for i := len(before) - shift; i < len(after); i++ {
+		want = append(want, added(i))
+	}
+	if got := alignPages(before, after); !reflect.DeepEqual(got, want) {
+		t.Fatalf("alignment = %#v, want %#v", got, want)
 	}
 }
 

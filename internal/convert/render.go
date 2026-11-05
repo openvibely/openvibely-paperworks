@@ -222,6 +222,27 @@ const pageFeatureSamples = 4
 
 type pageFeature [pageFeatureGrid * pageFeatureGrid * 3]uint8
 
+func rgbaModelSample(img image.Image, x, y int) (r, g, b, a uint32) {
+	switch img := img.(type) {
+	case *image.RGBA:
+		i := img.PixOffset(x, y)
+		return uint32(img.Pix[i]), uint32(img.Pix[i+1]), uint32(img.Pix[i+2]), uint32(img.Pix[i+3])
+	case *image.NRGBA:
+		i := img.PixOffset(x, y)
+		a := uint32(img.Pix[i+3])
+		premultiply := func(channel uint8) uint32 {
+			return (uint32(channel) * 257 * a / 255) >> 8
+		}
+		return premultiply(img.Pix[i]), premultiply(img.Pix[i+1]), premultiply(img.Pix[i+2]), a
+	}
+	c := img.At(x, y)
+	if rgba, ok := c.(color.RGBA); ok {
+		return uint32(rgba.R), uint32(rgba.G), uint32(rgba.B), uint32(rgba.A)
+	}
+	r, g, b, a = c.RGBA()
+	return r >> 8, g >> 8, b >> 8, a >> 8
+}
+
 type pageAlignment struct {
 	before int
 	after  int
@@ -251,11 +272,11 @@ func pageImageFeature(img image.Image) pageFeature {
 				for sx := 0; sx < pageFeatureSamples; sx++ {
 					x := bounds.Min.X + ((gx*pageFeatureSamples+sx)*width+width/2)/(pageFeatureGrid*pageFeatureSamples)
 					y := bounds.Min.Y + ((gy*pageFeatureSamples+sy)*height+height/2)/(pageFeatureGrid*pageFeatureSamples)
-					c := color.RGBAModel.Convert(img.At(x, y)).(color.RGBA)
-					alpha := uint32(c.A)
-					sums[0] += (uint32(c.R)*alpha + 255*(255-alpha)) / 255
-					sums[1] += (uint32(c.G)*alpha + 255*(255-alpha)) / 255
-					sums[2] += (uint32(c.B)*alpha + 255*(255-alpha)) / 255
+					r, g, b, a := rgbaModelSample(img, x, y)
+					alpha := uint32(a)
+					sums[0] += (r*alpha + 255*(255-alpha)) / 255
+					sums[1] += (g*alpha + 255*(255-alpha)) / 255
+					sums[2] += (b*alpha + 255*(255-alpha)) / 255
 				}
 			}
 			i := (gy*pageFeatureGrid + gx) * 3
@@ -283,8 +304,9 @@ func pageFeatureDistance(a, b pageFeature) float64 {
 // alignPages uses global sequence alignment with image distance as the match
 // cost and a fixed cost for inserted or removed pages. Ties prefer matching
 // earlier pages, which makes runs of identical pages stable across comparisons.
+// Similarity is evaluated inside an adaptive diagonal corridor; large shifts
+// widen the corridor and eventually use the full dynamic program.
 func alignPages(before, after []image.Image) []pageAlignment {
-	const gapCost = 0.55
 	n, m := len(before), len(after)
 	beforeFeatures := make([]pageFeature, n)
 	afterFeatures := make([]pageFeature, m)
@@ -295,6 +317,188 @@ func alignPages(before, after []image.Image) []pageAlignment {
 		afterFeatures[i] = pageImageFeature(page)
 	}
 
+	distances := make([]float64, n*m)
+	for i := range distances {
+		distances[i] = -1
+	}
+	maxRadius := max(n, m)
+	radius := min(8, maxRadius)
+	for {
+		low, high := alignmentBand(radius, n, m)
+		if alignmentBandCells(n, m, low, high)*3 >= (n+1)*(m+1) {
+			return alignPagesFull(beforeFeatures, afterFeatures, distances)
+		}
+		alignment, mayEscape, ok := alignPagesBand(beforeFeatures, afterFeatures, distances, low, high)
+		if !ok {
+			return alignPagesFull(beforeFeatures, afterFeatures, distances)
+		}
+		if !mayEscape || radius >= maxRadius {
+			return alignment
+		}
+		radius = min(maxRadius, radius*2)
+	}
+}
+
+func alignmentBand(radius, n, m int) (int, int) {
+	delta := m - n
+	return min(0, delta) - radius, max(0, delta) + radius
+}
+
+func alignmentBandCells(n, m, low, high int) int {
+	cells := 0
+	for i := 0; i <= n; i++ {
+		first := max(0, i+low)
+		last := min(m, i+high)
+		if first <= last {
+			cells += last - first + 1
+		}
+	}
+	return cells
+}
+
+func alignPagesBand(before, after []pageFeature, distances []float64, low, high int) ([]pageAlignment, bool, bool) {
+	const gapCost = 0.55
+	n, m := len(before), len(after)
+	inBand := func(i, j int) bool {
+		delta := j - i
+		return delta >= low && delta <= high
+	}
+	steps := make([]byte, (n+1)*(m+1))
+	below := make([]float64, m+1)
+	current := make([]float64, m+1)
+	for i := n; i >= 0; i-- {
+		first := max(0, i+low)
+		last := min(m, i+high)
+		for j := last; j >= first; j-- {
+			if i == n && j == m {
+				current[j] = 0
+				continue
+			}
+			best := 1e9
+			var step byte
+			if i < n && j < m && inBand(i+1, j+1) {
+				best = cachedPageFeatureDistance(before, after, distances, m, i, j) + below[j+1]
+				step = pageMatch
+			}
+			if i < n && inBand(i+1, j) {
+				candidate := gapCost + below[j]
+				if candidate < best {
+					best, step = candidate, pageRemoved
+				}
+			}
+			if j < m && inBand(i, j+1) {
+				candidate := gapCost + current[j+1]
+				if candidate < best {
+					best, step = candidate, pageAdded
+				}
+			}
+			current[j] = best
+			steps[i*(m+1)+j] = step
+		}
+		below, current = current, below
+	}
+
+	alignment := make([]pageAlignment, 0, max(n, m))
+	for i, j := 0, 0; i < n || j < m; {
+		switch steps[i*(m+1)+j] {
+		case pageMatch:
+			alignment = append(alignment, pageAlignment{before: i, after: j, kind: pageMatch})
+			i++
+			j++
+		case pageRemoved:
+			alignment = append(alignment, pageAlignment{before: i, kind: pageRemoved})
+			i++
+		case pageAdded:
+			alignment = append(alignment, pageAlignment{after: j, kind: pageAdded})
+			j++
+		default:
+			return nil, false, false
+		}
+	}
+
+	bestCost := below[0]
+	return alignment, bandMayContainBetterPath(before, after, distances, low, high, bestCost), true
+}
+
+// bandMayContainBetterPath bounds every path that can leave the band. Its
+// prefix is evaluated exactly inside the band; the suffix lower bound counts
+// only the gaps forced by the remaining sequence lengths. If that lower bound
+// can tie or beat the in-band result, the caller widens the corridor.
+func bandMayContainBetterPath(before, after []pageFeature, distances []float64, low, high int, bestCost float64) bool {
+	const gapCost = 0.55
+	n, m := len(before), len(after)
+	inBand := func(i, j int) bool {
+		delta := j - i
+		return delta >= low && delta <= high
+	}
+	previous := make([]float64, m+1)
+	current := make([]float64, m+1)
+	minEscape := 1e9
+	for i := 0; i <= n; i++ {
+		first := max(0, i+low)
+		last := min(m, i+high)
+		for j := first; j <= last; j++ {
+			if i == 0 && j == 0 {
+				current[j] = 0
+			} else {
+				best := 1e9
+				if i > 0 && j > 0 && inBand(i-1, j-1) {
+					best = previous[j-1] + cachedPageFeatureDistance(before, after, distances, m, i-1, j-1)
+				}
+				if i > 0 && inBand(i-1, j) {
+					candidate := previous[j] + gapCost
+					if candidate < best {
+						best = candidate
+					}
+				}
+				if j > 0 && inBand(i, j-1) {
+					candidate := current[j-1] + gapCost
+					if candidate < best {
+						best = candidate
+					}
+				}
+				current[j] = best
+			}
+
+			if j-i == low && i < n {
+				suffixGaps := pageCountDifference(n-i-1, m-j)
+				minEscape = minFloat(minEscape, current[j]+gapCost+gapCost*float64(suffixGaps))
+			}
+			if j-i == high && j < m {
+				suffixGaps := pageCountDifference(n-i, m-j-1)
+				minEscape = minFloat(minEscape, current[j]+gapCost+gapCost*float64(suffixGaps))
+			}
+		}
+		previous, current = current, previous
+	}
+	return minEscape <= bestCost
+}
+
+func cachedPageFeatureDistance(before, after []pageFeature, distances []float64, afterCount, i, j int) float64 {
+	index := i*afterCount + j
+	if distances[index] < 0 {
+		distances[index] = pageFeatureDistance(before[i], after[j])
+	}
+	return distances[index]
+}
+
+func minFloat(a, b float64) float64 {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func pageCountDifference(a, b int) int {
+	if a > b {
+		return a - b
+	}
+	return b - a
+}
+
+func alignPagesFull(before, after []pageFeature, distances []float64) []pageAlignment {
+	const gapCost = 0.55
+	n, m := len(before), len(after)
 	cost := make([][]float64, n+1)
 	next := make([][]byte, n+1)
 	for i := range cost {
@@ -309,7 +513,7 @@ func alignPages(before, after []image.Image) []pageAlignment {
 			best := 1e9
 			var step byte
 			if i < n && j < m {
-				best = pageFeatureDistance(beforeFeatures[i], afterFeatures[j]) + cost[i+1][j+1]
+				best = cachedPageFeatureDistance(before, after, distances, m, i, j) + cost[i+1][j+1]
 				step = pageMatch
 			}
 			if i < n {
@@ -327,7 +531,6 @@ func alignPages(before, after []image.Image) []pageAlignment {
 			cost[i][j], next[i][j] = best, step
 		}
 	}
-
 	alignment := make([]pageAlignment, 0, max(n, m))
 	for i, j := 0, 0; i < n || j < m; {
 		switch next[i][j] {
