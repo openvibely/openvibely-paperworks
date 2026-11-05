@@ -52,8 +52,8 @@ func TestInstalledWorksheetReferenceBytes(t *testing.T) {
 }
 
 func TestNormalizeWorksheetXMLPreservesCellContents(t *testing.T) {
-	raw := []byte(`<worksheet><sheetData><row r="1"><c r="A1" s="2"/><c r="B1" s="3"><v/></c><c r="C1" t="str"><f>1+2</f><v>3</v></c></row></sheetData></worksheet>`)
-	want := `<worksheet><sheetData><row r="1"><c r="A1" s="2"></c><c r="B1" s="3"><v></v></c><c r="C1" t="str"><f>1+2</f><v>3</v></c></row></sheetData></worksheet>`
+	raw := []byte(`<worksheet><!-- <c x="<v/>"/>; <c r="comment"/> --><sheetData><row r="1"><c r="A1" s="2"/><c r="B1" s="3"><v/></c><c r="C1" t="str"><f>1+2</f><v>3</v></c></row></sheetData></worksheet>`)
+	want := `<worksheet><!-- <c x="<v></v>"/>; <c r="comment"/> --><sheetData><row r="1"><c r="A1" s="2"></c><c r="B1" s="3"><v></v></c><c r="C1" t="str"><f>1+2</f><v>3</v></c></row></sheetData></worksheet>`
 	if got := string(normalizeWorksheetXML(raw)); got != want {
 		t.Fatalf("normalized worksheet XML mismatch\n got: %s\nwant: %s", got, want)
 	}
@@ -96,6 +96,7 @@ func TestInlineWorksheetValuesAndFormulas(t *testing.T) {
 	if e != nil {
 		t.Fatal(e)
 	}
+	sheet.Root().CreateComment(`<c x="<v/>"/>;<c r="comment"/>`)
 	var emptyCell *etree.Element
 	for _, cell := range sheet.Root().FindElements("sheetData/row/c") {
 		if cell.SelectAttrValue("r", "") == "C2" {
@@ -119,6 +120,9 @@ func TestInlineWorksheetValuesAndFormulas(t *testing.T) {
 	}
 	if !strings.Contains(worksheetXML, `r="C2"`) || !strings.Contains(worksheetXML, "</c>") {
 		t.Fatalf("styled empty cell was not serialized with a closing tag: %s", worksheetXML)
+	}
+	if !strings.Contains(worksheetXML, `<!--<c x="<v></v>"/>;<c r="comment"/>-->`) {
+		t.Fatalf("comment markup was normalized as worksheet cells: %s", worksheetXML)
 	}
 	out := filepath.Join(t.TempDir(), "inline.xlsx")
 	if e = p.SaveNew(out); e != nil {

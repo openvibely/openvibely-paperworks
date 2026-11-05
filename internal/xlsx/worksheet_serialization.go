@@ -204,6 +204,27 @@ func normalizeWorksheetXML(raw []byte) []byte {
 			i++
 			continue
 		}
+		if i+4 <= len(raw) && raw[i+1] == '!' && raw[i+2] == '-' && raw[i+3] == '-' {
+			i += 4
+			for i < len(raw) {
+				if i+3 <= len(raw) && raw[i] == '-' && raw[i+1] == '-' && raw[i+2] == '>' {
+					i += 3
+					break
+				}
+				if i+4 <= len(raw) && raw[i] == '<' && raw[i+1] == 'v' && raw[i+2] == '/' && raw[i+3] == '>' {
+					if normalized == nil {
+						normalized = make([]byte, 0, len(raw)+len(raw)/4)
+					}
+					normalized = append(normalized, raw[last:i]...)
+					normalized = append(normalized, "<v></v>"...)
+					i += 4
+					last = i
+					continue
+				}
+				i++
+			}
+			continue
+		}
 		if i+4 <= len(raw) && raw[i+1] == 'v' && raw[i+2] == '/' && raw[i+3] == '>' {
 			if normalized == nil {
 				normalized = make([]byte, 0, len(raw)+len(raw)/4)
