@@ -154,7 +154,8 @@ func runXML(r Run) string {
 	if pr.Len() > 0 {
 		out.WriteString("<w:rPr>" + pr.String() + "</w:rPr>")
 	}
-	for i, line := range strings.Split(strings.ReplaceAll(r.Text, "\r", "\n"), "\n") {
+	text := strings.NewReplacer("\r\n", "\n", "\r", "\n").Replace(r.Text)
+	for i, line := range strings.Split(text, "\n") {
 		if i > 0 {
 			out.WriteString("<w:br/>")
 		}
